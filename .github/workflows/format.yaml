@@ -15,6 +15,10 @@ jobs:
             uses: actions/setup-node@v4
             with:
                 node-version: "latest"
+                cache: "npm"
+
+          - name: Install dependencies
+            run: npm install --save-dev
 
           - name: Lint code
             run: npm run lint:fix

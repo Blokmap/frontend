@@ -1,0 +1,12 @@
+.github/
+node_modules/
+test/
+
+.dockerignore
+.gitignore
+.prettierrc.json
+cypress.config.test
+Dockerfile
+eslint.config.js
+LICENSE
+README.md

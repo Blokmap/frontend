@@ -43,6 +43,7 @@ jobs:
           - name: Setup
             uses: ./.github/actions/common
 
+            # See https://github.com/cypress-io/github-action/issues/601#issuecomment-1301013647
           - name: Setup xvfb (Linux)
             if: runner.os == 'Linux'
             run: |

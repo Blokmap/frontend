@@ -12,4 +12,7 @@ export default defineConfig({
     build: {
         outDir: 'public',
     },
+    test: {
+        include: ['test/unit/**/*.{test,spec}.ts'],
+    },
 });

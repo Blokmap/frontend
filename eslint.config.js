@@ -5,7 +5,6 @@ import prettier from 'eslint-config-prettier';
 
 export default [
     {
-        files: ['**/*.ts', '**/*.vue'],
         languageOptions: {
             parser: tsparser,
             parserOptions: {

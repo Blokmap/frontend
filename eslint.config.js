@@ -1,18 +1,24 @@
-import eslint from '@eslint/js';
-import tslint from 'typescript-eslint';
-import vuelint from 'eslint-plugin-vue';
-import pretty from 'eslint-config-prettier';
+import tsplugin from '@typescript-eslint/eslint-plugin';
+import tsparser from '@typescript-eslint/parser';
+import vue from 'eslint-plugin-vue';
+import prettier from 'eslint-config-prettier';
 
-export default tslint.config(
-    eslint.configs.recommended,
-    ...tslint.configs.recommended,
-    ...vuelint.configs['flat/recommended'],
+export default [
     {
         languageOptions: {
+            parser: tsparser,
             parserOptions: {
-                parser: tslint.parser,
+                ecmaVersion: 'latest',
+                sourceType: 'module',
             },
         },
+        plugins: {
+            '@typescript-eslint': tsplugin,
+        },
+        rules: {
+            ...tsplugin.configs.recommended.rules,
+        },
     },
-    pretty,
-);
+    ...vue.configs['flat/recommended'],
+    prettier,
+];

@@ -1,9 +1,25 @@
-name: Test code
+name: Lint, format, and test code
 
 on:
     push
 
 jobs:
+    lint-and-format:
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v4
+
+          - name: Setup
+            uses: ./.github/actions/common
+
+          - name: Lint code
+            run: npm run lint:fix
+
+          - name: Format code
+            run: npm run format
+
     unit-tests:
         runs-on: ubuntu-latest
 
@@ -11,14 +27,8 @@ jobs:
           - name: Checkout code
             uses: actions/checkout@v4
 
-          - name: Set up node
-            uses: actions/setup-node@v4
-            with:
-                node-version: "latest"
-                cache: "npm"
-
-          - name: Install dependencies
-            run: npm install --save-dev
+          - name: Setup
+            uses: ./.github/actions/common
 
           - name: Run unit tests
             run: npm run test:unit
@@ -30,14 +40,8 @@ jobs:
           - name: Checkout code
             uses: actions/checkout@v4
 
-          - name: Set up node
-            uses: actions/setup-node@v4
-            with:
-                node-version: "latest"
-                cache: "npm"
-
-          - name: Install dependencies
-            run: npm install --save-dev
+          - name: Setup
+            uses: ./.github/actions/common
 
           - name: Run e2e tests
             run: npm run test:e2e

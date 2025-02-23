@@ -15,4 +15,12 @@ export default defineConfig({
     test: {
         include: ['test/unit/**/*.{test,spec}.ts'],
     },
+    server: {
+        host: true,
+        allowedHosts: true,
+        port: 3000,
+        hmr: {
+            clientPort: 443,
+        },
+    },
 });

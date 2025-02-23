@@ -13,6 +13,7 @@ public
 public-ssr
 dist
 dist-ssr
+tsconfig.tsbuildinfo
 *.local
 
 # Editor directories and files.

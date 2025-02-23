@@ -2,7 +2,7 @@ FROM node:23-alpine
 
 WORKDIR /blokmap-frontend
 
-COPY package.json package-lock.json ./
+COPY package*.json ./
 
 RUN npm install -g npm
 RUN npm install

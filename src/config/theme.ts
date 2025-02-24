@@ -1,6 +1,13 @@
 import { definePreset } from '@primevue/themes';
 import Aura from '@primevue/themes/aura';
 
-export const BlokmapTheme = definePreset(Aura, {
+const preset = definePreset(Aura, {
     // Customizations go here.
 });
+
+export const BlokmapTheme = {
+    preset,
+    options: {
+        prefix: null,
+    },
+};

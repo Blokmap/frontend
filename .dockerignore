@@ -6,7 +6,8 @@ test/
 .gitignore
 .prettierrc.json
 cypress.config.test
-Dockerfile
+Dockerfile.prod
+Dockerfile.test
 eslint.config.js
 LICENSE
 README.md

@@ -15,7 +15,7 @@ jobs:
             uses: ./.github/actions/common
 
           - name: Lint code
-            run: npm run lint:fix
+            run: npm run lint
 
           - name: Format code
             run: npm run format

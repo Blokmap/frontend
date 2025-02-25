@@ -5,9 +5,9 @@ const preset = definePreset(Aura, {
     // Customizations go here.
 });
 
-export const BlokmapTheme = {
+export const BlokmapThemeConfig = {
     preset,
     options: {
-        prefix: null,
+        prefix: '',
     },
 };

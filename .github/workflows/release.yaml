@@ -20,7 +20,7 @@ jobs:
             uses: docker/metadata-action@v5
             with:
                 images: |
-                    ghcr.io/blokmap/blokmap-backend
+                    ghcr.io/blokmap/blokmap-frontend
                 tags: |
                     type=semver,pattern={{version}}
 
@@ -40,8 +40,8 @@ jobs:
                 file: Dockerfile.prod
                 push: true
                 tags: ${{ steps.meta.outputs.tags }}
-                cache-from: type=registry,ref=ghcr.io/blokmap/blokmap-backend:buildcache
-                cache-to: type=registry,ref=ghcr.io/blokmap/blokmap-backend:buildcache,mode=max
+                cache-from: type=registry,ref=ghcr.io/blokmap/blokmap-frontend:buildcache
+                cache-to: type=registry,ref=ghcr.io/blokmap/blokmap-frontend:buildcache,mode=max
 
     deploy:
         runs-on: self-hosted

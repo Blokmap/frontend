@@ -1,4 +1,19 @@
 import { createApp } from 'vue';
-import App from './App.vue';
+import { BlokmapTheme } from '@/config/theme';
+import PrimeVue from 'primevue/config';
+import App from '@/App.vue';
 
-createApp(App).mount('#app');
+const app = createApp(App);
+
+// Register plugins.
+app.use(PrimeVue, {
+    theme: {
+        preset: BlokmapTheme,
+        options: {
+            prefix: null,
+        },
+    },
+});
+
+// Mount the app.
+app.mount('#app');

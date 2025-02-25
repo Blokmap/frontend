@@ -1,7 +1,9 @@
 name: Lint, format, and test code
 
 on:
-    push
+    push:
+        branches: ["**"]
+        tags-ignore: ["**"]
 
 jobs:
     lint-and-format:

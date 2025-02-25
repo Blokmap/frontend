@@ -1,6 +1,12 @@
 {
     "extends": "@vue/tsconfig/tsconfig.dom.json",
     "compilerOptions": {
+        "strict": true,
+        "jsx": "preserve",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
         "baseUrl": ".",
         "paths": {
             "@/*": [
@@ -9,6 +15,7 @@
         },
     },
     "include": [
+        "test/**/*.ts",
         "src/**/*.ts",
         "src/**/*.tsx",
         "src/**/*.vue"

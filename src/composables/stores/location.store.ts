@@ -1,4 +1,4 @@
-import type { GeoLocation } from '@/types/Location';
+import type { GeoLocation } from '@/types/model/Location';
 import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
 

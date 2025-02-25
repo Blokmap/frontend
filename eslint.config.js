@@ -6,8 +6,9 @@ import prettier from 'eslint-config-prettier';
 export default [
     {
         languageOptions: {
-            parser: tsparser,
+            parser: vue,
             parserOptions: {
+                parser: tsparser,
                 ecmaVersion: 'latest',
                 sourceType: 'module',
             },

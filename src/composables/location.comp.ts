@@ -1,4 +1,4 @@
-import type { GeoLocation } from '@/types/Location';
+import type { GeoLocation } from '@/types/model/Location';
 import { ref, watch } from 'vue';
 
 export function useLocation() {

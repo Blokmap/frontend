@@ -1,18 +1,23 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import { useBlokmap } from '@/composables/blokmap.comp';
+import { useLeafletMap } from '@/composables/leaflet.comp';
+import { blokmapConfig } from '@/config/blokmap.config';
 
-const mapContainer = ref<HTMLElement | null>(null);
+const container = ref<HTMLElement | null>(null);
+
+const { zoom, bounds } = blokmapConfig;
+const { map } = useLeafletMap(container);
 
 onMounted(() => {
-    if (mapContainer.value) {
-        useBlokmap(mapContainer.value);
+    if (map.value) {
+        map.value.setMaxBounds(bounds);
+        map.value.setZoom(zoom);
     }
 });
 </script>
 
 <template>
-    <div ref="mapContainer" class="h-screen w-screen"></div>
+    <div ref="container" class="h-full w-full"></div>
 </template>
 
 <style lang="scss">

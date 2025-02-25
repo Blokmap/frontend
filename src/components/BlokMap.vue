@@ -1,18 +1,18 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useBlokmap } from '@/composables/blokmap.comp';
-import { useLocation } from '@/composables/location.comp';
 
-const { getGeoLocation } = useLocation();
+const mapContainer = ref<HTMLElement | null>(null);
 
 onMounted(() => {
-    getGeoLocation();
-    useBlokmap();
+    if (mapContainer.value) {
+        useBlokmap(mapContainer.value);
+    }
 });
 </script>
 
 <template>
-    <div id="map" class="h-screen w-screen"></div>
+    <div ref="mapContainer" class="h-screen w-screen"></div>
 </template>
 
 <style lang="scss">

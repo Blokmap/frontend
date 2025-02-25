@@ -3,6 +3,7 @@ import { BlokmapThemeConfig } from '@/config/theme.config';
 import { I18nPlugin } from '@/config/i18n.config';
 import { RouterPlugin } from '@/config/router/router.config';
 import { Ripple, Tooltip } from 'primevue';
+import { createPinia } from 'pinia';
 import App from '@/App.vue';
 import PrimeVuePlugin from 'primevue/config';
 
@@ -10,6 +11,7 @@ import PrimeVuePlugin from 'primevue/config';
 const app = createApp(App);
 
 // Register plugins.
+app.use(createPinia());
 app.use(RouterPlugin);
 app.use(I18nPlugin);
 app.use(PrimeVuePlugin, {

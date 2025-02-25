@@ -1,11 +1,12 @@
-import { useLocation } from '@/composables/location.comp';
+import { useLocationStore } from '@/composables/stores/location.store';
 import { BlokMapConfig } from '@/config/map.config';
 import type { GeoLocation } from '@/types/Location';
-import Leaflet from 'leaflet';
+import { storeToRefs } from 'pinia';
 import { watch } from 'vue';
+import Leaflet from 'leaflet';
 
-export function useBlokmap(container: string = 'map') {
-    const { location } = useLocation();
+export function useBlokmap(container: HTMLElement) {
+    const { location } = storeToRefs(useLocationStore());
     const { center, zoom, bounds, tileLayerUrl, tileLayerConfig } = BlokMapConfig;
 
     // Create the map.
@@ -19,6 +20,7 @@ export function useBlokmap(container: string = 'map') {
     // Add the tile layer.
     Leaflet.tileLayer(tileLayerUrl, tileLayerConfig).addTo(map);
 
+    // Watch the location and add a marker to the map.
     watch(
         location,
         (newLocation: GeoLocation | null) => {
@@ -26,12 +28,14 @@ export function useBlokmap(container: string = 'map') {
                 return;
             }
 
+            console.log(location.value);
+
             Leaflet.marker([newLocation.lat, newLocation.lng])
                 .addTo(map)
                 .bindPopup('Your location')
                 .openPopup();
         },
-        { immediate: true },
+        { immediate: true},
     );
 
     return map;

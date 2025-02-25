@@ -1,7 +1,8 @@
 import type { GeoLocation } from '@/types/Location';
+import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
 
-export function useLocation() {
+export const useLocationStore = defineStore('location', () => {
     const location = ref<GeoLocation | null>(null);
     const isError = ref(false);
     const isLoading = ref(true);
@@ -51,6 +52,10 @@ export function useLocation() {
         { immediate: true },
     );
 
+    // Get the user's location.
+    // This will prompt the user for permission.
+    getGeoLocation();
+
     return {
         location,
         isError,
@@ -58,4 +63,4 @@ export function useLocation() {
         hasPermission,
         getGeoLocation,
     };
-}
+});

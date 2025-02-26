@@ -1,4 +1,4 @@
-import type { LatLngExpression, LatLngBoundsExpression } from "leaflet";
+import type { LatLng, LatLngBounds } from 'leaflet';
 
 export type BlokmapConfig = {
     tlUrl: string;
@@ -6,8 +6,8 @@ export type BlokmapConfig = {
         maxZoom: number;
         minZoom: number;
     };
-    maxPinCount: number;
+    maxLocationCount: number;
     zoom: number;
-    center: LatLngExpression;
-    bounds: LatLngBoundsExpression;
+    center: LatLng;
+    bounds: LatLngBounds;
 };

@@ -1,4 +1,4 @@
-name: Build and release a new docker image and deploy new assets
+name: Build, publish, and deploy new images
 
 permissions:
     packages: write

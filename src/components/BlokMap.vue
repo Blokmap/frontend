@@ -74,7 +74,8 @@ function updateMarkers(locations: Location[]) {
                         event.originalEvent,
                         marker.getElement(),
                     );
-                });
+                })
+                .once('zoomstart', hidePopover);
         });
 
         // Animate marker on add.
@@ -139,7 +140,6 @@ onMounted(() => {
     // map.value.on('update');
     map.value.on('move', updatePopover);
     map.value.on('zoomanim', updatePopover);
-    map.value.on('dragstart', hidePopover);
     map.value.on('moveend', updateLocations);
 
     // Update locations on mount.
@@ -152,7 +152,6 @@ onUnmounted(() => {
     // Remove map listeners.
     map.value.off('move');
     map.value.off('moveend');
-    map.value.off('zoomanim');
     map.value.off('dragstart');
 });
 </script>
@@ -160,6 +159,7 @@ onUnmounted(() => {
 <template>
     <div ref="mapContainer" class="h-full w-full"></div>
     <Popover
+        id="popoverContainer"
         ref="popoverContainer"
         class="w-30rem max-w-full"
         @hide="popoverShown = false"

@@ -1,7 +1,7 @@
-import { definePreset } from '@primevue/themes';
-import Aura from '@primevue/themes/aura';
+import { definePreset } from '@primeuix/themes';
+import Nora from '@primeuix/themes/nora';
 
-const preset = definePreset(Aura, {
+const preset = definePreset(Nora, {
     // Customizations go here.
 });
 

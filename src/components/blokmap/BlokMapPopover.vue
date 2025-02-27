@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Location } from '@/types/model/Location';
 import { PrimeIcons } from '@primevue/core';
-import { Popover, Button } from 'primevue';
+import { Popover, Button, Tag } from 'primevue';
 import { ref } from 'vue';
 
 defineProps<{

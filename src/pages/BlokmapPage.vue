@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BlokMap from '@/components/BlokMap.vue';
+import BlokMap from '@/components/blokmap/BlokMap.vue';
 </script>
 
 <template>

@@ -5,15 +5,13 @@ import { blokmapConfig } from '@/config/blokmapConfig';
 import { useLocationService } from '@/composables/services/useLocationService';
 import type { Location } from '@/types/model/Location';
 import { useDebounceFn } from '@vueuse/core';
-import { Button, Popover, Tag } from 'primevue';
-import { PrimeIcons } from '@primevue/core';
 import MarkerIcon from '@/assets/img/marker.png';
 import L, { type LeafletMouseEvent } from 'leaflet';
 import G from 'gsap';
+import BlokMapPopover from '@/components/blokmap/BlokMapPopover.vue';
 
+const popoverContainer = ref<InstanceType<typeof BlokMapPopover> | null>(null);
 const mapContainer = ref<HTMLElement | null>(null);
-const popoverContainer = ref<InstanceType<typeof Popover> | null>(null);
-const popoverShown = ref(false);
 
 const selectedLocation = ref<Location | null>(null);
 const selectedMarker = ref<L.Marker | null>(null);
@@ -61,21 +59,23 @@ function updateMarkers(locations: Location[]) {
 
         // Show location details on marker click.
         marker.on('click', (event: LeafletMouseEvent) => {
-            selectedLocation.value = location;
-            selectedMarker.value = marker;
+            if (!map.value) return;
 
             map.value
-                ?.flyTo(marker.getLatLng(), map.value.getMaxZoom(), {
+                .flyTo(marker.getLatLng(), map.value.getMaxZoom(), {
                     animate: true,
                     duration: 0.5,
                 })
                 .once('moveend', () => {
+                    selectedLocation.value = location;
+                    selectedMarker.value = marker;
+
                     popoverContainer.value?.show(
                         event.originalEvent,
                         marker.getElement(),
                     );
                 })
-                .once('zoomstart', hidePopover);
+                .once('zoomstart', () => popoverContainer.value?.hide());
         });
 
         // Animate marker on add.
@@ -96,26 +96,6 @@ function updateMarkers(locations: Location[]) {
 }
 
 /**
- * Updates the popover overlay position.
- */
-function updatePopover() {
-    if (!selectedLocation.value) return;
-
-    try {
-        popoverContainer.value?.alignOverlay();
-    } catch {
-        console.warn('Failed to align popover overlay.');
-    }
-}
-
-/**
- * Hides the popover overlay.
- */
-function hidePopover() {
-    popoverContainer.value?.hide();
-}
-
-/**
  * Debounced function to update the locations on the map.
  */
 const updateLocations = useDebounceFn(() => {
@@ -125,11 +105,12 @@ const updateLocations = useDebounceFn(() => {
         map.value.getBounds(),
         maxLocationCount,
     );
+
     updateMarkers(locations);
 }, 250);
 
 onMounted(() => {
-    if (!map.value) return;
+    if (!map.value || !popoverContainer.value) return;
 
     // Add map configuration.
     // Set the map bounds and zoom level.
@@ -138,8 +119,7 @@ onMounted(() => {
 
     // Add map listeners.
     // map.value.on('update');
-    map.value.on('move', updatePopover);
-    map.value.on('zoomanim', updatePopover);
+    map.value.on('move', popoverContainer.value.update);
     map.value.on('moveend', updateLocations);
 
     // Update locations on mount.
@@ -152,42 +132,12 @@ onUnmounted(() => {
     // Remove map listeners.
     map.value.off('move');
     map.value.off('moveend');
-    map.value.off('dragstart');
 });
 </script>
 
 <template>
     <div ref="mapContainer" class="h-full w-full"></div>
-    <Popover
-        id="popoverContainer"
-        ref="popoverContainer"
-        class="w-30rem max-w-full"
-        @hide="popoverShown = false"
-        @show="popoverShown = true">
-        <template v-if="selectedLocation !== null">
-            <h2 class="m-0">{{ selectedLocation.name }}</h2>
-            <div class="flex gap-2 my-3">
-                <Tag :icon="PrimeIcons.STAR" severity="contrast"> Popular </Tag>
-                <Tag :icon="PrimeIcons.CALENDAR" severity="secondary">
-                    Event
-                </Tag>
-                <Tag :icon="PrimeIcons.BOLT" severity="secondary"> Coffee </Tag>
-            </div>
-            <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum
-                possimus vitae culpa minus iste non inventore, sint accusantium
-                nostrum ipsum, maiores laudantium! Adipisci omnis officiis velit
-                quia repudiandae alias soluta!
-            </p>
-            <Button
-                label="More information"
-                severity="contrast"
-                icon-pos="right"
-                :icon="PrimeIcons.ARROW_RIGHT"
-                outlined>
-            </Button>
-        </template>
-    </Popover>
+    <BlokMapPopover ref="popoverContainer" :location="selectedLocation" />
 </template>
 
 <style lang="scss">

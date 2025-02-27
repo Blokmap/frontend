@@ -4,9 +4,9 @@
     "semi": true,
     "singleQuote": true,
     "trailingComma": "all",
-    "printWidth": 100,
+    "printWidth": 80,
     "bracketSpacing": true,
     "arrowParens": "always",
-    "endOfLine": "lf"
-  }
-  
+    "endOfLine": "lf",
+    "bracketSameLine": true
+}

@@ -1,85 +1,99 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { useLocationService } from '@/composables/services/useLocationService';
 import { LatLngBounds } from 'leaflet';
-import { useLocationService } from '@/composables/services/location.service';
+import { describe, expect, it, beforeEach } from 'vitest';
 
 describe('useLocationService', () => {
-    const service = useLocationService();
-    const testZoom = 10;
-    const testMax = 75;
+    const service  = useLocationService();
 
     beforeEach(() => {
-        service.clearCache();
+        service.cache.clear();
     });
 
-    it('should reuse cached cells and fetch missing ones when panning', () => {
-        const initialBounds = new LatLngBounds([-45, -90], [45, 90]); // Covers center cells
-        const pannedBounds = new LatLngBounds([-45, 0], [45, 180]); // Pan east
+    it('returns locations within the specified bounds', () => {
+        const bounds = new LatLngBounds([50.8, 3.0], [51.1, 4.0]);
+        const locations = service.getViewportLocations(bounds, 1000);
 
-        // Should cache some cells.
-        service.getViewportLocations(initialBounds, testZoom, 100);
-        const initialCachedCells = Array.from(service.cache.keys());
-        expect(initialCachedCells.length).toBeGreaterThan(0);
-
-        // Some cells should be reused, new ones added.
-        service.getViewportLocations(pannedBounds, testZoom, 100);
-        const newCachedCells = Array.from(service.cache.keys());
-
-        expect(newCachedCells.length).toBeGreaterThan(initialCachedCells.length);
-        expect(initialCachedCells.some((cell) => newCachedCells.includes(cell))).toBe(true);
-
-        // Should be the same object (reference) in cache.
-        const initialLocations = service.cache.get(initialCachedCells[0]);
-        const newLocations = service.cache.get(newCachedCells[0]);
-        expect(initialLocations).toBe(newLocations);
+        // Ensure all returned locations are within the bounds
+        expect(locations.every((l) => bounds.contains(l.coords))).toBe(true);
     });
 
-    it('should only return locations within the current viewport bounds', () => {
-        const bounds = new LatLngBounds([-45, -90], [45, 90]);
-        const locations = service.getViewportLocations(bounds, testZoom, 100);
+    it('respects the max parameter', () => {
+        const bounds = new LatLngBounds([50.8, 3.0], [51.1, 4.0]);
+        const max = 5;
+        const locations = service.getViewportLocations(bounds, max);
 
-        // All locations must be inside the requested bounds
-        locations.forEach((location) => {
-            expect(bounds.contains(location.coords)).toBe(true);
-        });
+        // Ensure the number of returned locations does not exceed the max
+        expect(locations.length).toBeLessThanOrEqual(max);
     });
 
-    it('should return <= max locations sorted by importance (desc)', () => {
-        const bounds = new LatLngBounds([-45, -90], [45, 90]);
+    it('sorts locations by descending importance', () => {
+        const bounds = new LatLngBounds([50.8, 3.0], [51.1, 4.0]);
+        const locations = service.getViewportLocations(bounds, 1000);
 
-        const locations = service.getViewportLocations(bounds, testZoom, testMax);
-        expect(locations.length).toBeLessThanOrEqual(testMax);
-
-        // Check sorting (importance should decrease)
+        // Ensure locations are sorted by importance in descending order
         for (let i = 1; i < locations.length; i++) {
-            expect(locations[i].importance).toBeLessThanOrEqual(locations[i - 1].importance);
+            expect(locations[i - 1].importance).toBeGreaterThanOrEqual(locations[i].importance);
         }
     });
 
-    it('should clear cached cells when requested', () => {
-        const bounds = new LatLngBounds([-45, -90], [45, 90]);
+    it('uses cached data when available', () => {
+        const boundsLarge = new LatLngBounds([50.8, 3.0], [51.1, 4.0]);
+        const boundsSmall = new LatLngBounds([51.0, 3.0], [51.1, 3.1]);
 
-        // Load data to populate cache
-        service.getViewportLocations(bounds, testZoom, 100);
-        expect(service.cache.size).toBeGreaterThan(0);
+        // First call (cache miss)
+        const result1 = service.getViewportLocations(boundsLarge, 1000);
+        expect(result1.length).toBeGreaterThan(0);
 
-        // Clear entire cache
-        service.clearCache();
-        expect(service.cache.size).toBe(0);
+        // Second call (cache hit)
+        const result2 = service.getViewportLocations(boundsSmall, 1000);
+        expect(result2.length).toBeGreaterThan(0);
 
-        // Load again and ensure cache is repopulated
-        service.getViewportLocations(bounds, testZoom, 100);
-        expect(service.cache.size).toBeGreaterThan(0);
+        // Ensure the results are filtered from the cached data
+        expect(result2.every((l) => boundsSmall.contains(l.coords as any))).toBe(true);
     });
 
-    it('should handle viewports spanning multiple cells', () => {
-        const wideBounds = new LatLngBounds([-90, -180], [90, 180]); // Entire world
+    it('removes subset cached bounds when adding superset', () => {
+        const boundsSmall = new LatLngBounds([51.0, 3.0], [51.1, 3.1]);
+        const boundsLarge = new LatLngBounds([50.8, 3.0], [51.1, 4.0]);
 
-        const locations = service.getViewportLocations(wideBounds, testZoom, 1000);
-        const cells = service.getViewportCells(wideBounds, testZoom);
+        // Cache the smaller bounds
+        service.getViewportLocations(boundsSmall, 1000);
+        expect(service.cache.has(boundsSmall)).toBe(true);
 
-        // Should fetch from all cells in the viewport
-        expect(cells.length).toBeGreaterThan(1);
-        expect(service.cache.size).toBe(cells.length);
-        expect(locations.length).toBe(1000); // Max is respected
+        // Cache the larger bounds, which should remove the smaller bounds
+        service.getViewportLocations(boundsLarge, 1000);
+        expect(service.cache.has(boundsSmall)).toBe(false);
+        expect(service.cache.has(boundsLarge)).toBe(true);
+    });
+
+    it('adds new entry to cache on fetch', () => {
+        const bounds = new LatLngBounds([51.0, 3.0], [51.1, 3.1]);
+
+        // Fetch data and ensure it's added to the cache
+        service.getViewportLocations(bounds, 1000);
+        expect(service.cache.has(bounds)).toBe(true);
+    });
+
+    it('does not use cache when no containing bounds exist', () => {
+        const boundsSmall = new LatLngBounds([51.0, 3.0], [51.1, 3.1]);
+        const boundsOther = new LatLngBounds([50.0, 2.0], [52.0, 5.0]);
+
+        // Cache the smaller bounds
+        service.getViewportLocations(boundsSmall, 1000);
+        expect(service.cache.has(boundsSmall)).toBe(true);
+
+        // Fetch data for a different bounds, which should not use the cache
+        const result = service.getViewportLocations(boundsOther, 1000);
+        expect(service.cache.has(boundsSmall)).toBe(false);
+        expect(service.cache.has(boundsOther)).toBe(true);
+        expect(result.length).toBeGreaterThan(0);
+    });
+
+    it('returns an empty array if no locations are within bounds', () => {
+        const bounds = new LatLngBounds([0, 0], [1, 1]); // Bounds with no locations
+        const locations = service.getViewportLocations(bounds, 1000);
+
+        // Ensure no locations are returned
+        expect(locations).toHaveLength(0);
     });
 });

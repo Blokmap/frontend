@@ -8,13 +8,10 @@ export type GeolocationError = {
     readonly message: string;
 };
 
-export type CellKey = {
+export type Cell = {
     zoom: number;
     row: number;
     col: number;
-};
-
-export type Cell = {
     sizeLat: number;
     sizeLng: number;
     rows: number;
@@ -22,7 +19,7 @@ export type Cell = {
 };
 
 export type Location = {
-    id: number;
+    id: number
     name: string;
     importance: number;
     coords: GeoLocation;

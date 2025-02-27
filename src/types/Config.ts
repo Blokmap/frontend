@@ -1,13 +1,13 @@
-import type { LatLng, LatLngBounds } from 'leaflet';
+import type { LatLng, LatLngBounds, MapOptions } from 'leaflet';
 
-export type BlokmapConfig = {
+export type BlokmapOptions = MapOptions & {
+    maxLocationCount: number;
+    zoom: number;
+    center: LatLng;
+    bounds: LatLngBounds;
     tlUrl: string;
     tlConfig: {
         maxZoom: number;
         minZoom: number;
     };
-    maxLocationCount: number;
-    zoom: number;
-    center: LatLng;
-    bounds: LatLngBounds;
 };

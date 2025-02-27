@@ -1,8 +1,9 @@
 import { onMounted, onUnmounted, ref, shallowRef, type Ref } from 'vue';
-import { blokmapConfig } from '@/config/blokmap.config';
-import L, { type LeafletEventHandlerFn, type Map as LeafletMap } from 'leaflet';
+import { blokmapConfig } from '@/config/blokmapConfig';
+import L, { type LeafletEventHandlerFn, type Map as LeafletMap, type MapOptions } from 'leaflet';
+import type { BlokmapOptions } from '@/types/Config';
 
-export function useLeafletMap(container: Ref<HTMLElement | null>, options = blokmapConfig) {
+export function useLeafletMap(container: Ref<HTMLElement | null>, options: BlokmapOptions = blokmapConfig) {
     const map = shallowRef<LeafletMap>();
     const listeners = new Map<string, LeafletEventHandlerFn>();
 

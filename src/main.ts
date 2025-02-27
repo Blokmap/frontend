@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
-import { BlokmapThemeConfig } from '@/config/plugin/theme.config';
-import { I18nPlugin } from '@/config/plugin/i18n.config';
-import { RouterPlugin } from '@/config/router/router.config';
+import { BlokmapThemeConfig } from '@/plugin/themePlugin';
+import { I18nPlugin } from '@/plugin/i18nPlugin';
+import { RouterPlugin } from '@/router/routerConfig';
 import { Ripple, Tooltip } from 'primevue';
 import { createPinia } from 'pinia';
 import App from '@/App.vue';

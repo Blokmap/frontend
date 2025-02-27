@@ -9,5 +9,6 @@ export const BlokmapThemeConfig = {
     preset,
     options: {
         prefix: '',
+        darkModeSelector: false,
     },
 };

@@ -55,5 +55,6 @@ jobs:
                 key: ${{ secrets.PRODUCTION_SSH_KEY }}
                 debug: true
                 script: |
+                    set -e
                     docker compose -f /home/blokmap/deploy/production/compose.staging.yaml pull
                     docker compose -f /home/blokmap/deploy/production/compose.staging.yaml up blokmap-staging-frontend

@@ -1,4 +1,8 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
+import {
+    createRouter,
+    createWebHistory,
+    type RouteRecordRaw,
+} from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
     {
@@ -10,7 +14,7 @@ const routes: RouteRecordRaw[] = [
         path: '/test',
         name: 'test',
         component: () => import('@/pages/TestPage.vue'),
-    }
+    },
 ];
 
 export const RouterPlugin = createRouter({

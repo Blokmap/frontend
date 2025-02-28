@@ -4,7 +4,7 @@ import Nora from '@primeuix/themes/nora';
 const preset = definePreset(Nora, {
     semantic: {
         primary: palette('#881941'),
-    }
+    },
 });
 
 export const BlokmapThemeConfig = {

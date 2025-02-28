@@ -19,7 +19,7 @@ export type Cell = {
 };
 
 export type Location = {
-    id: number
+    id: number;
     name: string;
     importance: number;
     coords: GeoLocation;

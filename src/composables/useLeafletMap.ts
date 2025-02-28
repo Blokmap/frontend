@@ -10,7 +10,7 @@ export function useLeafletMap(
 ) {
     const map = shallowRef<LeafletMap>();
     const markers = L.layerGroup();
-    const tiles = L.tileLayer(options.tlUrl, options.tlConfig)
+    const tiles = L.tileLayer(options.tlUrl, options.tlConfig);
 
     onMounted(() => {
         if (container.value) {

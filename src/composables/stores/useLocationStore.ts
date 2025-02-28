@@ -4,7 +4,13 @@ import { useStorage } from '@vueuse/core';
 import type { GeoLocation } from '@/types/model/Location';
 import { useI18n } from 'vue-i18n';
 
-export type LocationStatus = 'idle' | 'prompting' | 'querying' | 'granted' | 'denied' | 'error';
+export type LocationStatus =
+    | 'idle'
+    | 'prompting'
+    | 'querying'
+    | 'granted'
+    | 'denied'
+    | 'error';
 
 export const useUserLocationStore = defineStore('userLocation', () => {
     const hasPrompted = useStorage('promptedLocation', false);

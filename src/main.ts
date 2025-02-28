@@ -15,7 +15,7 @@ app.use(createPinia());
 app.use(RouterPlugin);
 app.use(I18nPlugin);
 app.use(PrimeVuePlugin, {
-    theme: BlokmapThemeConfig
+    theme: BlokmapThemeConfig,
 });
 
 // Register directives.

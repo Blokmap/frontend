@@ -1,0 +1,16 @@
+@mixin font-face($name, $weight, $file) {
+    @font-face {
+        font-family: '#{$name}';
+        font-weight: $weight;
+        font-style: normal;
+        src: url('@/assets/fonts/opensans/#{$file}.ttf') format('truetype');
+    }
+}
+
+// Load Open Sans variations
+@include font-face('OpenSans', 300, 'OpenSans-Light');
+@include font-face('OpenSans', 400, 'OpenSans-Regular');
+@include font-face('OpenSans', 500, 'OpenSans-Medium');
+@include font-face('OpenSans', 600, 'OpenSans-SemiBold');
+@include font-face('OpenSans', 700, 'OpenSans-Bold');
+@include font-face('OpenSans', 800, 'OpenSans-ExtraBold');

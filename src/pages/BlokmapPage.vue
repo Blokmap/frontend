@@ -71,7 +71,11 @@ function toggleFavorite(location: Location): void {
             <header id="header">
                 <img id="logo" :src="BlokMapLogo" alt="Logo" />
                 <div id="navigation">
-                    <Button :label="t('layout.header.login')" :icon="PrimeIcons.USER"> </Button>
+                    <Button
+                        icon-pos="right"
+                        :label="t('layout.header.login')"
+                        :icon="PrimeIcons.ARROW_RIGHT">
+                    </Button>
                 </div>
             </header>
             <footer id="footer">
@@ -110,7 +114,7 @@ function toggleFavorite(location: Location): void {
     </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #overlay {
     position: absolute;
     top: 0;
@@ -137,11 +141,16 @@ function toggleFavorite(location: Location): void {
         #navigation {
             display: flex;
             align-items: center;
-            gap: 1rem;
             pointer-events: all;
+            gap: 1rem;
 
             .p-button {
-                padding: 0.75rem 1rem;
+                font-size: 18px;
+                padding: 0.65rem 1rem;
+
+                .p-button-label {
+                    font-weight: 700;
+                }
             }
         }
     }

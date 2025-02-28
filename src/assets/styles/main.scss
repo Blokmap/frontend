@@ -1,8 +1,9 @@
 @use 'primeflex/primeflex.min.css';
 @use 'primeicons/primeicons.css';
+@use 'partials/fonts';
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'OpenSans', sans-serif;
     padding: 0;
     margin: 0;
 

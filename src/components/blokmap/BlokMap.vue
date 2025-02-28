@@ -56,8 +56,8 @@ function updateMarkers(locations: Location[] = props.locations): void {
         const marker = new BlokMapMarker(location, {
             icon: L.icon({
                 iconUrl: MarkerIcon,
-                iconSize: [30, 30],
-                iconAnchor: [15, 30],
+                iconSize: [35, 35],
+                iconAnchor: [17.5, 35],
             }),
         });
 
@@ -108,8 +108,9 @@ onMounted(() => {
     map.value.setZoom(zoom);
 
     // Add map listeners.
-    const { update } = popoverContainer.value;
+    const { update, hide } = popoverContainer.value;
     map.value.on('move', update);
+    map.value.on('dragend', hide);
 });
 
 onUnmounted(() => {
@@ -117,6 +118,7 @@ onUnmounted(() => {
 
     // Remove map listeners.
     map.value.off('move');
+    map.value.off('dragend');
 });
 
 defineExpose({

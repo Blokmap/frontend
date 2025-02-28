@@ -8,10 +8,12 @@ import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import { Button } from 'primevue';
 import { PrimeIcons } from '@primevue/core';
 import BlokMapLogo from '@/assets/img/logo-contrast.png';
+import { useI18n } from 'vue-i18n';
 
 const { maxLocationCount } = blokmapConfig;
 const { getViewportLocations } = useLocationService();
 
+const { t } = useI18n();
 const blokmap = useTemplateRef('map');
 
 const locations = ref<Location[]>([]);
@@ -50,16 +52,72 @@ onUnmounted(() => {
             class="w-full h-full z-0"
             :locations="locations">
         </BlokMap>
-        <div
-            class="absolute top-0 left-0 w-screen h-screen pointer-events-none z-1">
-            <header
-                class="p-4 flex align-items-center justify-content-between gap-3">
-                <img class="h-3rem" :src="BlokMapLogo" alt="Logo" />
-                <div class="flex align-items-center gap-3 pointer-events-auto">
-                    <Button label="Login" :icon="PrimeIcons.USER"></Button>
+        <div id="overlay">
+            <header id="header">
+                <img id="logo" :src="BlokMapLogo" alt="Logo" />
+                <div id="navigation">
+                    <Button
+                        :label="t('layout.header.login')"
+                        :icon="PrimeIcons.USER">
+                    </Button>
                 </div>
             </header>
-            <footer></footer>
+            <footer id="footer">
+                <div id="attribution">
+                    {{ t('pages.blokmap.attribution') }}
+                </div>
+            </footer>
         </div>
     </div>
 </template>
+
+<style lang="scss" scoped>
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    #header {
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+
+        #logo {
+            height: 3rem;
+        }
+
+        #navigation {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            pointer-events: all;
+
+            .p-button {
+                padding: 0.75rem 1rem;
+            }
+        }
+    }
+
+    #footer {
+        padding: 1.5rem;
+
+        #attribution {
+            font-size: 12px;
+            padding: 0.25rem;
+            display: inline-block;
+            color: var(--surface-600);
+            border-radius: var(--border-radius-md);
+            background: rgba(white, 0.6);
+        }
+    }
+}
+</style>

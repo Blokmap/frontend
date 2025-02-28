@@ -14,6 +14,7 @@ export const blokmapConfig: BlokmapOptions = {
     },
     maxLocationCount: 25,
     zoomControl: false,
+    attributionControl: false,
     zoomAnimation: true,
     zoom: 9,
     center: new LatLng(51.052, 3.717),

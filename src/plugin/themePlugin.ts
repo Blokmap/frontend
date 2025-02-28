@@ -1,9 +1,9 @@
 import { definePreset, palette } from '@primeuix/themes';
-import Nora from '@primeuix/themes/nora';
+import Aura from '@primeuix/themes/aura';
 
-const preset = definePreset(Nora, {
+const preset = definePreset(Aura, {
     semantic: {
-        primary: palette('#881941'),
+        primary: palette('#78a0c5'),
     },
 });
 

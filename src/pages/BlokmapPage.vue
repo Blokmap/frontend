@@ -145,7 +145,7 @@ function toggleFavorite(location: Location): void {
             gap: 1rem;
 
             .p-button {
-                font-size: 18px;
+                font-size: 16px;
                 padding: 0.65rem 1rem;
 
                 .p-button-label {

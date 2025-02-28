@@ -3,8 +3,7 @@ import { LatLng, LatLngBounds } from 'leaflet';
 
 // The URL of the tile layer.
 // This is a CartoDB tile layer that provides a light basemap.
-const titleLayerUrl =
-    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+const titleLayerUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
 
 export const blokmapConfig: BlokmapOptions = {
     tlUrl: titleLayerUrl,

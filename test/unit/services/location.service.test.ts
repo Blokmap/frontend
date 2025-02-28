@@ -32,9 +32,7 @@ describe('useLocationService', () => {
 
         // Ensure locations are sorted by importance in descending order
         for (let i = 1; i < locations.length; i++) {
-            expect(locations[i - 1].importance).toBeGreaterThanOrEqual(
-                locations[i].importance,
-            );
+            expect(locations[i - 1].importance).toBeGreaterThanOrEqual(locations[i].importance);
         }
     });
 
@@ -51,9 +49,7 @@ describe('useLocationService', () => {
         expect(result2.length).toBeGreaterThan(0);
 
         // Ensure the results are filtered from the cached data
-        expect(
-            result2.every((l) => boundsSmall.contains(l.coords as any)),
-        ).toBe(true);
+        expect(result2.every((l) => boundsSmall.contains(l.coords as any))).toBe(true);
     });
 
     it('removes subset cached bounds when adding superset', () => {

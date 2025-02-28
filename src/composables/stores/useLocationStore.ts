@@ -1,16 +1,10 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useStorage } from '@vueuse/core';
-import type { GeoLocation } from '@/types/model/Location';
 import { useI18n } from 'vue-i18n';
+import type { LatLng, LatLngExpression } from 'leaflet';
 
-export type LocationStatus =
-    | 'idle'
-    | 'prompting'
-    | 'querying'
-    | 'granted'
-    | 'denied'
-    | 'error';
+export type LocationStatus = 'idle' | 'prompting' | 'querying' | 'granted' | 'denied' | 'error';
 
 export const useUserLocationStore = defineStore('userLocation', () => {
     const hasPrompted = useStorage('promptedLocation', false);
@@ -18,7 +12,7 @@ export const useUserLocationStore = defineStore('userLocation', () => {
 
     const status = ref<LocationStatus>('idle');
     const error = ref<string | null>(null);
-    const coords = ref<GeoLocation | null>(null);
+    const coords = ref<LatLngExpression | null>(null);
     const timeout = ref(10_000);
 
     /**
@@ -46,10 +40,10 @@ export const useUserLocationStore = defineStore('userLocation', () => {
 
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    coords.value = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                    };
+                    coords.value = [
+                        position.coords.latitude,
+                        position.coords.longitude,
+                    ];
                     status.value = 'granted';
                     resolve();
                 },

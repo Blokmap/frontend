@@ -1,4 +1,4 @@
-import type { LatLngExpression } from "leaflet";
+import type { LatLngExpression } from 'leaflet';
 
 export type LocationId = number;
 

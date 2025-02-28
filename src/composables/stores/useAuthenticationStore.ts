@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useAuthenticationStore = defineStore('authentication', () => {
-    const user = ref<User|null>(null);
+    const user = ref<User | null>(null);
 
     const guest = useLocalStorage<Guest>('guest', {
         favoriteLocationIds: [],

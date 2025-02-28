@@ -27,9 +27,7 @@ body {
         background-position: 0 100%;
         background-size: 1px 0;
         transition: background-size 0.2s;
-        background-image: linear-gradient(to bottom,
-                var(--primary-100) 0,
-                var(--primary-100) 100%);
+        background-image: linear-gradient(to bottom, var(--primary-100) 0, var(--primary-100) 100%);
 
         &:hover {
             background-size: 1px 100%;

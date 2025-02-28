@@ -11,6 +11,8 @@ export default [
                 parser: tsparser,
                 ecmaVersion: 'latest',
                 sourceType: 'module',
+                project: './tsconfig.json',
+                extraFileExtensions: ['.vue'], // Add this line
             },
         },
         plugins: {

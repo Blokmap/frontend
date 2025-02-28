@@ -14,9 +14,7 @@ export function useUserService() {
     }
 
     function removeFavoriteLocation(locationId: number): void {
-        guest.value.favoriteLocationIds = getFavoriteLocations().filter(
-            (id) => id !== locationId,
-        );
+        guest.value.favoriteLocationIds = getFavoriteLocations().filter((id) => id !== locationId);
 
         if (user.value !== null) {
             // TODO: Implement API call to update user's favorite location.
@@ -43,7 +41,6 @@ export function useUserService() {
 
         return user.value.favoriteLocationIds ?? [];
     }
-
 
     return {
         toggleFavoriteLocation,

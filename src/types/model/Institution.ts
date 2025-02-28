@@ -1,0 +1,1 @@
+export type Institution = string;

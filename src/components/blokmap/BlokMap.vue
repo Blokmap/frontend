@@ -1,21 +1,29 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, useTemplateRef, watch } from 'vue';
+import { computed, onMounted, onUnmounted, useTemplateRef, watch } from 'vue';
 import { useLeafletMap } from '@/composables/useLeafletMap';
 import { blokmapConfig } from '@/config/blokmapConfig';
-import type { Location } from '@/types/model/Location';
+import type { Location, LocationId } from '@/types/model/Location';
 import { BlokMapMarker } from '@/types/Leaflet';
 import MarkerIcon from '@/assets/img/home.png';
 import L, { type LeafletMouseEvent } from 'leaflet';
 import G from 'gsap';
 import BlokMapPopover from '@/components/blokmap/BlokMapPopover.vue';
 
-const props = defineProps<{
-    locations: Location[];
+const { favoriteLocations, loadedLocations } = defineProps<{
+    loadedLocations: Location[];
+    favoriteLocations?: LocationId[];
 }>();
 
 const selectedLocation = defineModel<Location | null>('location', {
     required: true,
 });
+
+const selectedIsFavorite = computed(() => {
+    if (!favoriteLocations || !selectedLocation.value) return false;
+    return favoriteLocations.includes(selectedLocation.value.id);
+});
+
+const emit = defineEmits(['toggle:favorite']);
 
 const popoverContainer = useTemplateRef('popover');
 const mapContainer = useTemplateRef('blokmap');
@@ -26,7 +34,7 @@ const { map, markers } = useLeafletMap(mapContainer);
 /**
  * Updates the markers on the map based on the provided locations.
  */
-function updateMarkers(locations: Location[] = props.locations): void {
+function updateMarkers(locations: Location[] = loadedLocations): void {
     const locationIds = new Set(locations.map((loc) => loc.id));
     const existingLocationIds = new Set();
 
@@ -72,11 +80,7 @@ function updateMarkers(locations: Location[] = props.locations): void {
                 })
                 .once('moveend', () => {
                     selectedLocation.value = location;
-
-                    popoverContainer.value?.show(
-                        event.originalEvent,
-                        marker.getElement(),
-                    );
+                    popoverContainer.value?.show(event.originalEvent, marker.getElement());
                 })
                 .once('zoomstart', () => popoverContainer.value?.hide());
         });
@@ -97,7 +101,7 @@ function updateMarkers(locations: Location[] = props.locations): void {
     });
 }
 
-watch(() => props.locations, updateMarkers);
+watch(() => loadedLocations, updateMarkers);
 
 onMounted(() => {
     if (!map.value || !popoverContainer.value) return;
@@ -128,7 +132,12 @@ defineExpose({
 
 <template>
     <div ref="blokmap">
-        <BlokMapPopover ref="popover" :location="selectedLocation" />
+        <BlokMapPopover
+            ref="popover"
+            :selected-location="selectedLocation"
+            :is-favorite-location="selectedIsFavorite"
+            @toggle:favorite="emit('toggle:favorite', $event)">
+        </BlokMapPopover>
     </div>
 </template>
 

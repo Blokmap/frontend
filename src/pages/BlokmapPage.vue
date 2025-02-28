@@ -2,22 +2,27 @@
 import BlokMap from '@/components/blokmap/BlokMap.vue';
 import { useLocationService } from '@/composables/services/useLocationService';
 import { blokmapConfig } from '@/config/blokmapConfig';
-import type { Location } from '@/types/model/Location';
+import type { Location, LocationId } from '@/types/model/Location';
 import { useDebounceFn } from '@vueuse/core';
-import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 import { Button } from 'primevue';
 import { PrimeIcons } from '@primevue/core';
 import BlokMapLogo from '@/assets/img/logo-contrast.png';
 import { useI18n } from 'vue-i18n';
-
-const { maxLocationCount } = blokmapConfig;
-const { getViewportLocations } = useLocationService();
+import { useUserService } from '@/composables/services/useUserService';
+import { useAuthenticationStore } from '@/composables/stores/useAuthenticationStore';
 
 const { t } = useI18n();
+const { maxLocationCount } = blokmapConfig;
+const { getViewportLocations } = useLocationService();
+const { toggleFavoriteLocation, getFavoriteLocations } = useUserService();
+const { user, guest } = useAuthenticationStore();
+
 const blokmap = useTemplateRef('map');
 
-const locations = ref<Location[]>([]);
-const location = ref<Location | null>(null);
+const loadedLocations = ref<Location[]>([]);
+const favoriteLocations = ref<LocationId[]>([]);
+const selectedLocation = ref<Location | null>(null);
 
 /**
  * Updates the locations based on the current map viewport.
@@ -25,41 +30,48 @@ const location = ref<Location | null>(null);
 const updateLocations = useDebounceFn(() => {
     if (blokmap.value && blokmap.value.map) {
         const { map } = blokmap.value;
-
-        locations.value = getViewportLocations(
-            map.getBounds(),
-            maxLocationCount,
-        );
+        loadedLocations.value = getViewportLocations(map.getBounds(), maxLocationCount);
     }
 }, 500);
+
+watch([user, guest], () => {
+    favoriteLocations.value = getFavoriteLocations();
+});
 
 onMounted(async () => {
     const { map } = blokmap.value!;
     map?.on('moveend', updateLocations);
+    updateLocations();
 });
 
 onUnmounted(() => {
     const { map } = blokmap.value!;
     map?.off('moveend', updateLocations);
 });
+
+/**
+ * Toggles the favorite status of the provided location.
+ */
+function toggleFavorite(location: Location): void {
+    toggleFavoriteLocation(location.id);
+}
 </script>
 
 <template>
     <div class="w-screen h-screen relative">
         <BlokMap
             ref="map"
-            v-model:location="location"
+            v-model:location="selectedLocation"
             class="w-full h-full z-0"
-            :locations="locations">
+            :favorite-locations="favoriteLocations"
+            :loaded-locations="loadedLocations"
+            @toggle:favorite="toggleFavorite">
         </BlokMap>
         <div id="overlay">
             <header id="header">
                 <img id="logo" :src="BlokMapLogo" alt="Logo" />
                 <div id="navigation">
-                    <Button
-                        :label="t('layout.header.login')"
-                        :icon="PrimeIcons.USER">
-                    </Button>
+                    <Button :label="t('layout.header.login')" :icon="PrimeIcons.USER"> </Button>
                 </div>
             </header>
             <footer id="footer">

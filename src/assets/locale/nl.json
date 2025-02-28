@@ -8,5 +8,14 @@
         "blokmap": {
             "attribution": "Kaartgegevens © OpenStreetMap-bijdragers"
         }
+    },
+    "components": {
+        "blokmap": {
+            "popover": {
+                "favorite": "Markeer als favoriet",
+                "unfavorite": "Verwijder als favoriet",
+                "button": "Meer informatie"
+            }
+        }
     }
 }

@@ -2,20 +2,26 @@
 import type { Location } from '@/types/model/Location';
 import { PrimeIcons } from '@primevue/core';
 import { Popover, Button, Tag } from 'primevue';
-import { ref } from 'vue';
+import { ref, useTemplateRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
-    location: Location | null;
+    selectedLocation: Location | null;
+    isFavoriteLocation: boolean;
 }>();
 
-const container = ref<InstanceType<typeof Popover> | null>(null);
-const shown = ref(false);
+const emit = defineEmits(['toggle:favorite']);
+
+const { t } = useI18n();
+const container = useTemplateRef('popover');
+
+const isShown = ref(false);
 
 /**
  * Updates the popover overlay position.
  */
 function update(): void {
-    if (!shown.value) return;
+    if (!isShown.value) return;
     container.value?.alignOverlay();
 }
 
@@ -23,7 +29,7 @@ function update(): void {
  * Hides the popover overlay.
  */
 function hide(): void {
-    if (!shown.value) return;
+    if (!isShown.value) return;
     container.value?.hide();
 }
 
@@ -46,29 +52,42 @@ defineExpose({
 
 <template>
     <Popover
-        ref="container"
+        ref="popover"
         class="w-30rem max-w-full"
-        @hide="shown = false"
-        @show="shown = true">
-        <template v-if="location !== null">
-            <h2 class="m-0">{{ location.name }}</h2>
+        @hide="isShown = false"
+        @show="isShown = true">
+        <template v-if="selectedLocation !== null">
+            <div class="flex justify-content-between">
+                <h2 class="m-0">{{ selectedLocation.name }}</h2>
+                <div class="cursor-pointer" @click="emit('toggle:favorite', selectedLocation)">
+                    <template v-if="isFavoriteLocation">
+                        <i
+                            v-tooltip.top="t('components.blokmap.popover.unfavorite')"
+                            :class="PrimeIcons.STAR_FILL">
+                        </i>
+                    </template>
+                    <template v-else>
+                        <i
+                            v-tooltip.top="t('components.blokmap.popover.favorite')"
+                            :class="PrimeIcons.STAR">
+                        </i>
+                    </template>
+                </div>
+            </div>
             <div class="flex gap-2 my-3">
                 <Tag :icon="PrimeIcons.STAR" severity="contrast"> Popular </Tag>
-                <Tag :icon="PrimeIcons.CALENDAR" severity="secondary">
-                    Event
-                </Tag>
+                <Tag :icon="PrimeIcons.CALENDAR" severity="secondary"> Event </Tag>
                 <Tag :icon="PrimeIcons.BOLT" severity="secondary"> Coffee </Tag>
             </div>
             <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum
-                possimus vitae culpa minus iste non inventore, sint accusantium
-                nostrum ipsum, maiores laudantium! Adipisci omnis officiis velit
-                quia repudiandae alias soluta!
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum possimus vitae culpa
+                minus iste non inventore, sint accusantium nostrum ipsum, maiores laudantium!
+                Adipisci omnis officiis velit quia repudiandae alias soluta!
             </p>
             <Button
-                label="More information"
                 severity="contrast"
                 icon-pos="right"
+                :label="t('components.blokmap.popover.button')"
                 :icon="PrimeIcons.ARROW_RIGHT"
                 outlined>
             </Button>

@@ -75,9 +75,36 @@ function toggleFavorite(location: Location): void {
                 </div>
             </header>
             <footer id="footer">
-                <div id="attribution">
-                    {{ t('pages.blokmap.attribution') }}
+                <div class="attribution">
+                    <div>
+                        <i18n-t keypath="pages.blokmap.attribution.osm">
+                            <template #link>
+                                <a href="https://openstreetmap.org/copyright" class="styled">
+                                    OpenStreetMap
+                                </a>
+                            </template>
+                        </i18n-t>
+                    </div>
+                    &bull;
+                    <div>
+                        <i18n-t keypath="pages.blokmap.attribution.carto">
+                            <template #link>
+                                <a href="https://carto.com/basemaps" class="styled"> CARTO </a>
+                            </template>
+                        </i18n-t>
+                    </div>
                 </div>
+                <!-- <div class="attribution">
+                    <div>
+                        <i18n-t keypath="layout.footer.attribution">
+                            <template #link>
+                                <a href="https://gentsestudentenraad.be" class="styled">
+                                    Gentse Studentenraad
+                                </a>
+                            </template>
+                        </i18n-t>
+                    </div>
+                </div> -->
             </footer>
         </div>
     </div>
@@ -120,12 +147,18 @@ function toggleFavorite(location: Location): void {
     }
 
     #footer {
-        padding: 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        flex-direction: row-reverse;
 
-        #attribution {
+        .attribution {
+            display: inline-flex;
+            align-items: center;
+            pointer-events: all;
             font-size: 12px;
             padding: 0.25rem;
-            display: inline-block;
+            gap: 0.25rem;
             color: var(--surface-600);
             border-radius: var(--border-radius-md);
             background: rgba(white, 0.6);

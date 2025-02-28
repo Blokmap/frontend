@@ -2,11 +2,18 @@
     "layout": {
         "header": {
             "login": "Inloggen"
+        },
+        "footer": {
+            "attribution": "Aangedreven door ☕ en de {link}"
         }
     },
     "pages": {
         "blokmap": {
-            "attribution": "Kaartgegevens © OpenStreetMap-bijdragers"
+            "attribution": {
+                "osm": "Data © {link}",
+                "leaflet": "Kaartimplementatie via {link}",
+                "carto": "Tiles © {link}"
+            }
         }
     },
     "components": {

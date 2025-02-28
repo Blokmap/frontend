@@ -12,7 +12,7 @@ export const blokmapConfig: BlokmapOptions = {
         maxZoom: 17,
         minZoom: 9,
     },
-    maxLocationCount: 75,
+    maxLocationCount: 25,
     zoomControl: false,
     zoomAnimation: true,
     zoom: 9,

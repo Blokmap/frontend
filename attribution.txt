@@ -1,0 +1,2 @@
+marker icons: <a href="https://www.flaticon.com/free-icons/address" title="address icons">Address icons created by VectorPortal - Flaticon</a>
+map: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>

@@ -1,37 +1,42 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, useTemplateRef, watch } from 'vue';
 import { useLeafletMap } from '@/composables/useLeafletMap';
 import { blokmapConfig } from '@/config/blokmapConfig';
-import { useLocationService } from '@/composables/services/useLocationService';
 import type { Location } from '@/types/model/Location';
-import { useDebounceFn } from '@vueuse/core';
-import MarkerIcon from '@/assets/img/marker.png';
+import { BlokMapMarker } from '@/types/Leaflet';
+import MarkerIcon from '@/assets/img/home.png';
 import L, { type LeafletMouseEvent } from 'leaflet';
 import G from 'gsap';
 import BlokMapPopover from '@/components/blokmap/BlokMapPopover.vue';
 
-const popoverContainer = ref<InstanceType<typeof BlokMapPopover> | null>(null);
-const mapContainer = ref<HTMLElement | null>(null);
+const props = defineProps<{
+    locations: Location[];
+}>();
 
-const selectedLocation = ref<Location | null>(null);
-const selectedMarker = ref<L.Marker | null>(null);
-const locationMarkers = new Map<number, L.Marker>();
+const selectedLocation = defineModel<Location | null>('location', {
+    required: true,
+});
 
-const { zoom, bounds, maxLocationCount } = blokmapConfig;
-const { map } = useLeafletMap(mapContainer);
-const { getViewportLocations } = useLocationService();
+const popoverContainer = useTemplateRef('popover');
+const mapContainer = useTemplateRef('blokmap');
+
+const { zoom, bounds } = blokmapConfig;
+const { map, markers } = useLeafletMap(mapContainer);
 
 /**
  * Updates the markers on the map based on the provided locations.
  */
-function updateMarkers(locations: Location[]) {
-    const newLocationIds = new Set(locations.map((loc) => loc.id));
+function updateMarkers(locations: Location[] = props.locations): void {
+    const locationIds = new Set(locations.map((loc) => loc.id));
+    const existingLocationIds = new Set();
 
     // Remove markers not in new response.
-    locationMarkers.forEach((marker, id) => {
+    markers.getLayers().forEach((m: unknown) => {
+        const marker = m as BlokMapMarker;
         const element = marker.getElement();
 
-        if (!element || newLocationIds.has(id)) {
+        if (!element || locationIds.has(marker.location.id)) {
+            existingLocationIds.add(marker.location.id);
             return;
         }
 
@@ -39,17 +44,16 @@ function updateMarkers(locations: Location[]) {
             duration: 0.3,
             opacity: 0,
             onComplete: () => {
-                marker.remove();
-                locationMarkers.delete(id);
+                markers.removeLayer(marker);
             },
         });
     });
 
     // Add new markers in the response.
     locations.forEach((location) => {
-        if (locationMarkers.has(location.id)) return;
+        if (existingLocationIds.has(location.id)) return;
 
-        const marker = L.marker(location.coords, {
+        const marker = new BlokMapMarker(location, {
             icon: L.icon({
                 iconUrl: MarkerIcon,
                 iconSize: [30, 30],
@@ -68,7 +72,6 @@ function updateMarkers(locations: Location[]) {
                 })
                 .once('moveend', () => {
                     selectedLocation.value = location;
-                    selectedMarker.value = marker;
 
                     popoverContainer.value?.show(
                         event.originalEvent,
@@ -90,24 +93,11 @@ function updateMarkers(locations: Location[]) {
             }
         });
 
-        marker.addTo(map.value!);
-        locationMarkers.set(location.id, marker);
+        marker.addTo(markers);
     });
 }
 
-/**
- * Debounced function to update the locations on the map.
- */
-const updateLocations = useDebounceFn(() => {
-    if (!map.value) return;
-
-    const locations = getViewportLocations(
-        map.value.getBounds(),
-        maxLocationCount,
-    );
-
-    updateMarkers(locations);
-}, 250);
+watch(() => props.locations, updateMarkers);
 
 onMounted(() => {
     if (!map.value || !popoverContainer.value) return;
@@ -118,12 +108,8 @@ onMounted(() => {
     map.value.setZoom(zoom);
 
     // Add map listeners.
-    // map.value.on('update');
-    map.value.on('move', popoverContainer.value.update);
-    map.value.on('moveend', updateLocations);
-
-    // Update locations on mount.
-    updateLocations();
+    const { update } = popoverContainer.value;
+    map.value.on('move', update);
 });
 
 onUnmounted(() => {
@@ -131,13 +117,17 @@ onUnmounted(() => {
 
     // Remove map listeners.
     map.value.off('move');
-    map.value.off('moveend');
+});
+
+defineExpose({
+    map,
 });
 </script>
 
 <template>
-    <div ref="mapContainer" class="h-full w-full"></div>
-    <BlokMapPopover ref="popoverContainer" :location="selectedLocation" />
+    <div ref="blokmap">
+        <BlokMapPopover ref="popover" :location="selectedLocation" />
+    </div>
 </template>
 
 <style lang="scss">

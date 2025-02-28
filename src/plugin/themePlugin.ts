@@ -1,8 +1,10 @@
-import { definePreset } from '@primeuix/themes';
+import { definePreset, palette } from '@primeuix/themes';
 import Nora from '@primeuix/themes/nora';
 
 const preset = definePreset(Nora, {
-    // Customizations go here.
+    semantic: {
+        primary: palette('#881941'),
+    }
 });
 
 export const BlokmapThemeConfig = {

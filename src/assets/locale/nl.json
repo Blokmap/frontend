@@ -1,3 +1,28 @@
 {
-    "test": "Test"
+    "layout": {
+        "header": {
+            "login": "Inloggen"
+        },
+        "footer": {
+            "attribution": "Aangedreven door ☕ en de {link}"
+        }
+    },
+    "pages": {
+        "blokmap": {
+            "attribution": {
+                "osm": "Data © {link}",
+                "leaflet": "Kaartimplementatie via {link}",
+                "carto": "Tiles © {link}"
+            }
+        }
+    },
+    "components": {
+        "blokmap": {
+            "popover": {
+                "favorite": "Markeer als favoriet",
+                "unfavorite": "Verwijder als favoriet",
+                "button": "Meer informatie"
+            }
+        }
+    }
 }

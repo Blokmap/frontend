@@ -1,2 +1,36 @@
 @use 'primeflex/primeflex.min.css';
 @use 'primeicons/primeicons.css';
+@use 'partials/fonts';
+
+body {
+    font-family: 'OpenSans', sans-serif;
+    padding: 0;
+    margin: 0;
+
+    a.styled {
+        color: inherit;
+        text-decoration: none;
+        background: inherit;
+        outline: 0;
+        border: 0;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.15rem 0.1rem;
+        font-weight: 600;
+        border-top-left-radius: 0.2rem;
+        border-top-right-radius: 0.2rem;
+        color: var(--primary-700);
+        border-bottom: 1px solid var(--primary-color);
+        text-decoration: none;
+        background-repeat: repeat-x;
+        background-position: 0 100%;
+        background-size: 1px 0;
+        transition: background-size 0.2s;
+        background-image: linear-gradient(to bottom, var(--primary-100) 0, var(--primary-100) 100%);
+
+        &:hover {
+            background-size: 1px 100%;
+        }
+    }
+}

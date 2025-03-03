@@ -134,6 +134,7 @@ defineExpose({
     <div ref="blokmap">
         <BlokMapPopover
             ref="popover"
+            id="popover"
             :selected-location="selectedLocation"
             :is-favorite-location="selectedIsFavorite"
             @toggle:favorite="emit('toggle:favorite', $event)">
@@ -143,4 +144,13 @@ defineExpose({
 
 <style lang="scss">
 @use 'leaflet/dist/leaflet.css';
+
+@media (max-width: 478px) {
+    // Prevent the popover from sticking to
+    // the edges on smaller screens.
+    #popover {
+        max-width: calc(100vw - 1rem) !important;
+        transform: translateX(0.5rem);
+    }
+}
 </style>

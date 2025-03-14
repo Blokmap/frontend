@@ -9,6 +9,18 @@
     },
     "pages": {
         "blokmap": {
+            "search": {
+                "placeholder": "Zoek naar een bloklocatie of plaats"
+            },
+            "sidebar": {
+                "menu": "Menu",
+                "favorite": "Favo",
+                "recent": "Recent",
+                "links": {
+                    "gsr": "Een project van de Gentse Studentenraad",
+                    "source": "Broncode"
+                }
+            },
             "attribution": {
                 "osm": "Data © {link}",
                 "leaflet": "Kaartimplementatie via {link}",

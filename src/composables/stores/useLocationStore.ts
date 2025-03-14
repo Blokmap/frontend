@@ -40,10 +40,7 @@ export const useUserLocationStore = defineStore('userLocation', () => {
 
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    coords.value = [
-                        position.coords.latitude,
-                        position.coords.longitude,
-                    ];
+                    coords.value = [position.coords.latitude, position.coords.longitude];
                     status.value = 'granted';
                     resolve();
                 },

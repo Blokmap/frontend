@@ -1,17 +1,14 @@
+import { TILE_LAYER_URL } from '@/constants';
 import type { BlokmapOptions } from '@/types/Config';
 import { LatLng, LatLngBounds } from 'leaflet';
 
-// The URL of the tile layer.
-// This is a CartoDB tile layer that provides a light basemap.
-const titleLayerUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
-
 export const blokmapConfig: BlokmapOptions = {
-    tlUrl: titleLayerUrl,
+    tlUrl: TILE_LAYER_URL,
     tlConfig: {
         maxZoom: 17,
         minZoom: 9,
     },
-    maxLocationCount: 75,
+    maxLocationCount: 50,
     zoomControl: false,
     attributionControl: false,
     zoomAnimation: true,

@@ -4,7 +4,7 @@ import { useLeafletMap } from '@/composables/useLeafletMap';
 import { blokmapConfig } from '@/config/blokmapConfig';
 import type { Location, LocationId } from '@/types/model/Location';
 import { BlokMapMarker } from '@/types/Leaflet';
-import MarkerIcon from '@/assets/img/home.png';
+import MarkerIcon from '@/assets/img/map/home.png';
 import L, { type LeafletMouseEvent } from 'leaflet';
 import G from 'gsap';
 import BlokMapPopover from '@/components/blokmap/BlokMapPopover.vue';
@@ -145,12 +145,10 @@ defineExpose({
 <style lang="scss">
 @use 'leaflet/dist/leaflet.css';
 
-@media (max-width: 478px) {
-    // Prevent the popover from sticking to
-    // the edges on smaller screens.
-    #popover {
-        max-width: calc(100vw - 1rem) !important;
-        transform: translateX(0.5rem);
-    }
+// Prevent the popover from sticking to
+// the edges on smaller screens.
+#popover {
+    max-width: calc(100vw - 1rem) !important;
+    transform: translateX(0.5rem);
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
     <div id="attribution">
         <div>
-            <i18n-t keypath="pages.blokmap.attribution.osm">
+            <i18n-t keypath="components.attribution.osm">
                 <template #link>
                     <a href="https://openstreetmap.org/copyright" class="styled"> OpenStreetMap </a>
                 </template>
@@ -9,7 +9,7 @@
         </div>
         &bull;
         <div>
-            <i18n-t keypath="pages.blokmap.attribution.carto">
+            <i18n-t keypath="components.attribution.carto">
                 <template #link>
                     <a href="https://carto.com/basemaps" class="styled"> CARTO </a>
                 </template>

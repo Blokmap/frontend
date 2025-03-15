@@ -7,7 +7,13 @@ const preset = definePreset(Aura, {
         tyrian: palette('#560224'),
     },
     semantic: {
-        primary: palette('#78a0c5'),
+        primary: palette('#60809d'),
+        overlayModalPadding: '1rem',
+        colorScheme: {
+            light: {
+                textColor: '#000',
+            },
+        },
     },
 });
 

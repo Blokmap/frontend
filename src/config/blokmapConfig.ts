@@ -13,6 +13,7 @@ export const blokmapConfig: BlokmapOptions = {
     attributionControl: false,
     zoomAnimation: true,
     zoom: 9,
+    maxBoundsViscosity: 1.0,
     center: new LatLng(51.052, 3.717),
     bounds: new LatLngBounds([
         [49.4967, 2.3889],

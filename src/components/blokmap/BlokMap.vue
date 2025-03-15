@@ -23,13 +23,35 @@ const selectedIsFavorite = computed(() => {
     return favoriteLocations.includes(selectedLocation.value.id);
 });
 
-const emit = defineEmits(['toggle:favorite']);
-
-const popoverContainer = useTemplateRef('popover');
-const mapContainer = useTemplateRef('blokmap');
+const emit = defineEmits(['toggle:favorite', 'select:location']);
 
 const { zoom, bounds } = blokmapConfig;
+const popoverContainer = useTemplateRef('popover');
+const mapContainer = useTemplateRef('blokmap');
 const { map, markers } = useLeafletMap(mapContainer);
+
+onMounted(() => {
+    if (!map.value || !popoverContainer.value) return;
+
+    map.value.setMaxBounds(bounds);
+    map.value.setZoom(zoom);
+
+    const { update, hide } = popoverContainer.value;
+    map.value.on('move', update);
+    map.value.on('dragend', hide);
+});
+
+onUnmounted(() => {
+    if (!map.value) return;
+    map.value.off('move');
+    map.value.off('dragend');
+});
+
+defineExpose({
+    map,
+});
+
+watch(() => loadedLocations, updateMarkers);
 
 /**
  * Updates the markers on the map based on the provided locations.
@@ -100,34 +122,6 @@ function updateMarkers(locations: Location[] = loadedLocations): void {
         marker.addTo(markers);
     });
 }
-
-watch(() => loadedLocations, updateMarkers);
-
-onMounted(() => {
-    if (!map.value || !popoverContainer.value) return;
-
-    // Add map configuration.
-    // Set the map bounds and zoom level.
-    map.value.setMaxBounds(bounds);
-    map.value.setZoom(zoom);
-
-    // Add map listeners.
-    const { update, hide } = popoverContainer.value;
-    map.value.on('move', update);
-    map.value.on('dragend', hide);
-});
-
-onUnmounted(() => {
-    if (!map.value) return;
-
-    // Remove map listeners.
-    map.value.off('move');
-    map.value.off('dragend');
-});
-
-defineExpose({
-    map,
-});
 </script>
 
 <template>

@@ -9,32 +9,45 @@
     },
     "pages": {
         "blokmap": {
-            "search": {
-                "placeholder": "Zoek naar een bloklocatie of plaats"
-            },
             "sidebar": {
-                "menu": "Menu",
-                "favorite": "Favo",
-                "recent": "Recent",
-                "links": {
-                    "gsr": "Een project van de Gentse Studentenraad",
-                    "source": "Broncode"
-                }
-            },
-            "attribution": {
-                "osm": "Data © {link}",
-                "leaflet": "Kaartimplementatie via {link}",
-                "carto": "Tiles © {link}"
+                "locate": "Vlieg naar huidige positie"
             }
         }
     },
     "components": {
+        "toast": {
+            "error": "Er is een fout opgetreden",
+            "success": "Actie succesvol uitgevoerd",
+            "info": "Informatie"
+        },
         "blokmap": {
             "popover": {
                 "favorite": "Markeer als favoriet",
                 "unfavorite": "Verwijder als favoriet",
                 "button": "Meer informatie"
             }
+        },
+        "search": {
+            "placeholder": "Zoek naar een bloklocatie of plaats"
+        },
+        "sidebar": {
+            "items": {
+                "menu": "Navigatiemenu",
+                "favorite": "Favoriete locaties",
+                "recent": "Recente locaties"
+            },
+            "sections": {
+                "quick": "Snelmenu"
+            },
+            "links": {
+                "gsr": "Een project van de Gentse Studentenraad",
+                "source": "Broncode"
+            }
+        },
+        "attribution": {
+            "osm": "Data © {link}",
+            "leaflet": "Kaartimplementatie via {link}",
+            "carto": "Tiles © {link}"
         }
     }
 }

@@ -3,12 +3,12 @@ name: Lint, format, and test code
 on:
     push:
         branches: ["**"]
-        tags: ["!**"]
+        tags-ignore: ["v**"]
 
     workflow_call:
 
 jobs:
-    lint-and-format:
+    lint-format:
         runs-on: self-hosted
 
         steps:

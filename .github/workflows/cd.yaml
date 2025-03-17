@@ -2,18 +2,31 @@ name: Build, publish, and deploy new images
 
 permissions:
     packages: write
+    contents: read
 
 on:
     push:
         tags: ["v*"]
 
 jobs:
-    lint-and-test:
-        uses: ./.github/workflows/lint-and-test.yaml
+    ci:
+        uses: ./.github/workflows/ci.yaml
+
+    create-release-draft:
+        runs-on: self-hosted
+        needs: ci
+        permissions:
+            contents: write
+        steps:
+          - uses: release-drafter/release-drafter@v6
+            with:
+                config-name: release-drafter.yaml
+            env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     release:
-        runs-on: ubuntu-latest
-        needs: lint-and-test
+        runs-on: self-hosted
+        needs: ci
         steps:
           - name: Load docker metadata
             id: meta

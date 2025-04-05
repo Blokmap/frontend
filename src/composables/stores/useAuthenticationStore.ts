@@ -7,12 +7,13 @@ export const useAuthenticationStore = defineStore('authentication', () => {
     const user = ref<User | null>(null);
 
     const guest = useLocalStorage<Guest>('guest', {
-        favoriteLocationIds: [],
+        favoriteLocations: [],
+        recentLocations: [],
     });
 
-    function isGuest(): boolean {
+    const isGuest = (): boolean => {
         return user.value === null;
-    }
+    };
 
     return { user, guest, isGuest };
 });

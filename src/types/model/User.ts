@@ -4,10 +4,11 @@ export type User = {
     firstName: string;
     lastName: string;
     institution: Institution;
-    favoriteLocationIds?: number[];
     email?: string;
+    favoriteLocations?: number[];
 };
 
 export type Guest = Partial<User> & {
-    favoriteLocationIds: number[];
+    favoriteLocations: number[];
+    recentLocations: number[];
 };

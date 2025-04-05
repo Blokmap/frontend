@@ -1,13 +1,12 @@
 import { LatLngBounds } from 'leaflet';
 import type { Location } from '@/types/model/Location';
 import { useCache } from '@/composables/useCache';
-import { useUserService } from '@/composables/services/useUserService';
 
 const allLocations = getLocationsInBounds(
     new LatLngBounds([50.777634, 2.848489], [51.264321, 5.401258]),
 );
 
-function getLocationsInBounds(bounds: LatLngBounds, count: number = 100_000): Location[] {
+function getLocationsInBounds(bounds: LatLngBounds, count: number = 10_000): Location[] {
     const { lat: minLat, lng: minLng } = bounds.getSouthWest();
     const { lat: maxLat, lng: maxLng } = bounds.getNorthEast();
 

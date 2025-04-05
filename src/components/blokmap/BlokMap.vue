@@ -4,7 +4,7 @@ import { useLeafletMap } from '@/composables/useLeafletMap';
 import { blokmapConfig } from '@/config/blokmapConfig';
 import type { Location, LocationId } from '@/types/model/Location';
 import { BlokMapMarker } from '@/types/Leaflet';
-import MarkerIcon from '@/assets/img/home.png';
+import MarkerIcon from '@/assets/img/map/home.png';
 import L, { type LeafletMouseEvent } from 'leaflet';
 import G from 'gsap';
 import BlokMapPopover from '@/components/blokmap/BlokMapPopover.vue';
@@ -23,13 +23,35 @@ const selectedIsFavorite = computed(() => {
     return favoriteLocations.includes(selectedLocation.value.id);
 });
 
-const emit = defineEmits(['toggle:favorite']);
-
-const popoverContainer = useTemplateRef('popover');
-const mapContainer = useTemplateRef('blokmap');
+const emit = defineEmits(['toggle:favorite', 'select:location']);
 
 const { zoom, bounds } = blokmapConfig;
+const popoverContainer = useTemplateRef('popover');
+const mapContainer = useTemplateRef('blokmap');
 const { map, markers } = useLeafletMap(mapContainer);
+
+onMounted(() => {
+    if (!map.value || !popoverContainer.value) return;
+
+    map.value.setMaxBounds(bounds);
+    map.value.setZoom(zoom);
+
+    const { update, hide } = popoverContainer.value;
+    map.value.on('move', update);
+    map.value.on('dragend', hide);
+});
+
+onUnmounted(() => {
+    if (!map.value) return;
+    map.value.off('move');
+    map.value.off('dragend');
+});
+
+defineExpose({
+    map,
+});
+
+watch(() => loadedLocations, updateMarkers);
 
 /**
  * Updates the markers on the map based on the provided locations.
@@ -100,40 +122,13 @@ function updateMarkers(locations: Location[] = loadedLocations): void {
         marker.addTo(markers);
     });
 }
-
-watch(() => loadedLocations, updateMarkers);
-
-onMounted(() => {
-    if (!map.value || !popoverContainer.value) return;
-
-    // Add map configuration.
-    // Set the map bounds and zoom level.
-    map.value.setMaxBounds(bounds);
-    map.value.setZoom(zoom);
-
-    // Add map listeners.
-    const { update, hide } = popoverContainer.value;
-    map.value.on('move', update);
-    map.value.on('dragend', hide);
-});
-
-onUnmounted(() => {
-    if (!map.value) return;
-
-    // Remove map listeners.
-    map.value.off('move');
-    map.value.off('dragend');
-});
-
-defineExpose({
-    map,
-});
 </script>
 
 <template>
     <div ref="blokmap">
         <BlokMapPopover
             ref="popover"
+            id="popover"
             :selected-location="selectedLocation"
             :is-favorite-location="selectedIsFavorite"
             @toggle:favorite="emit('toggle:favorite', $event)">
@@ -143,4 +138,11 @@ defineExpose({
 
 <style lang="scss">
 @use 'leaflet/dist/leaflet.css';
+
+// Prevent the popover from sticking to
+// the edges on smaller screens.
+#popover {
+    max-width: calc(100vw - 1rem) !important;
+    transform: translateX(0.5rem);
+}
 </style>

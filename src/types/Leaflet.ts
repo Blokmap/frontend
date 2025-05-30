@@ -5,7 +5,7 @@ export class BlokMapMarker extends Marker {
     public location: Location;
 
     constructor(location: Location, options?: MarkerOptions) {
-        super(location.coords, options);
+        super([location.latitude, location.longitude], options);
         this.location = location;
     }
 }

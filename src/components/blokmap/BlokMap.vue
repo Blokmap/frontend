@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, useTemplateRef, watch } from 'vue';
 import { useLeafletMap } from '@/composables/useLeafletMap';
-import { blokmapConfig } from '@/config/blokmapConfig';
+import { blokmapConfig } from '@/config/blokmap';
 import type { Location, LocationId } from '@/types/model/Location';
 import { BlokMapMarker } from '@/types/Leaflet';
 import MarkerIcon from '@/assets/img/map/home.png';

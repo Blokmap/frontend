@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Location, LocationId } from '@/types/model/Location';
 import { useLocationService } from '@/composables/services/useLocationService';
-import { blokmapConfig } from '@/config/blokmapConfig';
+import { blokmapConfig } from '@/config/blokmap';
 import { useDebounceFn } from '@vueuse/core';
 import { computed, ref, useTemplateRef, watch, watchEffect } from 'vue';
 import { useUserService } from '@/composables/services/useUserService';

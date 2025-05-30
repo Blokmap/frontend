@@ -10,7 +10,7 @@ import de from '@/assets/locale/de.json';
 const locale = useLocalStorage<string>('locale', 'nl');
 const fallback = 'nl';
 
-export const I18nPlugin = createI18n({
+export const i18n = createI18n({
     legacy: false,
     locale: locale.value,
     fallbackLocale: fallback,

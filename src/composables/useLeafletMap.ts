@@ -1,5 +1,5 @@
 import { onMounted, shallowRef, type Ref } from 'vue';
-import { blokmapConfig } from '@/config/blokmapConfig';
+import { blokmapConfig } from '@/config/blokmap';
 import L, { LatLng, type Map as LeafletMap } from 'leaflet';
 import type { BlokmapOptions } from '@/types/Config';
 import type { BlokMapMarker } from '@/types/Leaflet';

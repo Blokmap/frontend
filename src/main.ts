@@ -1,9 +1,9 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { Ripple, ToastService, Tooltip } from 'primevue';
-import { BlokmapThemeConfig } from '@/plugin/themePlugin';
-import { I18nPlugin } from '@/plugin/i18nPlugin';
-import { RouterPlugin } from '@/router/routerConfig';
+import { theme } from '@/config/theme';
+import { i18n } from '@/config/i18n';
+import { router } from '@/router/router';
 import App from '@/App.vue';
 import PrimeVuePlugin from 'primevue/config';
 
@@ -12,11 +12,11 @@ const app = createApp(App);
 
 // Register plugins.
 app.use(createPinia());
-app.use(RouterPlugin);
-app.use(I18nPlugin);
+app.use(router);
+app.use(i18n);
 app.use(ToastService);
 app.use(PrimeVuePlugin, {
-    theme: BlokmapThemeConfig,
+    theme: theme,
     ripple: true,
 });
 

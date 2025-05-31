@@ -2,10 +2,7 @@
     "extends": "@vue/tsconfig/tsconfig.dom.json",
     "compilerOptions": {
         "strict": true,
-        "jsx": "preserve",
-        "moduleResolution": "bundler",
-        "esModuleInterop": true,
-        "skipLibCheck": true,
+        "noImplicitAny": true,
         "forceConsistentCasingInFileNames": true,
         "baseUrl": ".",
         "paths": {

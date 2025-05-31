@@ -1,0 +1,135 @@
+@plugin 'tailwindcss-primeui';
+@import 'tailwindcss';
+@import './primevue/tailwind.css' layer(components);
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --color-disco-50: #f2e7ee;
+    --color-disco-100: #cea1bb;
+    --color-disco-200: #b6739a;
+    --color-disco-300: #9e4478;
+    --color-disco-400: #861657;
+    --color-disco-500: #731349;
+    --color-disco-600: #5f103c;
+    --color-disco-700: #4b0d2f;
+    --color-disco-800: #370a22;
+    --color-disco-900: #230615;
+    --color-disco-950: #15030c;
+
+    --color-cinnabar-50: #fef4ee;
+    --color-cinnabar-100: #fee5d6;
+    --color-cinnabar-200: #fbc6ad;
+    --color-cinnabar-300: #f89f79;
+    --color-cinnabar-400: #f46e43;
+    --color-cinnabar-500: #f2542d;
+    --color-cinnabar-600: #e22e14;
+    --color-cinnabar-700: #bc2012;
+    --color-cinnabar-800: #951b17;
+    --color-cinnabar-900: #781a16;
+    --color-cinnabar-950: #410909;
+
+    --color-timber-green-50: #f0f9f5;
+    --color-timber-green-100: #dbf0e5;
+    --color-timber-green-200: #b9e1ce;
+    --color-timber-green-300: #8bcab0;
+    --color-timber-green-400: #5aad8e;
+    --color-timber-green-500: #399071;
+    --color-timber-green-600: #28735b;
+    --color-timber-green-700: #205c4a;
+    --color-timber-green-800: #1b4a3c;
+    --color-timber-green-900: #14342b;
+    --color-timber-green-950: #0c221d;
+
+    --color-primary: var(--color-disco-500);
+    --color-primary-50: var(--color-disco-50);
+    --color-primary-100: var(--color-disco-100);
+    --color-primary-200: var(--color-disco-200);
+    --color-primary-300: var(--color-disco-300);
+    --color-primary-400: var(--color-disco-400);
+    --color-primary-500: var(--color-disco-500);
+    --color-primary-600: var(--color-disco-600);
+    --color-primary-700: var(--color-disco-700);
+    --color-primary-800: var(--color-disco-800);
+    --color-primary-900: var(--color-disco-900);
+    --color-primary-950: var(--color-disco-950);
+
+    --color-secondary: var(--color-cinnabar-500);
+    --color-secondary-50: var(--color-cinnabar-50);
+    --color-secondary-100: var(--color-cinnabar-100);
+    --color-secondary-200: var(--color-cinnabar-200);
+    --color-secondary-300: var(--color-cinnabar-300);
+    --color-secondary-400: var(--color-cinnabar-400);
+    --color-secondary-500: var(--color-cinnabar-500);
+    --color-secondary-600: var(--color-cinnabar-600);
+    --color-secondary-700: var(--color-cinnabar-700);
+    --color-secondary-800: var(--color-cinnabar-800);
+    --color-secondary-900: var(--color-cinnabar-900);
+    --color-secondary-950: var(--color-cinnabar-950);
+}
+
+/* Primary and Surface Palettes */
+:root {
+    --p-primary-50: var(--color-disco-50);
+    --p-primary-100: var(--color-disco-100);
+    --p-primary-200: var(--color-disco-200);
+    --p-primary-300: var(--color-disco-300);
+    --p-primary-400: var(--color-disco-400);
+    --p-primary-500: var(--color-disco-500);
+    --p-primary-600: var(--color-disco-600);
+    --p-primary-700: var(--color-disco-700);
+    --p-primary-800: var(--color-disco-800);
+    --p-primary-900: var(--color-disco-900);
+    --p-primary-950: var(--color-disco-950);
+    --p-surface-0: #ffffff;
+    --p-surface-50: #fafafa;
+    --p-surface-100: #f4f4f5;
+    --p-surface-200: #e4e4e7;
+    --p-surface-300: #d4d4d8;
+    --p-surface-400: #a1a1aa;
+    --p-surface-500: #71717a;
+    --p-surface-600: #52525b;
+    --p-surface-700: #3f3f46;
+    --p-surface-800: #27272a;
+    --p-surface-900: #18181b;
+    --p-surface-950: #09090b;
+    --p-content-border-radius: 6px;
+}
+
+/* Light Mode */
+:root {
+    --p-primary-color: var(--p-primary-500);
+    --p-primary-contrast-color: var(--p-surface-0);
+    --p-primary-hover-color: var(--p-primary-600);
+    --p-primary-active-color: var(--p-primary-700);
+    --p-content-border-color: var(--p-surface-200);
+    --p-content-hover-background: var(--p-surface-100);
+    --p-content-hover-color: var(--p-surface-800);
+    --p-highlight-background: var(--p-primary-50);
+    --p-highlight-color: var(--p-primary-700);
+    --p-highlight-focus-background: var(--p-primary-100);
+    --p-highlight-focus-color: var(--p-primary-800);
+    --p-text-color: var(--p-surface-700);
+    --p-text-hover-color: var(--p-surface-800);
+    --p-text-muted-color: var(--p-surface-500);
+    --p-text-hover-muted-color: var(--p-surface-600);
+}
+
+/*  Dark Mode */
+:root[class='dark'] {
+    --p-primary-color: var(--p-primary-400);
+    --p-primary-contrast-color: var(--p-surface-0);
+    --p-primary-hover-color: var(--p-primary-300);
+    --p-primary-active-color: var(--p-primary-200);
+    --p-content-border-color: var(--p-surface-700);
+    --p-content-hover-background: var(--p-surface-800);
+    --p-content-hover-color: var(--p-surface-0);
+    --p-highlight-background: color-mix(in srgb, var(--p-primary-400), transparent 84%);
+    --p-highlight-color: rgba(255, 255, 255, 0.87);
+    --p-highlight-focus-background: color-mix(in srgb, var(--p-primary-400), transparent 76%);
+    --p-highlight-focus-color: rgba(255, 255, 255, 0.87);
+    --p-text-color: var(--p-surface-0);
+    --p-text-hover-color: var(--p-surface-0);
+    --p-text-muted-color: var(--p-surface-400);
+    --p-text-hover-muted-color: var(--p-surface-300);
+}

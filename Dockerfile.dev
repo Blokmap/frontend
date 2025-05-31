@@ -1,4 +1,4 @@
-FROM node:23-alpine
+FROM node:slim
 
 WORKDIR /blokmap-frontend
 
@@ -7,6 +7,6 @@ COPY package.json package-lock.json ./
 RUN npm install -g npm
 RUN npm install
 
-COPY . .
+COPY . ./
 
 CMD [ "npm", "run", "dev" ]

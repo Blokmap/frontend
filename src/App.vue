@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import '@/assets/styles/main.scss';
-import { Toast } from 'primevue';
+import Toast from 'primevue/toast';
 </script>
 
 <template>
     <main>
-        <Toast></Toast>
+        <Toast />
         <RouterView />
     </main>
 </template>

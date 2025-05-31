@@ -1,38 +1,30 @@
-import { useToast } from 'primevue';
+import { useToast, type ToastMessageOptions } from 'primevue';
 import { useI18n } from 'vue-i18n';
 
-export function useMessages() {
+export type UseMessagesReturn = {
+    show: (options: ToastMessageOptions) => void;
+};
+
+/**
+ * Composable to handle displaying messages using PrimeVue's Toast component.
+ *
+ * @param {number} life - Duration in milliseconds for which the toast message will be visible. Default is 5000ms.
+ * @returns {UseMessagesReturn} Functions to show error, success, and info messages.
+ */
+export function useMessages(life: number = 5000): UseMessagesReturn {
     const { add } = useToast();
     const { t } = useI18n();
 
-    const life = 5000;
+    const show = (options: ToastMessageOptions) => {
+        const severity = options.severity || 'info';
 
-    const showError = (message: string) => {
         add({
-            severity: 'error',
-            summary: t('components.toast.error'),
-            detail: message,
+            summary: t(`components.toast.${severity}`),
+            severity,
             life,
+            ...options,
         });
     };
 
-    const showSuccess = (message: string) => {
-        add({
-            severity: 'success',
-            summary: t('components.toast.success'),
-            detail: message,
-            life,
-        });
-    };
-
-    const showInfo = (message: string) => {
-        add({
-            severity: 'info',
-            summary: t('components.toast.info'),
-            detail: message,
-            life,
-        });
-    };
-
-    return { showError, showSuccess, showInfo };
+    return { show };
 }

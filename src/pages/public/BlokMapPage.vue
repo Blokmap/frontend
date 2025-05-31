@@ -1,14 +1,10 @@
-<script setup lang="ts">
-import type { Location, LocationId } from '@/types/model/Location';
-import { useLocationService } from '@/composables/services/useLocationService';
+<!-- <script setup lang="ts">
+import type { Location } from '@/types/model/Location';
 import { blokmapConfig } from '@/config/blokmap';
 import { useDebounceFn } from '@vueuse/core';
 import { computed, ref, useTemplateRef, watch, watchEffect } from 'vue';
-import { useUserService } from '@/composables/services/useUserService';
-import { useAuthenticationStore } from '@/composables/stores/useAuthenticationStore';
 import { useI18n } from 'vue-i18n';
 import { PrimeIcons } from '@primevue/core';
-import { usePosition } from '@/composables/usePosition';
 import { Button } from 'primevue';
 import { useMessages } from '@/composables/useMessages';
 import BlokMap from '@/components/blokmap/BlokMap.vue';
@@ -18,7 +14,7 @@ import BlokMapAttribution from '@/components/blokmap/overlay/BlokMapAttribution.
 
 const { maxLocationCount } = blokmapConfig;
 const { t } = useI18n();
-const { showError } = useMessages();
+// const { showError } = useMessages();
 const { updatePosition, isLoadingPosition } = usePosition();
 const { getViewportLocations } = useLocationService();
 const { toggleFavoriteLocation, getFavoriteLocations, updateRecentLocations } = useUserService();
@@ -130,4 +126,4 @@ const updateRecent = (location: Location): void => {
         right: 0;
     }
 }
-</style>
+</style> -->

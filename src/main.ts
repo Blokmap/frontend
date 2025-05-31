@@ -1,11 +1,10 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { Ripple, ToastService, Tooltip } from 'primevue';
-import { theme } from '@/config/theme';
 import { i18n } from '@/config/i18n';
 import { router } from '@/router/router';
-import App from '@/App.vue';
 import PrimeVuePlugin from 'primevue/config';
+import App from '@/App.vue';
 
 // Create the app.
 const app = createApp(App);
@@ -16,8 +15,15 @@ app.use(router);
 app.use(i18n);
 app.use(ToastService);
 app.use(PrimeVuePlugin, {
-    theme: theme,
     ripple: true,
+    theme: {
+        options: {
+            cssLayer: {
+                name: 'primevue',
+                order: 'theme, base, primevue',
+            },
+        },
+    },
 });
 
 // Register directives.

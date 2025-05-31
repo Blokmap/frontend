@@ -1,122 +1,66 @@
 import { Profile } from '@/types/model/Profile';
 import { Translation } from '@/types/model/Translation';
-import type { DateTime } from 'luxon';
 import { Image } from '@/types/model/Image';
-import { z, ZodType } from 'zod/v4';
+import { z } from 'zod/v4';
 import { datetime } from '@/utils/zod';
 
-export type Location = {
-    id: number;
-    name: string;
-    description: Translation;
-    excerpt: Translation;
-    seatCount: number;
-    reservationBlockSize: number;
-    minReservationLength: number | null;
-    maxReservationLength: number | null;
-    isReservable: boolean;
-    isVisible: boolean;
-    street: string;
-    number: string;
-    zip: string;
-    city: string;
-    province: string;
-    latitude: number;
-    longitude: number;
-    approvedAt?: DateTime | null;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    approvedBy?: Profile | null;
-    createdBy?: Profile | null;
-    updatedBy?: Profile | null;
-    images?: Image[];
-};
+export const Location = z.object({
+    id: z.number(),
+    name: z.string(),
+    description: z.lazy(() => Translation),
+    excerpt: z.lazy(() => Translation),
+    seatCount: z.number(),
+    reservationBlockSize: z.number(),
+    minReservationLength: z.number().nullable(),
+    maxReservationLength: z.number().nullable(),
+    isReservable: z.boolean(),
+    isVisible: z.boolean(),
+    street: z.string(),
+    number: z.string(),
+    zip: z.string(),
+    city: z.string(),
+    province: z.string(),
+    latitude: z.float64(),
+    longitude: z.float64(),
+    approvedAt: datetime.nullable(),
+    createdAt: datetime,
+    updatedAt: datetime,
+    approvedBy: z.lazy(() => Profile.optional().nullable()),
+    createdBy: z.lazy(() => Profile.optional().nullable()),
+    updatedBy: z.lazy(() => Profile.optional().nullable()),
+    images: z.lazy(() => Image.array().optional()),
+});
 
-export const Location: ZodType<Location> = z.lazy(() =>
-    z.object({
-        id: z.number(),
-        name: z.string(),
-        description: Translation,
-        excerpt: Translation,
-        seatCount: z.number(),
-        reservationBlockSize: z.number(),
-        minReservationLength: z.number().nullable(),
-        maxReservationLength: z.number().nullable(),
-        isReservable: z.boolean(),
-        isVisible: z.boolean(),
-        street: z.string(),
-        number: z.string(),
-        zip: z.string(),
-        city: z.string(),
-        province: z.string(),
-        latitude: z.float64(),
-        longitude: z.float64(),
-        approvedAt: datetime.nullable(),
-        createdAt: datetime,
-        updatedAt: datetime,
-        approvedBy: Profile.optional().nullable(),
-        createdBy: Profile.optional().nullable(),
-        updatedBy: Profile.optional().nullable(),
-        images: Image.array().optional(),
-    }),
-);
+export const OpeningTime = z.object({
+    id: z.number(),
+    startTime: datetime,
+    endTime: datetime,
+    seatCount: z.number().nullable(),
+    reservableFrom: datetime.nullable(),
+    reservableUntil: datetime.nullable(),
+    createdBy: z.lazy(() => Profile.optional().nullable()),
+    updatedBy: z.lazy(() => Profile.optional().nullable()),
+    createdAt: datetime,
+    updatedAt: datetime,
+});
 
-export type OpeningTime = {
-    id: number;
-    startTime: DateTime;
-    endTime: DateTime;
-    seatCount: number | null;
-    reservableFrom: DateTime | null;
-    reservableUntil: DateTime | null;
-    createdBy?: Profile | null;
-    updatedBy?: Profile | null;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-};
+export const Tag = z.object({
+    id: z.string(),
+    name: z.lazy(() => Translation),
+});
 
-export const OpeningTime: ZodType<OpeningTime> = z.lazy(() =>
-    z.object({
-        id: z.number(),
-        startTime: datetime,
-        endTime: datetime,
-        seatCount: z.number().nullable(),
-        reservableFrom: datetime.nullable(),
-        reservableUntil: datetime.nullable(),
-        createdBy: Profile.optional().nullable(),
-        updatedBy: Profile.optional().nullable(),
-        createdAt: datetime,
-        updatedAt: datetime,
-    }),
-);
+export const Review = z.object({
+    id: z.number(),
+    profile: z.lazy(() => Profile),
+    location: z.lazy(() => Location.optional()),
+    rating: z.number().min(1).max(5),
+    body: z.string().nullable(),
+    createdAt: datetime,
+    updatedAt: datetime,
+});
 
-export type Tag = {
-    id: string;
-    name: Translation;
-};
 
-export const Tag: ZodType<Tag> = z.lazy(() =>
-    z.object({
-        id: z.string(),
-        name: Translation,
-    }),
-);
-
-export type Review = {
-    id: number;
-    profile: Partial<Profile>;
-    rating: number;
-    body: string | null;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-};
-
-export const Review: ZodType<Review> = z.lazy(() =>
-    z.object({
-        id: z.number(),
-        profile: Profile,
-        rating: z.number().min(1).max(5),
-        body: z.string().nullable(),
-        createdAt: datetime,
-        updatedAt: datetime,
-    }),
-);
+export type Location = z.infer<typeof Location>;
+export type OpeningTime = z.infer<typeof OpeningTime>;
+export type Tag = z.infer<typeof Tag>;
+export type Review = z.infer<typeof Review>;

@@ -1,37 +1,37 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, useTemplateRef, watch } from 'vue';
+import MarkerIcon from '@/assets/img/map/home.png';
+import BlokMapPopover from '@/components/features/blokmap/BlokMapPopover.vue';
 import { useLeafletMap } from '@/composables/useLeafletMap';
 import { blokmapConfig } from '@/config/blokmap';
-import type { Location } from '@/types/model/Location';
 import { BlokMapMarker } from '@/types/Leaflet';
-import BlokMapPopover from '@/components/features/blokmap/BlokMapPopover.vue';
-import MarkerIcon from '@/assets/img/map/home.png';
-import L, { type LeafletMouseEvent } from 'leaflet';
+import type { Location } from '@/types/model/Location';
+import { faLocation, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import G from 'gsap';
+import L, { type LeafletMouseEvent } from 'leaflet';
+import { onMounted, onUnmounted, useTemplateRef, watch } from 'vue';
 
 const { locations } = withDefaults(
     defineProps<{
         locations: Location[];
         rounded?: boolean;
+        shadow?: boolean;
     }>(),
     {
         rounded: true,
+        shadow: false,
     },
 );
-
-const emit = defineEmits<{
-    'toggle:favorite': (location: Location) => void;
-    'update:location': (location: Location | null) => void;
-}>();
 
 const selectedLocation = defineModel<Location | null>('location', {
     required: true,
 });
 
-const { zoom, bounds } = blokmapConfig;
 const popoverContainer = useTemplateRef('popover');
 const mapContainer = useTemplateRef('blokmap');
+
 const { map, markers } = useLeafletMap(mapContainer);
+const { zoom, bounds } = blokmapConfig;
 
 watch(
     () => locations,
@@ -128,16 +128,53 @@ function updateMarkers(locs: Location[] = locations): void {
         marker.addTo(markers);
     });
 }
+
+/**
+ * Centers the map on the user's current location.
+ */
+function handleCenterClick(): void {
+    if (!map.value) return;
+
+    map.value.locate({ setView: true, maxZoom: 16 });
+}
 </script>
 
 <template>
-    <div ref="blokmap" :class="{ 'h-full': true, 'rounded-xl': rounded }">
+    <div
+        ref="blokmap"
+        class="h-full relative border-2 border-slate-100"
+        :class="{ 'rounded-xl': rounded, 'shadow-md': shadow }">
         <BlokMapPopover
             ref="popover"
-            id="popover"
             :selected-location="selectedLocation"
             :is-favorite-location="false">
         </BlokMapPopover>
+        <div class="absolute bottom-4 right-3 z-401 flex flex-col gap-2">
+            <!-- Zoom Controls Group -->
+            <div
+                class="flex flex-col bg-white rounded-full shadow-md overflow-hidden border border-slate-200">
+                <button
+                    class="p-2 hover:bg-gray-100 transition"
+                    @click="map?.zoomIn()"
+                    title="Zoom in">
+                    <FontAwesomeIcon :icon="faPlus" />
+                </button>
+                <button
+                    class="p-2 hover:bg-gray-100 transition"
+                    @click="map?.zoomOut()"
+                    title="Zoom out">
+                    <FontAwesomeIcon :icon="faMinus" />
+                </button>
+            </div>
+
+            <!-- Center Button -->
+            <button
+                class="p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition border border-slate-200"
+                @click="handleCenterClick"
+                title="Center to current location">
+                <FontAwesomeIcon :icon="faLocation" />
+            </button>
+        </div>
     </div>
 </template>
 

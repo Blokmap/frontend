@@ -31,7 +31,7 @@ function handleLeave(el: Element, done: () => void): void {
 
 <template>
     <PublicHeader />
-    <div class="w-full xl:w-10/12 mx-auto my-8 px-4">
+    <main class="w-full xl:w-10/12 mx-auto my-8 px-4">
         <RouterView v-slot="{ Component, route }">
             <Transition
                 mode="out-in"
@@ -44,6 +44,6 @@ function handleLeave(el: Element, done: () => void): void {
                 </div>
             </Transition>
         </RouterView>
-    </div>
+    </main>
     <PublicFooter />
 </template>

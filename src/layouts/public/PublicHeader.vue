@@ -11,36 +11,32 @@ const navigation = [
         link: { name: 'home' },
     },
     {
-        name: 'Test',
+        name: 'Locations',
         link: { name: 'test' },
     },
 ];
 </script>
 
 <template>
-    <!-- Public Header -->
-    <header class="flex p-4 border-b-2 border-slate-100">
-        <!-- Container -->
+    <header class="flex p-4 border-b-2 border-slate-100 dark:border-surface-800">
         <div class="flex items-center justify-between w-full md:w-10/12 mx-auto">
-            <!-- Logo and nav -->
             <div class="flex items-center gap-9">
-                <h2 class="text-xl font-bold leading-tight">
+                <h2 class="text-2xl font-bold leading-tight">
                     <FontAwesomeIcon :icon="faGraduationCap" class="text-primary" />
                     Blokmap
                 </h2>
                 <div class="flex items-center gap-6">
                     <template v-for="item in navigation" :key="item.name">
-                        <RouterLink
-                            :to="item.link"
-                            class="text-sm font-medium"
-                            v-slot="{ isExactActive }">
+                        <RouterLink :to="item.link" class="font-medium" v-slot="{ isExactActive }">
                             <span
-                                :class="{
-                                    ['px-3 py-2 rounded-lg']: true,
-                                    ['bg-timber-green-600 text-white']: isExactActive,
-                                }"
-                                >{{ item.name }}</span
-                            >
+                                :class="[
+                                    'px-3 py-2 rounded-lg text-md font-medium transition-colors duration-200 ease-out',
+                                    isExactActive
+                                        ? 'bg-primary-500 text-primary-contrast'
+                                        : 'hover:bg-slate-100',
+                                ]">
+                                {{ item.name }}
+                            </span>
                         </RouterLink>
                     </template>
                 </div>
@@ -48,7 +44,7 @@ const navigation = [
             <!-- Search and auth -->
             <div class="flex gap-3">
                 <LocationSearch />
-                <Button v-tooltip="'hellaur'">Sign Up</Button>
+                <Button>Sign Up</Button>
                 <Button severity="contrast">Log In</Button>
             </div>
         </div>

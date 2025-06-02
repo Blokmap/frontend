@@ -1,10 +1,11 @@
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
-import { Ripple, ToastService, Tooltip } from 'primevue';
+import App from '@/App.vue';
 import { i18n } from '@/config/i18n';
 import { router } from '@/router/router';
+import { VueQueryPlugin } from '@tanstack/vue-query';
+import { createPinia } from 'pinia';
+import { Ripple, ToastService, Tooltip } from 'primevue';
 import PrimeVuePlugin from 'primevue/config';
-import App from '@/App.vue';
+import { createApp } from 'vue';
 
 // Create the app.
 const app = createApp(App);
@@ -13,6 +14,7 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(router);
 app.use(i18n);
+app.use(VueQueryPlugin);
 app.use(ToastService);
 app.use(PrimeVuePlugin, {
     ripple: true,

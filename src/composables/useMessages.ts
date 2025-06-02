@@ -1,8 +1,8 @@
-import { useToast, type ToastMessageOptions } from 'primevue';
+import { type ToastMessageOptions, useToast } from 'primevue';
 import { useI18n } from 'vue-i18n';
 
 export type UseMessagesReturn = {
-    show: (options: ToastMessageOptions) => void;
+    showMessage: (options: ToastMessageOptions) => void;
 };
 
 /**
@@ -15,7 +15,7 @@ export function useMessages(life: number = 5000): UseMessagesReturn {
     const { add } = useToast();
     const { t } = useI18n();
 
-    const show = (options: ToastMessageOptions) => {
+    const showMessage = (options: ToastMessageOptions) => {
         const severity = options.severity || 'info';
 
         add({
@@ -26,5 +26,5 @@ export function useMessages(life: number = 5000): UseMessagesReturn {
         });
     };
 
-    return { show };
+    return { showMessage };
 }

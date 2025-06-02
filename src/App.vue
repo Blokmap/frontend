@@ -4,7 +4,7 @@ import Toast from 'primevue/toast';
 
 <template>
     <main>
-        <Toast />
+        <Toast position="bottom-right" />
         <RouterView />
     </main>
 </template>

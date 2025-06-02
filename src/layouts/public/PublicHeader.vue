@@ -1,9 +1,22 @@
 <script setup lang="ts">
-import { Button, InputText } from 'primevue';
-import { RouterLink } from 'vue-router';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 import LocationSearch from '@/components/features/location/LocationSearch.vue';
+import UserAvatar from '@/components/shared/UserAvatar.vue';
+import type { Profile } from '@/types/model/Profile';
+import { faGraduationCap } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import Button from 'primevue/button';
+import Skeleton from 'primevue/skeleton';
+import { RouterLink } from 'vue-router';
+
+defineProps<{
+    profile?: Profile | null;
+    profileIsLoading?: boolean;
+    logoutIsLoading?: boolean;
+}>();
+
+defineEmits<{
+    (e: 'logout'): Promise<void>;
+}>();
 
 const navigation = [
     {
@@ -18,8 +31,8 @@ const navigation = [
 </script>
 
 <template>
-    <header class="flex p-4 border-b-2 border-slate-100 dark:border-surface-800">
-        <div class="flex items-center justify-between w-full md:w-10/12 mx-auto">
+    <header class="flex p-4 border-b-2 border-slate-200 dark:border-surface-800">
+        <div class="flex items-center justify-between w-full xl:w-10/12 mx-auto">
             <div class="flex items-center gap-9">
                 <h2 class="text-2xl font-bold leading-tight">
                     <FontAwesomeIcon :icon="faGraduationCap" class="text-primary" />
@@ -42,10 +55,28 @@ const navigation = [
                 </div>
             </div>
             <!-- Search and auth -->
-            <div class="flex gap-3">
+            <div class="flex items-center gap-3">
                 <LocationSearch />
-                <Button>Sign Up</Button>
-                <Button severity="contrast">Log In</Button>
+                <template v-if="profileIsLoading">
+                    <Skeleton width="2rem" height="2rem" shape="circle" />
+                </template>
+
+                <template v-else-if="profile">
+                    <UserAvatar
+                        :profile="profile"
+                        :logout-is-loading="logoutIsLoading"
+                        @logout="$emit('logout')">
+                    </UserAvatar>
+                </template>
+
+                <template v-else>
+                    <RouterLink :to="{ name: 'auth.register' }">
+                        <Button>Sign Up</Button>
+                    </RouterLink>
+                    <RouterLink :to="{ name: 'auth.login' }">
+                        <Button severity="contrast">Log In</Button>
+                    </RouterLink>
+                </template>
             </div>
         </div>
     </header>

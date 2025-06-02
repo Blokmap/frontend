@@ -1,9 +1,9 @@
 export const endpoints = {
     auth: {
-        login: '/auth/login',
+        login: '/auth/login/username',
         logout: '/auth/logout',
         register: '/auth/register',
-        current: '/auth/me',
+        current: '/profile/me',
         sso: '/auth/sso/{provider}',
     },
     institutions: {

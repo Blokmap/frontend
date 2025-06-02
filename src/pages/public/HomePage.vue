@@ -1,12 +1,8 @@
 <script lang="ts" setup>
 import BlokMap from '@/components/features/blokmap/BlokMap.vue';
 import LocationSearch from '@/components/features/location/LocationSearch.vue';
-import { blokmapConfig } from '@/config/blokmap';
 import type { Location } from '@/types/model/Location';
-import { useGeolocation } from '@vueuse/core';
-import { ref, useTemplateRef, watch } from 'vue';
-
-const blokmapRef = useTemplateRef('blokmap');
+import { ref } from 'vue';
 
 const locations = ref<Location[]>([]);
 const selected = ref<Location | null>(null);

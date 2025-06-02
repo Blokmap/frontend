@@ -73,18 +73,14 @@ function toggleTag(id: string): void {
                 <h2 class="text-lg font-semibold">Type</h2>
                 <div class="inline-flex flex-col gap-2">
                     <div
-                        class="relative flex rounded-full border border-slate-300 bg-white overflow-hidden">
+                        class="relative flex rounded-full border-2 border-slate-100 bg-white overflow-hidden">
                         <div
-                            class="absolute top-0 left-0 h-full w-1/3 bg-gray-100 transition-transform duration-300 ease-in-out rounded-full"
-                            :style="{ transform: `translateX(${selectedIndex * 100}%)` }"></div>
+                            class="absolute top-[-1] bottom-0 left-0 h-full w-1/3 border-2 border-slate-200 transition-transform duration-300 ease-in-out rounded-full"
+                            :style="{ transform: `translateX(${selectedIndex * 100}%)` }" />
                         <button
                             v-for="(option, index) in options"
                             :key="option.value"
                             class="flex-1 z-10 py-2 text-sm font-medium transition-colors duration-200 cursor-pointer"
-                            :class="{
-                                'text-black': selectedIndex === index,
-                                'text-gray-500': selectedIndex !== index,
-                            }"
                             @click="selectTypeIndex(index)">
                             {{ option.label }}
                         </button>

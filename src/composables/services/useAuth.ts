@@ -1,53 +1,119 @@
 import { client } from '@/config/axios';
+import { endpoints } from '@/endpoints';
 import { Profile } from '@/types/model/Profile';
-import type { LoginRequest } from '@/types/schema/Auth';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import type { LoginRequest, RegisterRequest } from '@/types/schema/Auth';
+import {
+    type MutationOptions,
+    type UseMutationOptions,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from '@tanstack/vue-query';
+import type { AxiosError } from 'axios';
 
 /**
  * Composable to fetch the authenticated user's profile.
  *
- * @returns {ReturnType<typeof useQuery<Profile | null>>} The query object containing the profile data and its state.
+ * @returns The query object containing the profile data and its state.
  */
-export function useAuthProfile(): ReturnType<typeof useQuery<Profile | null>> {
-    return useQuery<Profile | null>({
+export function useAuthProfile() {
+    const query = useQuery<Profile | null>({
         queryKey: ['profile'],
+        retry: false,
+        throwOnError: true,
         queryFn: async () => {
-            const response = await client.get('/auth/me');
-            return Profile.parse(response.data);
+            const response = await client.get(endpoints.auth.current);
+            // return Profile.parse(response.data);
+            return response.data;
         },
     });
+
+    return {
+        profile: query.data,
+        profileError: query.error,
+        profileIsLoading: query.isPending,
+        profileIsSuccess: query.isSuccess,
+        profileIsError: query.isError,
+    };
 }
 
 /**
  * Composable to log out the user.
  *
- * @returns {ReturnType<typeof useMutation>} The mutation object for logging out.
+ * @returns The mutation object for logging out.
  */
-export function useAuthLogout(): ReturnType<typeof useMutation<void>> {
+export function useAuthLogout(options: MutationOptions<void, AxiosError> = {}) {
     const query = useQueryClient();
 
-    return useMutation({
+    const mutation = useMutation({
         mutationKey: ['logout'],
         mutationFn: async () => {
-            await client.post('/auth/logout');
+            await client.post(endpoints.auth.logout);
             await query.invalidateQueries({ queryKey: ['profile'] });
         },
+        ...options,
     });
+
+    return {
+        logoutError: mutation.error,
+        logoutIsLoading: mutation.isPending,
+        logoutIsSuccess: mutation.isSuccess,
+        logoutIsError: mutation.isError,
+        logout: mutation.mutateAsync,
+    };
 }
 
 /**
  * Composable to handle user login.
  *
- * @returns {ReturnType<typeof useMutation<void>>} The mutation object for logging in.
+ * @returns The mutation object for logging in.
  */
-export function useAuthLogin(): ReturnType<typeof useMutation<void, Error, LoginRequest>> {
+export function useAuthLogin(options: MutationOptions<void, AxiosError, LoginRequest> = {}) {
     const query = useQueryClient();
 
-    return useMutation({
-        mutationKey: ['login'],
+    const mutation = useMutation({
         mutationFn: async (credentials: LoginRequest) => {
-            await client.post('/auth/login', credentials);
+            await client.post(endpoints.auth.login, credentials);
             await query.invalidateQueries({ queryKey: ['profile'] });
         },
+        ...options,
     });
+
+    return {
+        loginError: mutation.error,
+        loginIsLoading: mutation.isPending,
+        loginIsSuccess: mutation.isSuccess,
+        loginIsError: mutation.isError,
+        login: mutation.mutateAsync,
+    };
+}
+
+/**
+ * Composable to handle user registration.
+ *
+ * @param {UseMutationOptions<void, Error, RegisterRequest>} options - Optional mutation options.
+ *
+ * @returns The mutation object for registering a new user.
+ */
+export function useAuthRegister(
+    options: UseMutationOptions<void, AxiosError, RegisterRequest> = {},
+) {
+    const query = useQueryClient();
+
+    const mutation = useMutation({
+        mutationFn: async (credentials: RegisterRequest) => {
+            console.log('Registering with credentials:', credentials.password);
+            await client.post(endpoints.auth.register, credentials);
+            await query.invalidateQueries({ queryKey: ['profile'] });
+        },
+        ...options,
+    });
+
+    return {
+        registerError: mutation.error,
+        registerIsLoading: mutation.isPending,
+        registerIsSuccess: mutation.isSuccess,
+        registerIsError: mutation.isError,
+        register: mutation.mutateAsync,
+    };
 }

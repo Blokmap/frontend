@@ -12,8 +12,8 @@
 @import './inputnumber';
 @import './inputotp'; */
 @import './inputtext';
-/* @import './floatlabel';
-@import './knob';
+@import './floatlabel';
+/* @import './knob';
 @import './listbox';
 @import './multiselect';
 @import './password';
@@ -48,16 +48,16 @@
 /* @import './confirmdialog';
 @import './confirmpopup';*/
 @import './dialog';
-/*@import './drawer';
-@import './popover'; */
+/*@import './drawer'; */
+@import './popover';
 @import './tooltip';
 
 /* Menu */
 /* @import './breadcrumb';
 @import './contextmenu';
-@import './dock';
-@import './menu';
-@import './menubar';
+@import './dock';*/
+/* @import './menu'; */
+/*@import './menubar';
 @import './megamenu';
 @import './panelmenu';
 @import './tieredmenu'; */
@@ -70,16 +70,16 @@
 @import './panel';
 @import './scrollpanel';
 @import './splitter';
-@import './stepper';
+@import './stepper';*/
 @import './tabs';
-@import './toolbar'; */
+/*@import './toolbar'; */
 
 /* File */
 /* @import './fileupload'; */
 
 /* Message */
-/* @import './message';
-@import './toast'; */
+@import './message';
+@import './toast';
 
 /* Media */
 /* @import './carousel';

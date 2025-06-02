@@ -65,7 +65,7 @@
 }
 
 .p-toast-message-success {
-    @apply bg-timber-green-100 border-timber-green-300 text-timber-green-900
+    @apply bg-timber-green-100 border-timber-green-300 text-timber-green-600
         dark:bg-green-500/15 dark:border-green-700/35 dark:text-green-500
         shadow-[0px_4px_8px_0px_theme(colors.green.500/0.04)];
 }

@@ -56,12 +56,7 @@ const navigation = [
             </div>
             <!-- Search and auth -->
             <div class="flex items-center gap-3">
-                <LocationSearch />
-                <template v-if="profileIsLoading">
-                    <Skeleton width="2rem" height="2rem" shape="circle" />
-                </template>
-
-                <template v-else-if="profile">
+                <template v-if="profileIsLoading || profile">
                     <UserAvatar
                         :profile="profile"
                         :logout-is-loading="logoutIsLoading"
@@ -77,6 +72,7 @@ const navigation = [
                         <Button severity="contrast">Log In</Button>
                     </RouterLink>
                 </template>
+                <LocationSearch />
             </div>
         </div>
     </header>

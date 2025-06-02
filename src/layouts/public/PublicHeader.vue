@@ -56,7 +56,7 @@ const navigation = [
             </div>
             <!-- Search and auth -->
             <div class="flex items-center gap-3">
-                <template v-if="profileIsLoading || profile">
+                <template v-if="profileIsLoading || !!profile">
                     <UserAvatar
                         :profile="profile"
                         :logout-is-loading="logoutIsLoading"

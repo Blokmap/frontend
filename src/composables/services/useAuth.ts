@@ -20,7 +20,6 @@ export function useAuthProfile() {
     const query = useQuery<Profile | null>({
         queryKey: ['profile'],
         retry: false,
-        throwOnError: true,
         queryFn: async () => {
             const response = await client.get(endpoints.auth.current);
             // return Profile.parse(response.data);

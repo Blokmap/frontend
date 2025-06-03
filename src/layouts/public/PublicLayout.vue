@@ -76,7 +76,6 @@ function handleLeave(el: Element, done: () => void): void {
 </script>
 
 <template>
-    {{ profile }}
     <PublicHeader
         :profile="profile"
         :profile-is-loading="profileIsLoading"

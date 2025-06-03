@@ -15,8 +15,8 @@ const selected = ref<Location | null>(null);
     <div class="flex flex-col gap-8 w-full xl:w-2/3 mx-auto mb-16">
         <LocationSearch />
         <div class="max-h-full h-[600px]">
-            <BlokMap :locations="locations" v-model:location="selected" ref="blokmap" rounded>
-            </BlokMap>
+            <BlokMap :locations="locations" v-model:location="selected" ref="blokmap" rounded />
         </div>
     </div>
+    <h2 class="text-2xl font-bold mb-8">Featured Locations</h2>
 </template>

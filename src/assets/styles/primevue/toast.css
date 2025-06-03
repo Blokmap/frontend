@@ -29,7 +29,7 @@
 .p-toast-close-button {
     @apply flex items-center justify-center overflow-hidden relative cursor-pointer bg-transparent select-none
         transition-colors duration-200 text-inherit w-7 h-7 rounded-full -mt-[25%] -end-1/4 p-0 border-none
-        focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2;
+        focus-visible:outline-1 focus-visible:outline-offset-2;
 }
 
 .p-toast-close-button:dir(rtl) {
@@ -42,101 +42,35 @@
 .p-toast-message-error,
 .p-toast-message-secondary,
 .p-toast-message-contrast {
-    @apply border-2 shadow-lg shadow-slate-200 bg-surface-0 dark:bg-surface-800 rounded-md;
+    @apply border-0 shadow-sm bg-surface-0 text-color dark:bg-surface-800 rounded-md;
 }
 
 .p-toast-close-icon {
     @apply text-base w-4 h-4;
 }
 
-.p-toast-message-info {
-    @apply bg-blue-50/95 border-blue-200 text-blue-600
-        dark:bg-blue-500/15 dark:border-blue-700/35 dark:text-blue-500
-        shadow-[0px_4px_8px_0px_theme(colors.blue.500/0.04)];
-}
-
 .p-toast-message-info .p-toast-detail {
     @apply text-surface-700 dark:text-surface-0;
-}
-
-.p-toast-message-info .p-toast-close-button {
-    @apply hover:bg-blue-100 focus-visible:outline-blue-600
-        dark:hover:bg-white/5 dark:focus-visible:outline-blue-500;
-}
-
-.p-toast-message-success {
-    @apply bg-timber-green-100 border-timber-green-300 text-timber-green-600
-        dark:bg-green-500/15 dark:border-green-700/35 dark:text-green-500
-        shadow-[0px_4px_8px_0px_theme(colors.green.500/0.04)];
 }
 
 .p-toast-message-success .p-toast-detail {
     @apply text-surface-700 dark:text-surface-0;
 }
 
-.p-toast-message-success .p-toast-close-button {
-    @apply hover:bg-timber-green-200 focus-visible:outline-timber-green-600
-        dark:hover:bg-white/5 dark:focus-visible:outline-green-500;
-}
-
-.p-toast-message-warn {
-    @apply bg-yellow-50/95 border-yellow-200 text-yellow-600
-        dark:bg-yellow-500/15 dark:border-yellow-700/35 dark:text-yellow-500
-        shadow-[0px_4px_8px_0px_theme(colors.yellow.500/0.04)];
-}
-
 .p-toast-message-warn .p-toast-detail {
     @apply text-surface-700 dark:text-surface-0;
-}
-
-.p-toast-message-warn .p-toast-close-button {
-    @apply hover:bg-yellow-100 focus-visible:outline-yellow-600
-        dark:hover:bg-white/5 dark:focus-visible:outline-yellow-500;
-}
-
-.p-toast-message-error {
-    @apply border-red-300 text-red-600 bg-red-50
-        dark:bg-red-500/15 dark:border-red-700/35 dark:text-red-500
-        shadow-[0px_4px_8px_0px_theme(colors.blue.500/0.04)];
 }
 
 .p-toast-message-error .p-toast-detail {
     @apply text-surface-700 dark:text-surface-0;
 }
 
-.p-toast-message-error .p-toast-close-button {
-    @apply hover:bg-red-100 focus-visible:outline-red-600
-        dark:hover:bg-white/5 dark:focus-visible:outline-red-500;
-}
-
-.p-toast-message-secondary {
-    @apply bg-surface-100 border-surface-200 text-surface-600
-        dark:bg-surface-800 dark:border-surface-700 dark:text-surface-300
-        shadow-[0px_4px_8px_0px_rgba(0,0,0,0.04)];
-}
-
 .p-toast-message-secondary .p-toast-detail {
     @apply text-surface-700 dark:text-surface-0;
 }
 
-.p-toast-message-secondary .p-toast-close-button {
-    @apply hover:bg-surface-200 focus-visible:outline-surface-600
-        dark:hover:bg-surface-700 dark:focus-visible:outline-surface-300;
-}
-
-.p-toast-message-contrast {
-    @apply bg-surface-900 border-surface-950 text-surface-50
-        dark:bg-surface-0 dark:border-surface-100 dark:text-surface-950
-        shadow-[0px_4px_8px_0px_rgba(0,0,0,0.04)];
-}
-
 .p-toast-message-contrast .p-toast-detail {
     @apply text-surface-0 dark:text-surface-950;
-}
-
-.p-toast-message-contrast .p-toast-close-button {
-    @apply hover:bg-surface-800 focus-visible:outline-surface-50
-        dark:hover:bg-surface-100 dark:focus-visible:outline-surface-950;
 }
 
 .p-toast-top-center {

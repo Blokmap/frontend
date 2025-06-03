@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import Toast from 'primevue/toast';
+import Toast from '@/components/shared/Toast.vue';
 </script>
 
 <template>
     <main>
-        <Toast position="bottom-right" />
+        <Toast />
         <RouterView />
     </main>
 </template>

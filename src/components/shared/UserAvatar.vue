@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useMessages } from '@/composables/useMessages';
 import { Profile } from '@/types/model/Profile';
-import { faSignOut } from '@fortawesome/free-solid-svg-icons';
+import { faSignOut, faSpaghettiMonsterFlying } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Avatar from 'primevue/avatar';
 import Button from 'primevue/button';
@@ -15,6 +15,10 @@ defineProps<{
     logoutIsLoading?: boolean;
 }>();
 
+defineEmits<{
+    (e: 'logout'): void;
+}>();
+
 const popoverTemplate = useTemplateRef('popover');
 </script>
 
@@ -24,8 +28,8 @@ const popoverTemplate = useTemplateRef('popover');
             class="cursor-pointer h-11 w-11 text-xl"
             shape="circle"
             id="avatar"
-            :label="profile.username?.[0]?.toUpperCase() ?? '?'"
             @click="popoverTemplate?.toggle($event)">
+            <FontAwesomeIcon :icon="faSpaghettiMonsterFlying" class="text-color" />
         </Avatar>
         <Popover ref="popover">
             <h3>

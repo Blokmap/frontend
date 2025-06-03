@@ -10,6 +10,7 @@ import { useRoute } from 'vue-router';
 const { showMessage } = useMessages();
 
 const { profile, profileIsLoading } = useAuthProfile();
+
 const { logout, logoutIsLoading } = useAuthLogout({
     onSuccess: () => {
         showMessage({
@@ -75,6 +76,7 @@ function handleLeave(el: Element, done: () => void): void {
 </script>
 
 <template>
+    {{ profile }}
     <PublicHeader
         :profile="profile"
         :profile-is-loading="profileIsLoading"

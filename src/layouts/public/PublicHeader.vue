@@ -5,7 +5,6 @@ import type { Profile } from '@/types/model/Profile';
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
-import Skeleton from 'primevue/skeleton';
 import { RouterLink } from 'vue-router';
 
 defineProps<{

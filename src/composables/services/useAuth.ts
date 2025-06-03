@@ -21,9 +21,12 @@ export function useAuthProfile() {
         queryKey: ['profile'],
         retry: false,
         queryFn: async () => {
-            const response = await client.get(endpoints.auth.current);
-            // return Profile.parse(response.data);
-            return response.data;
+            try {
+                const response = await client.get(endpoints.auth.current);
+                return response.data;
+            } catch {
+                return null;
+            }
         },
     });
 

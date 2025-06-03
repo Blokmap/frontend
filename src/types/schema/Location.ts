@@ -1,8 +1,8 @@
-import { Profile } from '@/types/model/Profile';
-import { Translation } from '@/types/model/Translation';
-import { Image } from '@/types/model/Image';
-import { z } from 'zod/v4';
+import { Image } from '@/types/schema/Image';
+import { Profile } from '@/types/schema/Profile';
+import { Translation } from '@/types/schema/Translation';
 import { datetime } from '@/utils/zod';
+import { z } from 'zod/v4';
 
 export const Location = z.object({
     id: z.number(),
@@ -29,6 +29,13 @@ export const Location = z.object({
     createdBy: z.lazy(() => Profile.optional().nullable()),
     updatedBy: z.lazy(() => Profile.optional().nullable()),
     images: z.lazy(() => Image.array().optional()),
+});
+
+export const SearchedLocation = z.object({
+    id: z.number(),
+    name: z.string(),
+    latitude: z.float64(),
+    longitude: z.float64(),
 });
 
 export const OpeningTime = z.object({
@@ -59,8 +66,8 @@ export const Review = z.object({
     updatedAt: datetime,
 });
 
-
 export type Location = z.infer<typeof Location>;
+export type SearchedLocation = z.infer<typeof SearchedLocation>;
 export type OpeningTime = z.infer<typeof OpeningTime>;
 export type Tag = z.infer<typeof Tag>;
 export type Review = z.infer<typeof Review>;

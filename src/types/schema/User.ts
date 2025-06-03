@@ -1,4 +1,4 @@
-import type { Institution } from '@/types/model/Institution';
+import type { Institution } from '@/types/schema/Institution';
 
 export type User = {
     firstName: string;

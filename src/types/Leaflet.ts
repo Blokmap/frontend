@@ -1,10 +1,10 @@
+import { type SearchedLocation } from '@/types/schema/Location';
 import { Marker, type MarkerOptions } from 'leaflet';
-import { type Location } from '@/types/model/Location';
 
 export class BlokMapMarker extends Marker {
-    public location: Location;
+    public location: SearchedLocation;
 
-    constructor(location: Location, options?: MarkerOptions) {
+    constructor(location: SearchedLocation, options?: MarkerOptions) {
         super([location.latitude, location.longitude], options);
         this.location = location;
     }

@@ -1,6 +1,6 @@
-import { Profile } from '@/types/model/Profile';
-import { Location } from '@/types/model/Location';
-import { z, ZodType } from 'zod/v4';
+import { Location } from '@/types/schema/Location';
+import { Profile } from '@/types/schema/Profile';
+import { ZodType, z } from 'zod/v4';
 
 export type Authority = {
     id: number;

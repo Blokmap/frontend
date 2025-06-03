@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import LocationSearch from '@/components/features/location/LocationSearch.vue';
 import UserAvatar from '@/components/shared/UserAvatar.vue';
-import type { Profile } from '@/types/model/Profile';
+import type { Profile } from '@/types/schema/Profile';
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
@@ -24,7 +24,7 @@ const navigation = [
     },
     {
         name: 'Locations',
-        link: { name: 'test' },
+        link: { name: 'locations' },
     },
 ];
 </script>

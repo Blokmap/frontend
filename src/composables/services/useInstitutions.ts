@@ -1,6 +1,6 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/endpoints';
-import { Institution } from '@/types/model/Institution';
+import { Institution } from '@/types/schema/Institution';
 import { useQuery } from '@tanstack/vue-query';
 
 export function useInstitutions(): ReturnType<typeof useQuery<unknown, Error, Institution[]>> {

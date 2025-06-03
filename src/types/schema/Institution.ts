@@ -1,5 +1,5 @@
-import { Image } from '@/types/model/Image';
-import { Translation } from '@/types/model/Translation';
+import { Image } from '@/types/schema/Image';
+import { Translation } from '@/types/schema/Translation';
 import z from 'zod/v4';
 
 export const Institution = z.object({

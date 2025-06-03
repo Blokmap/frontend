@@ -1,4 +1,4 @@
-import type { Idp } from '@/types/model/Profile';
+import type { Idp } from '@/types/schema/Profile';
 
 export const authIdentityProviders: Idp[] = [
     {

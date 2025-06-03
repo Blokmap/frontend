@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { Idp } from '@/types/model/Profile';
 import type { LoginRequest } from '@/types/schema/Auth';
+import type { Idp } from '@/types/schema/Profile';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';

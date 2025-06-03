@@ -1,9 +1,9 @@
-import { OpeningTime } from '@/types/model/Location';
-import { Profile } from '@/types/model/Profile';
-import { DateTime } from 'luxon';
-import { Location } from '@/types/model/Location';
-import { z, type ZodType } from 'zod/v4';
+import { OpeningTime } from '@/types/schema/Location';
+import { Location } from '@/types/schema/Location';
+import { Profile } from '@/types/schema/Profile';
 import { datetime } from '@/utils/zod';
+import { DateTime } from 'luxon';
+import { type ZodType, z } from 'zod/v4';
 
 export type Reservation = {
     id: number;

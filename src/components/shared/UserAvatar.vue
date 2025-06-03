@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useMessages } from '@/composables/useMessages';
-import { Profile } from '@/types/model/Profile';
+import { Profile } from '@/types/schema/Profile';
 import { faSignOut, faSpaghettiMonsterFlying } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Avatar from 'primevue/avatar';

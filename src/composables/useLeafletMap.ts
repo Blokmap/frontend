@@ -1,8 +1,8 @@
-import { onMounted, shallowRef, type Ref } from 'vue';
 import { blokmapConfig } from '@/config/blokmap';
-import L, { LatLng, type Map as LeafletMap } from 'leaflet';
 import type { BlokmapOptions } from '@/types/Config';
-import type { BlokMapMarker } from '@/types/Leaflet';
+import { BlokMapMarker } from '@/types/Leaflet';
+import L, { LatLng, type Map as LeafletMap } from 'leaflet';
+import { type Ref, onMounted, shallowRef } from 'vue';
 
 export function useLeafletMap(
     container: Ref<HTMLElement | null>,
@@ -10,7 +10,7 @@ export function useLeafletMap(
     initialPosition: GeolocationPosition | null = null,
 ) {
     const map = shallowRef<LeafletMap>();
-    const markers = L.layerGroup();
+    const markers = L.layerGroup<BlokMapMarker>();
     const tiles = L.tileLayer(options.tlUrl, options.tlConfig);
 
     onMounted(() => {

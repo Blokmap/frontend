@@ -1,5 +1,5 @@
-import { Authority } from '@/types/model/Authority';
-import { Institution } from '@/types/model/Institution';
+import { Authority } from '@/types/schema/Authority';
+import { Institution } from '@/types/schema/Institution';
 import { z } from 'zod/v4';
 
 export const Idp = z.object({

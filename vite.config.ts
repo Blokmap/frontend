@@ -1,10 +1,13 @@
-import { defineConfig } from 'vitest/config';
-import path from 'node:path';
-import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
+import vue from '@vitejs/plugin-vue';
+import path from 'node:path';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     plugins: [vue(), tailwindcss()],
+    optimizeDeps: {
+        exclude: ['@primeuix', 'primeicons'],
+    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),
@@ -12,6 +15,15 @@ export default defineConfig({
     },
     build: {
         outDir: 'public',
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vue: ['vue', '@vueuse/core', '@vueuse/shared'],
+                    primevue: ['primevue'],
+                    query: ['@tanstack/vue-query'],
+                },
+            },
+        },
     },
     test: {
         include: ['test/unit/**/*.{test,spec}.ts'],

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import type { Institution } from '@/types/model/Institution';
+import { useMessages } from '@/composables/useMessages';
+import type { Institution } from '@/types/schema/Institution';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import IconField from 'primevue/iconfield';
@@ -13,7 +14,16 @@ defineProps<{
     isLoading: boolean;
 }>();
 
+const { showMessage } = useMessages();
 const { locale } = useI18n();
+
+function handleInstitutionSelection(institution: Institution): void {
+    showMessage({
+        severity: 'warn',
+        summary: 'Not implemented',
+        detail: `You can't log in with ${institution.slug[locale.value as any]!} yet.`,
+    });
+}
 </script>
 
 <template>
@@ -23,7 +33,8 @@ const { locale } = useI18n();
         </template>
         <template v-for="institution in institutions" :key="institution.name" v-else>
             <div
-                class="flex items-center gap-4 p-4 border-2 border-slate-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                class="flex items-center gap-4 p-4 border-2 border-slate-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                @click="handleInstitutionSelection(institution)">
                 <img
                     :src="institution.logo.url"
                     :alt="institution.name[locale as any]!"

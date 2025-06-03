@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Button } from 'primevue';
+import Button from 'primevue';
 </script>
 
 <template>

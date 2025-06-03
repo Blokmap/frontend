@@ -54,7 +54,7 @@ function handleEnter(el: Element, done: () => void): void {
     G.to(el, {
         opacity: 1,
         scale: 1,
-        duration: 0.3,
+        duration: 0.2,
         onComplete: done,
     });
 }
@@ -69,7 +69,7 @@ function handleLeave(el: Element, done: () => void): void {
     G.to(el, {
         opacity: 0,
         scale: 0.96,
-        duration: 0.3,
+        duration: 0.2,
         onComplete: done,
     });
 }

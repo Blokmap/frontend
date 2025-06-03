@@ -4,16 +4,18 @@ import BlokMapPopover from '@/components/features/blokmap/BlokMapPopover.vue';
 import { useLeafletMap } from '@/composables/useLeafletMap';
 import { blokmapConfig } from '@/config/blokmap';
 import { BlokMapMarker } from '@/types/Leaflet';
-import type { Location } from '@/types/model/Location';
+import type { SearchedLocation } from '@/types/schema/Location';
 import { faLocation, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useGeolocation } from '@vueuse/core';
 import G from 'gsap';
 import L, { type LeafletMouseEvent } from 'leaflet';
 import { onMounted, onUnmounted, useTemplateRef, watch } from 'vue';
 
-const { locations } = withDefaults(
+const props = withDefaults(
     defineProps<{
-        locations: Location[];
+        locations?: SearchedLocation[];
+        isLoading?: boolean;
         rounded?: boolean;
         shadow?: boolean;
     }>(),
@@ -23,10 +25,11 @@ const { locations } = withDefaults(
     },
 );
 
-const selectedLocation = defineModel<Location | null>('location', {
-    required: true,
+const selectedLocation = defineModel<SearchedLocation | null>('location', {
+    default: null,
 });
 
+const geolocation = useGeolocation();
 const popoverContainer = useTemplateRef('popover');
 const mapContainer = useTemplateRef('blokmap');
 
@@ -34,60 +37,68 @@ const { map, markers } = useLeafletMap(mapContainer);
 const { zoom, bounds } = blokmapConfig;
 
 watch(
-    () => locations,
-    (newLocations) => {
-        updateMarkers(newLocations);
+    () => props.locations,
+    (newLocations, oldLocations) => {
+        if (!!newLocations) {
+            updateMarkers(newLocations, oldLocations);
+        }
     },
+    { immediate: true },
 );
 
 onMounted(() => {
-    if (!map.value || !popoverContainer.value) return;
+    map.value?.setMaxBounds(bounds);
+    map.value?.setZoom(zoom);
 
-    map.value.setMaxBounds(bounds);
-    map.value.setZoom(zoom);
-
-    const { update, hide } = popoverContainer.value;
-    map.value.on('move', update);
-    map.value.on('dragend', hide);
+    if (popoverContainer.value) {
+        map.value?.on('move', popoverContainer.value.update);
+        map.value?.on('dragend', popoverContainer.value.hide);
+    }
 });
 
 onUnmounted(() => {
-    if (!map.value) return;
-    map.value.off('move');
-    map.value.off('dragend');
+    map.value?.off('move');
+    map.value?.off('dragend');
 });
-
-defineExpose({ map });
 
 /**
  * Updates the markers on the map based on the provided locations.
+ *
+ * @param {SearchedLocation[]} locations - The new locations to display on the map.
+ * @returns {void}
  */
-function updateMarkers(locs: Location[] = locations): void {
-    const locationIds = new Set(locations.map((loc) => loc.id));
-    const existingLocationIds = new Set();
+function updateMarkers(
+    newLocations?: SearchedLocation[] | null,
+    oldLocations?: SearchedLocation[] | null,
+): void {
+    const oldIds = new Set(oldLocations?.map((l) => l.id) || []);
+    const newIds = new Set(newLocations?.map((l) => l.id) || []);
 
     // Remove markers not in new response.
     markers.getLayers().forEach((m: unknown) => {
         const marker = m as BlokMapMarker;
-        const element = marker.getElement();
 
-        if (!element || locationIds.has(marker.location.id)) {
-            existingLocationIds.add(marker.location.id);
-            return;
+        if (!newIds.has(marker.location.id)) {
+            const element = marker.getElement();
+
+            if (!element || newIds.has(marker.location.id)) {
+                oldIds.add(marker.location.id);
+            } else {
+                G.to(element, {
+                    duration: 0.3,
+                    opacity: 0,
+                    onComplete: () => {
+                        markers.removeLayer(marker);
+                    },
+                });
+            }
         }
-
-        G.to(element, {
-            duration: 0.3,
-            opacity: 0,
-            onComplete: () => {
-                markers.removeLayer(marker);
-            },
-        });
     });
 
     // Add new markers in the response.
-    locs.forEach((location) => {
-        if (existingLocationIds.has(location.id)) return;
+    newLocations?.forEach((location: SearchedLocation) => {
+        // Skip if the location already exists.
+        if (oldIds.has(location.id)) return;
 
         const marker = new BlokMapMarker(location, {
             icon: L.icon({
@@ -99,12 +110,12 @@ function updateMarkers(locs: Location[] = locations): void {
 
         // Show location details on marker click.
         marker.on('click', (event: LeafletMouseEvent) => {
-            if (!map.value) return;
-
-            map.value
-                .flyTo(marker.getLatLng(), map.value.getMaxZoom(), {
+            const currentMap = map.value;
+            const distance = currentMap?.getCenter().distanceTo(marker.getLatLng());
+            currentMap
+                ?.flyTo(marker.getLatLng(), currentMap.getMaxZoom(), {
                     animate: true,
-                    duration: 0.5,
+                    duration: distance && distance < 10 ? 0 : 1,
                 })
                 .once('moveend', () => {
                     selectedLocation.value = location;
@@ -134,9 +145,10 @@ function updateMarkers(locs: Location[] = locations): void {
  */
 function handleCenterClick(): void {
     if (!map.value) return;
-
     map.value.locate({ setView: true, maxZoom: 16 });
 }
+
+defineExpose({ map });
 </script>
 
 <template>

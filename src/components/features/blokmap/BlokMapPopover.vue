@@ -1,18 +1,19 @@
 <script lang="ts" setup>
-import type { Location } from '@/types/model/Location';
+import type { SearchedLocation } from '@/types/schema/Location';
 import { PrimeIcons } from '@primevue/core';
-import { Popover, Button, Tag } from 'primevue';
+import Button from 'primevue/button';
+import Popover from 'primevue/popover';
+import Tag from 'primevue/tag';
 import { ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 defineProps<{
-    selectedLocation: Location | null;
+    selectedLocation: SearchedLocation | null;
     isFavoriteLocation: boolean;
 }>();
 
 const { t } = useI18n();
 const container = useTemplateRef('popover');
-
 const isShown = ref(false);
 
 /**
@@ -49,11 +50,7 @@ defineExpose({
 </script>
 
 <template>
-    <Popover
-        ref="popover"
-        class="w-30rem max-w-full"
-        @hide="isShown = false"
-        @show="isShown = true">
+    <Popover ref="popover" class="w-md max-w-full" @hide="isShown = false" @show="isShown = true">
         <template v-if="selectedLocation !== null">
             <div class="flex justify-content-between">
                 <h2 class="m-0">{{ selectedLocation.name }}</h2>

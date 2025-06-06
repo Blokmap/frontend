@@ -50,7 +50,7 @@ jobs:
           - name: Build and push
             uses: docker/build-push-action@v6
             with:
-                file: Dockerfile.prod
+                file: Dockerfile.staging
                 push: true
                 tags: ${{ steps.meta.outputs.tags }}
                 cache-from: type=registry,ref=ghcr.io/blokmap/blokmap-frontend:buildcache

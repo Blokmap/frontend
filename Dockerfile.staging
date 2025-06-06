@@ -1,0 +1,12 @@
+FROM node:slim
+
+WORKDIR /blokmap-frontend
+
+COPY package.json package-lock.json ./
+
+RUN npm install -g npm
+RUN npm install
+
+COPY . .
+
+CMD [ "npm", "run", "build-staging" ]

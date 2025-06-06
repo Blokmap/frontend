@@ -7,6 +7,7 @@
         "dev": "vite",
         "host": "vite --host",
         "build": "tsc -b && vite build",
+		"build-staging": "tsc -b && vite build --mode staging",
         "lint": "tsc -b --dry",
         "format": "prettier --write src test",
         "preview": "vite preview",

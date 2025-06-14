@@ -1,7 +1,7 @@
 .p-divider-horizontal {
     @apply flex w-full relative items-center my-4 mx-0 py-0 px-4
         before:absolute before:block before:top-1/2 before:start-0 before:w-full
-        before:border-t before:border-slate-200 dark:before:border-surface-700;
+        before:border-t-2 before:border-slate-200 dark:before:border-surface-700;
 }
 
 .p-divider-horizontal .p-divider-content {

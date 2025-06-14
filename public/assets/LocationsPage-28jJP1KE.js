@@ -1,1 +1,0 @@
-import{_ as t}from"./BlokMap.vue_vue_type_style_index_0_lang-B0_4GhPp.js";import{P as a,r as e,k as n,b as r}from"./vue-Cs7Q816V.js";import"./primevue-BjZ91XHy.js";import"./index-z6GxQ8Mb.js";import"./query-D-ajdwyw.js";const u=a({__name:"LocationsPage",setup(s){const o=e([]);return(c,i)=>(r(),n(t,{locations:o.value},null,8,["locations"]))}});export{u as default};

@@ -1,0 +1,11 @@
+import type { MapOptions } from '@/types/contract/Map';
+
+export const defaultMapOptions: MapOptions = {
+    style: 'mapbox://styles/blokmap/cmbvad6nj001h01s9f8ck0fgx',
+    zoom: 7,
+    center: [4.4764595, 50.5010789],
+    bounds: [
+        [2.5889, 49.9967],
+        [6.5083, 51.6509],
+    ],
+};

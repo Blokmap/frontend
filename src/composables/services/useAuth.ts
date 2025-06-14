@@ -1,7 +1,7 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/endpoints';
 import type { LoginRequest, RegisterRequest } from '@/types/schema/Auth';
-import { Profile } from '@/types/schema/Profile';
+import type { Profile } from '@/types/schema/Profile';
 import {
     type MutationOptions,
     type UseMutationOptions,

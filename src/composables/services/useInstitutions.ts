@@ -1,6 +1,6 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/endpoints';
-import { Institution } from '@/types/schema/Institution';
+import type { Institution } from '@/types/schema/Institution';
 import { useQuery } from '@tanstack/vue-query';
 
 export function useInstitutions(): ReturnType<typeof useQuery<unknown, Error, Institution[]>> {
@@ -8,7 +8,7 @@ export function useInstitutions(): ReturnType<typeof useQuery<unknown, Error, In
         queryKey: ['institutions'],
         queryFn: async () => {
             const response = await client.get<Institution[]>(endpoints.institutions.list);
-            return Institution.array().parse(response.data);
+            return response.data;
         },
     });
 

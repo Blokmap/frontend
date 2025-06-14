@@ -1,7 +1,7 @@
 import { client } from '@/config/axios';
+import { endpoints } from '@/endpoints';
 import type { LocationFilter } from '@/types/schema/Filter';
-import { SearchedLocation } from '@/types/schema/Location';
-import { useQuery } from '@tanstack/vue-query';
+import { keepPreviousData, useQuery } from '@tanstack/vue-query';
 import { type Ref, computed } from 'vue';
 
 /**
@@ -10,16 +10,17 @@ import { type Ref, computed } from 'vue';
  * @param filters - The filters to apply when searching for locations.
  * @returns An object containing the search results and their state.
  */
-export function useLocationsSearch(filters: Ref<LocationFilter>) {
-    const filtersKey = computed(() => JSON.stringify(Object.entries(filters.value).sort()));
+export function useLocationsSearch(filters?: Ref<LocationFilter>) {
+    const filtersKey = computed(() => JSON.stringify(Object.entries(filters?.value || {}).sort()));
 
     const query = useQuery({
         queryKey: ['locations', 'search', filtersKey],
+        placeholderData: keepPreviousData,
         queryFn: async () => {
-            const response = await client.get('/locations/search', {
-                params: filters.value,
+            const response = await client.get(endpoints.locations.search, {
+                params: filters?.value || {},
             });
-            return SearchedLocation.array().parse(response.data);
+            return response.data;
         },
     });
 
@@ -29,5 +30,28 @@ export function useLocationsSearch(filters: Ref<LocationFilter>) {
         locationsIsLoading: query.isPending,
         locationsIsSuccess: query.isSuccess,
         locationsIsError: query.isError,
+    };
+}
+
+/**
+ * Composable to fetch tags for locations.
+ *
+ * @returns An object containing the tags and their state.
+ */
+export function useTags() {
+    const query = useQuery({
+        queryKey: ['tags'],
+        queryFn: async () => {
+            const response = await client.get(endpoints.tags.list);
+            return response.data;
+        },
+    });
+
+    return {
+        tags: query.data,
+        tagsError: query.error,
+        tagsIsLoading: query.isPending,
+        tagsIsSuccess: query.isSuccess,
+        tagsIsError: query.isError,
     };
 }

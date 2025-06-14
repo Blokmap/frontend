@@ -1,4 +1,5 @@
-import type { LocationFilter } from '@/types/schema/Filter';
+import { useTags } from '@/composables/services/useLocations';
+import type { LocationFilter, ReservableOption } from '@/types/schema/Filter';
 import { roundLatLng } from '@/utils/geo';
 import { defineStore } from 'pinia';
 import { computed, shallowRef } from 'vue';
@@ -8,7 +9,22 @@ import { useI18n } from 'vue-i18n';
  * Pinia store for managing location filters.
  */
 export const useLocationFilters = defineStore('locationFilters', () => {
-    const { locale } = useI18n();
+    const { locale, t } = useI18n();
+
+    const reservableOptions: ReservableOption[] = [
+        {
+            value: true,
+            label: 'Reserveerbaar',
+        },
+        {
+            value: false,
+            label: 'Niet reserveerbaar',
+        },
+        {
+            value: null,
+            label: 'Alle',
+        },
+    ];
 
     const filters = shallowRef<LocationFilter>({
         language: locale.value,
@@ -33,6 +49,7 @@ export const useLocationFilters = defineStore('locationFilters', () => {
     }
 
     return {
+        reservableOptions,
         filters,
         updateFilters,
     };

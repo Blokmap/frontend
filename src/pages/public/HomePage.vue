@@ -1,59 +1,81 @@
 <script lang="ts" setup>
-import BlokMap from '@/components/features/blokmap/BlokMap.vue';
-import LocationSearch from '@/components/features/location/LocationSearch.vue';
+import LocationCard from '@/components/features/location/LocationCard.vue';
+import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
 import { useLocationsSearch } from '@/composables/services/useLocations';
-import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { LocationFilter } from '@/types/schema/Filter';
-import type { Location } from '@/types/schema/Location';
-import { debouncedRef } from '@vueuse/core';
-import { storeToRefs } from 'pinia';
-import { onMounted, ref, useTemplateRef } from 'vue';
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import Button from 'primevue/button';
+import Divider from 'primevue/divider';
+import Skeleton from 'primevue/skeleton';
+import { ref } from 'vue';
 
-const { updateFilters } = useLocationFilters();
-const { filters } = storeToRefs(useLocationFilters());
-const debouncedFilters = debouncedRef<LocationFilter>(filters, 500);
-const { locations, locationsIsLoading } = useLocationsSearch(debouncedFilters);
-
-const blokmap = useTemplateRef('blokmap');
-const selected = ref<Location | null>(null);
-
-/**
- * Updates the location filters based on the current map bounds.
- */
-function updateLocationFilters(): void {
-    if (blokmap.value?.map) {
-        const bounds = blokmap.value.map.getBounds();
-        const northEast = bounds.getNorthEast();
-        const southWest = bounds.getSouthWest();
-        updateFilters({
-            northEastLat: northEast.lat,
-            northEastLng: northEast.lng,
-            southWestLat: southWest.lat,
-            southWestLng: southWest.lng,
-        });
-    }
-}
-
-onMounted(() => {
-    blokmap.value?.map?.on('moveend', updateLocationFilters);
-});
+const filters = ref<LocationFilter>({});
+const { locations, locationsIsLoading } = useLocationsSearch(filters);
 </script>
 
 <template>
-    <h1 class="text-center text-4xl font-extrabold my-16">
-        Find your perfect <span class="text-secondary">study spot</span> in Flanders
-    </h1>
-    <div class="flex flex-col gap-8 w-full xl:w-2/3 mx-auto mb-16">
-        <LocationSearch />
-        <div class="max-h-full h-[600px]">
-            <BlokMap
-                :locations="locations"
-                :is-loading="locationsIsLoading"
-                v-model:location="selected"
-                ref="blokmap"
-                rounded>
-            </BlokMap>
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-xl"><span class="text-secondary">Populaire</span> locaties</h2>
+        <div class="flex items-center gap-2">
+            <Button size="small" severity="secondary" class="h-6 w-6 text-xs" rounded>
+                <template #icon>
+                    <FontAwesomeIcon :icon="faChevronLeft" />
+                </template>
+            </Button>
+            <Button size="small" severity="secondary" class="h-6 w-6 text-xs" rounded>
+                <template #icon>
+                    <FontAwesomeIcon :icon="faChevronRight" />
+                </template>
+            </Button>
         </div>
     </div>
-    <h2 class="text-2xl font-bold mb-8">Featured Locations</h2>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-8">
+        <template v-if="locationsIsLoading">
+            <template v-for="n in 6" :key="n">
+                <LocationCardSkeleton />
+            </template>
+        </template>
+        <template v-else>
+            <template v-for="location in locations.slice(0, 6)" :key="location.id">
+                <RouterLink :to="{ name: 'home' }">
+                    <LocationCard :location="location" />
+                </RouterLink>
+            </template>
+        </template>
+    </div>
+
+    <Divider class="my-8" />
+
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-xl"><span class="text-secondary">Favoriete</span> locaties</h2>
+        <div class="flex items-center gap-2">
+            <Button size="small" severity="secondary" class="h-6 w-6 text-xs" rounded>
+                <template #icon>
+                    <FontAwesomeIcon :icon="faChevronLeft" />
+                </template>
+            </Button>
+            <Button size="small" severity="secondary" class="h-6 w-6 text-xs" rounded>
+                <template #icon>
+                    <FontAwesomeIcon :icon="faChevronRight" />
+                </template>
+            </Button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-8">
+        <template v-if="locationsIsLoading">
+            <template v-for="n in 6" :key="n">
+                <LocationCardSkeleton />
+            </template>
+        </template>
+        <template v-else>
+            <template v-for="location in locations.slice(0, 6)" :key="location.id">
+                <RouterLink :to="{ name: 'home' }">
+                    <LocationCard :location="location" />
+                </RouterLink>
+            </template>
+        </template>
+    </div>
 </template>

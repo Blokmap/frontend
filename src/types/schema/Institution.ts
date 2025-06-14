@@ -1,18 +1,15 @@
-import { Image } from '@/types/schema/Image';
-import { Translation } from '@/types/schema/Translation';
-import z from 'zod/v4';
+import type { Image } from '@/types/schema/Image';
+import type { Translation } from '@/types/schema/Translation';
 
-export const Institution = z.object({
-    slug: Translation,
-    name: Translation,
-    logo: Image,
-    email: z.email().nullable(),
-    phone: z.string().nullable(),
-    street: z.string().nullable(),
-    zip: z.string().nullable(),
-    city: z.string().nullable(),
-    province: z.string().nullable(),
-    country: z.string().nullable(),
-});
-
-export type Institution = z.infer<typeof Institution>;
+export type Institution = {
+    slug: Translation;
+    name: Translation;
+    logo: Image;
+    email: string | null;
+    phone: string | null;
+    street: string | null;
+    zip: string | null;
+    city: string | null;
+    province: string | null;
+    country: string | null;
+};

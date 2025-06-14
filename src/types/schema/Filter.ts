@@ -1,22 +1,24 @@
-import z from 'zod/v4';
+export type ReservableOption = {
+    value: boolean | null | undefined;
+    label: string;
+};
 
-export const LocationFilter = z.object({
-    language: z.string().nullish(),
-    query: z.string().nullish(),
+export type LocationFilter = {
+    language?: string | null;
+    city?: string | null;
+    query?: string | null;
 
-    isReservable: z.boolean().nullish(),
+    isReservable?: boolean | null;
 
-    openOnDay: z.date().nullish(),
-    openOnTime: z.date().nullish(),
+    openOnDay?: Date | null;
+    openOnTime?: Date | null;
 
-    centerLat: z.number().nullish(),
-    centerLng: z.number().nullish(),
-    distance: z.number().nullish(),
+    centerLat?: number | null;
+    centerLng?: number | null;
+    distance?: number | null;
 
-    northEastLat: z.number().nullish(),
-    northEastLng: z.number().nullish(),
-    southWestLat: z.number().nullish(),
-    southWestLng: z.number().nullish(),
-});
-
-export type LocationFilter = z.infer<typeof LocationFilter>;
+    northEastLat?: number | null;
+    northEastLng?: number | null;
+    southWestLat?: number | null;
+    southWestLng?: number | null;
+};

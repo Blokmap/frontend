@@ -81,7 +81,7 @@
 }
 
 .p-button-secondary {
-    @apply bg-surface-100 enabled:hover:bg-surface-200 enabled:active:bg-surface-300
+    @apply bg-slate-200 enabled:hover:bg-slate-300 enabled:active:bg-slate-300
         border-surface-100 enabled:hover:border-surface-200 enabled:active:border-surface-300
         text-surface-600 enabled:hover:text-surface-700 enabled:active:text-surface-800
         dark:bg-surface-800 dark:enabled:hover:bg-surface-700 dark:enabled:active:bg-surface-600

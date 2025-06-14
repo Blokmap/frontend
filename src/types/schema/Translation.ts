@@ -1,12 +1,8 @@
-import { z } from 'zod/v4';
-
-export const Translation = z
-    .object({
-        nl: z.string().nullable(),
-        en: z.string().nullable(),
-        de: z.string().nullable(),
-        fr: z.string().nullable(),
-    })
-    .catchall(z.string().nullable());
-
-export type Translation = z.infer<typeof Translation>;
+export type Translation = {
+    id: string;
+    nl: string | null;
+    en: string | null;
+    de: string | null;
+    fr: string | null;
+    [key: string]: string | null | undefined;
+};

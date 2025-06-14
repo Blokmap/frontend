@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import type { SearchedLocation } from '@/types/schema/Location';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { PrimeIcons } from '@primevue/core';
 import Button from 'primevue/button';
 import Popover from 'primevue/popover';
@@ -53,7 +55,7 @@ defineExpose({
     <Popover ref="popover" class="w-md max-w-full" @hide="isShown = false" @show="isShown = true">
         <template v-if="selectedLocation !== null">
             <div class="flex justify-content-between">
-                <h2 class="m-0">{{ selectedLocation.name }}</h2>
+                <h2 class="m-0 text-xl font-bold">{{ selectedLocation.name }}</h2>
                 <div class="cursor-pointer">
                     <template v-if="isFavoriteLocation">
                         <i
@@ -69,11 +71,7 @@ defineExpose({
                     </template>
                 </div>
             </div>
-            <div class="flex gap-2 my-3">
-                <Tag :icon="PrimeIcons.STAR" severity="contrast"> Popular </Tag>
-                <Tag :icon="PrimeIcons.CALENDAR" severity="secondary"> Event </Tag>
-                <Tag :icon="PrimeIcons.BOLT" severity="secondary"> Coffee </Tag>
-            </div>
+            <div class="flex gap-2 my-3"></div>
             <p>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum possimus vitae culpa
                 minus iste non inventore, sint accusantium nostrum ipsum, maiores laudantium!
@@ -83,8 +81,11 @@ defineExpose({
                 severity="contrast"
                 icon-pos="right"
                 :label="t('components.blokmap.popover.button')"
-                :icon="PrimeIcons.ARROW_RIGHT"
+                class="mt-3"
                 outlined>
+                <template #icon>
+                    <FontAwesomeIcon :icon="faArrowRight" />
+                </template>
             </Button>
         </template>
     </Popover>

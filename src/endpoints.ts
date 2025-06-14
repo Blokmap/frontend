@@ -107,3 +107,13 @@ export const endpoints = {
         delete: '/translations/{id}',
     },
 };
+
+export const mapboxEndpoints = {
+    geocoding: {
+        forward: '/search/geocode/v6/forward',
+        reverse: '/search/geocode/v6/reverse',
+    },
+    search: {
+        forward: '/search/searchbox/v1/forward',
+    },
+};

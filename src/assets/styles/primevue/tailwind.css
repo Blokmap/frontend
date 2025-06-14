@@ -1,8 +1,8 @@
 @import './common';
 
 /* Form */
-/* @import './autocomplete';
-@import './cascadeselect';
+@import './autocomplete';
+/* @import './cascadeselect';
 @import './checkbox';
 @import './colorpicker'; */
 @import './datepicker';

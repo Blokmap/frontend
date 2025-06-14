@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import studying from '@/assets/img/icon/studying.png';
+import LocationSearch from '@/components/features/location/LocationSearch.vue';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { Profile } from '@/types/schema/Profile';
 import {
@@ -24,9 +25,6 @@ defineEmits<{
     (e: 'logout'): Promise<void>;
 }>();
 
-const { filters } = storeToRefs(useLocationFilters());
-
-const searchTemplate = useTemplateRef('search');
 const isExpandedSearch = ref(false);
 
 onMounted(() => {
@@ -83,54 +81,11 @@ function handleEscape(event: KeyboardEvent): void {
                 </RouterLink>
             </h2>
             <!-- Search -->
-            <div
-                ref="search"
-                class="relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer items-center justify-between gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-all duration-500 hover:shadow-lg"
-                @click.stop="() => toggleExpandedSearch(true)"
-                :class="{ 'mt-[4rem] max-w-[960px]': isExpandedSearch }">
-                <img :src="studying" class="h-6 w-6" />
-                <!-- City filter -->
-                <div class="flex items-center gap-2 font-medium text-slate-700">
-                    <template v-if="isExpandedSearch">
-                        <!-- <InputText v-model="filters.city" placeholder="Stad" /> -->
-                    </template>
-                    <template v-else>
-                        <span>{{ filters.city || 'In de buurt' }}</span>
-                    </template>
-                </div>
+            <LocationSearch
+                :is-expanded-search="isExpandedSearch"
+                @toggle:expanded="toggleExpandedSearch">
+            </LocationSearch>
 
-                <div class="h-6 w-px bg-slate-300"></div>
-
-                <!-- Query filter -->
-                <div class="flex items-center gap-2 font-medium text-slate-700">
-                    <template v-if="isExpandedSearch">
-                        <!-- <InputText v-model="filters.query" placeholder="Naam van locatie" /> -->
-                    </template>
-                    <template v-else>
-                        <span>{{ filters.query || 'Alle locaties' }}</span>
-                    </template>
-                </div>
-
-                <div class="h-6 w-px bg-slate-300"></div>
-
-                <!-- Date filter -->
-                <div class="flex items-center gap-2 font-medium text-slate-700">
-                    <template v-if="isExpandedSearch">
-                        <!-- <Calendar
-                            v-model="filters.openOnDay"
-                            placeholder="Kies datum"
-                            dateFormat="dd/mm/yy"
-                            showIcon>
-                            </Calendar> -->
-                    </template>
-                    <template v-else>
-                        <span>{{ filters.openOnDay || 'Alle data' }}</span>
-                    </template>
-                </div>
-                <Button class="flex h-8 w-8 items-center overflow-hidden rounded-full">
-                    <FontAwesomeIcon :icon="faMagnifyingGlass" />
-                </Button>
-            </div>
             <!-- Quick Actions -->
             <div
                 class="hidden transform items-center gap-2 sm:absolute sm:top-1 sm:right-0 sm:flex">

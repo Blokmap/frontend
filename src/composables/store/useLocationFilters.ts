@@ -1,8 +1,7 @@
-import { useTags } from '@/composables/services/useLocations';
 import type { LocationFilter, ReservableOption } from '@/types/schema/Filter';
 import { roundLatLng } from '@/utils/geo';
 import { defineStore } from 'pinia';
-import { computed, shallowRef } from 'vue';
+import { shallowRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 /**

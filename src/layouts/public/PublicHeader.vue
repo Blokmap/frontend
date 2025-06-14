@@ -9,12 +9,9 @@ import {
     faMapLocationDot,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import gsap from 'gsap';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
-import Calendar from 'primevue/calendar';
-import InputText from 'primevue/inputtext';
-import { nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import { RouterLink } from 'vue-router';
 
 defineProps<{

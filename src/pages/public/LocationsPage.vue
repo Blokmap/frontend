@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import BlokMap from '@/components/features/blokmap/BlokMap.vue';
+import BlokMap from '@/components/features/map/BlokMap.vue';
 import { ref } from 'vue';
 
 const locations = ref([]);

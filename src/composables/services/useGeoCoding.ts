@@ -29,6 +29,7 @@ export function useGeoSearch() {
                         access_token: import.meta.env.VITE_MAPBOX_API_KEY,
                         q: debouncedSearch.value,
                         language: locale.value,
+                        types: 'city,poi',
                         auto_complete: true,
                         country: 'be',
                         limit: 5,

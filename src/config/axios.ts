@@ -9,6 +9,7 @@ export const mapBoxClient = axios.create({
     },
     headers: {
         'Content-Type': 'application/json',
+        'Referer': import.meta.env.VITE_API_BASE_URL,
     },
 });
 

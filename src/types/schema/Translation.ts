@@ -1,5 +1,5 @@
 export type Translation = {
-    id: string;
+    id?: string;
     nl: string | null;
     en: string | null;
     de: string | null;

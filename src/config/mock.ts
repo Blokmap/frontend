@@ -3,18 +3,20 @@ import type { Institution } from '@/types/schema/Institution';
 export const mockInstitutions: Institution[] = [
     {
         slug: {
+            id: '1',
             nl: 'UGent',
             en: 'UGent',
             de: 'UGent',
             fr: 'UGent',
         },
         name: {
+            id: '1',
             nl: 'Universiteit Gent',
             en: 'Ghent University',
             de: 'Universität Gent',
             fr: 'Université de Gand',
         },
-        logo: { url: 'https://www.ugent.be/logo.png' },
+        logo: { id: 1, url: 'https://www.ugent.be/logo.png' },
         email: 'info@ugent.be',
         phone: '09 331 01 01',
         street: 'Sint-Pietersnieuwstraat 33',

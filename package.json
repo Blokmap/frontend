@@ -8,7 +8,7 @@
         "host": "vite --host",
         "build": "tsc -b && vite build",
 		"build-staging": "tsc -b && vite build --mode staging",
-        "lint": "tsc -b --dry",
+        "lint": "tsc -b --noEmit",
         "format": "prettier --write src test",
         "preview": "vite preview",
         "test:unit": "vitest run",

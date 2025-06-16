@@ -9,9 +9,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { storeToRefs } from 'pinia';
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
+import DatePicker from 'primevue/datepicker';
 import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
-import { onMounted, watch } from 'vue';
+import { watch } from 'vue';
 
 defineProps<{
     isExpandedSearch?: boolean;
@@ -21,7 +22,7 @@ const emit = defineEmits<{
     (e: 'toggle:expanded', state?: boolean): void;
 }>();
 
-const { search, query } = useGeoSearch();
+const { search, searchResults, searchIsLoading } = useGeoSearch();
 const { reservableOptions, updateFilters } = useLocationFilters();
 const { filters } = storeToRefs(useLocationFilters());
 const { tags } = useTags();
@@ -35,10 +36,6 @@ watch(
         }
     },
 );
-
-onMounted(() => {
-    search.value = 'Kortemark';
-});
 
 /**
  * Handles the click event on the search field to toggle the expanded search state.
@@ -73,17 +70,18 @@ function setReservableOption(option: ReservableOption): void {
                         class="w-full"
                         pt:input:class="border-0 px-0"
                         inputId="city"
-                        :loading="query.isLoading.value"
-                        :suggestions="(query.data.value?.features ?? []) as any[]"
+                        :loading="searchIsLoading"
+                        :suggestions="searchResults"
                         @complete="(e) => (search = e.query)">
                         <template #option="{ option }">
                             <div class="flex flex-col gap-1">
                                 <div class="flex items-center gap-2">
                                     <FontAwesomeIcon :icon="faMapLocation" />
-                                    {{ option.properties.name }}
+                                    {{ option.name }}
+                                    {{ option.province }}
                                 </div>
                                 <div class="text-sm text-slate-600">
-                                    {{ option.properties.full_address }}
+                                    {{ option.full_address }}
                                 </div>
                             </div>
                         </template>
@@ -116,12 +114,14 @@ function setReservableOption(option: ReservableOption): void {
         <!-- Date filter -->
         <div class="flex items-center gap-2 font-medium text-slate-700">
             <template v-if="isExpandedSearch">
-                <!-- <Calendar
-                            v-model="filters.openOnDay"
-                            placeholder="Kies datum"
-                            dateFormat="dd/mm/yy"
-                            showIcon>
-                            </Calendar> -->
+                <FloatLabel variant="on">
+                    <DatePicker
+                        v-model="filters.openOnDay"
+                        dateFormat="dd/mm/yy"
+                        inputId="openOnDay">
+                    </DatePicker>
+                    <label for="openOnDay">Open op datum</label>
+                </FloatLabel>
             </template>
             <template v-else>
                 <span>{{ filters.openOnDay || 'Alle data' }}</span>

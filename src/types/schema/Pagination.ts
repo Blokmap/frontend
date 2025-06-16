@@ -4,3 +4,9 @@ export type Paginated<T> = {
     total: number;
     data: T[];
 };
+
+export type Pagination = {
+    query?: string | null;
+    perPage?: number;
+    page?: number;
+}

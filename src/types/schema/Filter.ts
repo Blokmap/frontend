@@ -1,12 +1,13 @@
+import type { Pagination } from "@/types/schema/Pagination";
+
 export type ReservableOption = {
     value: boolean | null | undefined;
     label: string;
 };
 
-export type LocationFilter = {
+export type LocationFilter = Pagination & {
     language?: string | null;
     city?: string | null;
-    query?: string | null;
 
     isReservable?: boolean | null;
 

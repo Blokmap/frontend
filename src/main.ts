@@ -1,7 +1,7 @@
 import App from '@/App.vue';
 import { i18n } from '@/config/i18n';
 import { router } from '@/router/router';
-import { VueQueryPlugin } from '@tanstack/vue-query';
+import { VueQueryPlugin, keepPreviousData } from '@tanstack/vue-query';
 import { createPinia } from 'pinia';
 import { Ripple, ToastService, Tooltip } from 'primevue';
 import PrimeVuePlugin from 'primevue/config';
@@ -14,7 +14,15 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(router);
 app.use(i18n);
-app.use(VueQueryPlugin);
+app.use(VueQueryPlugin, {
+    queryClientConfig: {
+        defaultOptions: {
+            queries: {
+                placeholderData: keepPreviousData,
+            },
+        },
+    },
+});
 app.use(ToastService);
 app.use(PrimeVuePlugin, {
     ripple: true,

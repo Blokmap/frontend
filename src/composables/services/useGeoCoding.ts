@@ -9,39 +9,78 @@ export function useGeoCoding() {
     return {};
 }
 
-export function useGeoSearch() {
+type UseGeoSearch = {
+    search: Ref<string>;
+    searchResults: Ref<GeoJSON.GeoJsonProperties[] | undefined>;
+    searchIsLoading: Ref<boolean>;
+};
+
+type UseGeoSearchOptions = {
+    types?: string;
+    auto_complete?: boolean;
+    country?: string;
+    limit?: number;
+};
+
+const geoSearchOptions: UseGeoSearchOptions = {
+    auto_complete: true,
+    types: 'poi',
+    country: 'be',
+    limit: 5,
+};
+
+/**
+ * A composable function to perform a location search using Mapbox's geocoding API.
+ *
+ * @param options - Optional parameters to customize the geocoding search.
+ * @returns An object containing the search input and the query result.
+ */
+export function useGeoSearch(options: UseGeoSearchOptions = geoSearchOptions): UseGeoSearch {
     const { locale } = useI18n();
 
     const search = ref('');
     const debouncedSearch = useDebounce(search, 250);
+    const isEnabled = computed(() => debouncedSearch.value.length > 2);
 
-    const isEnabled = computed(() => debouncedSearch.value.length > 3);
-
-    const query = useQuery({
+    const { data: searchResults, isLoading: searchIsLoading } = useQuery({
         queryKey: ['geosearch', debouncedSearch],
         retry: false,
         enabled: isEnabled,
         queryFn: async () => {
+            const q = debouncedSearch.value.trim().toLowerCase();
+
             const response = await mapBoxClient.get<GeoJSON.FeatureCollection>(
                 mapboxEndpoints.search.forward,
                 {
                     params: {
+                        q,
                         access_token: import.meta.env.VITE_MAPBOX_API_KEY,
-                        q: debouncedSearch.value,
                         language: locale.value,
-                        types: 'city,poi',
-                        auto_complete: true,
-                        country: 'be',
-                        limit: 5,
+                        ...options,
                     },
                 },
             );
-            return response.data;
+
+            const result = response.data.features.reduce(
+                (acc: GeoJSON.GeoJsonProperties[], feature: GeoJSON.Feature) => {
+                    const props = feature.properties;
+
+                    if (!acc.some((f) => f?.name === props?.name)) {
+                        acc.push(props);
+                    }
+
+                    return acc;
+                },
+                [],
+            );
+
+            return result;
         },
     });
 
     return {
         search,
-        query,
+        searchResults,
+        searchIsLoading,
     };
 }

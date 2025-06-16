@@ -54,7 +54,7 @@ export const endpoints = {
         update: '/locations/{id}',
         delete: '/locations/{id}',
         list: '/locations',
-        search: '/locations/search',
+        search: '/locations',
         approve: '/locations/{id}/approve',
         reject: '/locations/{id}/reject',
         permissions: '/locations/permissions',

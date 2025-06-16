@@ -19,9 +19,9 @@ defineProps<{
                 :src="getLocationPlaceholderImage(location)"
                 class="aspect-square h-full w-full rounded-xl object-cover" />
             <div
-                class="absolute top-2 left-2 flex items-center gap-2 rounded-full bg-white/90 px-2 py-0.5 text-sm font-medium shadow">
+                class="absolute top-2 left-2 flex max-w-40 items-center gap-2 truncate rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium shadow">
                 <FontAwesomeIcon :icon="faLocationDot" class="text-secondary" />
-                {{ location.city ?? 'Ghent, Belgium' }}
+                {{ location.city }}, {{ location.province }}
             </div>
             <div
                 class="absolute top-1 right-2 text-2xl text-white transition-colors duration-200 hover:text-red-500">
@@ -30,10 +30,7 @@ defineProps<{
         </div>
         <h2 class="my-1 truncate text-sm font-semibold">{{ location.name }}</h2>
         <p class="line-clamp-2 text-xs text-gray-600">
-            {{
-                location.excerpt?.[locale] ??
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-            }}
+            {{ location.excerpt?.[locale] }}
         </p>
     </div>
 </template>

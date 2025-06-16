@@ -18,6 +18,7 @@ export type Location = {
     number: string;
     zip: string;
     city: string;
+    country: string;
     province: string;
     latitude: number;
     longitude: number;

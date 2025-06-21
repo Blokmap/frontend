@@ -5,11 +5,11 @@ import axios from 'axios';
 export const mapBoxClient = axios.create({
     baseURL: import.meta.env.VITE_MAPBOX_API_BASE_URL,
     params: {
-        'access_token': import.meta.env.VITE_MAPBOX_API_KEY,
+        access_token: import.meta.env.VITE_MAPBOX_API_KEY,
     },
     headers: {
         'Content-Type': 'application/json',
-        'Referrer': import.meta.env.VITE_API_BASE_URL,
+        Referrer: import.meta.env.VITE_API_BASE_URL,
     },
 });
 
@@ -42,7 +42,7 @@ client.interceptors.request.use(async (config) => {
 
 /**
  * Generates a random delay between minDelay and maxDelay milliseconds.
- * 
+ *
  * @param minDelay - number of milliseconds for the minimum delay (default is 250ms)
  * @param maxDelay - number of milliseconds for the maximum delay (default is 1500ms)
  * @returns {Promise<void>} - A promise that resolves after the random delay.

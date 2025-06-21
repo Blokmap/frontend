@@ -35,9 +35,9 @@
 
 /* Data */
 /* @import './datatable';
-@import './dataview';
+@import './dataview'; */
 @import './paginator';
-@import './picklist';
+/* @import './picklist';
 @import './orderlist';
 @import './organizationchart';
 @import './timeline';

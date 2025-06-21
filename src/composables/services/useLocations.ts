@@ -12,6 +12,7 @@ type UseLocationsSearch = {
     locationsIsLoading: Ref<boolean>;
     locationsIsSuccess: Ref<boolean>;
     locationsIsError: Ref<boolean>;
+    locationsIsFetching: Ref<boolean>;
 };
 
 /**
@@ -40,6 +41,7 @@ export function useLocationsSearch(filters?: Ref<LocationFilter>): UseLocationsS
         locationsIsLoading: query.isPending,
         locationsIsSuccess: query.isSuccess,
         locationsIsError: query.isError,
+        locationsIsFetching: query.isFetching,
     };
 }
 

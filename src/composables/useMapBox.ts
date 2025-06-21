@@ -1,11 +1,10 @@
 import Marker from '@/components/features/map/Marker.vue';
 import { defaultMapOptions } from '@/config/map';
 import type { LngLat, LngLatBounds, MapAdapter, MapOptions } from '@/types/contract/Map';
-import gsap from 'gsap';
 import mapboxgl from 'mapbox-gl';
 import { type Ref, computed, h, onMounted, onUnmounted, ref, render } from 'vue';
 
-const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_KEY;
+const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 
 /**
  * Composable to create a MapBox map instance.

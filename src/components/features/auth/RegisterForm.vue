@@ -36,7 +36,7 @@ function handleFormSubmission(): void {
 </script>
 
 <template>
-    <form class="space-y-3 my-6" @submit.prevent="handleFormSubmission">
+    <form class="my-6 space-y-3" @submit.prevent="handleFormSubmission">
         <div class="grid grid-cols-2 gap-3">
             <FloatLabel variant="on">
                 <label for="first-name">First Name</label>
@@ -84,7 +84,7 @@ function handleFormSubmission(): void {
             </FloatLabel>
         </div>
         <Button
-            class="w-full mt-3"
+            class="mt-3 w-full"
             label="Continue with email"
             severity="primary"
             type="submit"
@@ -94,11 +94,11 @@ function handleFormSubmission(): void {
             </template>
         </Button>
     </form>
-    <div class="grid grid-cols-1 gap-3 my-4">
+    <div class="my-4 grid grid-cols-1 gap-3">
         <template v-for="idp in idps" :key="idp.name">
             <Button class="w-full" severity="secondary" :label="`Continue with ${idp.name}`">
                 <template #icon>
-                    <img :src="idp.logo!" :alt="idp.name" class="w-5 h-5 object-contain" />
+                    <img :src="idp.logo!" :alt="idp.name" class="h-5 w-5 object-contain" />
                 </template>
             </Button>
         </template>

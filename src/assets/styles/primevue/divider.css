@@ -1,25 +1,21 @@
 .p-divider-horizontal {
-    @apply flex w-full relative items-center my-4 mx-0 py-0 px-4
-        before:absolute before:block before:top-1/2 before:start-0 before:w-full
-        before:border-t-2 before:border-slate-200 dark:before:border-surface-700;
+    @apply dark:before:border-surface-700 relative mx-0 my-4 flex w-full items-center px-4 py-0 before:absolute before:start-0 before:top-1/2 before:block before:w-full before:border-t-2 before:border-slate-200;
 }
 
 .p-divider-horizontal .p-divider-content {
-    @apply py-0 px-2;
+    @apply px-2 py-0;
 }
 
 .p-divider-vertical {
-    @apply min-h-full flex relative justify-center my-0 mx-4 py-2 px-0
-        before:absolute before:block before:top-0 before:start-1/2 before:h-full
-        before:border-s-2 before:border-slate-200 before:dark:border-surface-700;
+    @apply before:dark:border-surface-700 relative mx-4 my-0 flex min-h-full justify-center px-0 py-2 before:absolute before:start-1/2 before:top-0 before:block before:h-full before:border-s-2 before:border-slate-200;
 }
 
 .p-divider.p-divider-vertical .p-divider-content {
-    @apply py-2 px-0;
+    @apply px-0 py-2;
 }
 
 .p-divider-content {
-    @apply z-10 bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0;
+    @apply bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0 z-10;
 }
 
 .p-divider-solid.p-divider-horizontal:before {

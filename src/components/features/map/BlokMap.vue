@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { useMapBox } from '@/composables/useMapBox';
 import type { LngLatBounds } from '@/types/contract/Map';
-import type { SearchedLocation } from '@/types/schema/Location';
+import type { Location } from '@/types/schema/Location';
 import { onMounted, useTemplateRef, watch } from 'vue';
 
 const props = withDefaults(
     defineProps<{
-        locations?: SearchedLocation[];
+        locations?: Location[];
         isLoading?: boolean;
         rounded?: boolean;
         shadow?: boolean;
@@ -40,17 +40,25 @@ watch(() => props.locations, updateMarkers);
  */
 function updateMarkers(): void {
     const locations = props.locations || [];
-    map.setMarkers(
-        locations.map((location: SearchedLocation) => [
-            location.id,
-            [location.longitude, location.latitude],
-        ]),
-    );
+    if (!props.isLoading) {
+        map.setMarkers(
+            locations.map((location: Location) => [
+                location.id,
+                [location.longitude, location.latitude],
+            ]),
+        );
+    }
 }
 </script>
 
 <template>
-    <div ref="mapContainer" class="h-full relative border-2 border-slate-200" />
+    <div ref="mapContainer" class="relative h-full border-2 border-slate-200">
+        <template v-if="isLoading">
+            <div class="flex h-full items-center justify-center">
+                <p class="text-gray-500">Loading...</p>
+            </div>
+        </template>
+    </div>
 </template>
 
 <style lang="css">

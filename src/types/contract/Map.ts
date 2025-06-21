@@ -11,7 +11,7 @@ export interface MapOptions {
 }
 
 export interface MapAdapter<T> {
-    setMarkers(markers: Array<[T, LngLat]>): void;
+    setMarkers(markers: [T, LngLat][]): void;
     setOnBoundsChange(callback: (bounds: LngLatBounds) => void): void;
     isLoaded: ComputedRef<boolean>;
 }

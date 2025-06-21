@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import studying from '@/assets/img/icon/studying.png';
 import { useGeoSearch } from '@/composables/services/useGeoCoding';
 import { useTags } from '@/composables/services/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
@@ -57,18 +56,14 @@ function setReservableOption(option: ReservableOption): void {
 <template>
     <div
         ref="search"
-        class="relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer items-center justify-between gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition-all duration-500 hover:shadow-lg"
+        class="gap- relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer items-center justify-between rounded-full border border-slate-200 bg-white px-5 py-2 text-center text-sm shadow-sm transition-all duration-500 hover:shadow-lg"
         @click.stop="handleSearchClick"
         :class="{ 'mt-[4rem] max-w-[960px]': isExpandedSearch }">
-        <img :src="studying" class="h-6 w-6" />
         <!-- City filter -->
-        <div class="flex items-center gap-2 font-medium text-slate-700">
+        <div class="flex w-full items-center justify-center gap-2 font-medium text-slate-700">
             <template v-if="isExpandedSearch">
                 <FloatLabel variant="on">
                     <AutoComplete
-                        v-model="filters.city"
-                        class="w-full"
-                        pt:input:class="border-0 px-0"
                         inputId="city"
                         :loading="searchIsLoading"
                         :suggestions="searchResults"
@@ -86,7 +81,7 @@ function setReservableOption(option: ReservableOption): void {
                             </div>
                         </template>
                     </AutoComplete>
-                    <label for="city">Zoek op locatie</label>
+                    <label for="city" class="text-nowrap">Zoek op locatie</label>
                 </FloatLabel>
             </template>
             <template v-else>
@@ -94,14 +89,14 @@ function setReservableOption(option: ReservableOption): void {
             </template>
         </div>
 
-        <div class="h-6 w-px bg-slate-300"></div>
+        <div class="h-6 w-[3px] bg-slate-300"></div>
 
         <!-- Query filter -->
-        <div class="flex items-center gap-2 font-medium text-slate-700">
+        <div class="flex w-full items-center justify-center gap-2 font-medium text-slate-700">
             <template v-if="isExpandedSearch">
                 <FloatLabel variant="on">
                     <InputText v-model="filters.query" id="query" />
-                    <label for="query">Zoek op naam</label>
+                    <label for="query" class="text-nowrap">Zoek op naam</label>
                 </FloatLabel>
             </template>
             <template v-else>
@@ -109,10 +104,11 @@ function setReservableOption(option: ReservableOption): void {
             </template>
         </div>
 
-        <div class="h-6 w-px bg-slate-300"></div>
+        <div class="h-6 w-[3px] bg-slate-300"></div>
 
         <!-- Date filter -->
-        <div class="flex items-center gap-2 font-medium text-slate-700">
+        <div
+            class="flex w-full items-center justify-center gap-2 overflow-hidden font-medium text-slate-700">
             <template v-if="isExpandedSearch">
                 <FloatLabel variant="on">
                     <DatePicker
@@ -120,15 +116,17 @@ function setReservableOption(option: ReservableOption): void {
                         dateFormat="dd/mm/yy"
                         inputId="openOnDay">
                     </DatePicker>
-                    <label for="openOnDay">Open op datum</label>
+                    <label for="openOnDay" class="text-nowrap">Open op datum</label>
                 </FloatLabel>
             </template>
             <template v-else>
                 <span>{{ filters.openOnDay || 'Alle data' }}</span>
             </template>
         </div>
-        <Button class="flex h-8 w-8 items-center overflow-hidden rounded-full">
-            <FontAwesomeIcon :icon="faMagnifyingGlass" />
-        </Button>
+        <RouterLink :to="{ name: 'locations' }" @click.stop>
+            <Button class="flex h-8 w-8 items-center overflow-hidden rounded-full">
+                <FontAwesomeIcon :icon="faMagnifyingGlass" />
+            </Button>
+        </RouterLink>
     </div>
 </template>

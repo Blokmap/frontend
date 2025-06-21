@@ -31,7 +31,7 @@ const severityIcons: Record<string, IconDefinition> = {
         <template #container="slotProps">
             <div class="flex items-center gap-3 p-3">
                 <div
-                    class="h-10 aspect-square inline-flex items-center justify-center rounded-lg shrink-0"
+                    class="inline-flex aspect-square h-10 shrink-0 items-center justify-center rounded-lg"
                     :class="severityClasses[slotProps.message.severity]">
                     <FontAwesomeIcon :icon="severityIcons[slotProps.message.severity]" />
                 </div>

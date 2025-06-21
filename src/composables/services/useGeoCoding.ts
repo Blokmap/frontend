@@ -5,6 +5,8 @@ import { useDebounce } from '@vueuse/core';
 import { type Ref, computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
+
 export function useGeoCoding() {
     return {};
 }
@@ -24,7 +26,7 @@ type UseGeoSearchOptions = {
 
 const geoSearchOptions: UseGeoSearchOptions = {
     auto_complete: true,
-    types: 'poi',
+    types: 'city,street',
     country: 'be',
     limit: 5,
 };
@@ -54,7 +56,7 @@ export function useGeoSearch(options: UseGeoSearchOptions = geoSearchOptions): U
                 {
                     params: {
                         q,
-                        access_token: import.meta.env.VITE_MAPBOX_API_KEY,
+                        access_token: MAPBOX_ACCESS_TOKEN,
                         language: locale.value,
                         ...options,
                     },

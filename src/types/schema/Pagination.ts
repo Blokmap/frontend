@@ -9,4 +9,4 @@ export type Pagination = {
     query?: string | null;
     perPage?: number;
     page?: number;
-}
+};

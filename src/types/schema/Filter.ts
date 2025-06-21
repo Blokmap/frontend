@@ -1,4 +1,5 @@
-import type { Pagination } from "@/types/schema/Pagination";
+import type { LngLatBounds } from '@/types/contract/Map';
+import type { Pagination } from '@/types/schema/Pagination';
 
 export type ReservableOption = {
     value: boolean | null | undefined;
@@ -7,19 +8,8 @@ export type ReservableOption = {
 
 export type LocationFilter = Pagination & {
     language?: string | null;
-    city?: string | null;
-
+    location?: string | null;
     isReservable?: boolean | null;
-
-    openOnDay?: Date | null;
-    openOnTime?: Date | null;
-
-    centerLat?: number | null;
-    centerLng?: number | null;
-    distance?: number | null;
-
-    northEastLat?: number | null;
-    northEastLng?: number | null;
-    southWestLat?: number | null;
-    southWestLng?: number | null;
+    openOn?: Date | null;
+    bounds?: LngLatBounds;
 };

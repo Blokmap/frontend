@@ -1,41 +1,39 @@
 .p-breadcrumb {
-    @apply bg-surface-0 dark:bg-surface-900 p-4 overflow-x-auto
+    @apply bg-surface-0 dark:bg-surface-900 overflow-x-auto p-4;
 }
 
 .p-breadcrumb-list {
-    @apply m-0 p-0 list-none flex items-center flex-nowrap gap-2
+    @apply m-0 flex list-none flex-nowrap items-center gap-2 p-0;
 }
 
 .p-breadcrumb-separator {
-    @apply flex items-center text-surface-400 dark:text-surface-500
+    @apply text-surface-400 dark:text-surface-500 flex items-center;
 }
 
 .p-breadcrumb-separator-icon:dir(rtl) {
-    @apply rotate-180
+    @apply rotate-180;
 }
 
 .p-breadcrumb::-webkit-scrollbar {
-    @apply hidden
+    @apply hidden;
 }
 
 .p-breadcrumb-item-link {
-    @apply no-underline flex items-center gap-2 transition-colors duration-200 rounded-md
-        text-surface-500 dark:text-surface-400
-        focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-primary
+    @apply text-surface-500 dark:text-surface-400 focus-visible:outline-primary flex items-center gap-2 rounded-md no-underline transition-colors duration-200 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2;
 }
 
 .p-breadcrumb-item-link:hover .p-breadcrumb-item-label {
-    @apply text-surface-700 dark:text-surface-0
+    @apply text-surface-700 dark:text-surface-0;
 }
 
 .p-breadcrumb-item-label {
-    @apply transition-colors duration-200
+    @apply transition-colors duration-200;
 }
 
 .p-breadcrumb-item-icon {
-    @apply text-surface-400 dark:text-surface-500 transition-colors duration-200
+    @apply text-surface-400 dark:text-surface-500 transition-colors duration-200;
 }
 
 .p-breadcrumb-item-link:hover .p-breadcrumb-item-icon {
-    @apply text-surface-500 dark:text-surface-400
+    @apply text-surface-500 dark:text-surface-400;
 }

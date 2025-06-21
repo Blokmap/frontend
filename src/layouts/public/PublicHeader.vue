@@ -1,18 +1,10 @@
 <script setup lang="ts">
-import studying from '@/assets/img/icon/studying.png';
 import LocationSearch from '@/components/features/location/LocationSearch.vue';
-import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { Profile } from '@/types/schema/Profile';
-import {
-    faBars,
-    faGlobe,
-    faMagnifyingGlass,
-    faMapLocationDot,
-} from '@fortawesome/free-solid-svg-icons';
+import { faBars, faGlobe, faMapLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
-import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 
 defineProps<{
@@ -69,7 +61,7 @@ function handleEscape(event: KeyboardEvent): void {
     <header
         class="dark:border-surface-800 relative z-10 flex border-b-2 border-slate-200 bg-slate-50 p-4">
         <!-- Wrapper -->
-        <div class="relative mx-auto flex w-full justify-center xl:w-10/12">
+        <div class="relative mx-auto flex w-full justify-center xl:w-7/8">
             <!-- Logo -->
             <h2 class="hidden transform text-sm font-medium sm:absolute sm:top-1 sm:left-0 sm:flex">
                 <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2">

@@ -113,7 +113,7 @@ body {
     --p-content-border-color: var(--p-surface-200);
     --p-content-hover-background: var(--p-surface-100);
     --p-content-hover-color: var(--p-surface-800);
-    --p-highlight-background: var(--p-primary-50);
+    --p-highlight-background: var(--p-primary-100);
     --p-highlight-color: var(--p-primary-700);
     --p-highlight-focus-background: var(--p-primary-100);
     --p-highlight-focus-color: var(--p-primary-800);

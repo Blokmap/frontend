@@ -24,7 +24,7 @@ const popoverTemplate = useTemplateRef('popover');
 <template>
     <template v-if="profile">
         <Avatar
-            class="cursor-pointer h-11 w-11 text-xl"
+            class="h-11 w-11 cursor-pointer text-xl"
             shape="circle"
             id="avatar"
             @click="popoverTemplate?.toggle($event)">
@@ -33,13 +33,13 @@ const popoverTemplate = useTemplateRef('popover');
         <Popover ref="popover">
             <h3>
                 Currently logged in as
-                <span class="font-bold text-primary"> {{ profile.username }} </span>.
+                <span class="text-primary font-bold"> {{ profile.username }} </span>.
             </h3>
             <Divider />
             <div class="flex justify-end">
                 <Button
                     label="Log Out"
-                    class="text-xs py-1 px-3"
+                    class="px-3 py-1 text-xs"
                     severity="contrast"
                     :loading="logoutIsLoading"
                     @click="$emit('logout')"

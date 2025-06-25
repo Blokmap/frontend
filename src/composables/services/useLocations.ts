@@ -28,8 +28,20 @@ export function useLocationsSearch(filters?: Ref<LocationFilter>): UseLocationsS
         queryKey: ['locations', 'search', filtersKey],
         placeholderData: keepPreviousData,
         queryFn: async () => {
+            // Add artificial delay to simulate loading state
+            await new Promise((resolve) => setTimeout(resolve, 500));
+
+            const [southWest, northEast] = filters?.value?.bounds || [];
+
             const response = await client.get(endpoints.locations.search, {
-                params: filters?.value || {},
+                params: {
+                    northEastLng: northEast?.[0],
+                    northEastLat: northEast?.[1],
+                    southWestLng: southWest?.[0],
+                    southWestLat: southWest?.[1],
+                    page: filters?.value?.page,
+                    perPage: filters?.value?.perPage,
+                },
             });
             return response.data;
         },

@@ -27,7 +27,7 @@ export const useLocationFilters = defineStore('locationFilters', () => {
     const filters = shallowRef<LocationFilter>({
         language: locale.value,
         query: null,
-        perPage: 9,
+        perPage: 12,
     });
 
     /**

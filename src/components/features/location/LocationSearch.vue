@@ -11,7 +11,6 @@ import Button from 'primevue/button';
 import DatePicker from 'primevue/datepicker';
 import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
-import { watch } from 'vue';
 
 defineProps<{
     isExpandedSearch?: boolean;
@@ -25,16 +24,6 @@ const { search, searchResults, searchIsLoading } = useGeoSearch();
 const { reservableOptions, updateFilters } = useLocationFilters();
 const { filters } = storeToRefs(useLocationFilters());
 const { tags } = useTags();
-
-// Watch selected value and sync to search input
-watch(
-    () => filters.value.city,
-    (city?: string | null) => {
-        if (city !== search.value) {
-            search.value = city ?? '';
-        }
-    },
-);
 
 /**
  * Handles the click event on the search field to toggle the expanded search state.
@@ -56,9 +45,8 @@ function setReservableOption(option: ReservableOption): void {
 <template>
     <div
         ref="search"
-        class="gap- relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer items-center justify-between rounded-full border border-slate-200 bg-white px-5 py-2 text-center text-sm shadow-sm transition-all duration-500 hover:shadow-lg"
-        @click.stop="handleSearchClick"
-        :class="{ 'mt-[4rem] max-w-[960px]': isExpandedSearch }">
+        class="relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer flex-col items-center justify-between gap-3 rounded-full border border-slate-200 bg-white px-5 py-1 text-center text-sm shadow-sm transition-all duration-10000 hover:shadow-lg md:flex-row"
+        @click.stop="handleSearchClick">
         <!-- City filter -->
         <div class="flex w-full items-center justify-center gap-2 font-medium text-slate-700">
             <template v-if="isExpandedSearch">
@@ -66,8 +54,7 @@ function setReservableOption(option: ReservableOption): void {
                     <AutoComplete
                         inputId="city"
                         :loading="searchIsLoading"
-                        :suggestions="searchResults"
-                        @complete="(e) => (search = e.query)">
+                        :suggestions="searchResults">
                         <template #option="{ option }">
                             <div class="flex flex-col gap-1">
                                 <div class="flex items-center gap-2">
@@ -85,7 +72,7 @@ function setReservableOption(option: ReservableOption): void {
                 </FloatLabel>
             </template>
             <template v-else>
-                <span>{{ filters.city || 'In de buurt' }}</span>
+                <span>{{ filters.location || 'In de buurt' }}</span>
             </template>
         </div>
 
@@ -107,20 +94,20 @@ function setReservableOption(option: ReservableOption): void {
         <div class="h-6 w-[3px] bg-slate-300"></div>
 
         <!-- Date filter -->
-        <div
-            class="flex w-full items-center justify-center gap-2 overflow-hidden font-medium text-slate-700">
+        <div class="flex w-full items-center justify-center gap-2 font-medium text-slate-700">
             <template v-if="isExpandedSearch">
                 <FloatLabel variant="on">
                     <DatePicker
-                        v-model="filters.openOnDay"
+                        v-model="filters.openOn"
                         dateFormat="dd/mm/yy"
-                        inputId="openOnDay">
+                        inputId="openOnDay"
+                        pt:pc-input-text:class="border-0">
                     </DatePicker>
                     <label for="openOnDay" class="text-nowrap">Open op datum</label>
                 </FloatLabel>
             </template>
             <template v-else>
-                <span>{{ filters.openOnDay || 'Alle data' }}</span>
+                <span>{{ filters.openOn || 'Alle data' }}</span>
             </template>
         </div>
         <RouterLink :to="{ name: 'locations' }" @click.stop>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import LocationSearch from '@/components/features/location/LocationSearch.vue';
+import Logo from '@/components/shared/Logo.vue';
 import type { Profile } from '@/types/schema/Profile';
-import { faBars, faGlobe, faMapLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import { onMounted, onUnmounted, ref } from 'vue';
@@ -31,9 +32,10 @@ onUnmounted(() => {
 
 /**
  * Toggles the expanded search state.
- * When expanded, it scrolls the search template into view.
+ *
+ * @param state - Optional boolean to set the expanded state directly.
  */
-function toggleExpandedSearch(state?: boolean) {
+function toggleExpandedSearch(state?: boolean): void {
     isExpandedSearch.value = state ?? !isExpandedSearch.value;
 }
 
@@ -65,11 +67,7 @@ function handleEscape(event: KeyboardEvent): void {
             <!-- Logo -->
             <h2 class="hidden transform text-sm font-medium sm:absolute sm:top-1 sm:left-0 sm:flex">
                 <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2">
-                    <div
-                        class="bg-primary text-primary-contrast flex aspect-square items-center gap-2 rounded-full px-3 py-2 font-bold">
-                        <FontAwesomeIcon :icon="faMapLocationDot" class="text-md text-primary-200">
-                        </FontAwesomeIcon>
-                    </div>
+                    <Logo />
                 </RouterLink>
             </h2>
             <!-- Search -->

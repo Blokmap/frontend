@@ -4,23 +4,22 @@ import LocationCardSkeleton from '@/components/features/location/LocationCardSke
 import BlokMap from '@/components/features/map/BlokMap.vue';
 import { useLocationsSearch } from '@/composables/services/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import { useDebouncedLoading } from '@/composables/useDebouncedLoading';
 import type { LngLatBounds } from '@/types/contract/Map';
-import { useDebounce, useTemplateRefsList } from '@vueuse/core';
+import type { Location } from '@/types/schema/Location';
+import { useTemplateRefsList } from '@vueuse/core';
 import gsap from 'gsap';
 import { storeToRefs } from 'pinia';
+import Dialog from 'primevue/dialog';
 import Paginator from 'primevue/paginator';
 import Skeleton from 'primevue/skeleton';
-import { nextTick, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 
 const { updateFilters } = useLocationFilters();
 const { filters } = storeToRefs(useLocationFilters());
-const debouncedFilters = useDebounce(filters, 300);
+const { locations, locationsIsFetching } = useLocationsSearch(filters);
 
-const { locations, locationsIsFetching } = useLocationsSearch(debouncedFilters);
-
-const isLoading = useDebouncedLoading(locationsIsFetching, 300);
-
+const selectedLocation = ref<Location | null>(null);
+const showLocationDialog = computed(() => !!selectedLocation.value);
 const locationAnim = ref<GSAPTween | null>(null);
 const locationRefs = useTemplateRefsList();
 
@@ -53,37 +52,60 @@ watch(locations, async (locations) => {
 });
 
 /**
+ * Handle marker click events.
+ *
+ * @param id The ID of the clicked marker.
+ */
+function handleMarkerClick(id: number): void {
+    selectedLocation.value = locations?.value?.data.find((loc) => loc.id === id) || null;
+}
+
+/**
  * Handle changes to the map's bounds.
  *
  * @param bounds The new bounds of the map.
  */
 function handleBoundsChange(bounds: LngLatBounds): void {
-    updateFilters({ bounds });
+    updateFilters({ bounds, page: 1 });
+}
+
+/**
+ * Handle page changes in the paginator.
+ *
+ * @param event The pagination event containing the new page number.
+ */
+function handlePageChange(event: { page: number }): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    updateFilters({ page: event.page + 1 });
 }
 </script>
 
 <template>
-    <div class="flex w-full flex-col items-stretch gap-8 md:flex-row">
+    <div class="flex w-full flex-col-reverse items-stretch gap-8 md:flex-row">
         <div class="flex w-full flex-col md:w-1/2">
-            <h2 class="mb-8 font-semibold">
-                <template v-if="isLoading">
+            <h2 class="mb-8 flex items-center justify-between font-semibold">
+                <template v-if="!locations">
                     <Skeleton width="" height="1rem" />
                 </template>
-                <template v-else> Meer dan {{ locations?.total }} locaties gevonden </template>
+                <template v-else-if="locations.data.length">
+                    <span v-if="locations.truncated">
+                        More than {{ locations.total }} locations found
+                    </span>
+                    <span v-else> Around {{ locations.total }} locations found </span>
+                </template>
+                <template v-else>
+                    <span>No locations found</span>
+                </template>
             </h2>
-            <div class="grid flex-grow grid-cols-3 gap-x-3 gap-y-8">
-                <template v-if="isLoading">
-                    <LocationCardSkeleton v-for="n in 6" :key="n" />
+            <div class="grid flex-grow grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3">
+                <template v-if="locationsIsFetching">
+                    <LocationCardSkeleton v-for="n in filters.perPage" :key="n" />
                 </template>
                 <template v-else-if="locations?.data?.length">
                     <div v-for="(location, i) in locations.data" :key="i" :ref="locationRefs.set">
-                        <LocationCard :location="location" />
+                        <LocationCard :location="location" @click="selectedLocation = location">
+                        </LocationCard>
                     </div>
-                </template>
-                <template v-else>
-                    <p class="mt-4 text-center text-sm text-gray-500">
-                        No locations found in this area.
-                    </p>
                 </template>
             </div>
             <template v-if="locations?.data?.length">
@@ -91,7 +113,8 @@ function handleBoundsChange(bounds: LngLatBounds): void {
                     <Paginator
                         :rows="locations.perPage"
                         :total-records="locations.total"
-                        @update:first="console.log" />
+                        @page="handlePageChange">
+                    </Paginator>
                 </div>
             </template>
         </div>
@@ -103,11 +126,22 @@ function handleBoundsChange(bounds: LngLatBounds): void {
                 <BlokMap
                     ref="map"
                     :locations="locations?.data"
-                    :is-loading="isLoading"
+                    :is-loading="locationsIsFetching"
                     @change:bounds="handleBoundsChange"
+                    @click:marker="handleMarkerClick"
                     class="h-full w-full rounded-xl">
                 </BlokMap>
             </div>
         </div>
     </div>
+    <Dialog
+        class="mx-4 w-[1080px] max-w-full"
+        :visible="showLocationDialog"
+        :draggable="false"
+        @update:visible="selectedLocation = null"
+        modal>
+        <template #header>
+            <h2 class="text-2xl font-bold">{{ selectedLocation?.name }}</h2>
+        </template>
+    </Dialog>
 </template>

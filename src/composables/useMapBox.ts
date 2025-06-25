@@ -3,6 +3,7 @@ import { defaultMapOptions } from '@/config/map';
 import type { LngLat, LngLatBounds, MapAdapter, MapOptions } from '@/types/contract/Map';
 import mapboxgl from 'mapbox-gl';
 import { type Ref, computed, h, onMounted, onUnmounted, ref, render } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 
@@ -17,11 +18,15 @@ export function useMapBox<T>(
     container: Ref<HTMLElement | null>,
     options: MapOptions = defaultMapOptions,
 ): MapAdapter<T> {
+    const { locale } = useI18n();
+
     // Bypass deep type inference issues with mapbox-gl types
     // by explictely casting the correc types.
     const markers = new Map<T, mapboxgl.Marker>() as Map<T, mapboxgl.Marker>;
     const map = ref(null) as Ref<mapboxgl.Map | null>;
     const isLoaded = computed(() => map.value !== null);
+
+    const markerClickCallback = ref<(id: T, event: MouseEvent) => void>(() => null);
 
     onMounted(() => {
         if (container.value === null) {
@@ -30,6 +35,7 @@ export function useMapBox<T>(
 
         const newMap = new mapboxgl.Map({
             accessToken: MAPBOX_ACCESS_TOKEN,
+            language: locale.value,
             container: container.value,
             style: options.style ?? defaultMapOptions.style,
             center: options.center ?? defaultMapOptions.center,
@@ -72,10 +78,15 @@ export function useMapBox<T>(
         if (!map.value) return;
 
         const element = document.createElement('div');
+        element.addEventListener('click', (event) => {
+            markerClickCallback.value(id, event);
+        });
+
         const vnode = h(Marker);
         render(vnode, element);
 
         const marker = new mapboxgl.Marker({ element }).setLngLat(lngLat).addTo(map.value);
+
         markers.set(id, marker);
     }
 
@@ -109,11 +120,7 @@ export function useMapBox<T>(
      * @param callback - A function that will be called with the new bounds of the map.
      */
     function setOnBoundsChange(callback: (bounds: LngLatBounds) => void): void {
-        if (map.value === null) {
-            return;
-        }
-
-        map.value.on('moveend', () => {
+        map.value?.on('moveend', () => {
             const bounds = map.value?.getBounds();
 
             if (bounds) {
@@ -122,5 +129,28 @@ export function useMapBox<T>(
         });
     }
 
-    return { setMarkers, setOnBoundsChange, isLoaded };
+    /**
+     * Sets a callback to be called when the map is moved.
+     *
+     * @param callback - A function that will be called with the new center of the map.
+     */
+    function setOnMove(callback: (lngLat: LngLat) => void): void {
+        map.value?.on('move', () => {
+            const center = map.value?.getCenter();
+            if (center) {
+                callback(center.toArray());
+            }
+        });
+    }
+
+    /**
+     * Sets a callback to be called when a marker is clicked.
+     *
+     * @param callback - A function that will be called with the marker's identifier and its coordinates.
+     */
+    function setOnMarkerClick(callback: (id: T, event: MouseEvent) => void): void {
+        markerClickCallback.value = callback;
+    }
+
+    return { setMarkers, setOnBoundsChange, setOnMarkerClick, setOnMove, isLoaded };
 }

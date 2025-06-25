@@ -49,8 +49,6 @@ jobs:
 
           - name: Build and push
             uses: docker/build-push-action@v6
-            env:
-                VITE_MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
             with:
                 file: Dockerfile.staging
                 push: true

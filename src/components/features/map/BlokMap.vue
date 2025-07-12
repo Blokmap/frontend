@@ -28,7 +28,7 @@ const emit = defineEmits<{
 }>();
 
 const selectedLocation = ref<Location | null>(null);
-const mapContainer = useTemplateRef('mapContainer');
+const mapContainer = useTemplateRef('map');
 const map = useMapBox<number>(mapContainer);
 
 watch([() => props.locations, map.isLoaded], updateMarkers);
@@ -75,10 +75,13 @@ function updateMarkers(): void {
 </script>
 
 <template>
-    <div ref="mapContainer" class="relative z-2 h-full overflow-hidden border-2 border-slate-200">
+    <div class="relative h-full w-full">
+        <div
+            ref="map"
+            class="relative z-2 h-full overflow-hidden rounded-xl border-2 border-slate-200"></div>
         <template v-if="isLoading">
             <div
-                class="absolute top-0 right-0 bottom-0 left-0 z-2 flex h-full items-center justify-center bg-slate-800/30">
+                class="absolute top-0 right-0 z-2 flex h-full w-full items-center justify-center bg-gray-600/20">
                 <FontAwesomeIcon class="text-4xl text-white" :icon="faSpinner" spin />
             </div>
         </template>

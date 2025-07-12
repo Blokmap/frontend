@@ -1,32 +1,38 @@
 <script lang="ts" setup>
 import LocationCard from '@/components/features/location/LocationCard.vue';
 import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
+import LocationDialog from '@/components/features/location/LocationDialog.vue';
 import BlokMap from '@/components/features/map/BlokMap.vue';
 import { useLocationsSearch } from '@/composables/services/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { LngLatBounds } from '@/types/contract/Map';
-import type { Location } from '@/types/schema/Location';
 import { useTemplateRefsList } from '@vueuse/core';
 import gsap from 'gsap';
 import { storeToRefs } from 'pinia';
-import Dialog from 'primevue/dialog';
 import Paginator from 'primevue/paginator';
 import Skeleton from 'primevue/skeleton';
 import { computed, nextTick, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 
-const { updateFilters } = useLocationFilters();
-const { filters } = storeToRefs(useLocationFilters());
-const { locations, locationsIsFetching } = useLocationsSearch(filters);
-
-const selectedLocation = ref<Location | null>(null);
-const showLocationDialog = computed(() => !!selectedLocation.value);
-const locationAnim = ref<GSAPTween | null>(null);
+const { query } = useRoute();
+const filterStore = useLocationFilters();
+const { filters } = storeToRefs(filterStore);
+const locationsSearchQuery = useLocationsSearch(filters);
 const locationRefs = useTemplateRefsList();
+
+const previousLocationCount = ref(filterStore.filters.perPage);
+const locationAnim = ref<GSAPTween | null>(null);
+
+const locations = computed(() => locationsSearchQuery.data?.value);
+const locationsIsFetching = computed(() => locationsSearchQuery.isFetching.value);
 
 watch(locations, async (locations) => {
     if (!locations || !locations.data?.length) {
         return;
     }
+
+    // Update the previous location count to match the new data length
+    previousLocationCount.value = locations.data.length;
 
     await nextTick();
 
@@ -57,7 +63,7 @@ watch(locations, async (locations) => {
  * @param id The ID of the clicked marker.
  */
 function handleMarkerClick(id: number): void {
-    selectedLocation.value = locations?.value?.data.find((loc) => loc.id === id) || null;
+    const locations = locationsSearchQuery.data?.value;
 }
 
 /**
@@ -66,7 +72,7 @@ function handleMarkerClick(id: number): void {
  * @param bounds The new bounds of the map.
  */
 function handleBoundsChange(bounds: LngLatBounds): void {
-    updateFilters({ bounds, page: 1 });
+    filterStore.updateFilters({ bounds, page: 1 });
 }
 
 /**
@@ -76,14 +82,15 @@ function handleBoundsChange(bounds: LngLatBounds): void {
  */
 function handlePageChange(event: { page: number }): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    updateFilters({ page: event.page + 1 });
+    filterStore.updateFilters({ page: event.page + 1 });
 }
 </script>
 
 <template>
+    {{ filterStore.filters.page }}
     <div class="flex w-full flex-col-reverse items-stretch gap-8 md:flex-row">
-        <div class="flex w-full flex-col md:w-1/2">
-            <h2 class="mb-8 flex items-center justify-between font-semibold">
+        <div class="flex w-full flex-col md:w-4/7">
+            <h2 class="mb-8 flex items-center justify-between text-lg font-semibold">
                 <template v-if="!locations">
                     <Skeleton width="" height="1rem" />
                 </template>
@@ -91,26 +98,26 @@ function handlePageChange(event: { page: number }): void {
                     <span v-if="locations.truncated">
                         More than {{ locations.total }} locations found
                     </span>
-                    <span v-else> Around {{ locations.total }} locations found </span>
+                    <span v-else> {{ locations.total }} locations found </span>
                 </template>
                 <template v-else>
                     <span>No locations found</span>
                 </template>
             </h2>
-            <div class="grid flex-grow grid-cols-2 gap-x-3 gap-y-8 md:grid-cols-3">
+            <div class="grid flex-grow grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3">
                 <template v-if="locationsIsFetching">
-                    <LocationCardSkeleton v-for="n in filters.perPage" :key="n" />
+                    <LocationCardSkeleton v-for="n in previousLocationCount" :key="n" />
                 </template>
                 <template v-else-if="locations?.data?.length">
                     <div v-for="(location, i) in locations.data" :key="i" :ref="locationRefs.set">
-                        <LocationCard :location="location" @click="selectedLocation = location">
-                        </LocationCard>
+                        <LocationCard :location="location" @click="handleMarkerClick" />
                     </div>
                 </template>
             </div>
             <template v-if="locations?.data?.length">
                 <div class="mt-8">
                     <Paginator
+                        :first="locations.perPage * (locations.page - 1)"
                         :rows="locations.perPage"
                         :total-records="locations.total"
                         @page="handlePageChange">
@@ -119,7 +126,7 @@ function handlePageChange(event: { page: number }): void {
             </template>
         </div>
 
-        <div class="flex md:w-1/2">
+        <div class="flex md:w-3/7">
             <div
                 class="sticky top-[116px] w-full"
                 :style="{ height: 'calc(100vh - 116px - 2rem)' }">
@@ -128,20 +135,10 @@ function handlePageChange(event: { page: number }): void {
                     :locations="locations?.data"
                     :is-loading="locationsIsFetching"
                     @change:bounds="handleBoundsChange"
-                    @click:marker="handleMarkerClick"
-                    class="h-full w-full rounded-xl">
+                    @click:marker="handleMarkerClick">
                 </BlokMap>
             </div>
         </div>
     </div>
-    <Dialog
-        class="mx-4 w-[1080px] max-w-full"
-        :visible="showLocationDialog"
-        :draggable="false"
-        @update:visible="selectedLocation = null"
-        modal>
-        <template #header>
-            <h2 class="text-2xl font-bold">{{ selectedLocation?.name }}</h2>
-        </template>
-    </Dialog>
+    <LocationDialog v-if="query" />
 </template>

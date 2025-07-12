@@ -38,8 +38,8 @@ watch(route, (_, oldRoute) => {
                 @logout="logout">
             </PublicHeader>
         </div>
-        <main class="mx-auto my-8 flex w-full flex-grow flex-col items-stretch px-4 xl:w-7/8">
-            <RouterView class="h-full flex-1" />
+        <main class="mx-auto my-8 flex w-full flex-grow flex-col items-stretch px-8">
+            <RouterView />
         </main>
         <PublicFooter />
     </div>

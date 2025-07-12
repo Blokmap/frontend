@@ -28,7 +28,7 @@ defineProps<{
                 <FontAwesomeIcon :icon="faHeart" />
             </div>
         </div>
-        <h2 class="my-1 truncate text-sm font-semibold">{{ location.name }}</h2>
+        <h2 class="text-md my-1 truncate font-semibold">{{ location.name }}</h2>
         <p class="line-clamp-2 text-xs text-gray-600">
             {{ location.excerpt?.[locale] }}
         </p>

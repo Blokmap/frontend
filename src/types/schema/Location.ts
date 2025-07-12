@@ -5,8 +5,8 @@ import type { Translation } from '@/types/schema/Translation';
 export type Location = {
     id: number;
     name: string;
-    excerpt: Translation | null;
-    description?: Translation | null;
+    excerpt: Translation;
+    description: Translation;
     seatCount: number;
     reservationBlockSize: number;
     minReservationLength: number | null;

@@ -4,16 +4,9 @@ import type { LocationFilter } from '@/types/schema/Filter';
 import type { Location } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
 import { keepPreviousData, useQuery } from '@tanstack/vue-query';
-import { type Ref, computed } from 'vue';
+import { type MaybeRef, computed, toValue } from 'vue';
 
-type UseLocationsSearch = {
-    locations: Ref<Paginated<Location> | undefined>;
-    locationsError: Ref<Error | null>;
-    locationsIsLoading: Ref<boolean>;
-    locationsIsSuccess: Ref<boolean>;
-    locationsIsError: Ref<boolean>;
-    locationsIsFetching: Ref<boolean>;
-};
+type UseLocationsSearch = ReturnType<typeof useQuery<Paginated<Location>>>;
 
 /**
  * Composable to search for locations based on filters.
@@ -21,17 +14,19 @@ type UseLocationsSearch = {
  * @param filters - The filters to apply when searching for locations.
  * @returns An object containing the search results and their state.
  */
-export function useLocationsSearch(filters?: Ref<LocationFilter>): UseLocationsSearch {
-    const filtersKey = computed(() => JSON.stringify(Object.entries(filters?.value || {}).sort()));
+export function useLocationsSearch(filters?: MaybeRef<LocationFilter>): UseLocationsSearch {
+    const filtersKey = computed(() => JSON.stringify(Object.entries(filters || {}).sort()));
 
     const query = useQuery({
         queryKey: ['locations', 'search', filtersKey],
+        refetchOnWindowFocus: false,
         placeholderData: keepPreviousData,
         queryFn: async () => {
             // Add artificial delay to simulate loading state
             await new Promise((resolve) => setTimeout(resolve, 500));
 
-            const [southWest, northEast] = filters?.value?.bounds || [];
+            const filtersValue  = toValue(filters);
+            const [southWest, northEast] = filtersValue?.bounds || [];
 
             const response = await client.get(endpoints.locations.search, {
                 params: {
@@ -39,22 +34,39 @@ export function useLocationsSearch(filters?: Ref<LocationFilter>): UseLocationsS
                     northEastLat: northEast?.[1],
                     southWestLng: southWest?.[0],
                     southWestLat: southWest?.[1],
-                    page: filters?.value?.page,
-                    perPage: filters?.value?.perPage,
+                    page: filtersValue?.page,
+                    perPage: filtersValue?.perPage,
                 },
             });
+
             return response.data;
         },
     });
 
-    return {
-        locations: query.data,
-        locationsError: query.error,
-        locationsIsLoading: query.isPending,
-        locationsIsSuccess: query.isSuccess,
-        locationsIsError: query.isError,
-        locationsIsFetching: query.isFetching,
-    };
+    return query;
+}
+
+type UseLocation = ReturnType<typeof useQuery<Location>>;
+
+/**
+ * Composable to fetch a single location by its ID.
+ *
+ * @param id - The ID of the location to fetch.
+ * @returns An object containing the location and its state.
+ */
+export function useLocation(id: MaybeRef<string>): UseLocation {
+    const query = useQuery({
+        queryKey: ['location', id],
+        queryFn: async (): Promise<Location> => {
+            const response = await client.get(
+                endpoints.locations.read.replace('{id}', toValue(id)),
+            );
+
+            return response.data;
+        },
+    });
+
+    return query;
 }
 
 /**

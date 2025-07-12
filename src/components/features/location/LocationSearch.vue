@@ -45,8 +45,9 @@ function setReservableOption(option: ReservableOption): void {
 <template>
     <div
         ref="search"
-        class="relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer flex-col items-center justify-between gap-3 rounded-full border border-slate-200 bg-white px-5 py-1 text-center text-sm shadow-sm transition-all duration-10000 hover:shadow-lg md:flex-row"
-        @click.stop="handleSearchClick">
+        class="relative z-20 flex w-full max-w-[450px] min-w-[350px] origin-top cursor-pointer flex-col items-center justify-between gap-3 rounded-full border-2 border-slate-200 bg-white px-5 py-1 text-center text-sm transition-all duration-10000 md:flex-row"
+        @click.stop="handleSearchClick"
+        :class="{ 'max-w-[960px]': isExpandedSearch }">
         <!-- City filter -->
         <div class="flex w-full items-center justify-center gap-2 font-medium text-slate-700">
             <template v-if="isExpandedSearch">

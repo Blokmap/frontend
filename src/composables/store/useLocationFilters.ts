@@ -9,24 +9,13 @@ import { useI18n } from 'vue-i18n';
 export const useLocationFilters = defineStore('locationFilters', () => {
     const { locale } = useI18n();
 
-    const reservableOptions: ReservableOption[] = [
-        {
-            value: true,
-            label: 'Reserveerbaar',
-        },
-        {
-            value: false,
-            label: 'Niet reserveerbaar',
-        },
-        {
-            value: null,
-            label: 'Alle',
-        },
-    ];
-
     const filters = shallowRef<LocationFilter>({
         language: locale.value,
         query: null,
+        location: null,
+        isReservable: null,
+        openOn: null,
+        bounds: null,
         perPage: 12,
     });
 
@@ -44,7 +33,6 @@ export const useLocationFilters = defineStore('locationFilters', () => {
     }
 
     return {
-        reservableOptions,
         filters,
         updateFilters,
     };

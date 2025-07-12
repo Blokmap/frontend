@@ -47,7 +47,7 @@ client.interceptors.request.use(async (config) => {
  * @param maxDelay - number of milliseconds for the maximum delay (default is 1500ms)
  * @returns {Promise<void>} - A promise that resolves after the random delay.
  */
-async function getRandomDelay(minDelay: number = 250, maxDelay: number = 1500): Promise<void> {
+export async function getRandomDelay(minDelay: number = 250, maxDelay: number = 1500): Promise<void> {
     const delay = Math.random() * (maxDelay - minDelay) + minDelay;
     return new Promise((resolve) => setTimeout(resolve, delay));
 }

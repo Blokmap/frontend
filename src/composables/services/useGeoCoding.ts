@@ -2,7 +2,7 @@ import { mapBoxClient } from '@/config/axios';
 import { mapboxEndpoints } from '@/endpoints';
 import { useQuery } from '@tanstack/vue-query';
 import { useDebounce } from '@vueuse/core';
-import { type Ref, computed, ref } from 'vue';
+import { type MaybeRef, type Ref, computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
@@ -11,11 +11,7 @@ export function useGeoCoding() {
     return {};
 }
 
-type UseGeoSearch = {
-    search: Ref<string>;
-    searchResults: Ref<GeoJSON.GeoJsonProperties[] | undefined>;
-    searchIsLoading: Ref<boolean>;
-};
+type UseGeoSearch = ReturnType<typeof useQuery<GeoJSON.GeoJsonProperties[] | undefined>>;
 
 type UseGeoSearchOptions = {
     types?: string;
@@ -24,9 +20,9 @@ type UseGeoSearchOptions = {
     limit?: number;
 };
 
-const geoSearchOptions: UseGeoSearchOptions = {
+const defaultGeoSearchOptions: UseGeoSearchOptions = {
     auto_complete: true,
-    types: 'city,street',
+    types: 'city,postcode,place,neighborhood',
     country: 'be',
     limit: 5,
 };
@@ -37,14 +33,13 @@ const geoSearchOptions: UseGeoSearchOptions = {
  * @param options - Optional parameters to customize the geocoding search.
  * @returns An object containing the search input and the query result.
  */
-export function useGeoSearch(options: UseGeoSearchOptions = geoSearchOptions): UseGeoSearch {
+export function useGeoSearch(search: Ref<string>, options: UseGeoSearchOptions = defaultGeoSearchOptions): UseGeoSearch {
     const { locale } = useI18n();
 
-    const search = ref('');
     const debouncedSearch = useDebounce(search, 250);
-    const isEnabled = computed(() => debouncedSearch.value.length > 2);
-
-    const { data: searchResults, isLoading: searchIsLoading } = useQuery({
+    const isEnabled = computed(() => debouncedSearch.value.length > 0);
+    
+    const query = useQuery({
         queryKey: ['geosearch', debouncedSearch],
         retry: false,
         enabled: isEnabled,
@@ -80,9 +75,5 @@ export function useGeoSearch(options: UseGeoSearchOptions = geoSearchOptions): U
         },
     });
 
-    return {
-        search,
-        searchResults,
-        searchIsLoading,
-    };
+    return query;
 }

@@ -5,6 +5,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+    --text-base: 14px;
+
     --color-disco-50: #f2e7ee;
     --color-disco-100: #cea1bb;
     --color-disco-200: #b6739a;
@@ -69,7 +71,7 @@
 }
 
 body {
-    @apply bg-surface-0 text-surface-900;
+    @apply bg-surface-0 text-surface-900 text-base;
 
     &.dark {
         @apply bg-surface-900 text-surface-0;

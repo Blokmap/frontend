@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { useMapBox } from '@/composables/useMapBox';
-import type { LngLatBounds } from '@/types/contract/Map';
+import type { LngLat, LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
+import { latLngEqual } from '@/utils/geo';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
@@ -9,6 +10,7 @@ import { onMounted, ref, useTemplateRef, watch } from 'vue';
 const props = withDefaults(
     defineProps<{
         locations?: Location[];
+        center?: LngLat | null;
         isLoading?: boolean;
         hoveredLocation?: Location | null;
         rounded?: boolean;
@@ -27,9 +29,18 @@ const emit = defineEmits<{
     (e: 'click:marker', id: number): void;
 }>();
 
-const selectedLocation = ref<Location | null>(null);
 const mapContainer = useTemplateRef('mapContainer');
 const map = useMapBox<number>(mapContainer);
+
+watch(
+    () => props.center,
+    (newCenter, oldCenter) => {
+        if (newCenter && !latLngEqual(newCenter, oldCenter) && map.isLoaded) {
+            map.flyTo(newCenter);
+        }
+    },
+    { immediate: true },
+);
 
 watch([() => props.locations, map.isLoaded], updateMarkers);
 
@@ -75,10 +86,9 @@ function updateMarkers(): void {
 </script>
 
 <template>
-    <div ref="mapContainer" class="relative z-2 h-full overflow-hidden border-2 border-slate-200">
+    <div ref="mapContainer" class="map">
         <template v-if="isLoading">
-            <div
-                class="absolute top-0 right-0 bottom-0 left-0 z-2 flex h-full items-center justify-center bg-slate-800/30">
+            <div class="overlay">
                 <FontAwesomeIcon class="text-4xl text-white" :icon="faSpinner" spin />
             </div>
         </template>
@@ -86,5 +96,14 @@ function updateMarkers(): void {
 </template>
 
 <style lang="css">
+@reference '@/assets/styles/main.css';
 @import '@/assets/styles/maps.css';
+
+.map {
+    @apply relative z-2 h-full overflow-hidden border-2 border-slate-200;
+
+    .overlay {
+        @apply absolute top-0 right-0 bottom-0 left-0 z-2 flex h-full items-center justify-center bg-slate-800/30;
+    }
+}
 </style>

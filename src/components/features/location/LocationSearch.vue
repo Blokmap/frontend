@@ -1,119 +1,188 @@
 <script lang="ts" setup>
 import { useGeoSearch } from '@/composables/services/useGeoCoding';
-import { useTags } from '@/composables/services/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import type { ReservableOption } from '@/types/schema/Filter';
-import { faMagnifyingGlass, faMapLocation } from '@fortawesome/free-solid-svg-icons';
+import type { LocationFilter } from '@/types/schema/Filter';
+import {
+    faCalendarDays,
+    faMagnifyingGlass,
+    faMapLocation,
+    faQuoteLeft,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { storeToRefs } from 'pinia';
-import AutoComplete from 'primevue/autocomplete';
+import AutoComplete, { type AutoCompleteOptionSelectEvent } from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import DatePicker from 'primevue/datepicker';
-import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-defineProps<{
+const { filters } = defineProps<{
     isExpandedSearch?: boolean;
+    filters: LocationFilter;
 }>();
 
 const emit = defineEmits<{
     (e: 'toggle:expanded', state?: boolean): void;
+    (e: 'update:filters', filters: Partial<LocationFilter>): void;
 }>();
 
-const { search, searchResults, searchIsLoading } = useGeoSearch();
-const { reservableOptions, updateFilters } = useLocationFilters();
-const { filters } = storeToRefs(useLocationFilters());
-const { tags } = useTags();
+const { locale } = useI18n();
+
+const searchText = ref(filters.query ?? '');
+const openOnDate = ref(filters.openOn ?? null);
+const geoSearchLocation = ref(filters.location ?? null);
+const geoSearchText = ref(filters.location?.name ?? '');
+const geoSearch = useGeoSearch(geoSearchText);
+
+/**
+ * Handles the selection of a location option from the autocomplete suggestions.
+ *
+ * @param option - The selected location option.
+ */
+function handleLocationOptionSelect(option: AutoCompleteOptionSelectEvent): void {
+    geoSearchLocation.value = option.value;
+    geoSearchText.value = option.value.name;
+}
 
 /**
  * Handles the click event on the search field to toggle the expanded search state.
  */
-function handleSearchClick(): void {
+function handleExpandClick(): void {
     emit('toggle:expanded', true);
 }
 
 /**
- * Update the filters to set the selected reservable option.
- *
- * @param option The reservable option to set.
+ * Handles the search button click event.
+ * Updates the filters with the current search criteria and resets the input fields.
  */
-function setReservableOption(option: ReservableOption): void {
-    updateFilters({ isReservable: option.value });
+function handleSearchClick(): void {
+    geoSearchText.value = geoSearchLocation.value?.name ?? '';
+
+    emit('update:filters', {
+        query: searchText.value,
+        openOn: openOnDate.value,
+        location: geoSearchLocation.value,
+    });
 }
 </script>
 
 <template>
     <div
         ref="search"
-        class="relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer flex-col items-center justify-between gap-3 rounded-full border border-slate-200 bg-white px-5 py-1 text-center text-sm shadow-sm transition-all duration-10000 hover:shadow-lg md:flex-row"
-        @click.stop="handleSearchClick">
+        class="search"
+        @click.stop="handleExpandClick"
+        @keydown.enter="handleSearchClick">
         <!-- City filter -->
-        <div class="flex w-full items-center justify-center gap-2 font-medium text-slate-700">
+        <div class="search--filter">
+            <FontAwesomeIcon :icon="faMapLocation" />
             <template v-if="isExpandedSearch">
-                <FloatLabel variant="on">
-                    <AutoComplete
-                        inputId="city"
-                        :loading="searchIsLoading"
-                        :suggestions="searchResults">
-                        <template #option="{ option }">
-                            <div class="flex flex-col gap-1">
-                                <div class="flex items-center gap-2">
-                                    <FontAwesomeIcon :icon="faMapLocation" />
-                                    {{ option.name }}
-                                    {{ option.province }}
-                                </div>
-                                <div class="text-sm text-slate-600">
-                                    {{ option.full_address }}
-                                </div>
+                <AutoComplete
+                    inputId="city"
+                    placeholder="Zoek op locatie"
+                    pt:pcInputText:root:class="search-input"
+                    pt:overlay:class="!min-w-[200px]"
+                    :loading="geoSearch.isLoading.value"
+                    :suggestions="geoSearch.data.value"
+                    v-model="geoSearchText"
+                    option-label="name"
+                    @option-select="handleLocationOptionSelect">
+                    <template #option="{ option }">
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center gap-2">
+                                <FontAwesomeIcon :icon="faMapLocation" />
+                                {{ option.name }}
+                                {{ option.province }}
                             </div>
-                        </template>
-                    </AutoComplete>
-                    <label for="city" class="text-nowrap">Zoek op locatie</label>
-                </FloatLabel>
+                            <div class="text-sm text-slate-600">
+                                {{ option.full_address }}
+                            </div>
+                        </div>
+                    </template>
+
+                    <template #empty>
+                        <span class="text-sm text-slate-500"> Geen resultaten gevonden </span>
+                    </template>
+                </AutoComplete>
             </template>
             <template v-else>
-                <span>{{ filters.location || 'In de buurt' }}</span>
+                <span class="w-full">{{
+                    filters.location?.name || geoSearchText || 'In de buurt'
+                }}</span>
             </template>
         </div>
 
-        <div class="h-6 w-[3px] bg-slate-300"></div>
+        <div class="search--divider"></div>
 
         <!-- Query filter -->
-        <div class="flex w-full items-center justify-center gap-2 font-medium text-slate-700">
+        <div class="search--filter">
+            <FontAwesomeIcon :icon="faQuoteLeft" />
             <template v-if="isExpandedSearch">
-                <FloatLabel variant="on">
-                    <InputText v-model="filters.query" id="query" />
-                    <label for="query" class="text-nowrap">Zoek op naam</label>
-                </FloatLabel>
+                <InputText
+                    class="search-input"
+                    id="query"
+                    placeholder="Zoek op naam"
+                    v-model="searchText">
+                </InputText>
             </template>
             <template v-else>
-                <span>{{ filters.query || 'Alle locaties' }}</span>
+                <span class="w-full">{{ filters.query || searchText || 'Alle locaties' }}</span>
             </template>
         </div>
 
-        <div class="h-6 w-[3px] bg-slate-300"></div>
+        <div class="search--divider"></div>
 
         <!-- Date filter -->
-        <div class="flex w-full items-center justify-center gap-2 font-medium text-slate-700">
+        <div class="search--filter">
+            <FontAwesomeIcon :icon="faCalendarDays" />
             <template v-if="isExpandedSearch">
-                <FloatLabel variant="on">
-                    <DatePicker
-                        v-model="filters.openOn"
-                        dateFormat="dd/mm/yy"
-                        inputId="openOnDay"
-                        pt:pc-input-text:class="border-0">
-                    </DatePicker>
-                    <label for="openOnDay" class="text-nowrap">Open op datum</label>
-                </FloatLabel>
+                <DatePicker
+                    v-model="openOnDate"
+                    @clear-click="openOnDate = null"
+                    placeholder="Open op datum"
+                    dateFormat="dd/mm/yy"
+                    inputId="openOnDay"
+                    pt:pc-input-text:root:class="search-input"
+                    show-button-bar>
+                </DatePicker>
             </template>
             <template v-else>
-                <span>{{ filters.openOn || 'Alle data' }}</span>
+                <span class="w-full">
+                    {{
+                        (filters.openOn || openOnDate)?.toLocaleDateString(locale, {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long',
+                        }) || 'Alle data'
+                    }}
+                </span>
             </template>
         </div>
-        <RouterLink :to="{ name: 'locations' }" @click.stop>
-            <Button class="flex h-8 w-8 items-center overflow-hidden rounded-full">
-                <FontAwesomeIcon :icon="faMagnifyingGlass" />
-            </Button>
-        </RouterLink>
+
+        <!--  Search button -->
+        <Button
+            class="flex h-8 w-8 items-center overflow-hidden rounded-full"
+            @click.stop="handleSearchClick">
+            <FontAwesomeIcon :icon="faMagnifyingGlass" />
+        </Button>
     </div>
 </template>
+
+<style>
+@reference '@/assets/styles/main.css';
+
+.search {
+    @apply relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer flex-row items-center justify-between gap-3 rounded-full border border-slate-200 bg-white px-5 py-2 text-center text-sm transition-all duration-300;
+
+    .search--filter {
+        @apply flex w-full items-center justify-center gap-2 font-medium text-slate-700;
+
+        .search-input {
+            @apply w-full border-0 p-0 text-center text-sm shadow-none;
+        }
+    }
+
+    .search--divider {
+        @apply h-6 w-[1px] bg-slate-300;
+    }
+}
+</style>

@@ -1,10 +1,12 @@
-import { client } from '@/config/axios';
+import { client, getRandomDelay } from '@/config/axios';
 import { endpoints } from '@/endpoints';
 import type { LocationFilter } from '@/types/schema/Filter';
 import type { Location } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
 import { keepPreviousData, useQuery } from '@tanstack/vue-query';
-import { type Ref, computed } from 'vue';
+import { formatDate } from '@vueuse/core';
+import { type Ref, computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 type UseLocationsSearch = {
     locations: Ref<Paginated<Location> | undefined>;
@@ -22,27 +24,43 @@ type UseLocationsSearch = {
  * @returns An object containing the search results and their state.
  */
 export function useLocationsSearch(filters?: Ref<LocationFilter>): UseLocationsSearch {
-    const filtersKey = computed(() => JSON.stringify(Object.entries(filters?.value || {}).sort()));
+    const { locale } = useI18n();
 
     const query = useQuery({
-        queryKey: ['locations', 'search', filtersKey],
+        queryKey: ['locations', 'search', filters, locale],
         placeholderData: keepPreviousData,
         queryFn: async () => {
             // Add artificial delay to simulate loading state
-            await new Promise((resolve) => setTimeout(resolve, 500));
+            await getRandomDelay(250, 500);
 
             const [southWest, northEast] = filters?.value?.bounds || [];
+            const northEastLng = northEast?.[0];
+            const northEastLat = northEast?.[1];
+            const southWestLng = southWest?.[0];
+            const southWestLat = southWest?.[1];
 
-            const response = await client.get(endpoints.locations.search, {
-                params: {
-                    northEastLng: northEast?.[0],
-                    northEastLat: northEast?.[1],
-                    southWestLng: southWest?.[0],
-                    southWestLat: southWest?.[1],
-                    page: filters?.value?.page,
-                    perPage: filters?.value?.perPage,
-                },
-            });
+            const query = filters?.value?.query || undefined;
+            const page = filters?.value?.page;
+            const perPage = filters?.value?.perPage;
+            const language = locale.value;
+            const openOnDay = filters?.value?.openOn 
+                ? formatDate(filters.value.openOn, 'YYYY-MM-DD') 
+                : null;
+
+            const params = {
+                northEastLng,
+                northEastLat,
+                southWestLng,
+                southWestLat,
+                query,
+                page,
+                perPage,
+                openOnDay,
+                language
+            };
+
+            const response = await client.get(endpoints.locations.search, { params });
+
             return response.data;
         },
     });

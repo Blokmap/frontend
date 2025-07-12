@@ -15,5 +15,7 @@ export interface MapAdapter<T> {
     setOnMarkerClick(callback: (id: T, event: MouseEvent) => void): void;
     setOnMove(callback: (lngLat: LngLat) => void): void;
     setOnBoundsChange(callback: (bounds: LngLatBounds) => void): void;
+    flyToBounds(bounds: LngLatBounds): void;
+    flyTo(lngLat: LngLat): void;
     isLoaded: ComputedRef<boolean>;
 }

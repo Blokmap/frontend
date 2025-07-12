@@ -4,7 +4,7 @@ import LocationCardSkeleton from '@/components/features/location/LocationCardSke
 import BlokMap from '@/components/features/map/BlokMap.vue';
 import { useLocationsSearch } from '@/composables/services/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import type { LngLatBounds } from '@/types/contract/Map';
+import { type LngLat, type LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
 import { useTemplateRefsList } from '@vueuse/core';
 import gsap from 'gsap';
@@ -22,6 +22,15 @@ const selectedLocation = ref<Location | null>(null);
 const showLocationDialog = computed(() => !!selectedLocation.value);
 const locationAnim = ref<GSAPTween | null>(null);
 const locationRefs = useTemplateRefsList();
+
+const center = computed<LngLat | null>(() => {
+    if (!filters.value.location?.coordinates) return null;
+
+    return [
+        filters.value.location.coordinates.longitude,
+        filters.value.location.coordinates.latitude,
+    ];
+});
 
 watch(locations, async (locations) => {
     if (!locations || !locations.data?.length) {
@@ -82,7 +91,7 @@ function handlePageChange(event: { page: number }): void {
 
 <template>
     <div class="flex w-full flex-col-reverse items-stretch gap-8 md:flex-row">
-        <div class="flex w-full flex-col md:w-1/2">
+        <div class="flex w-full flex-col md:w-4/7">
             <h2 class="mb-8 flex items-center justify-between font-semibold">
                 <template v-if="!locations">
                     <Skeleton width="" height="1rem" />
@@ -118,8 +127,7 @@ function handlePageChange(event: { page: number }): void {
                 </div>
             </template>
         </div>
-
-        <div class="flex md:w-1/2">
+        <div class="flex md:w-3/7">
             <div
                 class="sticky top-[116px] w-full"
                 :style="{ height: 'calc(100vh - 116px - 2rem)' }">
@@ -127,6 +135,7 @@ function handlePageChange(event: { page: number }): void {
                     ref="map"
                     :locations="locations?.data"
                     :is-loading="locationsIsFetching"
+                    :center="center"
                     @change:bounds="handleBoundsChange"
                     @click:marker="handleMarkerClick"
                     class="h-full w-full rounded-xl">

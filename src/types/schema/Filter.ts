@@ -7,9 +7,9 @@ export type ReservableOption = {
 };
 
 export type LocationFilter = Pagination & {
-    language?: string | null;
-    location?: GeoJSON.GeoJsonProperties;
-    isReservable?: boolean | null;
-    openOn?: Date | null;
-    bounds?: LngLatBounds;
+    language: string | null;
+    location: GeoJSON.GeoJsonProperties;
+    isReservable: boolean | null;
+    openOn: Date | null;
+    bounds: LngLatBounds | null;
 };

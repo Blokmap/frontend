@@ -36,7 +36,6 @@
     "devDependencies": {
         "@tailwindcss/vite": "^4.1.8",
         "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-        "@types/cypress": "1.1.6",
         "@types/node": "^22.13.5",
         "@vitejs/plugin-vue": "^5.2.1",
         "@vue/tsconfig": "^0.7.0",

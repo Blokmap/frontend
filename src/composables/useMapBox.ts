@@ -144,6 +144,39 @@ export function useMapBox<T>(
     }
 
     /**
+     * Flies the map to the specified bounds.
+     *
+     * @param bounds - The bounds to fly to, defined by southwest and northeast coordinates.
+     */
+    function flyToBounds(bounds: LngLatBounds): void {
+        if (!map.value) return;
+
+        const sw = new mapboxgl.LngLat(bounds[0][0], bounds[0][1]);
+        const ne = new mapboxgl.LngLat(bounds[1][0], bounds[1][1]);
+        const mapBounds = new mapboxgl.LngLatBounds(sw, ne);
+
+        map.value.fitBounds(mapBounds, {
+            padding: { top: 20, bottom: 20, left: 20, right: 20 },
+            duration: 1000,
+        });
+    }
+
+    /**
+     * Flies the map to the specified longitude and latitude.
+     *
+     * @param lngLat - The longitude and latitude to fly to.
+     */
+    function flyTo(lngLat: LngLat): void {
+        if (!map.value) return;
+
+        map.value.flyTo({
+            center: lngLat,
+            zoom: 12,
+            duration: 1000,
+        });
+    }
+
+    /**
      * Sets a callback to be called when a marker is clicked.
      *
      * @param callback - A function that will be called with the marker's identifier and its coordinates.
@@ -152,5 +185,13 @@ export function useMapBox<T>(
         markerClickCallback.value = callback;
     }
 
-    return { setMarkers, setOnBoundsChange, setOnMarkerClick, setOnMove, isLoaded };
+    return {
+        setMarkers,
+        setOnBoundsChange,
+        setOnMarkerClick,
+        setOnMove,
+        flyToBounds,
+        flyTo,
+        isLoaded,
+    };
 }

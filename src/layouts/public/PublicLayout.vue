@@ -3,8 +3,6 @@ import PublicFooter from './PublicFooter.vue';
 import PublicHeader from './PublicHeader.vue';
 import { useAuthLogout, useAuthProfile } from '@/composables/services/useAuth';
 import { useMessages } from '@/composables/useMessages';
-import { ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
 
 const { showMessage } = useMessages();
 
@@ -19,13 +17,6 @@ const { logout, logoutIsLoading } = useAuthLogout({
         });
     },
 });
-
-const route = useRoute();
-const previousRoute = ref(route);
-
-watch(route, (_, oldRoute) => {
-    previousRoute.value = oldRoute;
-});
 </script>
 
 <template>
@@ -38,8 +29,8 @@ watch(route, (_, oldRoute) => {
                 @logout="logout">
             </PublicHeader>
         </div>
-        <main class="mx-auto my-8 flex w-full flex-grow flex-col items-stretch px-4 xl:w-7/8">
-            <RouterView class="h-full flex-1" />
+        <main class="mx-auto my-9 flex w-full flex-grow flex-col items-stretch px-4 2xl:w-7/8">
+            <RouterView />
         </main>
         <PublicFooter />
     </div>

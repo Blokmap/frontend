@@ -6,7 +6,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
     plugins: [vue(), tailwindcss()],
     optimizeDeps: {
-        exclude: ['@primeuix', 'primeicons'],
+        exclude: ['@primeuix'],
     },
     resolve: {
         alias: {

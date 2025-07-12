@@ -5,17 +5,10 @@ import type { Location } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
 import { keepPreviousData, useQuery } from '@tanstack/vue-query';
 import { formatDate } from '@vueuse/core';
-import { type Ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { type MaybeRef, toValue } from 'vue';
 
-type UseLocationsSearch = {
-    locations: Ref<Paginated<Location> | undefined>;
-    locationsError: Ref<Error | null>;
-    locationsIsLoading: Ref<boolean>;
-    locationsIsSuccess: Ref<boolean>;
-    locationsIsError: Ref<boolean>;
-    locationsIsFetching: Ref<boolean>;
-};
+type UseLocationsSearch = ReturnType<typeof useQuery<Paginated<Location>>>;
 
 /**
  * Composable to search for locations based on filters.
@@ -23,7 +16,7 @@ type UseLocationsSearch = {
  * @param filters - The filters to apply when searching for locations.
  * @returns An object containing the search results and their state.
  */
-export function useLocationsSearch(filters?: Ref<LocationFilter>): UseLocationsSearch {
+export function useLocationsSearch(filters?: MaybeRef<LocationFilter>): UseLocationsSearch {
     const { locale } = useI18n();
 
     const query = useQuery({
@@ -33,18 +26,20 @@ export function useLocationsSearch(filters?: Ref<LocationFilter>): UseLocationsS
             // Add artificial delay to simulate loading state
             await getRandomDelay(250, 500);
 
-            const [southWest, northEast] = filters?.value?.bounds || [];
+            const filtersValue = toValue(filters);
+
+            const [southWest, northEast] = filtersValue?.bounds || [];
             const northEastLng = northEast?.[0];
             const northEastLat = northEast?.[1];
             const southWestLng = southWest?.[0];
             const southWestLat = southWest?.[1];
 
-            const query = filters?.value?.query || undefined;
-            const page = filters?.value?.page;
-            const perPage = filters?.value?.perPage;
+            const query = filtersValue?.query || undefined;
+            const page = filtersValue?.page;
+            const perPage = filtersValue?.perPage;
             const language = locale.value;
-            const openOnDay = filters?.value?.openOn 
-                ? formatDate(filters.value.openOn, 'YYYY-MM-DD') 
+            const openOnDay = filtersValue?.openOn 
+                ? formatDate(filtersValue?.openOn, 'YYYY-MM-DD') 
                 : null;
 
             const params = {
@@ -65,14 +60,30 @@ export function useLocationsSearch(filters?: Ref<LocationFilter>): UseLocationsS
         },
     });
 
-    return {
-        locations: query.data,
-        locationsError: query.error,
-        locationsIsLoading: query.isPending,
-        locationsIsSuccess: query.isSuccess,
-        locationsIsError: query.isError,
-        locationsIsFetching: query.isFetching,
-    };
+    return query;
+}
+
+type UseLocation = ReturnType<typeof useQuery<Location>>;
+
+/**
+ * Composable to fetch a single location by its ID.
+ *
+ * @param id - The ID of the location to fetch.
+ * @returns An object containing the location and its state.
+ */
+export function useLocation(id: MaybeRef<string>): UseLocation {
+    const query = useQuery({
+        queryKey: ['location', id],
+        queryFn: async (): Promise<Location> => {
+            const response = await client.get(
+                endpoints.locations.read.replace('{id}', toValue(id)),
+            );
+
+            return response.data;
+        },
+    });
+
+    return query;
 }
 
 /**

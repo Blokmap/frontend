@@ -96,7 +96,6 @@ function handlePageChange(event: { page: number }): void {
 </script>
 
 <template>
-    {{ filterStore.filters.page }}
     <div class="flex w-full flex-col-reverse items-stretch gap-8 md:flex-row">
         <div class="flex w-full flex-col md:w-4/7">
             <h2 class="mb-8 flex items-center justify-between text-lg font-semibold">
@@ -134,7 +133,6 @@ function handlePageChange(event: { page: number }): void {
                 </div>
             </template>
         </div>
-        <<<<<<< HEAD ======= >>>>>>> f1f512287a240614855f150c3bca5a9d36ea1c60
         <div class="flex md:w-3/7">
             <div
                 class="sticky top-[116px] w-full"
@@ -150,5 +148,4 @@ function handlePageChange(event: { page: number }): void {
             </div>
         </div>
     </div>
-    <LocationDialog v-if="query" />
 </template>

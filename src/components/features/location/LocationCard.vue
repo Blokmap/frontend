@@ -7,24 +7,26 @@ import { useI18n } from 'vue-i18n';
 
 const { locale } = useI18n();
 
-defineProps<{
-    location: Location;
-}>();
+withDefaults(
+    defineProps<{
+        active?: boolean;
+        location: Location;
+    }>(),
+    {
+        active: false,
+    },
+);
 </script>
 
 <template>
-    <div class="flex aspect-square flex-col gap-2 transition-all duration-300 hover:scale-102">
-        <div class="relative h-full w-full overflow-hidden rounded-xl">
-            <img
-                :src="getLocationPlaceholderImage(location)"
-                class="aspect-square h-full w-full rounded-xl object-cover" />
-            <div
-                class="absolute top-2 left-2 flex max-w-40 items-center gap-2 truncate rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium shadow">
+    <div class="location">
+        <div class="location--image" :class="{ active }">
+            <img :src="getLocationPlaceholderImage(location)" />
+            <div class="address">
                 <FontAwesomeIcon :icon="faLocationDot" class="text-secondary" />
                 {{ location.city }}, {{ location.province }}
             </div>
-            <div
-                class="absolute top-1 right-2 text-2xl text-white transition-colors duration-200 hover:text-red-500">
+            <div class="heart">
                 <FontAwesomeIcon :icon="faHeart" />
             </div>
         </div>
@@ -34,3 +36,31 @@ defineProps<{
         </p>
     </div>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.location {
+    @apply flex aspect-square flex-col gap-2 transition-all duration-300 hover:scale-102;
+
+    &.active {
+        @apply hidden;
+    }
+
+    .location--image {
+        @apply relative h-full w-full overflow-hidden rounded-xl;
+
+        .heart {
+            @apply absolute top-1 right-2 text-2xl text-white transition-colors duration-200 hover:text-red-500;
+        }
+
+        .address {
+            @apply absolute top-2 left-2 flex max-w-40 items-center gap-2 truncate rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium shadow;
+        }
+
+        img {
+            @apply aspect-square h-full w-full rounded-xl object-cover;
+        }
+    }
+}
+</style>

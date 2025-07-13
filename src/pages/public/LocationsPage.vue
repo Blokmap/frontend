@@ -2,19 +2,23 @@
 import LocationCard from '@/components/features/location/LocationCard.vue';
 import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
 import BlokMap from '@/components/features/map/BlokMap.vue';
+import Marker from '@/components/features/map/Marker.vue';
 import { useLocationsSearch } from '@/composables/services/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { type LngLat, type LngLatBounds } from '@/types/contract/Map';
+import type { Location } from '@/types/schema/Location';
 import { useTemplateRefsList } from '@vueuse/core';
 import gsap from 'gsap';
 import { storeToRefs } from 'pinia';
 import Paginator from 'primevue/paginator';
 import Skeleton from 'primevue/skeleton';
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
 
 const filterStore = useLocationFilters();
 const { filters } = storeToRefs(filterStore);
-const locationsSearchQuery = useLocationsSearch(filters);
+const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(filters);
+
+const mapRef = useTemplateRef<typeof BlokMap>('map');
 const locationRefs = useTemplateRefsList();
 
 const center = computed<LngLat | null>(() => {
@@ -26,11 +30,9 @@ const center = computed<LngLat | null>(() => {
     ];
 });
 
-const previousLocationCount = ref(filterStore.filters.perPage);
+const hoveredLocation = ref<Location | null>(null);
+const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
 const locationAnim = ref<GSAPTween | null>(null);
-
-const locations = computed(() => locationsSearchQuery.data?.value);
-const locationsIsFetching = computed(() => locationsSearchQuery.isFetching.value);
 
 watch(locations, async (locations) => {
     if (!locations || !locations.data?.length) {
@@ -63,13 +65,21 @@ watch(locations, async (locations) => {
     );
 });
 
+watch(
+    () => filters.value.location,
+    (newLocation) => {
+        if (!newLocation || !newLocation.coordinates) return;
+        mapRef.value?.flyTo([newLocation.coordinates.longitude, newLocation.coordinates.latitude]);
+    },
+);
+
 /**
  * Handle marker click events.
  *
  * @param id The ID of the clicked marker.
  */
 function handleMarkerClick(id: number): void {
-    const locations = locationsSearchQuery.data?.value;
+    console.log(`Marker with ID ${id} clicked`);
 }
 
 /**
@@ -117,7 +127,12 @@ function handlePageChange(event: { page: number }): void {
                 </template>
                 <template v-else-if="locations?.data?.length">
                     <div v-for="(location, i) in locations.data" :key="i" :ref="locationRefs.set">
-                        <LocationCard :location="location" @click="handleMarkerClick" />
+                        <LocationCard
+                            :location="location"
+                            @click="handleMarkerClick"
+                            @mouseenter="hoveredLocation = location"
+                            @mouseleave="hoveredLocation = null">
+                        </LocationCard>
                     </div>
                 </template>
             </div>
@@ -140,9 +155,16 @@ function handlePageChange(event: { page: number }): void {
                     ref="map"
                     :locations="locations?.data"
                     :is-loading="locationsIsFetching"
-                    :center="center"
-                    @change:bounds="handleBoundsChange"
-                    @click:marker="handleMarkerClick">
+                    @change:bounds="handleBoundsChange">
+                    <Marker
+                        v-for="location in locations?.data || []"
+                        :key="location.id"
+                        :location="location"
+                        :active="location.id === hoveredLocation?.id"
+                        @mouseenter="hoveredLocation = location"
+                        @mouseleave="hoveredLocation = null"
+                        @click="handleMarkerClick(location.id)">
+                    </Marker>
                 </BlokMap>
             </div>
         </div>

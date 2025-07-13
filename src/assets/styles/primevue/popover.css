@@ -42,3 +42,8 @@
 .p-popover.p-popover-flipped:before {
     @apply border-t-surface-200 dark:border-t-surface-700 border-b-transparent;
 }
+
+.p-popover:after,
+.p-popover:before {
+    left: calc(1.25rem + var(--p-popover-arrow-left));
+}

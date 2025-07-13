@@ -1,6 +1,5 @@
-import Marker from '@/components/features/map/Marker.vue';
 import { defaultMapOptions } from '@/config/map';
-import type { LngLat, LngLatBounds, MapAdapter, MapOptions } from '@/types/contract/Map';
+import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/types/contract/Map';
 import mapboxgl from 'mapbox-gl';
 import { type Ref, computed, h, onMounted, onUnmounted, ref, render } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -27,8 +26,6 @@ export function useMapBox<T>(
 
     const isLoaded = computed(() => map.value !== null && map.value.loaded());
     const isMoving = computed(() => map.value !== null && map.value.isMoving());
-
-    const markerClickCallback = ref<(id: T, event: MouseEvent) => void>(() => null);
 
     onMounted(() => {
         if (container.value === null) {
@@ -59,46 +56,28 @@ export function useMapBox<T>(
 
     onUnmounted(() => {
         map.value?.remove();
-        for (const [key] of markers) {
-            removeMarker(key);
-        }
     });
-
-    /**
-     * Removes a marker from the map.
-     *
-     * @param id - The identifier of the marker to remove.
-     */
-    function removeMarker(id: T): void {
-        const marker = markers.get(id);
-        if (!marker) return;
-
-        const el = marker.getElement();
-        render(null, el);
-        marker.remove();
-        markers.delete(id);
-    }
 
     /**
      * Adds a marker to the map.
      *
-     * @param id - The identifier for the marker.
-     * @param lngLat - The longitude and latitude coordinates for the marker.
+     * @param marker - The marker to add, containing an identifier, coordinates, and an HTML element.
      */
-    function addMarker(id: T, lngLat: LngLat): void {
+    function addMarker(marker: Marker<T>): void {
         if (!map.value) return;
+        const { id, coord, el } = marker;
+        const mbMarker = new mapboxgl.Marker(el).setLngLat(coord).addTo(map.value);
+        markers.set(id, mbMarker);
+    }
 
-        const element = document.createElement('div');
-        element.addEventListener('click', (event) => {
-            markerClickCallback.value(id, event);
-        });
-
-        const vnode = h(Marker);
-        render(vnode, element);
-
-        const marker = new mapboxgl.Marker({ element }).setLngLat(lngLat).addTo(map.value);
-
-        markers.set(id, marker);
+    /**
+     * Removes a marker from the map by its identifier.
+     *
+     * @param id - The identifier of the marker to remove.
+     */
+    function removeMarker(id: T): void {
+        markers.get(id)?.remove();
+        markers.delete(id);
     }
 
     /**
@@ -106,14 +85,14 @@ export function useMapBox<T>(
      *
      * @param entries - An array of tuples containing the marker identifier and its longitude/latitude coordinates.
      */
-    function setMarkers(entries: Array<[T, LngLat]>): void {
-        const newIds = new Set(entries.map(([id]) => id));
+    function setMarkers(entries: Marker<T>[]): void {
+        const newIds = new Set(entries.map((marker) => marker.id));
         const existingIds = new Set(markers.keys());
 
         // Add new markers
-        for (const [id, lngLat] of entries) {
-            if (!markers.has(id)) {
-                addMarker(id, lngLat);
+        for (const marker of entries) {
+            if (!markers.has(marker.id)) {
+                addMarker(marker);
             }
         }
 
@@ -188,19 +167,11 @@ export function useMapBox<T>(
         });
     }
 
-    /**
-     * Sets a callback to be called when a marker is clicked.
-     *
-     * @param callback - A function that will be called with the marker's identifier and its coordinates.
-     */
-    function setOnMarkerClick(callback: (id: T, event: MouseEvent) => void): void {
-        markerClickCallback.value = callback;
-    }
-
     return {
         setMarkers,
+        addMarker,
+        removeMarker,
         setOnBoundsChange,
-        setOnMarkerClick,
         setOnMove,
         flyToBounds,
         flyTo,

@@ -32,6 +32,8 @@ const { logout, logoutIsLoading } = useAuthLogout({
         <main class="mx-auto my-4 flex w-full flex-grow flex-col items-stretch px-6 2xl:w-7/8">
             <RouterView />
         </main>
-        <PublicFooter />
+        <div class="mx-6 my-4 2xl:mx-auto 2xl:w-7/8">
+            <PublicFooter />
+        </div>
     </div>
 </template>

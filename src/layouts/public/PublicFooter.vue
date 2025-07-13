@@ -60,4 +60,6 @@
     </footer>
 </template>
 
-<script setup></script>
+<style scoped>
+@reference '@/assets/styles/main.css';
+</style>

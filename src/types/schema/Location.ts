@@ -21,6 +21,7 @@ export type Location = {
     province: string;
     latitude: number;
     longitude: number;
+    openingTimes?: OpeningTime[];
     approvedAt: Date | null;
     createdAt: Date;
     updatedAt: Date;

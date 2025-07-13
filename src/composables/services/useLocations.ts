@@ -5,8 +5,8 @@ import type { Location } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
 import { keepPreviousData, useQuery } from '@tanstack/vue-query';
 import { formatDate } from '@vueuse/core';
-import { useI18n } from 'vue-i18n';
 import { type MaybeRef, toValue } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 type UseLocationsSearch = ReturnType<typeof useQuery<Paginated<Location>>>;
 
@@ -24,7 +24,7 @@ export function useLocationsSearch(filters?: MaybeRef<LocationFilter>): UseLocat
         placeholderData: keepPreviousData,
         queryFn: async () => {
             // Add artificial delay to simulate loading state
-            await getRandomDelay(250, 500);
+            await getRandomDelay(250, 350);
 
             const filtersValue = toValue(filters);
 
@@ -38,8 +38,8 @@ export function useLocationsSearch(filters?: MaybeRef<LocationFilter>): UseLocat
             const page = filtersValue?.page;
             const perPage = filtersValue?.perPage;
             const language = locale.value;
-            const openOnDay = filtersValue?.openOn 
-                ? formatDate(filtersValue?.openOn, 'YYYY-MM-DD') 
+            const openOnDay = filtersValue?.openOn
+                ? formatDate(filtersValue?.openOn, 'YYYY-MM-DD')
                 : null;
 
             const params = {
@@ -51,7 +51,7 @@ export function useLocationsSearch(filters?: MaybeRef<LocationFilter>): UseLocat
                 page,
                 perPage,
                 openOnDay,
-                language
+                language,
             };
 
             const response = await client.get(endpoints.locations.search, { params });

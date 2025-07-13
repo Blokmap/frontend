@@ -1,5 +1,4 @@
 import type { LocationFilter, ReservableOption } from '@/types/schema/Filter';
-import { useQueryClient } from '@tanstack/vue-query';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -9,7 +8,6 @@ import { useI18n } from 'vue-i18n';
  */
 export const useLocationFilters = defineStore('locationFilters', () => {
     const { locale } = useI18n();
-    const client = useQueryClient();
 
     const filters = ref<LocationFilter>({
         language: locale.value,
@@ -28,7 +26,6 @@ export const useLocationFilters = defineStore('locationFilters', () => {
      * @returns {void}
      */
     function updateFilters(newFilters: Partial<LocationFilter>): void {
-        client.invalidateQueries({ queryKey: ['locations', 'search'], });
         Object.assign(filters.value, newFilters);
     }
 

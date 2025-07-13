@@ -1,4 +1,12 @@
 {
+    "app": {
+        "locales": {
+            "en": "English",
+            "nl": "Nederlands",
+            "fr": "Français",
+            "de": "Deutsch"
+        }
+    },
     "layout": {
         "header": {
             "login": "Inloggen"

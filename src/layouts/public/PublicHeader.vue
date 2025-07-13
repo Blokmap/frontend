@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import LocationSearch from '@/components/features/location/LocationSearch.vue';
 import Logo from '@/components/shared/Logo.vue';
-import { useLocationsSearch } from '@/composables/services/useLocations';
+import LanguageSelector from '@/components/shared/molecules/LanguageSelector.vue';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { LocationFilter } from '@/types/schema/Filter';
 import type { Profile } from '@/types/schema/Profile';
-import { faBars, faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
@@ -18,9 +18,7 @@ defineProps<{
     logoutIsLoading?: boolean;
 }>();
 
-defineEmits<{
-    (e: 'logout'): Promise<void>;
-}>();
+defineEmits<{ (e: 'logout'): Promise<void> }>();
 
 const { push } = useRouter();
 
@@ -72,18 +70,14 @@ function handleFiltersUpdate(newFilters: Partial<LocationFilter>): void {
 
             <!-- Search -->
             <LocationSearch
-                :filters="filters"
                 v-model:is-expanded-search="isExpandedSearch"
+                :filters="filters"
                 @update:filters="handleFiltersUpdate">
             </LocationSearch>
 
             <!-- Quick Actions -->
             <div class="header--actions">
-                <Button severity="secondary" rounded>
-                    <template #icon>
-                        <FontAwesomeIcon :icon="faGlobe" />
-                    </template>
-                </Button>
+                <LanguageSelector />
                 <Button severity="secondary" rounded>
                     <template #icon>
                         <FontAwesomeIcon :icon="faBars" />
@@ -105,7 +99,7 @@ function handleFiltersUpdate(newFilters: Partial<LocationFilter>): void {
 @reference '@/assets/styles/main.css';
 
 .header {
-    @apply dark:border-surface-800 relative z-10 m-3 flex rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-3;
+    @apply dark:border-surface-800 relative z-10 flex rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-3;
 
     .header--wrapper {
         @apply relative mx-auto flex w-full items-center justify-center xl:w-7/8;

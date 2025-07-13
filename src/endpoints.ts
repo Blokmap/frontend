@@ -3,7 +3,7 @@ export const endpoints = {
         login: '/auth/login',
         logout: '/auth/logout',
         register: '/auth/register',
-        current: '/profile/me',
+        current: '/profiles/me',
         sso: '/auth/sso/{provider}',
     },
     institutions: {

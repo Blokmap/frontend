@@ -39,11 +39,20 @@ export function useMapBox<T>(
             accessToken: MAPBOX_ACCESS_TOKEN,
             language: locale.value,
             container: container.value,
-            style: options.style ?? defaultMapOptions.style,
-            center: options.center ?? defaultMapOptions.center,
-            maxBounds: options.bounds ?? defaultMapOptions.bounds,
-            zoom: options.zoom ?? defaultMapOptions.zoom,
+            style: options.style,
+            center: options.center,
+            maxBounds: options.bounds,
+            zoom: options.zoom,
         });
+
+        // Add geolocate control to the map.
+        newMap.addControl(
+            new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true,
+                },
+            }),
+        );
 
         map.value = newMap;
     });
@@ -196,6 +205,6 @@ export function useMapBox<T>(
         flyToBounds,
         flyTo,
         isLoaded,
-        isMoving
+        isMoving,
     };
 }

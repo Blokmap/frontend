@@ -97,9 +97,9 @@ function handlePageChange(event: { page: number }): void {
 <template>
     <div class="flex w-full flex-col-reverse items-stretch gap-6 md:flex-row">
         <div class="flex w-full flex-col md:w-4/7">
-            <h2 class="mb-8 flex items-center justify-between text-lg font-semibold">
+            <h2 class="mt-5 mb-9 flex items-center justify-between text-lg font-semibold">
                 <template v-if="!locations">
-                    <Skeleton width="" height="1rem" />
+                    <Skeleton height="1rem" />
                 </template>
                 <template v-else-if="locations.data.length">
                     <span v-if="locations.truncated">
@@ -134,8 +134,8 @@ function handlePageChange(event: { page: number }): void {
         </div>
         <div class="flex md:w-3/7">
             <div
-                class="sticky top-[116px] w-full"
-                :style="{ height: 'calc(100vh - 116px - 2rem)' }">
+                class="sticky top-[106px] w-full"
+                :style="{ height: 'calc(100vh - 106px - 1rem)' }">
                 <BlokMap
                     ref="map"
                     :locations="locations?.data"

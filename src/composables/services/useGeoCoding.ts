@@ -33,12 +33,15 @@ const defaultGeoSearchOptions: UseGeoSearchOptions = {
  * @param options - Optional parameters to customize the geocoding search.
  * @returns An object containing the search input and the query result.
  */
-export function useGeoSearch(search: Ref<string>, options: UseGeoSearchOptions = defaultGeoSearchOptions): UseGeoSearch {
+export function useGeoSearch(
+    search: Ref<string>,
+    options: UseGeoSearchOptions = defaultGeoSearchOptions,
+): UseGeoSearch {
     const { locale } = useI18n();
 
     const debouncedSearch = useDebounce(search, 250);
     const isEnabled = computed(() => debouncedSearch.value.length > 0);
-    
+
     const query = useQuery({
         queryKey: ['geosearch', debouncedSearch],
         retry: false,
@@ -46,18 +49,19 @@ export function useGeoSearch(search: Ref<string>, options: UseGeoSearchOptions =
         queryFn: async () => {
             const q = debouncedSearch.value.trim().toLowerCase();
 
+            const params = {
+                q,
+                access_token: MAPBOX_ACCESS_TOKEN,
+                language: locale.value,
+                ...options,
+            };
+
             const response = await mapBoxClient.get<GeoJSON.FeatureCollection>(
                 mapboxEndpoints.geocoding.forward,
-                {
-                    params: {
-                        q,
-                        access_token: MAPBOX_ACCESS_TOKEN,
-                        language: locale.value,
-                        ...options,
-                    },
-                },
+                { params },
             );
 
+            // Filter out duplicate names in the results
             const result = response.data.features.reduce(
                 (acc: GeoJSON.GeoJsonProperties[], feature: GeoJSON.Feature) => {
                     const props = feature.properties;

@@ -2,8 +2,8 @@
     @apply bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0 border-surface-200 dark:border-surface-700 before:border-b-surface-200 dark:before:border-b-surface-700 after:border-b-surface-0 dark:after:border-b-surface-900 mt-[10px] rounded-md border shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] before:pointer-events-none before:absolute before:bottom-full before:left-5 before:-ms-[10px] before:h-0 before:w-0 before:border-[10px] before:border-transparent after:pointer-events-none after:absolute after:bottom-full after:left-5 after:-ms-[8px] after:h-0 after:w-0 after:border-[8px] after:border-transparent;
 }
 
-.p-popover:after, .p-popover:before {
-    @apply hidden;
+.p-popover:after,
+.p-popover:before {
 }
 
 .p-popover-content {

@@ -113,7 +113,4 @@ export const mapboxEndpoints = {
         forward: '/search/geocode/v6/forward',
         reverse: '/search/geocode/v6/reverse',
     },
-    search: {
-        forward: '/search/searchbox/v1/forward',
-    },
 };

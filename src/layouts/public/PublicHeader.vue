@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import LocationSearch from '@/components/features/location/LocationSearch.vue';
 import Logo from '@/components/shared/Logo.vue';
+import { useLocationsSearch } from '@/composables/services/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { LocationFilter } from '@/types/schema/Filter';
 import type { Profile } from '@/types/schema/Profile';
@@ -23,8 +24,8 @@ defineEmits<{
 
 const { push } = useRouter();
 
-const { updateFilters } = useLocationFilters();
 const { filters } = storeToRefs(useLocationFilters());
+const locationFilters = useLocationFilters();
 const isExpandedSearch = ref(false);
 
 onMounted(() => {
@@ -36,15 +37,6 @@ onUnmounted(() => {
 });
 
 /**
- * Toggles the expanded search state.
- *
- * @param state - Optional boolean to set the expanded state directly.
- */
-function toggleExpandedSearch(state?: boolean): void {
-    isExpandedSearch.value = state ?? !isExpandedSearch.value;
-}
-
-/**
  * Handles the Escape key event to close the expanded search.
  *
  * @param event - The keyboard event triggered by pressing a key.
@@ -52,7 +44,7 @@ function toggleExpandedSearch(state?: boolean): void {
 function handleEscape(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
         event.preventDefault();
-        toggleExpandedSearch(false);
+        isExpandedSearch.value = false;
     }
 }
 
@@ -62,8 +54,8 @@ function handleEscape(event: KeyboardEvent): void {
  * @param newFilters - The new filters to apply.
  */
 function handleFiltersUpdate(newFilters: Partial<LocationFilter>): void {
-    updateFilters(newFilters);
-    toggleExpandedSearch(false);
+    locationFilters.updateFilters(newFilters);
+    isExpandedSearch.value = false;
     push({ name: 'locations' });
 }
 </script>
@@ -81,9 +73,8 @@ function handleFiltersUpdate(newFilters: Partial<LocationFilter>): void {
             <!-- Search -->
             <LocationSearch
                 :filters="filters"
-                :is-expanded-search="isExpandedSearch"
-                @update:filters="handleFiltersUpdate"
-                @toggle:expanded="toggleExpandedSearch">
+                v-model:is-expanded-search="isExpandedSearch"
+                @update:filters="handleFiltersUpdate">
             </LocationSearch>
 
             <!-- Quick Actions -->
@@ -107,7 +98,7 @@ function handleFiltersUpdate(newFilters: Partial<LocationFilter>): void {
             'pointer-events-auto opacity-100': isExpandedSearch,
             'pointer-events-none opacity-0': !isExpandedSearch,
         }"
-        @click="toggleExpandedSearch(false)"></div>
+        @click="isExpandedSearch = false"></div>
 </template>
 
 <style scoped>

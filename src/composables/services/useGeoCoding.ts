@@ -22,7 +22,7 @@ type UseGeoSearchOptions = {
 
 const defaultGeoSearchOptions: UseGeoSearchOptions = {
     auto_complete: true,
-    types: 'city,postcode,place,neighborhood',
+    types: 'place,locality',
     country: 'be',
     limit: 5,
 };
@@ -47,7 +47,7 @@ export function useGeoSearch(search: Ref<string>, options: UseGeoSearchOptions =
             const q = debouncedSearch.value.trim().toLowerCase();
 
             const response = await mapBoxClient.get<GeoJSON.FeatureCollection>(
-                mapboxEndpoints.search.forward,
+                mapboxEndpoints.geocoding.forward,
                 {
                     params: {
                         q,

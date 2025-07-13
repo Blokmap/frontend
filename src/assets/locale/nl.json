@@ -20,34 +20,11 @@
             "success": "Actie succesvol uitgevoerd",
             "info": "Informatie"
         },
-        "blokmap": {
-            "popover": {
-                "favorite": "Markeer als favoriet",
-                "unfavorite": "Verwijder als favoriet",
-                "button": "Meer informatie"
-            }
-        },
         "search": {
-            "placeholder": "Zoek naar een bloklocatie of plaats"
-        },
-        "sidebar": {
-            "items": {
-                "menu": "Navigatiemenu",
-                "favorite": "Favoriete locaties",
-                "recent": "Recente locaties"
-            },
-            "sections": {
-                "quick": "Snelmenu"
-            },
-            "links": {
-                "gsr": "Een project van de Gentse Studentenraad",
-                "source": "Broncode"
-            }
-        },
-        "attribution": {
-            "osm": "Data © {link}",
-            "leaflet": "Kaartimplementatie via {link}",
-            "carto": "Tiles © {link}"
+            "noResults": "Geen resultaten gevonden",
+            "inNeighborhood": "In de buurt",
+            "allLocations": "Alle locaties",
+            "anyDay": "Alle data"
         }
     }
 }

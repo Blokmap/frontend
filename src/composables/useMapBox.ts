@@ -24,7 +24,9 @@ export function useMapBox<T>(
     // by explictely casting the correc types.
     const markers = new Map<T, mapboxgl.Marker>() as Map<T, mapboxgl.Marker>;
     const map = ref(null) as Ref<mapboxgl.Map | null>;
+
     const isLoaded = computed(() => map.value !== null && map.value.loaded());
+    const isMoving = computed(() => map.value !== null && map.value.isMoving());
 
     const markerClickCallback = ref<(id: T, event: MouseEvent) => void>(() => null);
 
@@ -173,6 +175,7 @@ export function useMapBox<T>(
             center: lngLat,
             zoom: 12,
             duration: 1000,
+            essential: true,
         });
     }
 
@@ -193,5 +196,6 @@ export function useMapBox<T>(
         flyToBounds,
         flyTo,
         isLoaded,
+        isMoving
     };
 }

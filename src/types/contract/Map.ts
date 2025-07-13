@@ -18,4 +18,5 @@ export interface MapAdapter<T> {
     flyToBounds(bounds: LngLatBounds): void;
     flyTo(lngLat: LngLat): void;
     isLoaded: ComputedRef<boolean>;
+    isMoving: ComputedRef<boolean>;
 }

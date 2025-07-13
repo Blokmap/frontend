@@ -2,7 +2,6 @@
 import { useMapBox } from '@/composables/useMapBox';
 import type { LngLat, LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
-import { latLngEqual } from '@/utils/geo';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
@@ -34,8 +33,8 @@ const map = useMapBox<number>(mapContainer);
 
 watch(
     () => props.center,
-    (newCenter, oldCenter) => {
-        if (newCenter && !latLngEqual(newCenter, oldCenter) && map.isLoaded) {
+    (newCenter) => {
+        if (newCenter && map.isLoaded) {
             map.flyTo(newCenter);
         }
     },
@@ -87,7 +86,7 @@ function updateMarkers(): void {
 
 <template>
     <div ref="mapContainer" class="map">
-        <template v-if="isLoading">
+        <template v-if="isLoading && !map.isMoving.value">
             <div class="overlay">
                 <FontAwesomeIcon class="text-4xl text-white" :icon="faSpinner" spin />
             </div>
@@ -100,7 +99,7 @@ function updateMarkers(): void {
 @import '@/assets/styles/maps.css';
 
 .map {
-    @apply relative z-2 h-full overflow-hidden border-2 border-slate-200;
+    @apply relative z-2 h-full overflow-hidden rounded-xl border-2 border-slate-200;
 
     .overlay {
         @apply absolute top-0 right-0 bottom-0 left-0 z-2 flex h-full items-center justify-center bg-slate-800/30;

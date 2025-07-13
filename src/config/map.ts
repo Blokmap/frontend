@@ -1,7 +1,7 @@
 import type { MapOptions } from '@/types/contract/Map';
 
 export const defaultMapOptions: MapOptions = {
-    style: 'mapbox://styles/mapbox/light-v10',
+    style: 'mapbox://styles/blokmap/cmbvad6nj001h01s9f8ck0fgx',
     zoom: 7,
     center: [4.4764595, 50.5010789],
     bounds: [

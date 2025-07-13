@@ -8,30 +8,47 @@ import {
     faQuoteLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import AutoComplete, { type AutoCompleteOptionSelectEvent } from 'primevue/autocomplete';
+import type { AutoCompleteOptionSelectEvent } from 'primevue';
+import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import DatePicker from 'primevue/datepicker';
 import InputText from 'primevue/inputtext';
-import { ref } from 'vue';
+import { type ComponentPublicInstance, nextTick, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { filters } = defineProps<{
-    isExpandedSearch?: boolean;
     filters: LocationFilter;
 }>();
 
 const emit = defineEmits<{
-    (e: 'toggle:expanded', state?: boolean): void;
     (e: 'update:filters', filters: Partial<LocationFilter>): void;
 }>();
 
-const { locale } = useI18n();
+const isExpandedSearch = defineModel<boolean>('isExpandedSearch');
 
 const searchText = ref(filters.query ?? '');
 const openOnDate = ref(filters.openOn ?? null);
 const geoSearchLocation = ref(filters.location ?? null);
 const geoSearchText = ref(filters.location?.name ?? '');
+
+const { locale, t } = useI18n();
 const geoSearch = useGeoSearch(geoSearchText);
+
+const locationInputRef = useTemplateRef<ComponentPublicInstance>('locationInput');
+const queryInputRef = useTemplateRef<ComponentPublicInstance>('queryInput');
+const dateInputRef = useTemplateRef<ComponentPublicInstance>('dateInput');
+
+/**
+ * Handles the search button click event.
+ * Updates the filters with the current search criteria and resets the input fields.
+ */
+function handleSearchClick(): void {
+    emit('update:filters', {
+        query: searchText.value,
+        openOn: openOnDate.value,
+        location: geoSearchLocation.value,
+    });
+}
 
 /**
  * Handles the selection of a location option from the autocomplete suggestions.
@@ -44,39 +61,55 @@ function handleLocationOptionSelect(option: AutoCompleteOptionSelectEvent): void
 }
 
 /**
- * Handles the click event on the search field to toggle the expanded search state.
+ * Handles the change event of the location input.
+ * Resets the selected location when the input changes.
  */
-function handleExpandClick(): void {
-    emit('toggle:expanded', true);
+function handleLocationOptionChange(): void {
+    if (geoSearchLocation.value) {
+        geoSearchText.value = '';
+        geoSearchLocation.value = null;
+    }
 }
 
 /**
- * Handles the search button click event.
- * Updates the filters with the current search criteria and resets the input fields.
+ * Focuses the specified input field based on the provided field type.
+ *
+ * @param field - The field to focus ('location', 'query', or 'date').
  */
-function handleSearchClick(): void {
-    geoSearchText.value = geoSearchLocation.value?.name ?? '';
+async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<void> {
+    isExpandedSearch.value = true;
 
-    emit('update:filters', {
-        query: searchText.value,
-        openOn: openOnDate.value,
-        location: geoSearchLocation.value,
-    });
+    await nextTick();
+
+    switch (field) {
+        case 'location': {
+            const el = locationInputRef.value?.$el?.querySelector('input');
+            el?.focus();
+            break;
+        }
+        case 'query': {
+            const el = queryInputRef.value?.$el;
+            el?.focus();
+            break;
+        }
+        case 'date': {
+            const el = dateInputRef.value?.$el?.querySelector('input');
+            el?.focus();
+            break;
+        }
+    }
 }
 </script>
 
 <template>
-    <div
-        ref="search"
-        class="search"
-        @click.stop="handleExpandClick"
-        @keydown.enter="handleSearchClick">
+    <div ref="search" class="search" @keydown.enter="handleSearchClick">
         <!-- City filter -->
         <div class="search--filter">
             <FontAwesomeIcon :icon="faMapLocation" />
             <template v-if="isExpandedSearch">
                 <AutoComplete
-                    inputId="city"
+                    ref="locationInput"
+                    input-id="city"
                     placeholder="Zoek op locatie"
                     pt:pcInputText:root:class="search-input"
                     pt:overlay:class="!min-w-[200px]"
@@ -84,6 +117,7 @@ function handleSearchClick(): void {
                     :suggestions="geoSearch.data.value"
                     v-model="geoSearchText"
                     option-label="name"
+                    @change="handleLocationOptionChange"
                     @option-select="handleLocationOptionSelect">
                     <template #option="{ option }">
                         <div class="flex flex-col gap-1">
@@ -97,16 +131,21 @@ function handleSearchClick(): void {
                             </div>
                         </div>
                     </template>
-
                     <template #empty>
-                        <span class="text-sm text-slate-500"> Geen resultaten gevonden </span>
+                        <span class="text-sm text-slate-500">
+                            {{ t('components.search.noResults') }}
+                        </span>
                     </template>
                 </AutoComplete>
             </template>
             <template v-else>
-                <span class="w-full">{{
-                    filters.location?.name || geoSearchText || 'In de buurt'
-                }}</span>
+                <span class="w-full" @click="handleFocusField('location')">
+                    {{
+                        filters.location?.name ||
+                        geoSearchText ||
+                        t('components.search.inNeighborhood')
+                    }}
+                </span>
             </template>
         </div>
 
@@ -117,6 +156,7 @@ function handleSearchClick(): void {
             <FontAwesomeIcon :icon="faQuoteLeft" />
             <template v-if="isExpandedSearch">
                 <InputText
+                    ref="queryInput"
                     class="search-input"
                     id="query"
                     placeholder="Zoek op naam"
@@ -124,7 +164,9 @@ function handleSearchClick(): void {
                 </InputText>
             </template>
             <template v-else>
-                <span class="w-full">{{ filters.query || searchText || 'Alle locaties' }}</span>
+                <span class="w-full" @click="handleFocusField('query')">
+                    {{ filters.query || searchText || t('components.search.allLocations') }}
+                </span>
             </template>
         </div>
 
@@ -136,22 +178,23 @@ function handleSearchClick(): void {
             <template v-if="isExpandedSearch">
                 <DatePicker
                     v-model="openOnDate"
-                    @clear-click="openOnDate = null"
+                    ref="dateInput"
                     placeholder="Open op datum"
                     dateFormat="dd/mm/yy"
                     inputId="openOnDay"
                     pt:pc-input-text:root:class="search-input"
+                    @clear-click="openOnDate = null"
                     show-button-bar>
                 </DatePicker>
             </template>
             <template v-else>
-                <span class="w-full">
+                <span class="w-full" @click="handleFocusField('date')">
                     {{
                         (filters.openOn || openOnDate)?.toLocaleDateString(locale, {
                             weekday: 'long',
                             day: 'numeric',
                             month: 'long',
-                        }) || 'Alle data'
+                        }) || t('components.search.anyDay')
                     }}
                 </span>
             </template>
@@ -170,7 +213,7 @@ function handleSearchClick(): void {
 @reference '@/assets/styles/main.css';
 
 .search {
-    @apply relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer flex-row items-center justify-between gap-3 rounded-full border border-slate-200 bg-white px-5 py-2 text-center text-sm transition-all duration-300;
+    @apply relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer flex-row items-center justify-between gap-3 rounded-full border border-slate-200 bg-white px-5 py-1.5 text-center text-sm transition-all duration-300;
 
     .search--filter {
         @apply flex w-full items-center justify-center gap-2 font-medium text-slate-700;

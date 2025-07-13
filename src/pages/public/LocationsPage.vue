@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import LocationCard from '@/components/features/location/LocationCard.vue';
 import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
-import LocationDialog from '@/components/features/location/LocationDialog.vue';
 import BlokMap from '@/components/features/map/BlokMap.vue';
 import { useLocationsSearch } from '@/composables/services/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
@@ -12,9 +11,7 @@ import { storeToRefs } from 'pinia';
 import Paginator from 'primevue/paginator';
 import Skeleton from 'primevue/skeleton';
 import { computed, nextTick, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
 
-const { query } = useRoute();
 const filterStore = useLocationFilters();
 const { filters } = storeToRefs(filterStore);
 const locationsSearchQuery = useLocationsSearch(filters);
@@ -81,7 +78,9 @@ function handleMarkerClick(id: number): void {
  * @param bounds The new bounds of the map.
  */
 function handleBoundsChange(bounds: LngLatBounds): void {
-    filterStore.updateFilters({ bounds, page: 1 });
+    // When bounds change, update the filters with the new bounds
+    // and reset paginatation and location filter
+    filterStore.updateFilters({ bounds, page: 1, location: null });
 }
 
 /**
@@ -96,7 +95,7 @@ function handlePageChange(event: { page: number }): void {
 </script>
 
 <template>
-    <div class="flex w-full flex-col-reverse items-stretch gap-8 md:flex-row">
+    <div class="flex w-full flex-col-reverse items-stretch gap-6 md:flex-row">
         <div class="flex w-full flex-col md:w-4/7">
             <h2 class="mb-8 flex items-center justify-between text-lg font-semibold">
                 <template v-if="!locations">

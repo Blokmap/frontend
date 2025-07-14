@@ -5,7 +5,7 @@ import BlokMap from '@/components/features/map/BlokMap.vue';
 import Marker from '@/components/features/map/Marker.vue';
 import { useLocationsSearch } from '@/composables/services/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import { type LngLat, type LngLatBounds } from '@/types/contract/Map';
+import type { LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
 import { useTemplateRefsList } from '@vueuse/core';
 import gsap from 'gsap';
@@ -20,10 +20,9 @@ const { filters } = storeToRefs(filterStore);
 const mapRef = useTemplateRef<typeof BlokMap>('map');
 const locationRefs = useTemplateRefsList();
 
-const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(
-    filters,
-    mapRef.value?.isLoaded,
-);
+const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(filters, {
+    enabled: mapRef.value?.isLoaded,
+});
 
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);

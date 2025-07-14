@@ -20,9 +20,7 @@ const { filters } = storeToRefs(filterStore);
 const mapRef = useTemplateRef<typeof BlokMap>('map');
 const locationRefs = useTemplateRefsList();
 
-const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(filters, {
-    enabled: mapRef.value?.isLoaded,
-});
+const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(filters);
 
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);

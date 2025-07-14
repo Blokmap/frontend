@@ -44,6 +44,12 @@ onMounted(() => {
             debounceTimer.value = undefined;
         }, props.boundsDebounce);
     });
+
+    const bounds = map.getBounds();
+
+    if (bounds) {
+        emit('change:bounds', bounds);
+    }
 });
 </script>
 

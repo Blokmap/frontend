@@ -24,6 +24,7 @@ export interface MapAdapter<T = number> {
     setOnBoundsChange(callback: (bounds: LngLatBounds) => void): void;
     flyToBounds(bounds: LngLatBounds): void;
     flyTo(lngLat: LngLat): void;
+    getBounds(): LngLatBounds | null;
     isLoaded: ComputedRef<boolean>;
     isMoving: ComputedRef<boolean>;
 }

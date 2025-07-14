@@ -12,7 +12,7 @@ import gsap from 'gsap';
 import { storeToRefs } from 'pinia';
 import Paginator from 'primevue/paginator';
 import Skeleton from 'primevue/skeleton';
-import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
+import { nextTick, ref, useTemplateRef, watch } from 'vue';
 
 const filterStore = useLocationFilters();
 const { filters } = storeToRefs(filterStore);
@@ -20,15 +20,6 @@ const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(
 
 const mapRef = useTemplateRef<typeof BlokMap>('map');
 const locationRefs = useTemplateRefsList();
-
-const center = computed<LngLat | null>(() => {
-    if (!filters.value.location?.coordinates) return null;
-
-    return [
-        filters.value.location.coordinates.longitude,
-        filters.value.location.coordinates.latitude,
-    ];
-});
 
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
@@ -91,6 +82,7 @@ function handleBoundsChange(bounds: LngLatBounds): void {
     // When bounds change, update the filters with the new bounds
     // and reset paginatation and location filter
     filterStore.updateFilters({ bounds, page: 1, location: null });
+    console.log('Bounds changed:', bounds);
 }
 
 /**

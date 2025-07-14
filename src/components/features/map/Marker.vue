@@ -4,7 +4,7 @@ import type { Location } from '@/types/schema/Location';
 import { faBuildingColumns, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Popover from 'primevue/popover';
-import { inject, onMounted, onUnmounted, useTemplateRef, watch } from 'vue';
+import { inject, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
 const props = defineProps<{ location: Location; active?: boolean }>();
 
@@ -18,28 +18,35 @@ const popoverRef = useTemplateRef('popover');
 const markerRef = useTemplateRef('root');
 const map = inject<MapAdapter>('map');
 
+const isShowingPopover = ref(false);
+
 watch(
     () => props.active,
     (active) => {
         if (active) {
+            isShowingPopover.value = true;
             popoverRef?.value?.show(new Event('mouse'), markerRef.value);
         } else {
+            isShowingPopover.value = false;
             popoverRef?.value?.hide();
         }
     },
 );
 
 function handleMouseEnter(event: MouseEvent) {
+    isShowingPopover.value = true;
     popoverRef?.value?.show(event);
     emit('mouseenter');
 }
 
 function handleMouseLeave() {
+    isShowingPopover.value = false;
     popoverRef.value?.hide();
     emit('mouseleave');
 }
 
 function updatePopoverPosition() {
+    if (!isShowingPopover.value || !popoverRef.value) return;
     popoverRef.value?.alignOverlay();
 }
 

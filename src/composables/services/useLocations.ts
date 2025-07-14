@@ -5,7 +5,7 @@ import type { Location } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
 import { keepPreviousData, useQuery } from '@tanstack/vue-query';
 import { formatDate } from '@vueuse/core';
-import { type MaybeRef, toValue } from 'vue';
+import { type MaybeRef, computed, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 type UseLocationsSearch = ReturnType<typeof useQuery<Paginated<Location>>>;
@@ -19,8 +19,14 @@ type UseLocationsSearch = ReturnType<typeof useQuery<Paginated<Location>>>;
 export function useLocationsSearch(filters?: MaybeRef<LocationFilter>): UseLocationsSearch {
     const { locale } = useI18n();
 
+    const enabled = computed<boolean>(() => {
+        const filtersValue = toValue(filters);
+        return !filtersValue || !!filtersValue.bounds;
+    });
+
     const query = useQuery({
         queryKey: ['locations', 'search', filters, locale],
+        enabled: enabled,
         placeholderData: keepPreviousData,
         queryFn: async () => {
             // Add artificial delay to simulate loading state

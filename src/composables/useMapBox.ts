@@ -167,6 +167,24 @@ export function useMapBox<T>(
         });
     }
 
+    /**
+     * Returns the current bounds of the map.
+     *
+     * @returns - The current bounds of the map as an array of southwest and northeast coordinates.
+     */
+    function getBounds(): LngLatBounds | null {
+        if (!map.value) return null;
+
+        const bounds = map.value.getBounds();
+
+        if (!bounds) return null;
+
+        return [
+            [bounds.getSouthWest().lng, bounds.getSouthWest().lat],
+            [bounds.getNorthEast().lng, bounds.getNorthEast().lat],
+        ];
+    }
+
     return {
         setMarkers,
         addMarker,
@@ -175,6 +193,7 @@ export function useMapBox<T>(
         setOnMove,
         flyToBounds,
         flyTo,
+        getBounds,
         isLoaded,
         isMoving,
     };

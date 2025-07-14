@@ -16,10 +16,14 @@ import { nextTick, ref, useTemplateRef, watch } from 'vue';
 
 const filterStore = useLocationFilters();
 const { filters } = storeToRefs(filterStore);
-const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(filters);
 
 const mapRef = useTemplateRef<typeof BlokMap>('map');
 const locationRefs = useTemplateRefsList();
+
+const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(
+    filters,
+    mapRef.value?.isLoaded,
+);
 
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);

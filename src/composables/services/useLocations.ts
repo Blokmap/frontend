@@ -16,13 +16,11 @@ type UseLocationsSearch = ReturnType<typeof useQuery<Paginated<Location>>>;
  * @param filters - The filters to apply when searching for locations.
  * @returns An object containing the search results and their state.
  */
-export function useLocationsSearch(filters?: MaybeRef<LocationFilter>): UseLocationsSearch {
+export function useLocationsSearch(
+    filters?: MaybeRef<LocationFilter>,
+    enabled?: MaybeRef<boolean>,
+): UseLocationsSearch {
     const { locale } = useI18n();
-
-    const enabled = computed<boolean>(() => {
-        const filtersValue = toValue(filters);
-        return !filtersValue || !!filtersValue.bounds;
-    });
 
     const query = useQuery({
         queryKey: ['locations', 'search', filters, locale],

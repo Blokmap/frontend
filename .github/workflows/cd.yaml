@@ -53,7 +53,7 @@ jobs:
         needs: [release-frontend-package]
         steps:
           - name: Deploy frontend
-            uses: appleboy/ssh-action@v1.2.1
+            uses: appleboy/ssh-action@8faa84277b88b6cd1455986f459aa66cf72bc8a3 # v1.2.1
             with:
                 host: ${{ secrets.STAGING_HOST }}
                 username: ${{ secrets.STAGING_USERNAME }}

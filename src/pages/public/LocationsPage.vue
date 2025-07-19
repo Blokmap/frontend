@@ -11,12 +11,11 @@ import type { Location } from '@/types/schema/Location';
 import { faFilter, faHelicopter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRefsList } from '@vueuse/core';
-import gsap from 'gsap';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Paginator from 'primevue/paginator';
 import Skeleton from 'primevue/skeleton';
-import { nextTick, ref, useTemplateRef, watch } from 'vue';
+import { ref, useTemplateRef, watch } from 'vue';
 
 const filterStore = useLocationFilters();
 const { filters } = storeToRefs(filterStore);
@@ -75,7 +74,7 @@ function handlePageChange(event: { page: number }): void {
 <template>
     <div class="flex w-full flex-col-reverse items-stretch gap-6 md:flex-row">
         <div class="flex w-full flex-col md:w-4/7">
-            <div class="mt-3 mb-8">
+            <div class="mb-8">
                 <template v-if="locationsIsFetching">
                     <div class="mt-2">
                         <Skeleton height="2rem" />

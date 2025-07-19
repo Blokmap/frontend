@@ -60,7 +60,7 @@ function handleFiltersUpdate(newFilters: Partial<LocationFilter>): void {
     <header class="header">
         <div class="header--wrapper">
             <div class="header--logo">
-                <RouterLink :to="{ name: 'locations' }" class="flex items-center gap-2">
+                <RouterLink :to="{ name: 'locations' }">
                     <Logo />
                 </RouterLink>
             </div>

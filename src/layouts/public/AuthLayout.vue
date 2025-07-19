@@ -25,7 +25,9 @@ function onTabChange(newValue: string | number) {
 }
 </script>
 <template>
-    <h1 class="mb-4 text-3xl font-semibold">Account</h1>
+    <h1 class="mt-4 text-center text-3xl font-semibold">
+        Your <span class="text-gradient-conic">Blokmap Account</span>
+    </h1>
     <Tabs :value="route.path" @update:value="onTabChange">
         <TabList>
             <Tab v-for="tab in items" :key="tab.label" :value="tab.route">

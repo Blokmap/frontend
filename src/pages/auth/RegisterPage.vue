@@ -51,7 +51,7 @@ const {
 
         <div class="basis-2/5">
             <h2 class="text-color my-6 text-xl font-semibold">
-                <span class="text-secondary font-bold">Register</span> without institution
+                <GradientText>Register</GradientText> without institution
             </h2>
             <RegisterForm
                 @submit="register"

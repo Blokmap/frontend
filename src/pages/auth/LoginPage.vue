@@ -54,7 +54,7 @@ const {
 
         <div class="basis-2/5">
             <h2 class="text-color my-6 text-xl font-semibold">
-                <span class="text-secondary font-bold">Log in</span> in without institution
+                <GradientText>Log in</GradientText> in without institution
             </h2>
             <LoginForm
                 :idps="authIdentityProviders"

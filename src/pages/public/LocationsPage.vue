@@ -42,11 +42,13 @@ watch(
     () => filters.value.location,
     (newLocation) => {
         if (!newLocation || !newLocation.coordinates) return;
+        console.log('Flying to new location:', newLocation);
         mapRef.value?.map.flyTo([
             newLocation.coordinates.longitude,
             newLocation.coordinates.latitude,
         ]);
     },
+    { immediate: true, deep: true },
 );
 
 /**
@@ -88,11 +90,11 @@ function handlePageChange(event: { page: number }): void {
                             <template v-if="locations?.data?.length">
                                 <template v-if="locations.truncated">
                                     More than {{ locations.total }}
-                                    <GradientText>BlokSpots</GradientText> found
+                                    <GradientText>Blokspots</GradientText> found
                                 </template>
                                 <template v-else>
                                     {{ locations.total }}
-                                    <GradientText>BlokSpots</GradientText> found
+                                    <GradientText>Blokspots</GradientText> found
                                 </template>
                             </template>
                             <template v-else> No exact matches found </template>
@@ -108,7 +110,7 @@ function handlePageChange(event: { page: number }): void {
                     <template v-if="locations?.data?.length">
                         <p class="text-slate-500" v-if="locations.total > locations.perPage">
                             Showing {{ locations.perPage }} of {{ locations.total }}
-                            <GradientText>BlokSpots</GradientText>. Use the filters to narrow down
+                            <GradientText>Blokspots</GradientText>. Use the filters to narrow down
                             your search.
                         </p>
                     </template>

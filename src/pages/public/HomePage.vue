@@ -7,9 +7,6 @@ import Button from 'primevue/button';
 import Divider from 'primevue/divider';
 </script>
 
-<template>
-</template>
+<template></template>
 
-<style lang="postcss" scoped>
-
-</style>
+<style lang="postcss" scoped></style>

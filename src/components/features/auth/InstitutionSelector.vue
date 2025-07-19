@@ -27,14 +27,18 @@ function handleInstitutionSelection(institution: Institution): void {
 </script>
 
 <template>
-    <div class="my-4 grid grid-cols-2 gap-3">
+    <IconField>
+        <InputIcon>
+            <FontAwesomeIcon :icon="faMagnifyingGlass" />
+        </InputIcon>
+        <InputText class="w-full" placeholder="Search for your institution" />
+    </IconField>
+    <div class="my-6 grid grid-cols-2 gap-3">
         <template v-if="isLoading">
             <Skeleton height="96px" v-for="_ in 9" />
         </template>
         <template v-for="institution in institutions" :key="institution.name" v-else>
-            <div
-                class="flex cursor-pointer items-center gap-4 rounded-lg border-2 border-slate-200 p-4 transition-colors hover:bg-gray-50"
-                @click="handleInstitutionSelection(institution)">
+            <div class="institution" @click="handleInstitutionSelection(institution)">
                 <img
                     :src="institution.logo.url"
                     :alt="institution.name[locale as any]!"
@@ -46,11 +50,12 @@ function handleInstitutionSelection(institution: Institution): void {
             </div>
         </template>
     </div>
-    <h2 class="text-color my-6 text-xl font-semibold">Search for additional institutions</h2>
-    <IconField>
-        <InputIcon>
-            <FontAwesomeIcon :icon="faMagnifyingGlass" />
-        </InputIcon>
-        <InputText class="w-full" placeholder="Search for your institution" />
-    </IconField>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.institution {
+    @apply flex cursor-pointer items-center gap-4 rounded-lg border-2 border-slate-200 p-4 transition-colors hover:bg-gray-50;
+}
+</style>

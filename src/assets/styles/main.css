@@ -7,30 +7,6 @@
 @theme {
     --text-base: 14px;
 
-    --color-disco-50: #f2e7ee;
-    --color-disco-100: #cea1bb;
-    --color-disco-200: #b6739a;
-    --color-disco-300: #9e4478;
-    --color-disco-400: #861657;
-    --color-disco-500: #731349;
-    --color-disco-600: #5f103c;
-    --color-disco-700: #4b0d2f;
-    --color-disco-800: #370a22;
-    --color-disco-900: #230615;
-    --color-disco-950: #15030c;
-
-    --color-cinnabar-50: #fef4ee;
-    --color-cinnabar-100: #fee5d6;
-    --color-cinnabar-200: #fbc6ad;
-    --color-cinnabar-300: #f89f79;
-    --color-cinnabar-400: #f46e43;
-    --color-cinnabar-500: #f2542d;
-    --color-cinnabar-600: #e22e14;
-    --color-cinnabar-700: #bc2012;
-    --color-cinnabar-800: #951b17;
-    --color-cinnabar-900: #781a16;
-    --color-cinnabar-950: #410909;
-
     --color-timber-green-50: #f0f9f5;
     --color-timber-green-100: #dbf0e5;
     --color-timber-green-200: #b9e1ce;
@@ -42,6 +18,18 @@
     --color-timber-green-800: #1b4a3c;
     --color-timber-green-900: #14342b;
     --color-timber-green-950: #0c221d;
+
+    --color-glacier: oklch(49.933% 0.11024 250.04);
+    --color-glacier-50: oklch(96.247% 0.02001 200.64);
+    --color-glacier-100: oklch(92.597% 0.03582 205.23);
+    --color-glacier-200: oklch(84.361% 0.06317 214.03);
+    --color-glacier-300: oklch(74.762% 0.08826 226.04);
+    --color-glacier-400: oklch(63.754% 0.11758 239.66);
+    --color-glacier-500: oklch(49.933% 0.11024 250.04);
+    --color-glacier-600: oklch(41.436% 0.10419 257.32);
+    --color-glacier-700: oklch(33.231% 0.09464 263.24);
+    --color-glacier-800: oklch(25.996% 0.07965 268.39);
+    --color-glacier-900: oklch(19.004% 0.05983 273.58);
 
     --color-primary: var(--color-timber-green-500);
     --color-primary-50: var(--color-timber-green-50);
@@ -56,18 +44,25 @@
     --color-primary-900: var(--color-timber-green-900);
     --color-primary-950: var(--color-timber-green-950);
 
-    --color-secondary: var(--color-disco-500);
-    --color-secondary-50: var(--color-disco-50);
-    --color-secondary-100: var(--color-disco-100);
-    --color-secondary-200: var(--color-disco-200);
-    --color-secondary-300: var(--color-disco-300);
-    --color-secondary-400: var(--color-disco-400);
-    --color-secondary-500: var(--color-disco-500);
-    --color-secondary-600: var(--color-disco-600);
-    --color-secondary-700: var(--color-disco-700);
-    --color-secondary-800: var(--color-disco-800);
-    --color-secondary-900: var(--color-disco-900);
-    --color-secondary-950: var(--color-disco-950);
+    --color-secondary: var(--color-glacier-500);
+    --color-secondary-50: var(--color-glacier-50);
+    --color-secondary-100: var(--color-glacier-100);
+    --color-secondary-200: var(--color-glacier-200);
+    --color-secondary-300: var(--color-glacier-300);
+    --color-secondary-400: var(--color-glacier-400);
+    --color-secondary-500: var(--color-glacier-500);
+    --color-secondary-600: var(--color-glacier-600);
+    --color-secondary-700: var(--color-glacier-700);
+    --color-secondary-800: var(--color-glacier-800);
+    --color-secondary-900: var(--color-glacier-900);
+    --color-secondary-950: var(--color-glacier-950);
+
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.2);
+    --shadow-default: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 10px 40px rgba(0, 0, 0, 0.18);
+    --shadow-2xl: 0 12px 60px rgba(0, 0, 0, 0.2);
 }
 
 body {

@@ -12,19 +12,12 @@ const { t, locale, availableLocales } = useI18n();
 const rememberedLocale = useLocalStorage('locale', 'nl');
 const popoverRef = useTemplateRef('popover');
 
-/**
- * Toggles the language selection popover.
- */
 function toggleLanguageSelector(event: MouseEvent): void {
     if (popoverRef.value) {
         popoverRef.value.toggle(event);
     }
 }
 
-/**
- * Handles the change of locale.
- * @param newLocale - The new locale to set.
- */
 function handleLocaleChange(newLocale: string): void {
     locale.value = newLocale;
     rememberedLocale.value = newLocale;

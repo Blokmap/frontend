@@ -1,4 +1,4 @@
-import type { LngLat } from "@/types/contract/Map";
+import type { LngLat } from '@/types/contract/Map';
 
 /**
  * Rounds a latitude or longitude value to a specified number of decimal digits.
@@ -16,7 +16,7 @@ export function roundLatLng(n: number | null | undefined, digits = 4): number | 
  *
  * @param one - The first LngLat value.
  * @param two - The second LngLat value.
- * 
+ *
  * @returns `true` if both LngLat values are equal, `false` otherwise.
  */
 export function latLngEqual(one?: LngLat | null, two?: LngLat | null): boolean {

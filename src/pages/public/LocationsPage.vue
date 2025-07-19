@@ -3,13 +3,16 @@ import LocationCard from '@/components/features/location/LocationCard.vue';
 import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
 import BlokMap from '@/components/features/map/BlokMap.vue';
 import Marker from '@/components/features/map/Marker.vue';
-import { useLocationsSearch } from '@/composables/services/useLocations';
+import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
+import { faFilter } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRefsList } from '@vueuse/core';
 import gsap from 'gsap';
 import { storeToRefs } from 'pinia';
+import Button from 'primevue/button';
 import Paginator from 'primevue/paginator';
 import Skeleton from 'primevue/skeleton';
 import { nextTick, ref, useTemplateRef, watch } from 'vue';
@@ -20,7 +23,11 @@ const { filters } = storeToRefs(filterStore);
 const mapRef = useTemplateRef<typeof BlokMap>('map');
 const locationRefs = useTemplateRefsList();
 
-const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(filters);
+const {
+    data: locations,
+    isFetching: locationsIsFetching,
+    refetch: refetchLocations,
+} = useLocationsSearch(filters);
 
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
@@ -60,8 +67,12 @@ watch(locations, async (locations) => {
 watch(
     () => filters.value.location,
     (newLocation) => {
+        console.log('New location selected:', newLocation);
         if (!newLocation || !newLocation.coordinates) return;
-        mapRef.value?.flyTo([newLocation.coordinates.longitude, newLocation.coordinates.latitude]);
+        mapRef.value?.map.flyTo([
+            newLocation.coordinates.longitude,
+            newLocation.coordinates.latitude,
+        ]);
     },
 );
 
@@ -100,20 +111,44 @@ function handlePageChange(event: { page: number }): void {
 <template>
     <div class="flex w-full flex-col-reverse items-stretch gap-6 md:flex-row">
         <div class="flex w-full flex-col md:w-4/7">
-            <h2 class="mt-5 mb-9 flex items-center justify-between text-lg font-semibold">
-                <template v-if="!locations">
-                    <Skeleton height="1rem" />
+            <div class="mt-3 mb-8">
+                <template v-if="locationsIsFetching">
+                    <Skeleton height="2rem" />
+                    <Skeleton class="mt-3" height="1rem" />
                 </template>
-                <template v-else-if="locations.data.length">
-                    <span v-if="locations.truncated">
-                        More than {{ locations.total }} locations found
-                    </span>
-                    <span v-else> {{ locations.total }} locations found </span>
-                </template>
+
                 <template v-else>
-                    <span>No locations found</span>
+                    <h2 class="mb-3 flex items-center justify-between text-xl font-semibold">
+                        <span>
+                            <template v-if="locations?.data?.length">
+                                <template v-if="locations.truncated">
+                                    More than {{ locations.total }} locations found
+                                </template>
+                                <template v-else> {{ locations.total }} locations found </template>
+                            </template>
+                            <template v-else> No exact matches found </template>
+                        </span>
+
+                        <Button size="small" severity="secondary" @click="() => {}" rounded>
+                            <template #icon>
+                                <FontAwesomeIcon :icon="faFilter" />
+                            </template>
+                        </Button>
+                    </h2>
+
+                    <template v-if="locations?.data?.length">
+                        <p class="text-slate-500" v-if="locations.total > locations.perPage">
+                            Showing {{ locations.perPage }} of {{ locations.total }} locations. Use
+                            the filters to narrow down your search.
+                        </p>
+                    </template>
+
+                    <template v-else>
+                        <p>Try adjusting your search criteria or filters.</p>
+                    </template>
                 </template>
-            </h2>
+            </div>
+
             <div class="grid flex-grow grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3">
                 <template v-if="locationsIsFetching">
                     <LocationCardSkeleton v-for="n in previousLocationCount" :key="n" />
@@ -141,9 +176,7 @@ function handlePageChange(event: { page: number }): void {
             </template>
         </div>
         <div class="flex md:w-3/7">
-            <div
-                class="sticky top-[106px] w-full"
-                :style="{ height: 'calc(100vh - 106px - 1rem)' }">
+            <div class="sticky top-4 w-full" :style="{ height: 'calc(100vh - 2rem)' }">
                 <BlokMap
                     ref="map"
                     :locations="locations?.data"

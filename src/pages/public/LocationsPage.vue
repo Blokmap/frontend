@@ -7,7 +7,7 @@ import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
-import { faFilter } from '@fortawesome/free-solid-svg-icons';
+import { faFilter, faHelicopter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRefsList } from '@vueuse/core';
 import gsap from 'gsap';
@@ -113,8 +113,10 @@ function handlePageChange(event: { page: number }): void {
         <div class="flex w-full flex-col md:w-4/7">
             <div class="mt-3 mb-8">
                 <template v-if="locationsIsFetching">
-                    <Skeleton height="2rem" />
-                    <Skeleton class="mt-3" height="1rem" />
+                    <div class="mt-2">
+                        <Skeleton height="2rem" />
+                        <Skeleton class="mt-3" height="1rem" />
+                    </div>
                 </template>
 
                 <template v-else>
@@ -129,7 +131,7 @@ function handlePageChange(event: { page: number }): void {
                             <template v-else> No exact matches found </template>
                         </span>
 
-                        <Button size="small" severity="contrast" @click="() => {}" rounded>
+                        <Button size="small" severity="contrast" @click="() => {}" outlined rounded>
                             <template #icon>
                                 <FontAwesomeIcon :icon="faFilter" />
                             </template>
@@ -145,6 +147,9 @@ function handlePageChange(event: { page: number }): void {
 
                     <template v-else>
                         <p>Try adjusting your search criteria or filters.</p>
+                        <Button class="mt-6" :loading="true" outlined rounded>
+                            <FontAwesomeIcon :icon="faHelicopter" /> Fly to closest BlokSpot
+                        </Button>
                     </template>
                 </template>
             </div>

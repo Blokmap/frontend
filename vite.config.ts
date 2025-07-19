@@ -20,7 +20,7 @@ export default defineConfig({
                 manualChunks: {
                     vue: ['vue', '@vueuse/core', '@vueuse/shared'],
                     primevue: ['primevue'],
-                    query: ['@tanstack/vue-query'],
+                    mapbox: ['mapbox-gl'],
                 },
             },
         },

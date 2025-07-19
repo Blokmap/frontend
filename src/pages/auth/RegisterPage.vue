@@ -13,7 +13,11 @@ const { showMessage } = useMessages();
 
 const { data: institutions, isLoading: isLoadingInstitutions } = useInstitutions();
 
-const { register, registerIsLoading, registerError } = useAuthRegister({
+const {
+    mutate: register,
+    isPending: registerIsLoading,
+    error: registerError,
+} = useAuthRegister({
     onError: (error) => {
         showMessage({
             severity: 'error',

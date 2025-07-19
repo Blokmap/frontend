@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Location } from '@/types/schema/Location';
 import { getLocationPlaceholderImage } from '@/utils/location';
-import { faHeart, faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';

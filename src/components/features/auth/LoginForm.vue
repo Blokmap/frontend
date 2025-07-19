@@ -65,7 +65,7 @@ function handleFormSubmission(): void {
     </form>
     <div class="my-4 grid grid-cols-1 gap-3">
         <template v-for="idp in idps" :key="idp.name">
-            <Button class="w-full" severity="secondary" :label="`Log in with ${idp.name}`">
+            <Button class="w-full" severity="contrast" :label="`Log in with ${idp.name}`">
                 <template #icon>
                     <img :src="idp.logo!" :alt="idp.name" class="h-5 w-5 object-contain" />
                 </template>

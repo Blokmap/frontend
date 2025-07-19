@@ -9,12 +9,4 @@ export const authIdentityProviders: Idp[] = [
         name: 'Microsoft',
         logo: 'https://www.microsoft.com/favicon.ico',
     },
-    {
-        name: 'GitHub',
-        logo: 'https://github.githubassets.com/favicons/favicon.svg',
-    },
-    {
-        name: 'Smartschool',
-        logo: 'https://www.smartschool.be/favicon.ico',
-    },
 ];

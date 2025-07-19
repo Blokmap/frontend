@@ -9,10 +9,10 @@ lerna-debug.log*
 
 # Build and library files.
 node_modules
-public
-public-ssr
-dist
-dist-ssr
+./public
+./public-ssr
+./dist
+./dist-ssr
 tsconfig.tsbuildinfo
 *.local
 .env

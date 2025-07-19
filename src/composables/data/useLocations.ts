@@ -1,16 +1,11 @@
 import { client, getRandomDelay } from '@/config/axios';
 import { endpoints } from '@/endpoints';
+import { searchLocations } from '@/services/location';
 import type { LocationFilter } from '@/types/schema/Filter';
 import type { Location } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
-import {
-    type DefinedInitialQueryOptions,
-    type UseQueryOptions,
-    keepPreviousData,
-    useQuery,
-} from '@tanstack/vue-query';
-import { formatDate } from '@vueuse/core';
-import { type MaybeRef, computed, toValue } from 'vue';
+import { keepPreviousData, useQuery, type QueryOptions } from '@tanstack/vue-query';
+import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 type UseLocationsSearch = ReturnType<typeof useQuery<Paginated<Location>>>;
@@ -19,55 +14,25 @@ type UseLocationsSearch = ReturnType<typeof useQuery<Paginated<Location>>>;
  * Composable to search for locations based on filters.
  *
  * @param filters - The filters to apply when searching for locations.
+ * @param options - Additional options for the query, such as initial data or query configuration.
  * @returns An object containing the search results and their state.
  */
-export function useLocationsSearch(filters?: MaybeRef<LocationFilter>) {
+export function useLocationsSearch(
+    filters?: MaybeRef<LocationFilter>,
+    options = {},
+): UseLocationsSearch {
     const { locale } = useI18n();
 
-    const enabled = computed(() => {
-        const filtersValue = toValue(filters);
-        return !filtersValue || filtersValue.bounds !== null;
-    });
-
     const query = useQuery({
-        enabled,
-        queryKey: ['locations', 'search', filters, locale],
+        ...options,
+        queryKey: ['locations', 'search', locale],
+        refetchOnWindowFocus: false,
         placeholderData: keepPreviousData,
         queryFn: async () => {
-            // Add artificial delay to simulate loading state
+            const params = toValue(filters);
             await getRandomDelay(250, 350);
-
-            const filtersValue = toValue(filters);
-
-            const [southWest, northEast] = filtersValue?.bounds || [];
-            const northEastLng = northEast?.[0];
-            const northEastLat = northEast?.[1];
-            const southWestLng = southWest?.[0];
-            const southWestLat = southWest?.[1];
-
-            const query = filtersValue?.query || undefined;
-            const page = filtersValue?.page;
-            const perPage = filtersValue?.perPage;
-            const language = locale.value;
-            const openOnDay = filtersValue?.openOn
-                ? formatDate(filtersValue?.openOn, 'YYYY-MM-DD')
-                : null;
-
-            const params = {
-                northEastLng,
-                northEastLat,
-                southWestLng,
-                southWestLat,
-                query,
-                page,
-                perPage,
-                openOnDay,
-                language,
-            };
-
-            const response = await client.get(endpoints.locations.search, { params });
-
-            return response.data;
+            const locations = await searchLocations(params, locale.value);
+            return locations;
         },
     });
 

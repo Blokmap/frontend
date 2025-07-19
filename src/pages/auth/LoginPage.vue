@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import InstitutionSelector from '@/components/features/auth/InstitutionSelector.vue';
 import LoginForm from '@/components/features/auth/LoginForm.vue';
-import { useAuthLogin, useAuthRegister } from '@/composables/services/useAuth';
-import { useInstitutions } from '@/composables/services/useInstitutions';
+import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
+import { useInstitutions } from '@/composables/data/useInstitutions';
 import { useMessages } from '@/composables/useMessages';
 import { authIdentityProviders } from '@/config/auth';
 import Divider from 'primevue/divider';
@@ -15,7 +15,11 @@ const router = useRouter();
 
 const { data: institutions, isLoading: isLoadingInstitutions } = useInstitutions();
 
-const { login, loginIsLoading, loginError } = useAuthLogin({
+const {
+    mutate: login,
+    isPending: loginIsLoading,
+    error: loginError,
+} = useAuthLogin({
     onError: (error) => {
         showMessage({
             severity: 'error',
@@ -24,7 +28,7 @@ const { login, loginIsLoading, loginError } = useAuthLogin({
         });
     },
     onSuccess: () => {
-        router.push({ name: 'home' });
+        router.push({ name: 'locations' });
         showMessage({
             severity: 'success',
             summary: 'Login Successful',

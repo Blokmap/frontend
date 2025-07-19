@@ -1,17 +1,14 @@
 import AuthLayout from '@/layouts/public/AuthLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
+import OfflinePage from '@/pages/system/OfflinePage.vue';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
     {
         path: '/',
+        redirect: { name: 'locations' },
         component: PublicLayout,
         children: [
-            {
-                path: '',
-                name: 'home',
-                component: () => import('@/pages/public/HomePage.vue'),
-            },
             {
                 path: 'locations',
                 name: 'locations',
@@ -35,6 +32,11 @@ const routes: RouteRecordRaw[] = [
                 ],
             },
         ],
+    },
+    {
+        path: '/offline',
+        name: 'offline',
+        component: OfflinePage,
     },
 ];
 

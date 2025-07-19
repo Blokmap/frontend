@@ -55,6 +55,8 @@ onMounted(() => {
 
     window.addEventListener('scroll', updatePopoverPosition);
 
+    map?.setOnMove(updatePopoverPosition);
+
     map?.addMarker({
         id: props.location.id,
         coord: [props.location.longitude, props.location.latitude],

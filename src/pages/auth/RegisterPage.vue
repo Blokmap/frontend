@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import InstitutionSelector from '@/components/features/auth/InstitutionSelector.vue';
 import RegisterForm from '@/components/features/auth/RegisterForm.vue';
-import { useAuthRegister } from '@/composables/services/useAuth';
-import { useInstitutions } from '@/composables/services/useInstitutions';
+import { useAuthRegister } from '@/composables/data/useAuth';
+import { useInstitutions } from '@/composables/data/useInstitutions';
 import { useMessages } from '@/composables/useMessages';
 import { authIdentityProviders } from '@/config/auth';
 import Divider from 'primevue/divider';

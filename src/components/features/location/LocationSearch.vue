@@ -1,19 +1,21 @@
 <script lang="ts" setup>
-import { useGeoSearch } from '@/composables/services/useGeoCoding';
+import { useGeoSearch } from '@/composables/data/useGeoCoding';
+import { useLocationsSearch } from '@/composables/data/useLocations';
 import type { LocationFilter } from '@/types/schema/Filter';
 import {
     faCalendarDays,
     faMagnifyingGlass,
     faMapLocation,
     faQuoteLeft,
+    faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import type { AutoCompleteOptionSelectEvent } from 'primevue';
+import { type AutoCompleteOptionSelectEvent } from 'primevue';
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import DatePicker from 'primevue/datepicker';
 import InputText from 'primevue/inputtext';
-import { type ComponentPublicInstance, nextTick, ref, useTemplateRef } from 'vue';
+import { type ComponentPublicInstance, computed, nextTick, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { filters } = defineProps<{
@@ -31,8 +33,31 @@ const openOnDate = ref(filters.openOn ?? null);
 const geoSearchLocation = ref(filters.location ?? null);
 const geoSearchText = ref(filters.location?.name ?? '');
 
+const locationLabel = computed(() => {
+    return filters.location?.name || geoSearchText.value || t('components.search.inNeighborhood');
+});
+
+const searchLabel = computed(() => {
+    return filters.query || searchText.value || t('components.search.allLocations');
+});
+
+const dateLabel = computed(() => {
+    const date = filters.openOn || openOnDate.value;
+
+    if (date) {
+        return date.toLocaleDateString(locale.value, {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+        });
+    }
+
+    return t('components.search.anyDay');
+});
+
 const { locale, t } = useI18n();
-const geoSearch = useGeoSearch(geoSearchText);
+const { isFetching } = useLocationsSearch(filters, { enabled: false });
+const { isLoading: isLoadingGeoSearch, data: geoSearchData } = useGeoSearch(geoSearchText);
 
 const locationInputRef = useTemplateRef<ComponentPublicInstance>('locationInput');
 const queryInputRef = useTemplateRef<ComponentPublicInstance>('queryInput');
@@ -113,8 +138,8 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
                     placeholder="Zoek op locatie"
                     pt:pcInputText:root:class="search-input"
                     pt:overlay:class="!min-w-[200px]"
-                    :loading="geoSearch.isLoading.value"
-                    :suggestions="geoSearch.data.value"
+                    :loading="isLoadingGeoSearch"
+                    :suggestions="geoSearchData"
                     v-model="geoSearchText"
                     option-label="name"
                     @change="handleLocationOptionChange"
@@ -122,7 +147,7 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
                     <template #option="{ option }">
                         <div class="flex flex-col gap-1">
                             <div class="flex items-center gap-2">
-                                <FontAwesomeIcon :icon="faMapLocation" />
+                                <FontAwesomeIcon class="text-secondary-500" :icon="faMapLocation" />
                                 {{ option.name }}
                                 {{ option.province }}
                             </div>
@@ -139,17 +164,11 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
                 </AutoComplete>
             </template>
             <template v-else>
-                <span class="w-full" @click="handleFocusField('location')">
-                    {{
-                        filters.location?.name ||
-                        geoSearchText ||
-                        t('components.search.inNeighborhood')
-                    }}
+                <span class="w-full truncate" @click="handleFocusField('location')">
+                    {{ locationLabel }}
                 </span>
             </template>
         </div>
-
-        <div class="search--divider"></div>
 
         <!-- Query filter -->
         <div class="search--filter">
@@ -164,13 +183,11 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
                 </InputText>
             </template>
             <template v-else>
-                <span class="w-full" @click="handleFocusField('query')">
-                    {{ filters.query || searchText || t('components.search.allLocations') }}
+                <span class="w-full truncate" @click="handleFocusField('query')">
+                    {{ searchLabel }}
                 </span>
             </template>
         </div>
-
-        <div class="search--divider"></div>
 
         <!-- Date filter -->
         <div class="search--filter">
@@ -189,22 +206,15 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
             </template>
             <template v-else>
                 <span class="w-full" @click="handleFocusField('date')">
-                    {{
-                        (filters.openOn || openOnDate)?.toLocaleDateString(locale, {
-                            weekday: 'long',
-                            day: 'numeric',
-                            month: 'long',
-                        }) || t('components.search.anyDay')
-                    }}
+                    {{ dateLabel }}
                 </span>
             </template>
         </div>
 
         <!--  Search button -->
-        <Button
-            class="flex h-8 w-8 items-center overflow-hidden rounded-full"
-            @click.stop="handleSearchClick">
-            <FontAwesomeIcon :icon="faMagnifyingGlass" />
+        <Button class="h-8 w-8 rounded-full" :disabled="isFetching" @click.stop="handleSearchClick">
+            <FontAwesomeIcon :icon="faSpinner" spin v-if="isFetching" />
+            <FontAwesomeIcon :icon="faMagnifyingGlass" v-else />
         </Button>
     </div>
 </template>
@@ -213,7 +223,8 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
 @reference '@/assets/styles/main.css';
 
 .search {
-    @apply relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer flex-row items-center justify-between gap-3 rounded-full border border-slate-200 bg-white px-5 py-1.5 text-center text-sm transition-all duration-300;
+    @apply relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer flex-row items-center justify-between gap-3;
+    @apply rounded-full border-2 border-slate-200 bg-white px-5 py-1.5 text-center text-sm transition-all duration-300;
 
     .search--filter {
         @apply flex w-full items-center justify-center gap-2 font-medium text-slate-700;
@@ -221,10 +232,6 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
         .search-input {
             @apply w-full border-0 p-0 text-center text-sm shadow-none;
         }
-    }
-
-    .search--divider {
-        @apply h-6 w-[1px] bg-slate-300;
     }
 }
 </style>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Gallery from '@/components/shared/Gallery.vue';
-import { useLocation } from '@/composables/services/useLocations';
+import { useLocation } from '@/composables/data/useLocations';
 import Dialog from 'primevue/dialog';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';

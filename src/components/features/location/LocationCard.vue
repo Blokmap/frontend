@@ -3,6 +3,7 @@ import type { Location } from '@/types/schema/Location';
 import { getLocationPlaceholderImage } from '@/utils/location';
 import { faHeart, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { locale } = useI18n();
@@ -22,13 +23,13 @@ withDefaults(
     <div class="location">
         <div class="location--image" :class="{ active }">
             <img :src="getLocationPlaceholderImage(location)" />
-            <div class="address">
+            <div class="address" v-tooltip="location.city">
                 <FontAwesomeIcon :icon="faLocationDot" class="text-secondary" />
-                {{ location.city }}, {{ location.province }}
+                {{ location.city }}
             </div>
-            <div class="heart">
+            <!-- <div class="heart">
                 <FontAwesomeIcon :icon="faHeart" />
-            </div>
+            </div> -->
         </div>
         <h2 class="text-md my-1 truncate font-semibold">{{ location.name }}</h2>
         <p class="line-clamp-2 text-xs text-gray-600">
@@ -56,7 +57,7 @@ withDefaults(
         }
 
         .address {
-            @apply absolute top-2 left-2 flex max-w-40 items-center gap-2 truncate rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium shadow;
+            @apply absolute top-2 left-2 flex max-w-30 items-center gap-2 truncate rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium shadow;
         }
 
         img {

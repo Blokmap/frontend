@@ -1,3 +1,4 @@
+import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import type { Location } from '@/types/schema/Location';
 
 export const locationPlaceholderImages = Object.values(
@@ -14,8 +15,5 @@ export const locationPlaceholderImages = Object.values(
  * @returns A random placeholder image URL.
  */
 export function getLocationPlaceholderImage(location: Location): string {
-    return (
-        locationPlaceholderImages[location.id % locationPlaceholderImages.length] ||
-        locationPlaceholderImages[0]
-    );
+    return placeholder;
 }

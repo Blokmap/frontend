@@ -49,7 +49,7 @@ function handleHoverOut() {
 
 <template>
     <div ref="logoRef" class="logo" @mouseenter="handleHoverIn" @mouseleave="handleHoverOut">
-        <FontAwesomeIcon class="text-lg text-white" :icon="faGraduationCap" />
+        <FontAwesomeIcon class="text-lg" :icon="faGraduationCap" />
         <span ref="textRef" class="ml-2 flex space-x-[1px]">
             <span v-for="(char, i) in 'Blokmap'" :key="i">{{ char }}</span>
         </span>
@@ -60,7 +60,7 @@ function handleHoverOut() {
 @reference '@/assets/styles/main.css';
 
 .logo {
-    @apply bg-secondary inline-flex items-center rounded-full px-4 py-2 transition-shadow duration-200;
-    @apply cursor-pointer text-lg font-bold tracking-wide text-white select-none;
+    @apply border-secondary inline-flex items-center rounded-full border-2 px-4 py-2 transition-shadow duration-200;
+    @apply text-secondary cursor-pointer text-lg font-bold tracking-wide select-none;
 }
 </style>

@@ -3,6 +3,7 @@ import LocationCard from '@/components/features/location/LocationCard.vue';
 import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
 import BlokMap from '@/components/features/map/BlokMap.vue';
 import Marker from '@/components/features/map/Marker.vue';
+import GradientText from '@/components/shared/GradientText.vue';
 import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { LngLatBounds } from '@/types/contract/Map';
@@ -140,15 +141,17 @@ function handlePageChange(event: { page: number }): void {
 
                     <template v-if="locations?.data?.length">
                         <p class="text-slate-500" v-if="locations.total > locations.perPage">
-                            Showing {{ locations.perPage }} of {{ locations.total }} locations. Use
-                            the filters to narrow down your search.
+                            Showing {{ locations.perPage }} of {{ locations.total }}
+                            <GradientText>BlokSpots</GradientText>. Use the filters to narrow down
+                            your search.
                         </p>
                     </template>
 
                     <template v-else>
                         <p>Try adjusting your search criteria or filters.</p>
-                        <Button class="mt-6" :loading="true" outlined rounded>
-                            <FontAwesomeIcon :icon="faHelicopter" /> Fly to closest BlokSpot
+                        <Button class="mt-6" outlined rounded>
+                            <FontAwesomeIcon :icon="faHelicopter" /> Fly to closest
+                            <GradientText>BlokSpot</GradientText>
                         </Button>
                     </template>
                 </template>

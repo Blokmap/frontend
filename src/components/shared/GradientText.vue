@@ -1,10 +1,10 @@
 <script setup lang="ts">
-defineProps<{ text: string }>();
+defineProps<{ text?: string }>();
 </script>
 
 <template>
     <span class="emphasis">
-        {{ text }}
+        <slot>{{ text }}</slot>
     </span>
 </template>
 
@@ -12,6 +12,15 @@ defineProps<{ text: string }>();
 @reference '@/assets/styles/main.css';
 
 .emphasis {
-    @apply from-primary to-secondary bg-gradient-to-r bg-clip-text font-semibold text-transparent;
+    font-weight: 600;
+    background-image: conic-gradient(
+        from 180deg,
+        var(--color-primary-500),
+        var(--color-secondary-500),
+        var(--color-primary-500)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 </style>

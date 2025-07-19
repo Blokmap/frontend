@@ -41,7 +41,7 @@ function goTo(routeName: string): void {
 
     <!-- Popover -->
     <Popover ref="popover" class="min-w-[240px] rounded-lg border border-slate-200 shadow-lg">
-        <div class="space-y-3 px-3 py-2 text-sm text-slate-800 dark:text-slate-200">
+        <div class="text-sm text-slate-800 dark:text-slate-200">
             <!-- Profile Section -->
             <template v-if="profileIsLoading">
                 <div class="flex items-center gap-3">

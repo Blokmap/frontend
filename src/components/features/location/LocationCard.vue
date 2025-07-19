@@ -3,7 +3,6 @@ import type { Location } from '@/types/schema/Location';
 import { getLocationPlaceholderImage } from '@/utils/location';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { locale } = useI18n();
@@ -31,7 +30,7 @@ withDefaults(
                 <FontAwesomeIcon :icon="faHeart" />
             </div> -->
         </div>
-        <h2 class="text-md my-1 truncate font-semibold">{{ location.name }}</h2>
+        <h2 class="text-md mt-1 truncate font-semibold">{{ location.name }}</h2>
         <p class="line-clamp-2 text-xs text-gray-600">
             {{ location.excerpt?.[locale] }}
         </p>
@@ -50,7 +49,7 @@ withDefaults(
 
     .location--image {
         @apply relative h-full w-full overflow-hidden;
-        @apply rounded-xl border-2 border-slate-200;
+        @apply rounded-2xl border-2 border-slate-200;
 
         .heart {
             @apply absolute top-1 right-2 text-2xl text-white transition-colors duration-200 hover:text-red-500;

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import InstitutionSelector from '@/components/features/auth/InstitutionSelector.vue';
 import LoginForm from '@/components/features/auth/LoginForm.vue';
+import GradientText from '@/components/shared/GradientText.vue';
 import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
 import { useInstitutions } from '@/composables/data/useInstitutions';
 import { useMessages } from '@/composables/useMessages';
@@ -42,7 +43,7 @@ const {
     <div class="flex items-start gap-8">
         <div class="basis-3/5">
             <h2 class="text-color my-6 text-xl font-semibold">
-                <span class="text-secondary font-bold">Log in</span> through your institution
+                <GradientText>Log in</GradientText> through your institution
             </h2>
             <InstitutionSelector :institutions="institutions" :is-loading="isLoadingInstitutions" />
         </div>

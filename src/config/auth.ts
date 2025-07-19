@@ -1,12 +1,14 @@
+import google from '@/assets/img/idps/google.svg';
+import microsoft from '@/assets/img/idps/microsoft.svg';
 import type { Idp } from '@/types/schema/Profile';
 
 export const authIdentityProviders: Idp[] = [
     {
         name: 'Google',
-        logo: 'https://www.google.com/favicon.ico',
+        logo: google,
     },
     {
         name: 'Microsoft',
-        logo: 'https://www.microsoft.com/favicon.ico',
+        logo: microsoft,
     },
 ];

@@ -212,7 +212,10 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
         </div>
 
         <!--  Search button -->
-        <Button class="h-8 w-8 rounded-full" :disabled="isFetching" @click.stop="handleSearchClick">
+        <Button
+            class="bg-gradient-conic h-8 w-8 rounded-full"
+            :disabled="isFetching"
+            @click.stop="handleSearchClick">
             <FontAwesomeIcon :icon="faSpinner" spin v-if="isFetching" />
             <FontAwesomeIcon :icon="faMagnifyingGlass" v-else />
         </Button>

@@ -100,7 +100,7 @@ onUnmounted(() => {
 @reference '@/assets/styles/main.css';
 
 .marker {
-    @apply flex h-6 w-9 cursor-pointer items-center justify-center rounded-full bg-slate-900 drop-shadow-lg transition-transform duration-200 hover:scale-110;
+    @apply bg-gradient-conic flex h-6 w-9 cursor-pointer items-center justify-center rounded-full drop-shadow-lg transition-transform duration-200 hover:scale-110;
 
     &.active {
         @apply scale-110;

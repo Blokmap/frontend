@@ -3,11 +3,12 @@ import LocationCard from '@/components/features/location/LocationCard.vue';
 import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
 import BlokMap from '@/components/features/map/BlokMap.vue';
 import Marker from '@/components/features/map/Marker.vue';
+import GradientText from '@/components/shared/GradientText.vue';
 import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
-import { faFilter } from '@fortawesome/free-solid-svg-icons';
+import { faFilter, faHelicopter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRefsList } from '@vueuse/core';
 import gsap from 'gsap';
@@ -113,8 +114,10 @@ function handlePageChange(event: { page: number }): void {
         <div class="flex w-full flex-col md:w-4/7">
             <div class="mt-3 mb-8">
                 <template v-if="locationsIsFetching">
-                    <Skeleton height="2rem" />
-                    <Skeleton class="mt-3" height="1rem" />
+                    <div class="mt-2">
+                        <Skeleton height="2rem" />
+                        <Skeleton class="mt-3" height="1rem" />
+                    </div>
                 </template>
 
                 <template v-else>
@@ -122,14 +125,18 @@ function handlePageChange(event: { page: number }): void {
                         <span>
                             <template v-if="locations?.data?.length">
                                 <template v-if="locations.truncated">
-                                    More than {{ locations.total }} locations found
+                                    More than {{ locations.total }}
+                                    <GradientText>BlokSpots</GradientText> found
                                 </template>
-                                <template v-else> {{ locations.total }} locations found </template>
+                                <template v-else>
+                                    {{ locations.total }}
+                                    <GradientText>BlokSpots</GradientText> found
+                                </template>
                             </template>
                             <template v-else> No exact matches found </template>
                         </span>
 
-                        <Button size="small" severity="contrast" @click="() => {}" rounded>
+                        <Button size="small" severity="contrast" @click="() => {}" outlined rounded>
                             <template #icon>
                                 <FontAwesomeIcon :icon="faFilter" />
                             </template>
@@ -138,13 +145,18 @@ function handlePageChange(event: { page: number }): void {
 
                     <template v-if="locations?.data?.length">
                         <p class="text-slate-500" v-if="locations.total > locations.perPage">
-                            Showing {{ locations.perPage }} of {{ locations.total }} locations. Use
-                            the filters to narrow down your search.
+                            Showing {{ locations.perPage }} of {{ locations.total }}
+                            <GradientText>BlokSpots</GradientText>. Use the filters to narrow down
+                            your search.
                         </p>
                     </template>
 
                     <template v-else>
                         <p>Try adjusting your search criteria or filters.</p>
+                        <Button class="mt-6" outlined rounded>
+                            <FontAwesomeIcon :icon="faHelicopter" /> Fly to closest
+                            <GradientText>BlokSpot</GradientText>
+                        </Button>
                     </template>
                 </template>
             </div>

@@ -75,20 +75,21 @@ function goTo(routeName: string): void {
             </template>
 
             <template v-else>
-                <div class="flex flex-col gap-2">
-                    <button class="menu-link" @click="goTo('auth.login')">
+                <h3 class="mb-3 text-lg font-bold">Your Profile</h3>
+                <div class="flex gap-1">
+                    <div class="menu-link" @click="goTo('auth.login')">
                         <FontAwesomeIcon :icon="faRightToBracket" class="text-secondary" />
                         <span>Login</span>
-                    </button>
-                    <button class="menu-link" @click="goTo('auth.register')">
+                    </div>
+                    <div class="menu-link" @click="goTo('auth.register')">
                         <FontAwesomeIcon :icon="faUserPlus" class="text-secondary" />
                         <span>Register</span>
-                    </button>
+                    </div>
                 </div>
             </template>
 
             <!-- Divider -->
-            <div class="border-t border-slate-200 dark:border-slate-700" />
+            <div class="my-3 border-t border-slate-200 dark:border-slate-700" />
 
             <!-- Navigation -->
             <div class="flex flex-col gap-2">
@@ -105,6 +106,6 @@ function goTo(routeName: string): void {
 @reference '@/assets/styles/main.css';
 
 .menu-link {
-    @apply flex items-center gap-2 rounded-md px-2 py-1.5 transition hover:bg-slate-100 dark:hover:bg-slate-800;
+    @apply flex w-full cursor-pointer items-center gap-2 rounded-md p-1 transition hover:bg-slate-100 dark:hover:bg-slate-800;
 }
 </style>

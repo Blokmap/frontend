@@ -59,9 +59,11 @@ function handleFiltersUpdate(newFilters: Partial<LocationFilter>): void {
 <template>
     <header class="header">
         <div class="header--wrapper">
-            <!-- <RouterLink :to="{ name: 'home' }" class="flex items-center gap-2">
-                <Logo />
-            </RouterLink> -->
+            <div class="header--logo">
+                <RouterLink :to="{ name: 'locations' }" class="flex items-center gap-2">
+                    <Logo />
+                </RouterLink>
+            </div>
 
             <LocationSearch
                 v-model:is-expanded-search="isExpandedSearch"
@@ -89,6 +91,10 @@ function handleFiltersUpdate(newFilters: Partial<LocationFilter>): void {
 
     .header--wrapper {
         @apply relative mx-auto flex w-full items-center justify-center;
+    }
+
+    .header--logo {
+        @apply top-[50%] left-0 translate-y-[-50%] sm:absolute;
     }
 
     .header--actions {

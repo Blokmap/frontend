@@ -129,7 +129,7 @@ function handlePageChange(event: { page: number }): void {
                             <template v-else> No exact matches found </template>
                         </span>
 
-                        <Button size="small" severity="secondary" @click="() => {}" rounded>
+                        <Button size="small" severity="contrast" @click="() => {}" rounded>
                             <template #icon>
                                 <FontAwesomeIcon :icon="faFilter" />
                             </template>

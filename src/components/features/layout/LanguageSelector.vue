@@ -26,7 +26,7 @@ function handleLocaleChange(newLocale: string): void {
 </script>
 
 <template>
-    <Button severity="secondary" @click="toggleLanguageSelector" rounded>
+    <Button severity="contrast" @click="toggleLanguageSelector" rounded>
         <template #icon>
             <FontAwesomeIcon :icon="faGlobe" />
         </template>

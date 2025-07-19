@@ -33,7 +33,7 @@ function goTo(routeName: string): void {
 
 <template>
     <!-- Menu Toggle Button -->
-    <Button severity="secondary" @click="handleMenuButtonClick" rounded class="!px-3 !py-2">
+    <Button severity="contrast" @click="handleMenuButtonClick" rounded class="!px-3 !py-2">
         <template #icon>
             <FontAwesomeIcon :icon="faBars" />
         </template>

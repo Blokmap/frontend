@@ -3,10 +3,11 @@ import type { MapAdapter } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
 import { faBuildingColumns, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import gsap from 'gsap';
 import Popover from 'primevue/popover';
-import { inject, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
+import { inject, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue';
 
-const props = defineProps<{ location: Location; active?: boolean }>();
+const props = defineProps<{ location: Location; active?: boolean; map: MapAdapter }>();
 
 const emit = defineEmits<{
     (e: 'click'): void;
@@ -16,7 +17,6 @@ const emit = defineEmits<{
 
 const popoverRef = useTemplateRef('popover');
 const markerRef = useTemplateRef('root');
-const map = inject<MapAdapter>('map');
 
 const isShowingPopover = ref(false);
 
@@ -53,20 +53,34 @@ function updatePopoverPosition() {
 onMounted(() => {
     if (!markerRef.value) return;
 
-    window.addEventListener('scroll', updatePopoverPosition);
+    window.addEventListener('scroll', () => {
+        if (isShowingPopover.value) {
+            updatePopoverPosition();
+        }
+    });
 
-    map?.setOnMove(updatePopoverPosition);
+    props.map.setOnMove(() => {
+        if (isShowingPopover.value) {
+            updatePopoverPosition();
+        }
+    });
 
-    map?.addMarker({
+    props.map.addMarker({
         id: props.location.id,
         coord: [props.location.longitude, props.location.latitude],
         el: markerRef.value,
     });
-});
 
-onUnmounted(() => {
-    window.removeEventListener('scroll', updatePopoverPosition);
-    map?.removeMarker(props.location.id);
+    gsap.fromTo(
+        markerRef.value,
+        { scale: 0.5, opacity: 0 },
+        {
+            scale: 1,
+            opacity: 1,
+            duration: 0.3,
+            ease: 'back.out(1.7)',
+        },
+    );
 });
 </script>
 
@@ -100,7 +114,7 @@ onUnmounted(() => {
 @reference '@/assets/styles/main.css';
 
 .marker {
-    @apply bg-gradient-conic flex h-6 w-9 cursor-pointer items-center justify-center rounded-full drop-shadow-lg transition-transform duration-200 hover:scale-110;
+    @apply flex h-6 w-9 cursor-pointer items-center justify-center rounded-full bg-slate-700 drop-shadow-lg transition-transform duration-200 hover:scale-110;
 
     &.active {
         @apply scale-110;

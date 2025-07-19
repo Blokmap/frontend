@@ -40,7 +40,9 @@ function goTo(routeName: string): void {
     </Button>
 
     <!-- Popover -->
-    <Popover ref="popover" class="min-w-[240px] rounded-lg border border-slate-200 shadow-lg">
+    <Popover
+        ref="popover"
+        class="max-w-[300px] min-w-[240px] rounded-lg border border-slate-200 shadow-lg">
         <div class="text-sm text-slate-800 dark:text-slate-200">
             <!-- Profile Section -->
             <template v-if="profileIsLoading">
@@ -75,7 +77,11 @@ function goTo(routeName: string): void {
             </template>
 
             <template v-else>
-                <h3 class="mb-3 text-lg font-bold">Your Profile</h3>
+                <h3 class="text-lg font-bold">Your Profile</h3>
+                <p class="mt-2 mb-3 text-sm text-slate-500 dark:text-slate-400">
+                    Use your account to reserve a seat at one of our
+                    <span class="text-gradient-conic">Blokspots</span> or submit your own.
+                </p>
                 <div class="flex gap-1">
                     <div class="menu-link" @click="goTo('auth.login')">
                         <FontAwesomeIcon :icon="faRightToBracket" class="text-secondary" />
@@ -95,7 +101,7 @@ function goTo(routeName: string): void {
             <div class="flex flex-col gap-2">
                 <button class="menu-link" @click="goTo('dashboard')">
                     <FontAwesomeIcon :icon="faMapLocation" class="text-secondary" />
-                    <span>Dashboard</span>
+                    <span>Browse our <span class="text-gradient-conic">Blokspots</span></span>
                 </button>
             </div>
         </div>
@@ -106,6 +112,6 @@ function goTo(routeName: string): void {
 @reference '@/assets/styles/main.css';
 
 .menu-link {
-    @apply flex w-full cursor-pointer items-center gap-2 rounded-md p-1 transition hover:bg-slate-100 dark:hover:bg-slate-800;
+    @apply flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition hover:bg-slate-100 dark:hover:bg-slate-800;
 }
 </style>

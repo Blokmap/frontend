@@ -2,8 +2,8 @@
 import LocationCard from '@/components/features/location/LocationCard.vue';
 import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
 import BlokMap from '@/components/features/map/BlokMap.vue';
-import Marker from '@/components/features/map/Marker.vue';
 import GradientText from '@/components/shared/GradientText.vue';
+import { useItemAnimation } from '@/composables/anim/useItemAnimation';
 import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { LngLatBounds } from '@/types/contract/Map';
@@ -23,16 +23,12 @@ const { filters } = storeToRefs(filterStore);
 
 const mapRef = useTemplateRef<typeof BlokMap>('map');
 const locationRefs = useTemplateRefsList();
+useItemAnimation(locationRefs);
 
-const {
-    data: locations,
-    isFetching: locationsIsFetching,
-    refetch: refetchLocations,
-} = useLocationsSearch(filters);
+const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(filters);
 
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
-const locationAnim = ref<GSAPTween | null>(null);
 
 watch(locations, async (locations) => {
     if (!locations || !locations.data?.length) {
@@ -41,34 +37,11 @@ watch(locations, async (locations) => {
 
     // Update the previous location count to match the new data length
     previousLocationCount.value = locations.data.length;
-
-    await nextTick();
-
-    // Kill any existing animation to prevent conflicts
-    if (locationAnim.value) {
-        locationAnim.value.kill();
-    }
-
-    locationAnim.value = gsap.fromTo(
-        locationRefs.value,
-        { opacity: 0, y: 20 },
-        {
-            opacity: 1,
-            y: 0,
-            duration: 0.3,
-            ease: 'power2.out',
-            stagger: {
-                amount: 0.5,
-                from: 'start',
-            },
-        },
-    );
 });
 
 watch(
     () => filters.value.location,
     (newLocation) => {
-        console.log('New location selected:', newLocation);
         if (!newLocation || !newLocation.coordinates) return;
         mapRef.value?.map.flyTo([
             newLocation.coordinates.longitude,
@@ -76,15 +49,6 @@ watch(
         ]);
     },
 );
-
-/**
- * Handle marker click events.
- *
- * @param id The ID of the clicked marker.
- */
-function handleMarkerClick(id: number): void {
-    console.log(`Marker with ID ${id} clicked`);
-}
 
 /**
  * Handle changes to the map's bounds.
@@ -95,7 +59,6 @@ function handleBoundsChange(bounds: LngLatBounds): void {
     // When bounds change, update the filters with the new bounds
     // and reset paginatation and location filter
     filterStore.updateFilters({ bounds, page: 1, location: null });
-    console.log('Bounds changed:', bounds);
 }
 
 /**
@@ -169,7 +132,6 @@ function handlePageChange(event: { page: number }): void {
                     <div v-for="(location, i) in locations.data" :key="i" :ref="locationRefs.set">
                         <LocationCard
                             :location="location"
-                            @click="handleMarkerClick"
                             @mouseenter="hoveredLocation = location"
                             @mouseleave="hoveredLocation = null">
                         </LocationCard>
@@ -193,16 +155,8 @@ function handlePageChange(event: { page: number }): void {
                     ref="map"
                     :locations="locations?.data"
                     :is-loading="locationsIsFetching"
+                    v-model:hovered-location="hoveredLocation"
                     @change:bounds="handleBoundsChange">
-                    <Marker
-                        v-for="location in locations?.data || []"
-                        :key="location.id"
-                        :location="location"
-                        :active="location.id === hoveredLocation?.id"
-                        @mouseenter="hoveredLocation = location"
-                        @mouseleave="hoveredLocation = null"
-                        @click="handleMarkerClick(location.id)">
-                    </Marker>
                 </BlokMap>
             </div>
         </div>

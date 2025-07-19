@@ -24,12 +24,13 @@ export function useMapBox<T>(
     const markers = new Map<T, mapboxgl.Marker>() as Map<T, mapboxgl.Marker>;
     const map = ref(null) as Ref<mapboxgl.Map | null>;
 
-    const isLoaded = computed(() => map.value !== null && map.value.loaded());
+    const markerCount = ref(0);
+    const isLoaded = ref(false);
     const isMoving = computed(() => map.value !== null && map.value.isMoving());
 
     onMounted(() => {
         if (container.value === null) {
-            return;
+            return console.error('Map container is not defined, cannot initialize map');
         }
 
         const newMap = new mapboxgl.Map({
@@ -42,12 +43,13 @@ export function useMapBox<T>(
             zoom: options.zoom,
         });
 
-        // Add geolocate control to the map.
+        newMap.once('load', () => {
+            isLoaded.value = true;
+        });
+
         newMap.addControl(
             new mapboxgl.GeolocateControl({
-                positionOptions: {
-                    enableHighAccuracy: true,
-                },
+                positionOptions: { enableHighAccuracy: true },
             }),
         );
 
@@ -55,7 +57,10 @@ export function useMapBox<T>(
     });
 
     onUnmounted(() => {
+        markers.forEach((marker) => marker.remove());
         map.value?.remove();
+        map.value = null;
+        markers.clear();
     });
 
     /**
@@ -64,10 +69,14 @@ export function useMapBox<T>(
      * @param marker - The marker to add, containing an identifier, coordinates, and an HTML element.
      */
     function addMarker(marker: Marker<T>): void {
-        if (!map.value) return;
+        if (!map.value) {
+            return console.error('Map is not initialized, cannot add marker');
+        }
+
         const { id, coord, el } = marker;
         const mbMarker = new mapboxgl.Marker(el).setLngLat(coord).addTo(map.value);
         markers.set(id, mbMarker);
+        markerCount.value = markers.size;
     }
 
     /**
@@ -78,6 +87,7 @@ export function useMapBox<T>(
     function removeMarker(id: T): void {
         markers.get(id)?.remove();
         markers.delete(id);
+        markerCount.value = markers.size;
     }
 
     /**
@@ -139,7 +149,9 @@ export function useMapBox<T>(
      * @param bounds - The bounds to fly to, defined by southwest and northeast coordinates.
      */
     function flyToBounds(bounds: LngLatBounds): void {
-        if (!map.value) return;
+        if (!map.value) {
+            return console.error('Map is not initialized, cannot fly to bounds');
+        }
 
         const sw = new mapboxgl.LngLat(bounds[0][0], bounds[0][1]);
         const ne = new mapboxgl.LngLat(bounds[1][0], bounds[1][1]);
@@ -157,7 +169,9 @@ export function useMapBox<T>(
      * @param lngLat - The longitude and latitude to fly to.
      */
     function flyTo(lngLat: LngLat): void {
-        if (!map.value) return;
+        if (!map.value) {
+            return console.error('Map is not initialized, cannot fly to location');
+        }
 
         map.value.flyTo({
             center: lngLat,
@@ -173,11 +187,17 @@ export function useMapBox<T>(
      * @returns - The current bounds of the map as an array of southwest and northeast coordinates.
      */
     function getBounds(): LngLatBounds | null {
-        if (!map.value) return null;
+        if (!map.value) {
+            console.warn('Map is not initialized, cannot get bounds');
+            return null;
+        }
 
         const bounds = map.value.getBounds();
 
-        if (!bounds) return null;
+        if (!bounds) {
+            console.warn('Map bounds are not available');
+            return null;
+        }
 
         return [
             [bounds.getSouthWest().lng, bounds.getSouthWest().lat],

@@ -1,10 +1,11 @@
 <script lang="ts" setup>
+import Marker from './Marker.vue';
 import { useMapBox } from '@/composables/useMapBox';
 import type { LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { onMounted, provide, ref, useTemplateRef } from 'vue';
+import { onMounted, ref, useTemplateRef } from 'vue';
 
 const props = withDefaults(
     defineProps<{
@@ -19,12 +20,21 @@ const props = withDefaults(
     },
 );
 
+const hoveredLocation = defineModel<Location | null>('hoveredLocation', {
+    default: null,
+});
+
 const emit = defineEmits<{
     (e: 'change:bounds', value: LngLatBounds): void;
+    (e: 'click:marker', id: number): void;
 }>();
 
 const mapContainerRef = useTemplateRef('mapContainer');
 const map = useMapBox(mapContainerRef);
+
+function handleMarkerClick(id: number): void {
+    emit('click:marker', id);
+}
 
 onMounted(() => {
     const debounceTimer = ref<number>();
@@ -52,7 +62,6 @@ onMounted(() => {
 });
 
 defineExpose({ map });
-provide('map', map);
 </script>
 
 <template>
@@ -61,7 +70,18 @@ provide('map', map);
             <span>Loading</span>
             <FontAwesomeIcon :icon="faSpinner" spin />
         </div>
-        <slot></slot>
+        <template v-if="map.isLoaded.value">
+            <Marker
+                v-for="location in locations"
+                :key="location.id"
+                :map="map"
+                :location="location"
+                :active="location.id === hoveredLocation?.id"
+                @mouseenter="hoveredLocation = location"
+                @mouseleave="hoveredLocation = null"
+                @click="handleMarkerClick(location.id)">
+            </Marker>
+        </template>
     </div>
 </template>
 

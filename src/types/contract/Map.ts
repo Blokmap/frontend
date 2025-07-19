@@ -1,4 +1,4 @@
-import type { ComputedRef, VNode } from 'vue';
+import type { Ref } from 'vue';
 
 export type LngLat = [number, number];
 export type LngLatBounds = [LngLat, LngLat];
@@ -25,6 +25,6 @@ export interface MapAdapter<T = number> {
     flyToBounds(bounds: LngLatBounds): void;
     flyTo(lngLat: LngLat): void;
     getBounds(): LngLatBounds | null;
-    isLoaded: ComputedRef<boolean>;
-    isMoving: ComputedRef<boolean>;
+    isLoaded: Ref<boolean>;
+    isMoving: Ref<boolean>;
 }

@@ -23,8 +23,6 @@ export const client = axios.create({
 
 client.interceptors.request.use(async (config) => {
     if (config.url === endpoints.institutions.list && config.method === 'get') {
-        console.log('Mocking institutions list request');
-        // Simulate network delay
         await getRandomDelay();
         config.adapter = async () => {
             return {

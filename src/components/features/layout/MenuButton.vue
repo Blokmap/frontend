@@ -105,14 +105,14 @@ function goTo(routeName: string): void {
 
             <!-- Navigation -->
             <div class="flex flex-col gap-2">
-                <div class="menu-link" @click="goTo('dashboard')">
+                <RouterLink class="menu-link" :to="{ name: 'locations' }">
                     <FontAwesomeIcon :icon="faMapLocation" class="text-secondary" />
                     <span>Ontdek onze <span class="text-gradient-conic">Blokspots</span></span>
-                </div>
-                <div class="menu-link">
+                </RouterLink>
+                <RouterLink class="menu-link" :to="{ name: 'locations' }">
                     <FontAwesomeIcon :icon="faInfoCircle" class="text-secondary" />
                     <span>Open de <span class="text-gradient-conic">Handleiding</span></span>
-                </div>
+                </RouterLink>
             </div>
         </div>
     </Popover>

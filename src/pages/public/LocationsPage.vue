@@ -12,6 +12,7 @@ import type { LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
 import { faFilter, faHelicopter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useQueryClient } from '@tanstack/vue-query';
 import { useTemplateRefsList } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
@@ -21,6 +22,7 @@ import { ref, useTemplateRef, watch } from 'vue';
 
 const filterStore = useLocationFilters();
 const messages = useMessages();
+const client = useQueryClient();
 const { filters, flyToTrigger } = storeToRefs(filterStore);
 
 const mapRef = useTemplateRef('map');
@@ -64,8 +66,10 @@ async function flyToNearestLocation(): Promise<void> {
     if (!mapRef.value) return;
     const center = { coords: mapRef.value.map.getCenter() };
     const query = await searchLocations({ center, perPage: 1 });
+
     if (query.data && query.data.length > 0) {
         const nearestLocation = query.data[0];
+        client.setQueryData(['search', 'locations'], { data: [nearestLocation] });
         mapRef.value.map.flyTo([nearestLocation.longitude, nearestLocation.latitude]);
     } else {
         messages.showMessage({

@@ -6,6 +6,7 @@ import Logo from '@/components/shared/Logo.vue';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { LocationFilter } from '@/types/schema/Filter';
 import type { Profile } from '@/types/schema/Profile';
+import { useQueryClient } from '@tanstack/vue-query';
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
@@ -18,6 +19,7 @@ defineProps<{
 
 defineEmits<{ (e: 'logout'): Promise<void> }>();
 
+const client = useQueryClient();
 const { push } = useRouter();
 
 const { filters } = storeToRefs(useLocationFilters());
@@ -51,6 +53,7 @@ function handleEscape(event: KeyboardEvent): void {
  */
 function handleFiltersUpdate(newFilters: Partial<LocationFilter>): void {
     locationFilters.updateFilters(newFilters);
+    locationFilters.triggerFlyTo();
     isExpandedSearch.value = false;
     push({ name: 'locations' });
 }

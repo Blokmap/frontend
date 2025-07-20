@@ -1,3 +1,4 @@
+import { i18n } from '@/config/i18n';
 import { type ToastMessageOptions, useToast } from 'primevue';
 import { useI18n } from 'vue-i18n';
 
@@ -13,7 +14,7 @@ export type UseMessagesReturn = {
  */
 export function useMessages(life: number = 5000): UseMessagesReturn {
     const { add } = useToast();
-    const { t } = useI18n();
+    const { t } = i18n.global;
 
     const showMessage = (options: ToastMessageOptions) => {
         const severity = options.severity || 'info';

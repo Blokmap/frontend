@@ -1,6 +1,12 @@
+import { AuthenticationGuard } from './guards/auth';
+import { useAuthProfile } from '@/composables/data/useAuth';
+import { useLocationFilters } from '@/composables/store/useLocationFilters';
+import { useMessages } from '@/composables/useMessages';
+import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
 import AuthLayout from '@/layouts/public/AuthLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
 import OfflinePage from '@/pages/system/OfflinePage.vue';
+import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -34,13 +40,28 @@ const routes: RouteRecordRaw[] = [
         ],
     },
     {
-        path: '/offline',
-        name: 'offline',
-        component: OfflinePage,
+        path: '/dashboard',
+        component: DashboardLayout,
+        beforeEnter: AuthenticationGuard,
+        children: [
+            {
+                path: '',
+                name: 'dashboard',
+                component: () => import('@/pages/dashboard/DashboardPage.vue'),
+            },
+        ],
     },
 ];
 
-export const router = createRouter({
+const router = createRouter({
     history: createWebHistory(),
     routes,
 });
+
+router.beforeEach(() => {
+    const fiters = useQueryClient();
+    console.log('User before each route:', fiters.getQueryData(['profile']));
+    return true;
+});
+
+export default router;

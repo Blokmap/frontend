@@ -18,9 +18,9 @@ import Skeleton from 'primevue/skeleton';
 import { ref, useTemplateRef, watch } from 'vue';
 
 const filterStore = useLocationFilters();
-const { filters } = storeToRefs(filterStore);
+const { filters, flyToTrigger } = storeToRefs(filterStore);
 
-const mapRef = useTemplateRef<typeof BlokMap>('map');
+const mapRef = useTemplateRef('map');
 const locationRefs = useTemplateRefsList();
 useItemAnimation(locationRefs);
 
@@ -29,24 +29,19 @@ const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
 
-watch(locations, async (locations) => {
+watch(locations, (locations) => {
     if (!locations || !locations.data?.length) {
         return;
     }
 
-    // Update the previous location count to match the new data length
     previousLocationCount.value = locations.data.length;
 });
 
 watch(
-    () => filters.value.location,
-    (newLocation) => {
-        if (!newLocation || !newLocation.coordinates) return;
-        console.log('Flying to new location:', newLocation);
-        mapRef.value?.map.flyTo([
-            newLocation.coordinates.longitude,
-            newLocation.coordinates.latitude,
-        ]);
+    [() => mapRef.value?.map.isLoaded, () => filters.value.location, flyToTrigger],
+    ([isLoaded, location]) => {
+        if (!isLoaded || !location || !location.coordinates) return;
+        mapRef.value?.map.flyTo([location.coordinates.longitude, location.coordinates.latitude]);
     },
     { immediate: true, deep: true },
 );
@@ -59,7 +54,7 @@ watch(
 function handleBoundsChange(bounds: LngLatBounds): void {
     // When bounds change, update the filters with the new bounds
     // and reset paginatation and location filter
-    filterStore.updateFilters({ bounds, page: 1, location: null });
+    filterStore.updateFilters({ bounds, page: 1 });
 }
 
 /**
@@ -89,15 +84,15 @@ function handlePageChange(event: { page: number }): void {
                         <span>
                             <template v-if="locations?.data?.length">
                                 <template v-if="locations.truncated">
-                                    More than {{ locations.total }}
-                                    <GradientText>Blokspots</GradientText> found
+                                    Meer dan {{ locations.total }}
+                                    <GradientText>Blokspots</GradientText> gevonden
                                 </template>
                                 <template v-else>
                                     {{ locations.total }}
-                                    <GradientText>Blokspots</GradientText> found
+                                    <GradientText>Blokspots</GradientText> gevonden
                                 </template>
                             </template>
-                            <template v-else> No exact matches found </template>
+                            <template v-else> Geen exacte resultaten gevonden </template>
                         </span>
 
                         <Button size="small" severity="contrast" @click="() => {}" outlined rounded>
@@ -109,17 +104,17 @@ function handlePageChange(event: { page: number }): void {
 
                     <template v-if="locations?.data?.length">
                         <p class="text-slate-500" v-if="locations.total > locations.perPage">
-                            Showing {{ locations.perPage }} of {{ locations.total }}
-                            <GradientText>Blokspots</GradientText>. Use the filters to narrow down
-                            your search.
+                            {{ locations.perPage }} van {{ locations.total }}
+                            <GradientText>Blokspots</GradientText> getoond. Gebruik de filters om je
+                            zoekopdracht te verfijnen.
                         </p>
                     </template>
 
                     <template v-else>
-                        <p>Try adjusting your search criteria or filters.</p>
+                        <p>Probeer je zoekcriteria of filters aan te passen.</p>
                         <Button class="mt-6" outlined rounded>
-                            <FontAwesomeIcon :icon="faHelicopter" /> Fly to closest
-                            <GradientText>BlokSpot</GradientText>
+                            <FontAwesomeIcon :icon="faHelicopter" /> Vlieg naar dichtstbijzijnde
+                            <GradientText>Blokspot</GradientText>
                         </Button>
                     </template>
                 </template>

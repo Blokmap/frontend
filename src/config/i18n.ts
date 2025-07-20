@@ -13,5 +13,5 @@ export const i18n = createI18n({
     legacy: false,
     locale: locale.value,
     fallbackLocale: 'en',
-    messages: { nl, en, fr, de },
+    messages: { nl, en },
 });

@@ -5,7 +5,7 @@ import type { LocationFilter } from '@/types/schema/Filter';
 import type { Location } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
 import { type QueryOptions, keepPreviousData, useQuery } from '@tanstack/vue-query';
-import { type MaybeRef, toValue } from 'vue';
+import { type MaybeRef, toValue, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 type UseLocationsSearch = ReturnType<typeof useQuery<Paginated<Location>>>;
@@ -25,7 +25,7 @@ export function useLocationsSearch(
 
     const query = useQuery({
         ...options,
-        queryKey: ['locations', 'search', locale],
+        queryKey: ['locations', 'search', filters, locale],
         refetchOnWindowFocus: false,
         refetchOnMount: true,
         placeholderData: keepPreviousData,

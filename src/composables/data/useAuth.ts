@@ -5,8 +5,10 @@ import {
     type MutationOptions,
     type QueryOptions,
     type UseMutationOptions,
+    type UseQueryOptions,
     useMutation,
     useQuery,
+    useQueryClient,
 } from '@tanstack/vue-query';
 import type { AxiosError } from 'axios';
 
@@ -17,10 +19,13 @@ export type UseAuthProfile = ReturnType<typeof useQuery<Profile | null>>;
  *
  * @returns The query object containing the profile data and its state.
  */
-export function useAuthProfile(options: QueryOptions<Profile | null> = {}): UseAuthProfile {
+export function useAuthProfile(
+    options: Partial<UseQueryOptions<Profile | null>> = {},
+): UseAuthProfile {
     const query = useQuery<Profile | null>({
         ...options,
         queryKey: ['profile'],
+        throwOnError: false,
         retry: false,
         queryFn: getAuthProfile,
     });
@@ -36,10 +41,15 @@ type UseAuthLogout = ReturnType<typeof useMutation<void, AxiosError>>;
  * @returns The mutation object for logging out.
  */
 export function useAuthLogout(options: MutationOptions<void, AxiosError> = {}): UseAuthLogout {
+    const client = useQueryClient();
+
     const mutation = useMutation({
         ...options,
-        mutationKey: ['profile'],
         mutationFn: logout,
+        onSuccess: (data, vars, context) => {
+            client.invalidateQueries({ queryKey: ['profile'] });
+            options.onSuccess?.(data, vars, context);
+        },
     });
 
     return mutation;
@@ -55,10 +65,15 @@ type UseAuthLogin = ReturnType<typeof useMutation<void, AxiosError, LoginRequest
 export function useAuthLogin(
     options: MutationOptions<void, AxiosError, LoginRequest> = {},
 ): UseAuthLogin {
+    const client = useQueryClient();
+
     const mutation = useMutation({
         ...options,
-        mutationKey: ['profile'],
         mutationFn: login,
+        onSuccess: (data, vars, context) => {
+            client.invalidateQueries({ queryKey: ['profile'] });
+            options.onSuccess?.(data, vars, context);
+        },
     });
 
     return mutation;
@@ -74,12 +89,17 @@ type UseAuthRegister = ReturnType<typeof useMutation<void, AxiosError, RegisterR
  * @returns The mutation object for registering a new user.
  */
 export function useAuthRegister(
-    options: UseMutationOptions<void, AxiosError, RegisterRequest> = {},
+    options: MutationOptions<void, AxiosError, RegisterRequest> = {},
 ): UseAuthRegister {
+    const client = useQueryClient();
+
     const mutation = useMutation({
         ...options,
-        mutationKey: ['profile'],
         mutationFn: register,
+        onSuccess: (data, vars, context) => {
+            client.invalidateQueries({ queryKey: ['profile'] });
+            options.onSuccess?.(data, vars, context);
+        },
     });
 
     return mutation;

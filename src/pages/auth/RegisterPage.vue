@@ -22,15 +22,15 @@ const {
     onError: (error) => {
         showMessage({
             severity: 'error',
-            summary: 'An error occurred',
+            summary: 'Er is een fout opgetreden',
             detail: error.response?.data,
         });
     },
     onSuccess: () => {
         showMessage({
             severity: 'success',
-            summary: 'Registration Successful',
-            detail: 'You have successfully registered. Please check your email for further instructions.',
+            summary: 'Registratie Succesvol',
+            detail: 'Je bent succesvol geregistreerd. Controleer je e-mail voor verdere instructies.',
         });
     },
 });
@@ -40,7 +40,7 @@ const {
     <div class="flex items-start gap-8">
         <div class="basis-3/5">
             <h2 class="text-color my-6 text-xl font-semibold">
-                <GradientText>Register</GradientText> through your institution
+                <GradientText>Registreer</GradientText> via jouw instelling
             </h2>
             <InstitutionSelector :institutions="institutions" :is-loading="isLoadingInstitutions" />
         </div>
@@ -51,7 +51,7 @@ const {
 
         <div class="basis-2/5">
             <h2 class="text-color my-6 text-xl font-semibold">
-                <GradientText>Register</GradientText> without institution
+                <GradientText>Registreer</GradientText> zonder instelling
             </h2>
             <RegisterForm
                 @submit="register"

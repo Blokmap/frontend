@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { useAuthProfile } from '@/composables/data/useAuth';
+import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
 import {
     faBars,
+    faDashboard,
+    faInfoCircle,
     faMapLocation,
     faRightToBracket,
     faSignOut,
-    faUser,
-    faUserGear,
     faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -18,6 +18,7 @@ import { useTemplateRef } from 'vue';
 import { useRouter } from 'vue-router';
 
 const { isLoading: profileIsLoading, data: profile } = useAuthProfile();
+const { mutate: logout } = useAuthLogout();
 const popoverRef = useTemplateRef('popover');
 const router = useRouter();
 
@@ -56,40 +57,45 @@ function goTo(routeName: string): void {
             </template>
 
             <template v-else-if="profile">
-                <div
-                    class="flex cursor-pointer items-center gap-3 rounded-md p-2 transition hover:bg-slate-100 dark:hover:bg-slate-800"
-                    @click="goTo('profile')">
-                    <Avatar shape="circle" :label="profile.firstName[0]" class="text-sm" />
-                    <div class="leading-tight">
-                        <div class="font-semibold text-slate-900 dark:text-white">
-                            {{ profile.firstName }}
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-center gap-2">
+                        <Avatar shape="circle" :label="profile.firstName?.[0]" class="text-sm" />
+                        <div class="space-y-1 leading-tight">
+                            <div class="font-semibold text-slate-900 dark:text-white">
+                                {{ profile.firstName }}
+                            </div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">
+                                Welkom terug!
+                            </div>
                         </div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400">View profile</div>
+                    </div>
+
+                    <RouterLink class="menu-link" :to="{ name: 'dashboard' }">
+                        <FontAwesomeIcon :icon="faDashboard" class="text-secondary" />
+                        <span>Ga naar je <span class="text-gradient-conic">Dashboard</span></span>
+                    </RouterLink>
+
+                    <div class="menu-link text-red-500" @click="() => logout()">
+                        <FontAwesomeIcon :icon="faSignOut" />
+                        <span>Uitloggen</span>
                     </div>
                 </div>
-                <Button
-                    text
-                    class="w-full justify-start rounded-md px-2 py-1.5 text-left text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
-                    @click="goTo('logout')">
-                    <FontAwesomeIcon :icon="faSignOut" class="mr-2" />
-                    Logout
-                </Button>
             </template>
 
             <template v-else>
-                <h3 class="text-lg font-bold">Your Profile</h3>
+                <h3 class="text-lg font-bold">Jouw Profiel</h3>
                 <p class="mt-2 mb-3 text-sm text-slate-500 dark:text-slate-400">
-                    Use your account to reserve a seat at one of our
-                    <span class="text-gradient-conic">Blokspots</span> or submit your own.
+                    Reserveer een plek op een van onze
+                    <span class="text-gradient-conic">Blokspots</span> of meld zelf een plek aan.
                 </p>
                 <div class="flex gap-1">
                     <div class="menu-link" @click="goTo('auth.login')">
                         <FontAwesomeIcon :icon="faRightToBracket" class="text-secondary" />
-                        <span>Login</span>
+                        <span>Inloggen</span>
                     </div>
                     <div class="menu-link" @click="goTo('auth.register')">
                         <FontAwesomeIcon :icon="faUserPlus" class="text-secondary" />
-                        <span>Register</span>
+                        <span>Registreren</span>
                     </div>
                 </div>
             </template>
@@ -99,10 +105,14 @@ function goTo(routeName: string): void {
 
             <!-- Navigation -->
             <div class="flex flex-col gap-2">
-                <button class="menu-link" @click="goTo('dashboard')">
+                <div class="menu-link" @click="goTo('dashboard')">
                     <FontAwesomeIcon :icon="faMapLocation" class="text-secondary" />
-                    <span>Browse our <span class="text-gradient-conic">Blokspots</span></span>
-                </button>
+                    <span>Ontdek onze <span class="text-gradient-conic">Blokspots</span></span>
+                </div>
+                <div class="menu-link">
+                    <FontAwesomeIcon :icon="faInfoCircle" class="text-secondary" />
+                    <span>Open de <span class="text-gradient-conic">Handleiding</span></span>
+                </div>
             </div>
         </div>
     </Popover>

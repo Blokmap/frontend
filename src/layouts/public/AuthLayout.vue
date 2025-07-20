@@ -11,8 +11,8 @@ const route = useRoute();
 const router = useRouter();
 
 const items = [
-    { label: 'Login', route: '/auth/login', icon: faSignIn },
-    { label: 'Register', route: '/auth/register', icon: faUserPlus },
+    { label: 'Inloggen', route: '/auth/login', icon: faSignIn },
+    { label: 'Registreren', route: '/auth/register', icon: faUserPlus },
 ];
 
 /**
@@ -26,7 +26,7 @@ function onTabChange(newValue: string | number) {
 </script>
 <template>
     <h1 class="mt-4 text-center text-3xl font-semibold">
-        Your <span class="text-gradient-conic">Blokmap Account</span>
+        Jouw <span class="text-gradient-conic">Blokmap Account</span>
     </h1>
     <Tabs :value="route.path" @update:value="onTabChange">
         <TabList>

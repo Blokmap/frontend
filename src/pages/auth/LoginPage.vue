@@ -10,9 +10,9 @@ import Divider from 'primevue/divider';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
-const { t } = useI18n();
 const { showMessage } = useMessages();
 const router = useRouter();
+const route = useRoute();
 
 const { data: institutions, isLoading: isLoadingInstitutions } = useInstitutions();
 
@@ -29,7 +29,12 @@ const {
         });
     },
     onSuccess: () => {
-        router.push({ name: 'locations' });
+        if (route.query.redirect) {
+            router.push({ path: route.query.redirect.toString() });
+        } else {
+            router.push({ name: 'locations' });
+        }
+
         showMessage({
             severity: 'success',
             summary: 'Login Successful',
@@ -43,18 +48,18 @@ const {
     <div class="flex items-start gap-8">
         <div class="basis-3/5">
             <h2 class="text-color my-6 text-xl font-semibold">
-                <GradientText>Log in</GradientText> through your institution
+                <GradientText>Log in</GradientText> via jouw instelling
             </h2>
             <InstitutionSelector :institutions="institutions" :is-loading="isLoadingInstitutions" />
         </div>
 
         <Divider layout="vertical" align="center" class="mx-0 self-stretch">
-            <span class="text-sm font-bold">OR</span>
+            <span class="text-sm font-bold">OF</span>
         </Divider>
 
         <div class="basis-2/5">
             <h2 class="text-color my-6 text-xl font-semibold">
-                <GradientText>Log in</GradientText> in without institution
+                <GradientText>Log in</GradientText> zonder instelling
             </h2>
             <LoginForm
                 :idps="authIdentityProviders"

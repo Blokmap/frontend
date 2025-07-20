@@ -59,7 +59,7 @@ function goTo(routeName: string): void {
             <template v-else-if="profile">
                 <div class="flex flex-col gap-2">
                     <div class="flex items-center gap-2">
-                        <Avatar shape="circle" :label="profile.firstName?.[0]" class="text-sm" />
+                        <Avatar shape="circle" :label="profile.firstName?.[0]" class="text-md" />
                         <div class="space-y-1 leading-tight">
                             <div class="font-semibold text-slate-900 dark:text-white">
                                 {{ profile.firstName }}
@@ -107,7 +107,7 @@ function goTo(routeName: string): void {
             <div class="flex flex-col gap-2">
                 <RouterLink class="menu-link" :to="{ name: 'locations' }">
                     <FontAwesomeIcon :icon="faMapLocation" class="text-secondary" />
-                    <span>Ontdek onze <span class="text-gradient-conic">Blokspots</span></span>
+                    <span>Ontdek alle <span class="text-gradient-conic">Blokspots</span></span>
                 </RouterLink>
                 <RouterLink class="menu-link" :to="{ name: 'locations' }">
                     <FontAwesomeIcon :icon="faInfoCircle" class="text-secondary" />

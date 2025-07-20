@@ -1,1 +1,0 @@
-import{_ as r}from"./index-CJPmhKFB.js";import"./vue-C1ZH04E9.js";import"./primevue-Boa-rGZU.js";const o={};function a(e,t){return"Hellaur from dashboard"}const n=r(o,[["render",a]]);export{n as default};

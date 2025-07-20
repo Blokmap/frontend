@@ -121,6 +121,10 @@ async function flyToNearestLocation(): Promise<void> {
                             <GradientText>Blokspots</GradientText> getoond. Gebruik de filters om je
                             zoekopdracht te verfijnen.
                         </p>
+                        <p class="text-slate-500" v-else>
+                            Klik op een <GradientText>Blokspot</GradientText> voor meer informatie
+                            of om een plek te reserveren.
+                        </p>
                     </template>
 
                     <template v-else>

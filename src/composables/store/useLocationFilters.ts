@@ -19,6 +19,7 @@ export const useLocationFilters = defineStore('locationFilters', () => {
         openOn: null,
         bounds: null,
         perPage: 12,
+        center: null,
     });
 
     /**

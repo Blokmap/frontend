@@ -186,23 +186,50 @@ export function useMapBox<T>(
      *
      * @returns - The current bounds of the map as an array of southwest and northeast coordinates.
      */
-    function getBounds(): LngLatBounds | null {
+    function getBounds(): LngLatBounds {
         if (!map.value) {
-            console.warn('Map is not initialized, cannot get bounds');
-            return null;
+            console.error('Map is not initialized, cannot get bounds');
+            return [
+                [0, 0],
+                [0, 0],
+            ];
         }
 
         const bounds = map.value.getBounds();
 
         if (!bounds) {
-            console.warn('Map bounds are not available');
-            return null;
+            console.error('Map bounds are not available');
+            return [
+                [0, 0],
+                [0, 0],
+            ];
         }
 
         return [
             [bounds.getSouthWest().lng, bounds.getSouthWest().lat],
             [bounds.getNorthEast().lng, bounds.getNorthEast().lat],
         ];
+    }
+
+    /**
+     * Returns the current center of the map.
+     *
+     * @returns - The current center of the map as a longitude and latitude pair.
+     */
+    function getCenter(): LngLat {
+        if (!map.value) {
+            console.error('Map is not initialized, cannot get center');
+            return [0, 0];
+        }
+
+        const center = map.value.getCenter();
+
+        if (!center) {
+            console.error('Map center is not available');
+            return [0, 0];
+        }
+
+        return [center.lng, center.lat];
     }
 
     return {
@@ -214,6 +241,7 @@ export function useMapBox<T>(
         flyToBounds,
         flyTo,
         getBounds,
+        getCenter,
         isLoaded,
         isMoving,
     };

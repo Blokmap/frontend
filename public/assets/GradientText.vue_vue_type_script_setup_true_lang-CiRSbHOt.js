@@ -1,0 +1,1 @@
+import{K as t,c as s,e as a,b as o,f as n,t as r}from"./vue-C1ZH04E9.js";const c={class:"text-gradient-conic"},l=t({__name:"GradientText",props:{text:{}},setup(p){return(e,i)=>(o(),s("span",c,[a(e.$slots,"default",{},()=>[n(r(e.text),1)])]))}});export{l as _};

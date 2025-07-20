@@ -13,7 +13,7 @@ import { formatDate } from '@vueuse/core';
  * @returns {Promise<Paginated<Location>>} A promise that resolves to a paginated list of locations.
  */
 export async function searchLocations(
-    filters?: LocationFilter,
+    filters?: Partial<LocationFilter>,
     locale?: string,
 ): Promise<Paginated<Location>> {
     const [southWest, northEast] = filters?.bounds || [];
@@ -21,6 +21,10 @@ export async function searchLocations(
     const northEastLat = northEast?.[1];
     const southWestLng = southWest?.[0];
     const southWestLat = southWest?.[1];
+
+    const centerLng = filters?.center?.coords?.[0];
+    const centerLat = filters?.center?.coords?.[1];
+    const distance = filters?.center?.radius;
 
     const query = filters?.query || undefined;
     const page = filters?.page;
@@ -33,6 +37,9 @@ export async function searchLocations(
         northEastLat,
         southWestLng,
         southWestLat,
+        centerLng,
+        centerLat,
+        distance,
         query,
         page,
         perPage,

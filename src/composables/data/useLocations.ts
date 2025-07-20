@@ -4,7 +4,12 @@ import { searchLocations } from '@/services/location';
 import type { LocationFilter } from '@/types/schema/Filter';
 import type { Location } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
-import { type QueryOptions, keepPreviousData, useQuery } from '@tanstack/vue-query';
+import {
+    type QueryOptions,
+    type UseQueryOptions,
+    keepPreviousData,
+    useQuery,
+} from '@tanstack/vue-query';
 import { type MaybeRef, toValue, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 

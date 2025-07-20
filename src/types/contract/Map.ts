@@ -24,7 +24,8 @@ export interface MapAdapter<T = number> {
     setOnBoundsChange(callback: (bounds: LngLatBounds) => void): void;
     flyToBounds(bounds: LngLatBounds): void;
     flyTo(lngLat: LngLat): void;
-    getBounds(): LngLatBounds | null;
+    getBounds(): LngLatBounds;
+    getCenter(): LngLat;
     isLoaded: Ref<boolean>;
     isMoving: Ref<boolean>;
 }

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+
 const width = defineModel('width', {
     default: 0,
 });
@@ -7,22 +9,39 @@ const opacity = defineModel('opacity', {
     default: 0,
 });
 
-/**
- * Starts the progress bar animation.
- */
-function start(): void {
+const progressTimer = ref<number | null>(null);
+
+function start() {
+    if (progressTimer.value) return;
+
+    let current = 0;
     opacity.value = 1;
-    width.value = 80;
+    width.value = 0;
+
+    progressTimer.value = window.setInterval(() => {
+        if (current < 80) {
+            current += (80 - current) / 10 + 0.1;
+            width.value = Math.min(current, 80);
+        } else {
+            clearInterval(progressTimer.value!);
+            progressTimer.value = null;
+        }
+    }, 300);
 }
 
-/**
- * Finishes the progress bar animation.
- * Sets width to 100% and fades out after a delay.
- */
-function finish(): void {
+function finish() {
+    if (progressTimer.value) {
+        clearInterval(progressTimer.value);
+        progressTimer.value = null;
+    }
     width.value = 100;
+
     setTimeout(() => {
         opacity.value = 0;
+
+        setTimeout(() => {
+            width.value = 0;
+        }, 300);
     }, 400);
 }
 

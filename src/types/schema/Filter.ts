@@ -1,4 +1,4 @@
-import type { LngLatBounds } from '@/types/contract/Map';
+import type { LngLat, LngLatBounds } from '@/types/contract/Map';
 import type { Pagination } from '@/types/schema/Pagination';
 
 export type ReservableOption = {
@@ -12,4 +12,8 @@ export type LocationFilter = Pagination & {
     isReservable: boolean | null;
     openOn: Date | null;
     bounds: LngLatBounds | null;
+    center: {
+        coords: LngLat;
+        radius?: number | null;
+    } | null;
 };

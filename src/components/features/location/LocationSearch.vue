@@ -137,7 +137,7 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
                     input-id="city"
                     placeholder="Zoek op locatie"
                     pt:pcInputText:root:class="search-input"
-                    pt:overlay:class="!min-w-[200px]"
+                    pt:overlay:class="!min-w-[200px] mt-3"
                     :loading="isLoadingGeoSearch"
                     :suggestions="geoSearchData"
                     v-model="geoSearchText"
@@ -147,7 +147,7 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
                     <template #option="{ option }">
                         <div class="flex flex-col gap-1">
                             <div class="flex items-center gap-2">
-                                <FontAwesomeIcon class="text-secondary-500" :icon="faMapLocation" />
+                                <FontAwesomeIcon :icon="faMapLocation" />
                                 {{ option.name }}
                                 {{ option.province }}
                             </div>

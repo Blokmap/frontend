@@ -6,6 +6,8 @@ import GradientText from '@/components/shared/GradientText.vue';
 import { useItemAnimation } from '@/composables/anim/useItemAnimation';
 import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
+import { useMessages } from '@/composables/useMessages';
+import { searchLocations } from '@/services/location';
 import type { LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
 import { faFilter, faHelicopter } from '@fortawesome/free-solid-svg-icons';
@@ -18,6 +20,7 @@ import Skeleton from 'primevue/skeleton';
 import { ref, useTemplateRef, watch } from 'vue';
 
 const filterStore = useLocationFilters();
+const messages = useMessages();
 const { filters, flyToTrigger } = storeToRefs(filterStore);
 
 const mapRef = useTemplateRef('map');
@@ -46,25 +49,31 @@ watch(
     { immediate: true, deep: true },
 );
 
-/**
- * Handle changes to the map's bounds.
- *
- * @param bounds The new bounds of the map.
- */
 function handleBoundsChange(bounds: LngLatBounds): void {
     // When bounds change, update the filters with the new bounds
     // and reset paginatation and location filter
     filterStore.updateFilters({ bounds, page: 1 });
 }
 
-/**
- * Handle page changes in the paginator.
- *
- * @param event The pagination event containing the new page number.
- */
 function handlePageChange(event: { page: number }): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     filterStore.updateFilters({ page: event.page + 1 });
+}
+
+async function flyToNearestLocation(): Promise<void> {
+    if (!mapRef.value) return;
+    const center = { coords: mapRef.value.map.getCenter() };
+    const query = await searchLocations({ center, perPage: 1 });
+    if (query.data && query.data.length > 0) {
+        const nearestLocation = query.data[0];
+        mapRef.value.map.flyTo([nearestLocation.longitude, nearestLocation.latitude]);
+    } else {
+        messages.showMessage({
+            severity: 'info',
+            summary: 'Geen resultaten',
+            detail: 'Er zijn geen locaties gevonden in de buurt.',
+        });
+    }
 }
 </script>
 
@@ -112,7 +121,7 @@ function handlePageChange(event: { page: number }): void {
 
                     <template v-else>
                         <p>Probeer je zoekcriteria of filters aan te passen.</p>
-                        <Button class="mt-6" outlined rounded>
+                        <Button class="mt-6" @click="flyToNearestLocation" outlined rounded>
                             <FontAwesomeIcon :icon="faHelicopter" /> Vlieg naar dichtstbijzijnde
                             <GradientText>Blokspot</GradientText>
                         </Button>

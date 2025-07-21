@@ -79,7 +79,7 @@
 }
 
 body {
-    @apply bg-surface-0 text-surface-900 text-base;
+    @apply text-surface-900 bg-slate-900 text-base;
 
     &.dark {
         @apply bg-surface-900 text-surface-0;

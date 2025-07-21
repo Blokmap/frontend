@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import ProgressBar from './components/features/layout/ProgressBar.vue';
-import Toast from '@/components/shared/Toast.vue';
+import Toast from '@/components/Toast.vue';
+import ProgressBar from '@/components/features/layout/ProgressBar.vue';
 import { onMounted, useTemplateRef } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -20,9 +20,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <main>
-        <Toast />
-        <ProgressBar ref="progress" />
-        <RouterView />
-    </main>
+    <Toast />
+    <ProgressBar ref="progress" />
+    <RouterView />
 </template>

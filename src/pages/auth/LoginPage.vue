@@ -1,20 +1,39 @@
 <script lang="ts" setup>
-import InstitutionSelector from '@/components/features/auth/InstitutionSelector.vue';
-import LoginForm from '@/components/features/auth/LoginForm.vue';
-import GradientText from '@/components/shared/GradientText.vue';
-import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
+import { useTitleAnimation } from '@/composables/anim/useTitleAnimation';
+import { useAuthLogin } from '@/composables/data/useAuth';
 import { useInstitutions } from '@/composables/data/useInstitutions';
 import { useMessages } from '@/composables/useMessages';
-import { authIdentityProviders } from '@/config/auth';
-import Divider from 'primevue/divider';
+import { faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+import InputText from 'primevue/inputtext';
+import Select from 'primevue/select';
+import { computed, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
+const { locale } = useI18n();
 const { showMessage } = useMessages();
 const router = useRouter();
 const route = useRoute();
 
 const { data: institutions, isLoading: isLoadingInstitutions } = useInstitutions();
+
+const institutionFilter = ref<string>('');
+
+const filteredInstitutions = computed(() => {
+    if (!institutions.value) {
+        return [];
+    }
+
+    return institutions.value.filter((institution) => {
+        const slug = institution.slug[locale.value]?.toLowerCase().trim() || '';
+        const name = institution.name[locale.value]?.toLowerCase().trim() || '';
+        const filter = institutionFilter.value.toLowerCase();
+        return slug.includes(filter) || name.includes(filter);
+    });
+});
 
 const {
     mutate: login,
@@ -42,31 +61,61 @@ const {
         });
     },
 });
+
+useTitleAnimation(useTemplateRef('title'));
+
+function handleSelectInstitution(institution: { value: string }): void {
+    if (!institution.value) {
+        return;
+    }
+}
 </script>
 
 <template>
-    <div class="flex items-start gap-8">
-        <div class="basis-3/5">
-            <h2 class="text-color my-6 text-xl font-semibold">
-                <GradientText>Log in</GradientText> via jouw instelling
-            </h2>
-            <InstitutionSelector :institutions="institutions" :is-loading="isLoadingInstitutions" />
-        </div>
-
-        <Divider layout="vertical" align="center" class="mx-0 self-stretch">
-            <span class="text-sm font-bold">OF</span>
-        </Divider>
-
-        <div class="basis-2/5">
-            <h2 class="text-color my-6 text-xl font-semibold">
-                <GradientText>Log in</GradientText> zonder instelling
-            </h2>
-            <LoginForm
-                :idps="authIdentityProviders"
-                :error="loginError"
-                :is-loading="loginIsLoading"
-                @submit="login">
-            </LoginForm>
-        </div>
-    </div>
+    <h1 class="text-bold text-center text-4xl" ref="title">
+        <span class="text-gradient-conic font-bold">Blokmap Account</span>
+    </h1>
+    <p class="my-2 text-center text-lg text-slate-500">Log in via je onderwijsinstelling</p>
+    <IconField>
+        <InputIcon>
+            <FontAwesomeIcon :icon="faSchoolFlag" class="text-slate-500" />
+        </InputIcon>
+        <Select
+            class="!w-[300px] py-2 ps-6"
+            placeholder="Selecteer een instelling"
+            pt:overlay:class="!w-[300px] w-full"
+            pt:list-container:class="p-0"
+            :options="filteredInstitutions"
+            :loading="isLoadingInstitutions"
+            @change="handleSelectInstitution">
+            <template #header>
+                <InputText
+                    v-model="institutionFilter"
+                    placeholder="Zoek een instelling"
+                    class="w-full border-0">
+                </InputText>
+            </template>
+            <template #option="{ option }">
+                <div class="flex items-center gap-2">
+                    <img
+                        :alt="option.name"
+                        :src="option.logo.url"
+                        class="h-10 w-10 object-contain" />
+                    <div class="flex flex-col">
+                        <p class="text-sm font-bold">{{ option.slug[locale] }}</p>
+                        <p class="text-sm text-gray-400">{{ option.name[locale] }}</p>
+                    </div>
+                </div>
+            </template>
+            <template #value="{ value }">
+                <p class="text-sm font-bold text-slate-600">{{ value.name[locale] }}</p>
+            </template>
+            <template #empty>
+                <span class="text-gray-500">
+                    Geen overeenkomsten gevonden. Geen zorgen, je kan nog steeds een account maken
+                    via de opties hieronder 😄
+                </span>
+            </template>
+        </Select>
+    </IconField>
 </template>

@@ -7,12 +7,9 @@ import { useI18n } from 'vue-i18n';
  * Pinia store for managing location filters.
  */
 export const useLocationFilters = defineStore('locationFilters', () => {
-    const { locale } = useI18n();
-
     const flyToTrigger = ref(0);
 
     const filters = ref<LocationFilter>({
-        language: locale.value,
         query: null,
         location: null,
         isReservable: null,

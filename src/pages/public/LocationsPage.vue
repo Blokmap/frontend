@@ -24,12 +24,11 @@ const filterStore = useLocationFilters();
 const messages = useMessages();
 const client = useQueryClient();
 const { filters, flyToTrigger } = storeToRefs(filterStore);
+const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(filters);
 
 const mapRef = useTemplateRef('map');
 const locationRefs = useTemplateRefsList();
 useItemAnimation(locationRefs);
-
-const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(filters);
 
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);

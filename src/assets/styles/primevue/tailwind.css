@@ -63,8 +63,8 @@
 @import './tieredmenu'; */
 
 /* Panel */
-/* @import './accordion';
-@import './card';*/
+/* @import './accordion'; */
+@import './card';
 @import './divider';
 /*@import './fieldset';
 @import './panel';

@@ -3,11 +3,11 @@
 @import './iconfield';
 
 .p-select {
-    @apply bg-surface-0 dark:bg-surface-950 border-surface-300 dark:border-surface-700 relative inline-flex cursor-pointer rounded-md border shadow-[0_1px_2px_0_rgba(18,18,23,0.05)] transition-colors duration-200 select-none;
+    @apply bg-surface-0 dark:bg-surface-950 dark:border-surface-700 relative inline-flex cursor-pointer rounded-md border-2 border-slate-200 transition-colors duration-200 select-none;
 }
 
 .p-select:not(.p-disabled):hover {
-    @apply border-surface-400 dark:border-surface-600;
+    @apply dark:border-surface-600 border-slate-300;
 }
 
 .p-select.p-variant-filled {
@@ -59,7 +59,7 @@ input.p-select-label {
 }
 
 .p-select-overlay {
-    @apply bg-surface-0 dark:bg-surface-900 border-surface-200 dark:border-surface-700 text-surface-700 dark:text-surface-0 absolute top-0 left-0 rounded-md border shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)];
+    @apply bg-surface-0 dark:bg-surface-900 dark:border-surface-700 text-surface-700 dark:text-surface-0 absolute top-0 left-0 mt-1 rounded-md border-2 border-slate-200;
 }
 
 .p-select-header {

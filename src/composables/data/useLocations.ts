@@ -27,7 +27,6 @@ export function useLocationsSearch(
     options = {},
 ): UseLocationsSearch {
     const { locale } = useI18n();
-
     const query = useQuery({
         ...options,
         queryKey: ['locations', 'search', filters, locale],
@@ -35,6 +34,10 @@ export function useLocationsSearch(
         refetchOnMount: true,
         placeholderData: keepPreviousData,
         queryFn: async () => {
+            console.log('[useLocationsSearch] Executing queryFn', {
+                filters: toValue(filters),
+                locale: locale.value,
+            });
             const params = toValue(filters);
             await getRandomDelay(250, 350);
             const locations = await searchLocations(params, locale.value);

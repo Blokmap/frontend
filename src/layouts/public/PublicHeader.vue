@@ -5,21 +5,12 @@ import LocationSearch from '@/components/features/location/LocationSearch.vue';
 import Logo from '@/components/shared/Logo.vue';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { LocationFilter } from '@/types/schema/Filter';
-import type { Profile } from '@/types/schema/Profile';
-import { useQueryClient } from '@tanstack/vue-query';
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 
-defineProps<{
-    profile?: Profile | null;
-    profileIsLoading?: boolean;
-    logoutIsLoading?: boolean;
-}>();
-
 defineEmits<{ (e: 'logout'): Promise<void> }>();
 
-const client = useQueryClient();
 const { push } = useRouter();
 
 const { filters } = storeToRefs(useLocationFilters());

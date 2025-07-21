@@ -75,7 +75,9 @@ function handleSelectInstitution(institution: { value: string }): void {
     <h1 class="text-bold text-center text-4xl" ref="title">
         <span class="text-gradient-conic font-bold">Blokmap Account</span>
     </h1>
-    <p class="my-2 text-center text-lg text-slate-500">Log in via je onderwijsinstelling</p>
+    <p class="text-md mt-1 mb-2 max-w-80 text-center text-slate-500">
+        Gebruik je onderwijsinstelling of een ander type account om in te loggen.
+    </p>
     <IconField>
         <InputIcon>
             <FontAwesomeIcon :icon="faSchoolFlag" class="text-slate-500" />

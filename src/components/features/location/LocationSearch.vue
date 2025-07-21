@@ -18,31 +18,40 @@ import InputText from 'primevue/inputtext';
 import { type ComponentPublicInstance, computed, nextTick, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const { filters } = defineProps<{
+const props = defineProps<{
     filters: LocationFilter;
+    geoLocation: GeoJSON.GeoJsonProperties | null;
 }>();
 
 const emit = defineEmits<{
-    (e: 'update:filters', filters: Partial<LocationFilter>): void;
+    (
+        e: 'update:filters',
+        geoLocation: GeoJSON.GeoJsonProperties | null,
+        filters: Partial<LocationFilter>,
+    ): void;
 }>();
 
 const isExpandedSearch = defineModel<boolean>('isExpandedSearch');
 
-const searchText = ref(filters.query ?? '');
-const openOnDate = ref(filters.openOn ?? null);
-const geoSearchLocation = ref(filters.location ?? null);
-const geoSearchText = ref(filters.location?.name ?? '');
+const searchText = ref(props.filters.query ?? '');
+const openOnDate = ref(props.filters.openOn ?? null);
+const geoSearchText = ref(props.geoLocation?.name ?? '');
+const geoLocation = ref(props.geoLocation ?? null);
+
+const { locale, t } = useI18n();
+const { isFetching } = useLocationsSearch(props.filters, { enabled: false });
+const { isLoading: isLoadingGeoSearch, data: geoSearchData } = useGeoSearch(geoSearchText);
 
 const locationLabel = computed(() => {
-    return filters.location?.name || geoSearchText.value || t('components.search.inNeighborhood');
+    return geoLocation.value?.name || geoSearchText.value || t('components.search.inNeighborhood');
 });
 
 const searchLabel = computed(() => {
-    return filters.query || searchText.value || t('components.search.allLocations');
+    return props.filters.query || searchText.value || t('components.search.allLocations');
 });
 
 const dateLabel = computed(() => {
-    const date = filters.openOn || openOnDate.value;
+    const date = props.filters.openOn || openOnDate.value;
 
     if (date) {
         return date.toLocaleDateString(locale.value, {
@@ -55,10 +64,6 @@ const dateLabel = computed(() => {
     return t('components.search.anyDay');
 });
 
-const { locale, t } = useI18n();
-const { isFetching } = useLocationsSearch(filters, { enabled: false });
-const { isLoading: isLoadingGeoSearch, data: geoSearchData } = useGeoSearch(geoSearchText);
-
 const locationInputRef = useTemplateRef<ComponentPublicInstance>('locationInput');
 const queryInputRef = useTemplateRef<ComponentPublicInstance>('queryInput');
 const dateInputRef = useTemplateRef<ComponentPublicInstance>('dateInput');
@@ -68,10 +73,9 @@ const dateInputRef = useTemplateRef<ComponentPublicInstance>('dateInput');
  * Updates the filters with the current search criteria and resets the input fields.
  */
 function handleSearchClick(): void {
-    emit('update:filters', {
+    emit('update:filters', geoLocation.value, {
         query: searchText.value,
         openOn: openOnDate.value,
-        location: geoSearchLocation.value,
     });
 }
 
@@ -81,7 +85,7 @@ function handleSearchClick(): void {
  * @param option - The selected location option.
  */
 function handleLocationOptionSelect(option: AutoCompleteOptionSelectEvent): void {
-    geoSearchLocation.value = option.value;
+    geoLocation.value = option.value;
     geoSearchText.value = option.value.name;
 }
 
@@ -90,9 +94,9 @@ function handleLocationOptionSelect(option: AutoCompleteOptionSelectEvent): void
  * Resets the selected location when the input changes.
  */
 function handleLocationOptionChange(): void {
-    if (geoSearchLocation.value) {
+    if (geoLocation.value) {
         geoSearchText.value = '';
-        geoSearchLocation.value = null;
+        geoLocation.value = null;
     }
 }
 

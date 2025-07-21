@@ -23,7 +23,7 @@ import { ref, useTemplateRef, watch } from 'vue';
 const filterStore = useLocationFilters();
 const messages = useMessages();
 const client = useQueryClient();
-const { filters, flyToTrigger } = storeToRefs(filterStore);
+const { filters, geoLocation } = storeToRefs(filterStore);
 const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(filters);
 
 const mapRef = useTemplateRef('map');
@@ -42,7 +42,7 @@ watch(locations, (locations) => {
 });
 
 watch(
-    [() => mapRef.value?.map.isLoaded, () => filters.value.location, flyToTrigger],
+    [() => mapRef.value?.map.isLoaded, geoLocation],
     ([isLoaded, location]) => {
         if (!isLoaded || !location || !location.coordinates) return;
         mapRef.value?.map.flyTo([location.coordinates.longitude, location.coordinates.latitude]);

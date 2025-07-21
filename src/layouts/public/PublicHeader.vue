@@ -25,11 +25,6 @@ onUnmounted(() => {
     window.removeEventListener('keydown', handleEscape);
 });
 
-/**
- * Handles the Escape key event to close the expanded search.
- *
- * @param event - The keyboard event triggered by pressing a key.
- */
 function handleEscape(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
         event.preventDefault();
@@ -37,14 +32,12 @@ function handleEscape(event: KeyboardEvent): void {
     }
 }
 
-/**
- * Handles updates to the filters when the search criteria change.
- *
- * @param newFilters - The new filters to apply.
- */
-function handleFiltersUpdate(newFilters: Partial<LocationFilter>): void {
+function handleFiltersUpdate(
+    newGeoLocation: GeoJSON.GeoJsonProperties | null,
+    newFilters: Partial<LocationFilter>,
+): void {
     locationFilters.updateFilters(newFilters);
-    locationFilters.triggerFlyTo();
+    locationFilters.geoLocation = { ...newGeoLocation }; // Force update the geoLocation
     isExpandedSearch.value = false;
     push({ name: 'locations' });
 }
@@ -61,6 +54,7 @@ function handleFiltersUpdate(newFilters: Partial<LocationFilter>): void {
 
             <LocationSearch
                 v-model:is-expanded-search="isExpandedSearch"
+                :geo-location="locationFilters.geoLocation"
                 :filters="filters"
                 @update:filters="handleFiltersUpdate">
             </LocationSearch>

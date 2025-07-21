@@ -108,7 +108,9 @@ function handleSelectInstitution(institution: { value: string }): void {
                 </div>
             </template>
             <template #value="{ value }">
-                <p class="text-sm font-bold text-slate-600">{{ value.name[locale] }}</p>
+                <p class="text-sm font-bold text-slate-600" v-if="value">
+                    {{ value.name[locale] }}
+                </p>
             </template>
             <template #empty>
                 <span class="text-gray-500">

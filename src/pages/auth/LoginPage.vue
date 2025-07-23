@@ -3,8 +3,10 @@ import { useTitleAnimation } from '@/composables/anim/useTitleAnimation';
 import { useAuthLogin } from '@/composables/data/useAuth';
 import { useInstitutions } from '@/composables/data/useInstitutions';
 import { useMessages } from '@/composables/useMessages';
+import { authIdentityProviders } from '@/config/auth';
 import { faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import Button from 'primevue/button';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
@@ -83,7 +85,7 @@ function handleSelectInstitution(institution: { value: string }): void {
             <FontAwesomeIcon :icon="faSchoolFlag" class="text-slate-500" />
         </InputIcon>
         <Select
-            class="!w-[300px] py-2 ps-6"
+            class="!w-[300px] py-1 ps-6"
             placeholder="Selecteer een instelling"
             pt:overlay:class="!w-[300px] w-full"
             pt:list-container:class="p-0"
@@ -122,4 +124,15 @@ function handleSelectInstitution(institution: { value: string }): void {
             </template>
         </Select>
     </IconField>
+    <template v-for="idp in authIdentityProviders" :key="idp.name">
+        <Button
+            class="w-[300px]"
+            severity="contrast"
+            :label="`Log in met ${idp.name}`"
+            size="small">
+            <template #icon>
+                <img :src="idp.logo!" :alt="idp.name" class="h-5 w-5 object-contain" />
+            </template>
+        </Button>
+    </template>
 </template>

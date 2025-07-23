@@ -1,14 +1,9 @@
 <script lang="ts" setup>
 import { nextTick, onMounted, onUnmounted, useTemplateRef } from 'vue';
 
-const { speed } = withDefaults(
-    defineProps<{
-        speed?: number;
-    }>(),
-    {
-        speed: 50,
-    },
-);
+const { speed = 50 } = defineProps<{
+    speed?: number;
+}>();
 
 const trackRef = useTemplateRef('track');
 

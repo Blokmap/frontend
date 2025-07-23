@@ -9,8 +9,8 @@ const route = useRoute();
     <main class="auth">
         <div class="auth--section text-center text-slate-200">
             <h2 class="text-3xl">
-                Van <span class="font-bold text-slate-300">campusplekken</span> tot
-                <span class="font-bold text-slate-300">zolderkamers</span>
+                Van <span class="font-bold text-slate-300">campus</span> tot
+                <span class="font-bold text-slate-300">zolderkamer</span>
             </h2>
             <h4 class="mt-4 text-xl">Vind de perfecte studieplek in jouw buurt.</h4>
             <Carousel class="mt-4 max-w-[600px]">

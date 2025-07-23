@@ -8,7 +8,19 @@ import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
     {
-        path: '/auth',
+        path: '/',
+        redirect: { name: 'locations' },
+        component: PublicLayout,
+        children: [
+            {
+                path: 'locations',
+                name: 'locations',
+                component: () => import('@/pages/public/LocationsPage.vue'),
+            },
+        ],
+    },
+    {
+        path: '/auth/',
         component: AuthLayout,
         children: [
             {
@@ -20,18 +32,6 @@ const routes: RouteRecordRaw[] = [
                 path: 'register',
                 name: 'auth.register',
                 component: () => import('@/pages/auth/RegisterPage.vue'),
-            },
-        ],
-    },
-    {
-        path: '/',
-        redirect: { name: 'locations' },
-        component: PublicLayout,
-        children: [
-            {
-                path: 'locations',
-                name: 'locations',
-                component: () => import('@/pages/public/LocationsPage.vue'),
             },
         ],
     },

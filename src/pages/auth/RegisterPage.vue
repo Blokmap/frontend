@@ -1,12 +1,7 @@
 <script lang="ts" setup>
-import InstitutionSelector from '@/components/features/auth/InstitutionSelector.vue';
-import RegisterForm from '@/components/features/auth/forms/RegisterForm.vue';
-import GradientText from '@/components/shared/GradientText.vue';
 import { useAuthRegister } from '@/composables/data/useAuth';
 import { useInstitutions } from '@/composables/data/useInstitutions';
 import { useMessages } from '@/composables/useMessages';
-import { authIdentityProviders } from '@/config/auth';
-import Divider from 'primevue/divider';
 
 const { showMessage } = useMessages();
 
@@ -34,29 +29,4 @@ const {
 });
 </script>
 
-<template>
-    <div class="flex items-start gap-8">
-        <div class="basis-3/5">
-            <h2 class="text-color my-6 text-xl font-semibold">
-                <GradientText>Registreer</GradientText> via jouw instelling
-            </h2>
-            <InstitutionSelector :institutions="institutions" :is-loading="isLoadingInstitutions" />
-        </div>
-
-        <Divider layout="vertical" align="center" class="mx-0 my-6 self-stretch">
-            <span class="text-sm font-bold">OR</span>
-        </Divider>
-
-        <div class="basis-2/5">
-            <h2 class="text-color my-6 text-xl font-semibold">
-                <GradientText>Registreer</GradientText> zonder instelling
-            </h2>
-            <RegisterForm
-                @submit="register"
-                :idps="authIdentityProviders"
-                :is-loading="registerIsLoading"
-                :error="registerError">
-            </RegisterForm>
-        </div>
-    </div>
-</template>
+<template></template>

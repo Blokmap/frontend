@@ -33,7 +33,7 @@ export function useMapBox<T>(
 
     const markerCount = ref(0);
     const isLoaded = ref(false);
-    const isMoving = computed(() => map.value !== null && map.value.isMoving());
+    const isMoving = ref(false);
 
     onMounted(() => {
         if (container.value === null) {
@@ -50,15 +50,38 @@ export function useMapBox<T>(
             zoom: options.zoom,
         });
 
-        newMap.once('load', () => {
-            isLoaded.value = true;
+        newMap.on('move', () => {
+            isMoving.value = true;
         });
 
-        newMap.addControl(
-            new mapboxgl.GeolocateControl({
-                positionOptions: { enableHighAccuracy: true },
-            }),
-        );
+        newMap.on('moveend', () => {
+            isMoving.value = false;
+        });
+
+        // Add geolocate control to the map
+        const geoLocateControl = new mapboxgl.GeolocateControl({
+            positionOptions: { enableHighAccuracy: true },
+        });
+
+        newMap.addControl(geoLocateControl);
+
+        // Override the default geolocate control behavior
+        // to fly to the user's location when geolocated.
+        geoLocateControl.on('geolocate', (position) => {
+            const { longitude, latitude } = position.coords;
+
+            newMap.flyTo({
+                center: [longitude, latitude],
+                zoom: 12,
+                duration: 1500,
+                essential: true,
+            });
+        });
+
+        newMap.once('load', () => {
+            isLoaded.value = true;
+            geoLocateControl.trigger();
+        });
 
         map.value = newMap;
     });

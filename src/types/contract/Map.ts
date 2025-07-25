@@ -20,7 +20,6 @@ export interface MapAdapter<T = number> {
     setMarkers(markers: Marker<T>[]): void;
     addMarker(marker: Marker<T>): void;
     removeMarker(id: T): void;
-    bounds: Ref<LngLatBounds | undefined>;
     setOnMove(callback: (lngLat: LngLat) => void): void;
     setOnBoundsChange(callback: (bounds: LngLatBounds) => void): void;
     flyToBounds(bounds: LngLatBounds): void;

@@ -13,8 +13,8 @@ export const useLocationFilters = defineStore('locationFilters', () => {
         isReservable: null,
         openOn: null,
         bounds: null,
-        perPage: 12,
         center: null,
+        perPage: 12,
     });
 
     /**

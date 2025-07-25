@@ -19,6 +19,13 @@ export function useMapBox<T>(
 ): MapAdapter<T> {
     const { locale } = useI18n();
 
+    // Merge default options with provided options
+    // This allows for overriding default values while keeping the defaults intact.
+    options = {
+        ...defaultMapOptions,
+        ...options,
+    };
+
     // Bypass deep type inference issues with mapbox-gl types
     // by explictely casting the correc types.
     const markers = new Map<T, mapboxgl.Marker>() as Map<T, mapboxgl.Marker>;
@@ -232,6 +239,20 @@ export function useMapBox<T>(
         return [center.lng, center.lat];
     }
 
+    /**
+     * Returns the current zoom level of the map.
+     *
+     * @returns - The current zoom level of the map.
+     */
+    function getZoom(): number {
+        if (!map.value) {
+            console.error('Map is not initialized, cannot get zoom level');
+            return 0;
+        }
+
+        return map.value.getZoom();
+    }
+
     return {
         setMarkers,
         addMarker,
@@ -242,6 +263,7 @@ export function useMapBox<T>(
         flyTo,
         getBounds,
         getCenter,
+        getZoom,
         isLoaded,
         isMoving,
     };

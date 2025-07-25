@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import Marker from './Marker.vue';
 import { useMapBox } from '@/composables/useMapBox';
-import type { LngLatBounds } from '@/types/contract/Map';
+import type { LngLat, LngLatBounds, MapOptions } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useLocalStorage } from '@vueuse/core';
 import { onMounted, ref, useTemplateRef } from 'vue';
 
 const props = withDefaults(
@@ -30,7 +31,8 @@ const emit = defineEmits<{
 }>();
 
 const mapContainerRef = useTemplateRef('mapContainer');
-const map = useMapBox(mapContainerRef);
+const config = useLocalStorage<MapOptions>('map', {});
+const map = useMapBox(mapContainerRef, config.value);
 
 function handleMarkerClick(id: number): void {
     emit('click:marker', id);
@@ -40,7 +42,6 @@ onMounted(() => {
     const debounceTimer = ref<number>();
 
     map.setOnMove(() => {
-        // Clear the debounce timer if it exists
         if (debounceTimer.value) {
             clearTimeout(debounceTimer.value);
             debounceTimer.value = undefined;
@@ -51,6 +52,8 @@ onMounted(() => {
         debounceTimer.value = setTimeout(() => {
             emit('change:bounds', bounds);
             debounceTimer.value = undefined;
+            config.value.center = map.getCenter();
+            config.value.zoom = map.getZoom();
         }, props.boundsDebounce);
     });
 

@@ -7,7 +7,7 @@ const { speed = 50 } = defineProps<{
 
 const trackRef = useTemplateRef('track');
 
-const setupCarousel = () => {
+async function setupCarousel() {
     const track = trackRef.value;
     if (!track) return;
 
@@ -18,33 +18,33 @@ const setupCarousel = () => {
     track.querySelectorAll('.duplicate').forEach((el) => el.remove());
 
     // Add enough duplicates to cover any screen size
-    const duplicatesNeeded = Math.max(3, Math.ceil(window.innerWidth / 200)); // At least 3 sets
+    const duplicatesNeeded = Math.max(1, Math.ceil(window.innerWidth / 200));
 
     for (let i = 0; i < duplicatesNeeded; i++) {
-        items.forEach((item) => {
+        items.forEach((item, j) => {
             const clone = item.cloneNode(true) as HTMLElement;
             clone.classList.add('duplicate');
+            clone.classList.add(`${i}-${j}`);
             track.appendChild(clone);
         });
     }
 
-    nextTick(() => {
-        // Calculate width of one complete set
-        const itemWidth = items.reduce((total, item) => total + item.offsetWidth, 0);
-        const gapsWidth = 32 * items.length; // gap-8 = 32px
-        const setWidth = itemWidth + gapsWidth;
+    await nextTick();
 
-        // Set starting position to show first set
-        track.style.transform = `translateX(-${setWidth}px)`;
+    // Calculate width of one complete set
+    const itemWidth = items.reduce((total, item) => total + item.offsetWidth, 0);
+    const gapsWidth = 32 * items.length; // gap-8 = 32px
+    const setWidth = itemWidth + gapsWidth;
 
-        // Animate from second set back to first set position
-        track.style.setProperty('--scroll-width', `${setWidth}px`);
-        track.style.setProperty('--duration', `${setWidth / speed}s`);
-    });
-};
+    // Set starting position to show first set
+    track.style.transform = `translateX(-${setWidth}px)`;
+
+    // Animate from second set back to first set position
+    track.style.setProperty('--scroll-width', `${setWidth}px`);
+    track.style.setProperty('--duration', `${setWidth / speed}s`);
+}
 
 onMounted(async () => {
-    await nextTick();
     setupCarousel();
     window.addEventListener('resize', setupCarousel);
 });
@@ -71,7 +71,6 @@ onUnmounted(() => {
     .track {
         @apply flex items-center justify-between gap-8 will-change-transform;
         animation: scroll-left var(--duration, 20s) linear infinite;
-        animation-fill-mode: forwards;
 
         & > * {
             @apply w-[15%] min-w-18 flex-shrink-0;

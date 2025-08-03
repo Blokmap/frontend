@@ -87,10 +87,7 @@ export function useMapBox<T>(
     });
 
     onUnmounted(() => {
-        markers.forEach((marker) => marker.remove());
         map.value?.remove();
-        map.value = null;
-        markers.clear();
     });
 
     /**

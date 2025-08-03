@@ -1,17 +1,18 @@
 <script lang="ts" setup>
-import { useTitleAnimation } from '@/composables/anim/useTitleAnimation';
+import LoginForm from '@/components/features/auth/forms/LoginForm.vue';
 import { useAuthLogin } from '@/composables/data/useAuth';
 import { useInstitutions } from '@/composables/data/useInstitutions';
 import { useMessages } from '@/composables/useMessages';
 import { authIdentityProviders } from '@/config/auth';
-import { faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
-import { computed, ref, useTemplateRef } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -22,7 +23,8 @@ const route = useRoute();
 
 const { data: institutions, isLoading: isLoadingInstitutions } = useInstitutions();
 
-const institutionFilter = ref<string>('');
+const isDialogVisible = ref(false);
+const institutionFilter = ref('');
 
 const filteredInstitutions = computed(() => {
     if (!institutions.value) {
@@ -64,8 +66,6 @@ const {
     },
 });
 
-useTitleAnimation(useTemplateRef('title'));
-
 function handleSelectInstitution(institution: { value: string }): void {
     if (!institution.value) {
         return;
@@ -77,10 +77,10 @@ function handleSelectInstitution(institution: { value: string }): void {
     <h1 class="text-bold text-center text-4xl" ref="title">
         <span class="text-gradient-conic font-bold">Blokmap Account</span>
     </h1>
-    <p class="text-md mt-1 mb-2 max-w-80 text-center text-slate-500">
+    <p class="text-md mt-1 max-w-80 text-center text-slate-500">
         Gebruik je onderwijsinstelling of een ander type account om in te loggen.
     </p>
-    <IconField>
+    <IconField class="my-2">
         <InputIcon>
             <FontAwesomeIcon :icon="faSchoolFlag" class="text-slate-500" />
         </InputIcon>
@@ -119,7 +119,7 @@ function handleSelectInstitution(institution: { value: string }): void {
             <template #empty>
                 <span class="text-gray-500">
                     Geen overeenkomsten gevonden. Geen zorgen, je kan nog steeds een account maken
-                    via de opties hieronder 😄
+                    via de opties hieronder!
                 </span>
             </template>
         </Select>
@@ -135,4 +135,23 @@ function handleSelectInstitution(institution: { value: string }): void {
             </template>
         </Button>
     </template>
+    <div class="absolute right-4 bottom-4">
+        <Button severity="secondary" size="small" @click="isDialogVisible = true" link>
+            <span class="hover:underline">Inloggen met wachtwoord</span>
+            <FontAwesomeIcon :icon="faArrowRight" />
+        </Button>
+    </div>
+    <Dialog class="w-[500px]" v-model:visible="isDialogVisible" modal>
+        <template #header>
+            <h2 class="text-lg font-bold">Inloggen met wachtwoord</h2>
+        </template>
+        <template #default>
+            <LoginForm
+                :idps="authIdentityProviders"
+                :is-loading="loginIsLoading"
+                :error="loginError"
+                @submit="login">
+            </LoginForm>
+        </template>
+    </Dialog>
 </template>

@@ -8,7 +8,7 @@ import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useMessages } from '@/composables/useMessages';
 import { searchLocations } from '@/services/location';
-import type { LngLatBounds } from '@/types/contract/Map';
+import type { LngLat, LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
 import { faFilter, faHelicopter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -44,15 +44,16 @@ watch(locations, (locations) => {
 watch(
     [() => mapRef.value?.map.isLoaded, geoLocation],
     ([isLoaded, location]) => {
-        if (!isLoaded || !location || !location.coordinates) return;
-        mapRef.value?.map.flyTo([location.coordinates.longitude, location.coordinates.latitude]);
+        if (!isLoaded || !location || !location.coordinates) {
+            return;
+        }
+        const destination: LngLat = [location.coordinates.longitude, location.coordinates.latitude];
+        mapRef.value?.map.flyTo(destination);
     },
     { immediate: true, deep: true },
 );
 
 function handleBoundsChange(bounds: LngLatBounds): void {
-    // When bounds change, update the filters with the new bounds
-    // and reset paginatation and location filter
     filterStore.updateFilters({ bounds, page: 1 });
 }
 

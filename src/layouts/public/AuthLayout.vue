@@ -12,7 +12,7 @@ const route = useRoute();
                 Van <span class="font-bold text-slate-300">campus</span> tot
                 <span class="font-bold text-slate-300">zolderkamer</span>
             </h2>
-            <h4 class="mt-4 text-xl">Vind de perfecte studieplek in jouw buurt.</h4>
+            <h4 class="mt-4 text-xl">Vind de perfecte studieplek in jouw buurt</h4>
             <Carousel class="mt-4 max-w-[600px]">
                 <img src="@/assets/img/partners/ugent.png" alt="Universiteit Gent" />
                 <img src="@/assets/img/partners/stadgent.png" alt="Stad Gent" />
@@ -33,7 +33,7 @@ const route = useRoute();
 @reference '@/assets/styles/main.css';
 
 .auth {
-    @apply mx-auto flex h-full min-h-screen w-full items-stretch gap-3 p-6 2xl:w-7/8;
+    @apply mx-auto flex h-full min-h-screen w-full items-stretch gap-3 p-6;
 
     img {
         @apply w-full grayscale;

@@ -14,7 +14,15 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(router);
 app.use(i18n);
-app.use(VueQueryPlugin);
+app.use(VueQueryPlugin, {
+    queryClientConfig: {
+        defaultOptions: {
+            queries: {
+                staleTime: 10_000,
+            },
+        },
+    },
+});
 app.use(ToastService);
 app.use(PrimeVuePlugin, {
     ripple: true,

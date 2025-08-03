@@ -1,19 +1,20 @@
 <script lang="ts" setup>
-import { useSparkleTrail } from './composables/anim/useSparkleTrail';
+import { useMessages } from './composables/useMessages';
+import { setupAxiosInterceptors } from './config/axios';
 import Toast from '@/components/Toast.vue';
 import ProgressBar from '@/components/features/layout/ProgressBar.vue';
 import { onMounted, useTemplateRef } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const messages = useMessages();
 const progressRef = useTemplateRef('progress');
 
-useSparkleTrail();
+setupAxiosInterceptors(router, messages);
 
 onMounted(() => {
-    router.beforeEach((_, __, next) => {
+    router.beforeEach(() => {
         progressRef.value?.start();
-        next();
     });
 
     router.afterEach(() => {

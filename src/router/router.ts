@@ -4,6 +4,7 @@ import AuthLayout from '@/layouts/public/AuthLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
 import OfflinePage from '@/pages/system/OfflinePage.vue';
 import { useQueryClient } from '@tanstack/vue-query';
+import { KeepAlive } from 'vue';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -13,14 +14,26 @@ const routes: RouteRecordRaw[] = [
         component: PublicLayout,
         children: [
             {
+                path: 'profile',
+                beforeEnter: AuthenticationGuard,
+                children: [
+                    {
+                        path: 'reservations',
+                        name: 'profile.reservations',
+                        component: () => import('@/pages/public/profile/ReservationsPage.vue'),
+                    },
+                ],
+            },
+            {
                 path: 'locations',
                 name: 'locations',
+                meta: { keepAlive: true },
                 component: () => import('@/pages/public/LocationsPage.vue'),
             },
         ],
     },
     {
-        path: '/auth/',
+        path: '/',
         component: AuthLayout,
         children: [
             {
@@ -52,12 +65,6 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
     history: createWebHistory(),
     routes,
-});
-
-router.beforeEach(() => {
-    const fiters = useQueryClient();
-    console.log('User before each route:', fiters.getQueryData(['profile']));
-    return true;
 });
 
 export default router;

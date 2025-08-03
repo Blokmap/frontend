@@ -177,7 +177,7 @@
 }
 
 .p-button-link {
-    @apply text-primary enabled:hover:text-primary enabled:active:text-primary border-transparent bg-transparent enabled:hover:border-transparent enabled:hover:bg-transparent enabled:active:border-transparent enabled:active:bg-transparent;
+    @apply text-secondary enabled:hover:text-secondary enabled:active:text-secondary border-transparent bg-transparent enabled:hover:border-transparent enabled:hover:bg-transparent enabled:active:border-transparent enabled:active:bg-transparent;
 }
 
 .p-button-link:not(:disabled):hover .p-button-label {

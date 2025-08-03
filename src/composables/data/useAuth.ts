@@ -1,31 +1,26 @@
+import { useMessages } from '../useMessages';
 import { getAuthProfile, login, logout, register } from '@/services/auth';
+import type {
+    CompMutation,
+    CompMutationOptions,
+    CompQuery,
+    CompQueryOptions,
+} from '@/types/contract/Composable';
 import type { LoginRequest, RegisterRequest } from '@/types/schema/Auth';
 import type { Profile } from '@/types/schema/Profile';
-import {
-    type MutationOptions,
-    type QueryOptions,
-    type UseMutationOptions,
-    type UseQueryOptions,
-    useMutation,
-    useQuery,
-    useQueryClient,
-} from '@tanstack/vue-query';
-import type { AxiosError } from 'axios';
-
-export type UseAuthProfile = ReturnType<typeof useQuery<Profile | null>>;
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 
 /**
  * Composable to fetch the authenticated user's profile.
  *
  * @returns The query object containing the profile data and its state.
  */
-export function useAuthProfile(
-    options: Partial<UseQueryOptions<Profile | null>> = {},
-): UseAuthProfile {
+export function useAuthProfile(options: CompQueryOptions = {}): CompQuery<Profile | null> {
     const query = useQuery<Profile | null>({
         ...options,
         queryKey: ['profile'],
         throwOnError: false,
+        refetchInterval: 60000,
         retry: false,
         queryFn: getAuthProfile,
     });
@@ -33,20 +28,25 @@ export function useAuthProfile(
     return query;
 }
 
-type UseAuthLogout = ReturnType<typeof useMutation<void, AxiosError>>;
-
 /**
  * Composable to log out the user.
  *
+ * @param {CompMutationOptions} options - Optional mutation options.
  * @returns The mutation object for logging out.
  */
-export function useAuthLogout(options: MutationOptions<void, AxiosError> = {}): UseAuthLogout {
+export function useAuthLogout(options: CompMutationOptions = {}): CompMutation {
     const client = useQueryClient();
+    const messages = useMessages();
 
     const mutation = useMutation({
         ...options,
         mutationFn: logout,
         onSuccess: (data, vars, context) => {
+            messages.showMessage({
+                severity: 'success',
+                summary: 'Uitgelogd',
+                detail: 'Je bent succesvol uitgelogd.',
+            });
             client.invalidateQueries({ queryKey: ['profile'] });
             options.onSuccess?.(data, vars, context);
         },
@@ -55,16 +55,12 @@ export function useAuthLogout(options: MutationOptions<void, AxiosError> = {}): 
     return mutation;
 }
 
-type UseAuthLogin = ReturnType<typeof useMutation<void, AxiosError, LoginRequest>>;
-
 /**
  * Composable to handle user login.
  *
  * @returns The mutation object for logging in.
  */
-export function useAuthLogin(
-    options: MutationOptions<void, AxiosError, LoginRequest> = {},
-): UseAuthLogin {
+export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<void, LoginRequest> {
     const client = useQueryClient();
 
     const mutation = useMutation({
@@ -79,18 +75,16 @@ export function useAuthLogin(
     return mutation;
 }
 
-type UseAuthRegister = ReturnType<typeof useMutation<void, AxiosError, RegisterRequest>>;
-
 /**
  * Composable to handle user registration.
  *
- * @param {UseMutationOptions<void, Error, RegisterRequest>} options - Optional mutation options.
+ * @param {CompMutationOptions} options - Optional mutation options.
  *
  * @returns The mutation object for registering a new user.
  */
 export function useAuthRegister(
-    options: MutationOptions<void, AxiosError, RegisterRequest> = {},
-): UseAuthRegister {
+    options: CompMutationOptions = {},
+): CompMutation<void, RegisterRequest> {
     const client = useQueryClient();
 
     const mutation = useMutation({

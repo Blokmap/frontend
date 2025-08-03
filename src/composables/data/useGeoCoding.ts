@@ -1,17 +1,12 @@
 import { mapBoxClient } from '@/config/axios';
 import { mapboxEndpoints } from '@/endpoints';
+import type { CompQuery } from '@/types/contract/Composable';
 import { useQuery } from '@tanstack/vue-query';
 import { useDebounce } from '@vueuse/core';
 import { type MaybeRef, type Ref, computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
-
-export function useGeoCoding() {
-    return {};
-}
-
-type UseGeoSearch = ReturnType<typeof useQuery<GeoJSON.GeoJsonProperties[] | undefined>>;
 
 type UseGeoSearchOptions = {
     types?: string;
@@ -36,7 +31,7 @@ const defaultGeoSearchOptions: UseGeoSearchOptions = {
 export function useGeoSearch(
     search: Ref<string>,
     options: UseGeoSearchOptions = defaultGeoSearchOptions,
-): UseGeoSearch {
+): CompQuery<GeoJSON.GeoJsonProperties[]> {
     const { locale } = useI18n();
 
     const debouncedSearch = useDebounce(search, 250);

@@ -1,7 +1,9 @@
 <script lang="ts" setup>
-import Button from 'primevue';
+import { onMounted } from 'vue';
+
+onMounted(() => {
+    console.log('TestPage mounted');
+});
 </script>
 
-<template>
-    <Button> Hellaur ?</Button>
-</template>
+<template>Hellaur test</template>

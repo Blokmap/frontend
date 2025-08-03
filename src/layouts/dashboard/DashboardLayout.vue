@@ -1,13 +1,16 @@
 <script setup lang="ts">
+import DashboardSidebar from './DashboardSidebar.vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
 
 const profile = useAuthProfile({
-    // Staleness handled by the route guard.
-    staleTime: Infinity,
+    staleTime: Infinity, // staleness handled by the route guard
 });
 </script>
 
 <template>
-    {{ profile.data }}
-    <RouterView> </RouterView>
+    <div class="m-3 flex min-h-full rounded-lg bg-white md:m-6">
+        <main class="mx-auto w-full px-6 2xl:w-7/8">
+            <RouterView />
+        </main>
+    </div>
 </template>

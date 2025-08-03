@@ -60,6 +60,6 @@ defineExpose({
 
 .progressbar {
     @apply fixed top-0 left-0 z-50 w-full;
-    @apply bg-primary h-1 transition-all duration-300;
+    @apply bg-primary h-[2px] transition-all duration-300;
 }
 </style>

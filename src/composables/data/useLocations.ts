@@ -1,19 +1,13 @@
 import { client, getRandomDelay } from '@/config/axios';
 import { endpoints } from '@/endpoints';
-import { searchLocations } from '@/services/location';
+import { getLocationById, searchLocations } from '@/services/location';
+import type { CompQuery, CompQueryOptions } from '@/types/contract/Composable';
 import type { LocationFilter } from '@/types/schema/Filter';
 import type { Location } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
-import {
-    type QueryOptions,
-    type UseQueryOptions,
-    keepPreviousData,
-    useQuery,
-} from '@tanstack/vue-query';
+import { keepPreviousData, useQuery } from '@tanstack/vue-query';
 import { type MaybeRef, toValue, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-
-type UseLocationsSearch = ReturnType<typeof useQuery<Paginated<Location>>>;
 
 /**
  * Composable to search for locations based on filters.
@@ -24,9 +18,10 @@ type UseLocationsSearch = ReturnType<typeof useQuery<Paginated<Location>>>;
  */
 export function useLocationsSearch(
     filters?: MaybeRef<LocationFilter>,
-    options = {},
-): UseLocationsSearch {
+    options: CompQueryOptions = {},
+): CompQuery<Paginated<Location>> {
     const { locale } = useI18n();
+
     const query = useQuery({
         ...options,
         queryKey: ['locations', 'search', filters, locale],
@@ -34,21 +29,14 @@ export function useLocationsSearch(
         refetchOnMount: true,
         placeholderData: keepPreviousData,
         queryFn: async () => {
-            console.log('[useLocationsSearch] Executing queryFn', {
-                filters: toValue(filters),
-                locale: locale.value,
-            });
             const params = toValue(filters);
-            await getRandomDelay(250, 350);
-            const locations = await searchLocations(params, locale.value);
-            return locations;
+            await getRandomDelay(100, 250); // network delay to avoid flickering
+            return await searchLocations(params, locale.value);
         },
     });
 
     return query;
 }
-
-type UseLocation = ReturnType<typeof useQuery<Location>>;
 
 /**
  * Composable to fetch a single location by its ID.
@@ -56,16 +44,10 @@ type UseLocation = ReturnType<typeof useQuery<Location>>;
  * @param id - The ID of the location to fetch.
  * @returns An object containing the location and its state.
  */
-export function useLocation(id: MaybeRef<string>): UseLocation {
+export function useLocation(id: MaybeRef<string>): CompQuery<Location> {
     const query = useQuery({
         queryKey: ['location', id],
-        queryFn: async (): Promise<Location> => {
-            const response = await client.get(
-                endpoints.locations.read.replace('{id}', toValue(id)),
-            );
-
-            return response.data;
-        },
+        queryFn: () => getLocationById(toValue(id)),
     });
 
     return query;
@@ -76,7 +58,7 @@ export function useLocation(id: MaybeRef<string>): UseLocation {
  *
  * @returns An object containing the tags and their state.
  */
-export function useTags() {
+export function useTags(): CompQuery<string[]> {
     const query = useQuery({
         queryKey: ['tags'],
         queryFn: async () => {
@@ -85,11 +67,5 @@ export function useTags() {
         },
     });
 
-    return {
-        tags: query.data,
-        tagsError: query.error,
-        tagsIsLoading: query.isPending,
-        tagsIsSuccess: query.isSuccess,
-        tagsIsError: query.isError,
-    };
+    return query;
 }

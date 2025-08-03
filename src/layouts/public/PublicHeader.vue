@@ -65,10 +65,6 @@ function handleFiltersUpdate(
             </div>
         </div>
     </header>
-    <div
-        class="expanded-backdrop"
-        :class="{ expanded: isExpandedSearch }"
-        @click="isExpandedSearch = false"></div>
 </template>
 
 <style scoped>
@@ -87,15 +83,6 @@ function handleFiltersUpdate(
 
     .header--actions {
         @apply hidden transform items-center gap-2 sm:absolute sm:top-1 sm:right-0 sm:flex;
-    }
-}
-
-.expanded-backdrop {
-    @apply fixed inset-0 z-9 bg-black/30 transition-opacity duration-300;
-    @apply pointer-events-none opacity-0;
-
-    &.expanded {
-        @apply pointer-events-auto opacity-100;
     }
 }
 </style>

@@ -2,11 +2,13 @@
 import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
 import {
     faBars,
-    faDashboard,
+    faCalendarDay,
+    faCalendarDays,
     faInfoCircle,
     faMapLocation,
     faRightToBracket,
     faSignOut,
+    faUser,
     faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -17,18 +19,19 @@ import Skeleton from 'primevue/skeleton';
 import { useTemplateRef } from 'vue';
 import { useRouter } from 'vue-router';
 
-const { isLoading: profileIsLoading, data: profile } = useAuthProfile();
-const { mutate: logout } = useAuthLogout();
-const popoverRef = useTemplateRef('popover');
 const router = useRouter();
+const { isLoading: profileIsLoading, data: profile } = useAuthProfile();
+const { mutateAsync: logout } = useAuthLogout();
+const popoverRef = useTemplateRef('popover');
 
 function handleMenuButtonClick(event: MouseEvent): void {
     popoverRef.value?.toggle(event);
 }
 
-function goTo(routeName: string): void {
+async function handleLogoutClick(): Promise<void> {
+    await router.push({ name: 'locations' });
+    await logout();
     popoverRef.value?.hide();
-    router.push({ name: routeName });
 }
 </script>
 
@@ -68,17 +71,23 @@ function goTo(routeName: string): void {
                                 Welkom terug!
                             </div>
                         </div>
-                    </div>
 
-                    <RouterLink class="menu-link" :to="{ name: 'dashboard' }">
-                        <FontAwesomeIcon :icon="faDashboard" class="text-secondary" />
-                        <span>Ga naar je <span class="text-gradient-conic">Dashboard</span></span>
+                        <div
+                            class="ms-auto cursor-pointer self-end text-[10px] text-red-500"
+                            @click="handleLogoutClick">
+                            <FontAwesomeIcon :icon="faSignOut" class="me-1" />
+                            <span>Uitloggen</span>
+                        </div>
+                    </div>
+                    <RouterLink class="menu-link" :to="{ name: 'profile.reservations' }">
+                        <FontAwesomeIcon :icon="faUser" class="text-secondary" />
+                        <span> Bekijk <span class="text-gradient-conic">Account</span> </span>
                     </RouterLink>
 
-                    <div class="menu-link text-red-500" @click="() => logout()">
-                        <FontAwesomeIcon :icon="faSignOut" />
-                        <span>Uitloggen</span>
-                    </div>
+                    <RouterLink class="menu-link" :to="{ name: 'profile.reservations' }">
+                        <FontAwesomeIcon :icon="faCalendarDays" class="text-secondary" />
+                        <span> Bekijk <span class="text-gradient-conic">Reservaties</span> </span>
+                    </RouterLink>
                 </div>
             </template>
 
@@ -89,14 +98,14 @@ function goTo(routeName: string): void {
                     <span class="text-gradient-conic">Blokspots</span> of meld zelf een plek aan.
                 </p>
                 <div class="flex gap-1">
-                    <div class="menu-link" @click="goTo('auth.login')">
+                    <RouterLink class="menu-link" :to="{ name: 'auth.login' }">
                         <FontAwesomeIcon :icon="faRightToBracket" class="text-secondary" />
                         <span>Inloggen</span>
-                    </div>
-                    <div class="menu-link" @click="goTo('auth.register')">
+                    </RouterLink>
+                    <RouterLink class="menu-link" :to="{ name: 'auth.register' }">
                         <FontAwesomeIcon :icon="faUserPlus" class="text-secondary" />
                         <span>Registreren</span>
-                    </div>
+                    </RouterLink>
                 </div>
             </template>
 

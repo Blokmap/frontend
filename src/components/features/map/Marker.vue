@@ -5,7 +5,7 @@ import { faBuildingColumns, faLocationDot } from '@fortawesome/free-solid-svg-ic
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import gsap from 'gsap';
 import Popover from 'primevue/popover';
-import { inject, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue';
+import { onMounted, ref, useTemplateRef, watch } from 'vue';
 
 const props = defineProps<{ location: Location; active?: boolean; map: MapAdapter }>();
 
@@ -51,7 +51,9 @@ function updatePopoverPosition() {
 }
 
 onMounted(() => {
-    if (!markerRef.value) return;
+    if (!markerRef.value) {
+        return;
+    }
 
     window.addEventListener('scroll', () => {
         if (isShowingPopover.value) {
@@ -73,7 +75,10 @@ onMounted(() => {
 
     gsap.fromTo(
         markerRef.value,
-        { scale: 0.5, opacity: 0 },
+        {
+            scale: 0.5,
+            opacity: 0,
+        },
         {
             scale: 1,
             opacity: 1,

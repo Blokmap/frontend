@@ -51,3 +51,14 @@ export async function searchLocations(
 
     return response.data;
 }
+
+/**
+ * Function to get a location by its ID.
+ *
+ * @param {string} id - The ID of the location to fetch.
+ * @returns {Promise<Location>} A promise that resolves to the location data.
+ */
+export async function getLocationById(id: string): Promise<Location> {
+    const response = await client.get(endpoints.locations.read.replace('{id}', id));
+    return response.data;
+}

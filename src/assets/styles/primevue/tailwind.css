@@ -34,8 +34,8 @@
 @import './splitbutton'; */
 
 /* Data */
-/* @import './datatable';
-@import './dataview'; */
+@import './datatable';
+/* @import './dataview'; */
 @import './paginator';
 /* @import './picklist';
 @import './orderlist';

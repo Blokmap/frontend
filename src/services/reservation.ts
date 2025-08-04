@@ -33,7 +33,9 @@ export async function getProfileReservations(
     dateOfWeek?: Date,
 ): Promise<Reservation[]> {
     const endpoint = endpoints.profiles.reservations.list.replace('{id}', profileId.toString());
-    const params: Record<string, any> = {};
+    const params: Record<string, any> = {
+        profile: true,
+    };
 
     if (dateOfWeek !== undefined) {
         params.date = formatDate(dateOfWeek, 'YYYY-MM-DD');

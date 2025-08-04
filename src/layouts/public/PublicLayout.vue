@@ -9,7 +9,11 @@ import PublicHeader from './PublicHeader.vue';
             <PublicHeader></PublicHeader>
         </div>
         <main class="mx-auto flex w-full flex-grow flex-col items-stretch px-6 2xl:w-7/8">
-            <RouterView />
+            <RouterView v-slot="{ Component }">
+                <KeepAlive :include="['LocationsPage']">
+                    <component :is="Component" />
+                </KeepAlive>
+            </RouterView>
         </main>
         <div class="p-6 2xl:mx-auto 2xl:w-7/8">
             <PublicFooter />

@@ -7,7 +7,7 @@ const { speed = 50 } = defineProps<{
 
 const trackRef = useTemplateRef('track');
 
-async function setupCarousel() {
+async function setupCarousel(): Promise<void> {
     const track = trackRef.value;
     if (!track) return;
 

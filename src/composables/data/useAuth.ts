@@ -9,13 +9,16 @@ import type {
 import type { LoginRequest, RegisterRequest } from '@/types/schema/Auth';
 import type { Profile } from '@/types/schema/Profile';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { type Ref, computed } from 'vue';
 
 /**
  * Composable to fetch the authenticated user's profile.
  *
  * @returns The query object containing the profile data and its state.
  */
-export function useAuthProfile(options: CompQueryOptions = {}): CompQuery<Profile | null> {
+export function useAuthProfile(
+    options: CompQueryOptions = {},
+): CompQuery<Profile | null> & { profileId: Ref<number | null> } {
     const query = useQuery<Profile | null>({
         ...options,
         queryKey: ['profile'],
@@ -25,7 +28,9 @@ export function useAuthProfile(options: CompQueryOptions = {}): CompQuery<Profil
         queryFn: getAuthProfile,
     });
 
-    return query;
+    const profileId = computed(() => query.data.value?.id ?? null);
+
+    return { ...query, profileId };
 }
 
 /**

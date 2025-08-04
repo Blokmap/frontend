@@ -2,7 +2,6 @@
 import LocationCard from '@/components/features/location/LocationCard.vue';
 import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
 import BlokMap from '@/components/features/map/BlokMap.vue';
-import GradientText from '@/components/shared/GradientText.vue';
 import { useItemAnimation } from '@/composables/anim/useItemAnimation';
 import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
@@ -98,11 +97,11 @@ async function flyToNearestLocation(): Promise<void> {
                             <template v-if="locations?.data?.length">
                                 <template v-if="locations.truncated">
                                     Meer dan {{ locations.total }}
-                                    <GradientText>Blokspots</GradientText> gevonden
+                                    <span class="text-gradient-conic">Blokspots</span> gevonden
                                 </template>
                                 <template v-else>
                                     {{ locations.total }}
-                                    <GradientText>Blokspots</GradientText> gevonden
+                                    <span class="text-gradient-conic">Blokspots</span> gevonden
                                 </template>
                             </template>
                             <template v-else> Geen exacte resultaten gevonden </template>
@@ -118,12 +117,12 @@ async function flyToNearestLocation(): Promise<void> {
                     <template v-if="locations?.data?.length">
                         <p class="text-slate-500" v-if="locations.total > locations.perPage">
                             {{ locations.perPage }} van {{ locations.total }}
-                            <GradientText>Blokspots</GradientText> getoond. Gebruik de filters om je
-                            zoekopdracht te verfijnen.
+                            <span class="text-gradient-conic">Blokspots</span> getoond. Gebruik de
+                            filters om je zoekopdracht te verfijnen.
                         </p>
                         <p class="text-slate-500" v-else>
-                            Klik op een <GradientText>Blokspot</GradientText> voor meer informatie
-                            of om een plek te reserveren.
+                            Klik op een <span class="text-gradient-conic">Blokspot</span> voor meer
+                            informatie of om een plek te reserveren.
                         </p>
                     </template>
 
@@ -131,7 +130,7 @@ async function flyToNearestLocation(): Promise<void> {
                         <p>Probeer je zoekcriteria of filters aan te passen.</p>
                         <Button class="mt-6" @click="flyToNearestLocation" outlined rounded>
                             <FontAwesomeIcon :icon="faHelicopter" /> Vlieg naar dichtstbijzijnde
-                            <GradientText>Blokspot</GradientText>
+                            <span class="text-gradient-conic">Blokspot</span>
                         </Button>
                     </template>
                 </template>

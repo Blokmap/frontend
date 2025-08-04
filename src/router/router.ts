@@ -14,7 +14,7 @@ const routes: RouteRecordRaw[] = [
         component: PublicLayout,
         children: [
             {
-                path: 'profile',
+                path: 'profile/:dateInWeek?',
                 beforeEnter: AuthenticationGuard,
                 children: [
                     {

@@ -1,5 +1,4 @@
-import type { OpeningTime } from '@/types/schema/Location';
-import type { Location } from '@/types/schema/Location';
+import type { Location, OpeningTime } from '@/types/schema/Location';
 import type { Profile } from '@/types/schema/Profile';
 
 export type Reservation = {
@@ -15,3 +14,11 @@ export type Reservation = {
     createdAt: Date;
     updatedAt: Date;
 };
+
+export interface TimeSlot {
+    id: string;
+    day: Date;
+    startTime: string;
+    endTime: string;
+    reservation?: Reservation;
+}

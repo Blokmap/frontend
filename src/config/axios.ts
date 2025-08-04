@@ -1,8 +1,8 @@
-import { type UseMessages, useMessages } from '@/composables/useMessages';
+import { type UseMessages } from '@/composables/useMessages';
 import { mockInstitutions } from '@/config/mock';
 import { endpoints } from '@/endpoints';
 import axios, { HttpStatusCode } from 'axios';
-import { type Router, useRouter } from 'vue-router';
+import { type Router } from 'vue-router';
 
 export const mapBoxClient = axios.create({
     baseURL: import.meta.env.VITE_MAPBOX_API_BASE_URL,
@@ -30,7 +30,11 @@ export const client = axios.create({
 export function setupAxiosInterceptors(router: Router, messages: UseMessages): void {
     client.interceptors.response.use((response) => {
         if (response.status === HttpStatusCode.Unauthorized) {
-            router.push({ name: 'auth.login', query: { redirect: window.location.pathname } });
+            router.push({
+                name: 'auth',
+                params: { action: 'login' },
+                query: { redirect: window.location.pathname },
+            });
             messages.showMessage({
                 severity: 'error',
                 summary: 'Niet ingelogd',

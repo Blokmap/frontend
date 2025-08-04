@@ -2,7 +2,6 @@
 import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
 import {
     faBars,
-    faCalendarDay,
     faCalendarDays,
     faInfoCircle,
     faMapLocation,
@@ -98,11 +97,11 @@ async function handleLogoutClick(): Promise<void> {
                     <span class="text-gradient-conic">Blokspots</span> of meld zelf een plek aan.
                 </p>
                 <div class="flex gap-1">
-                    <RouterLink class="menu-link" :to="{ name: 'auth.login' }">
+                    <RouterLink class="menu-link" :to="{ name: 'auth' }">
                         <FontAwesomeIcon :icon="faRightToBracket" class="text-secondary" />
                         <span>Inloggen</span>
                     </RouterLink>
-                    <RouterLink class="menu-link" :to="{ name: 'auth.register' }">
+                    <RouterLink class="menu-link" :to="{ name: 'auth' }">
                         <FontAwesomeIcon :icon="faUserPlus" class="text-secondary" />
                         <span>Registreren</span>
                     </RouterLink>

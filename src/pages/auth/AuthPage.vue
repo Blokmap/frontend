@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import LoginForm from '@/components/features/auth/forms/LoginForm.vue';
-import { useAuthLogin } from '@/composables/data/useAuth';
+import RegisterForm from '@/components/features/auth/forms/RegisterForm.vue';
+import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
 import { useInstitutions } from '@/composables/data/useInstitutions';
 import { useMessages } from '@/composables/useMessages';
 import { authIdentityProviders } from '@/config/auth';
@@ -23,8 +24,57 @@ const route = useRoute();
 
 const { data: institutions, isLoading: isLoadingInstitutions } = useInstitutions();
 
-const isDialogVisible = ref(false);
+const {
+    mutate: login,
+    isPending: loginIsLoading,
+    error: loginError,
+} = useAuthLogin({
+    onError: (error) => {
+        showMessage({
+            severity: 'error',
+            summary: 'Inloggen mislukt',
+            detail: error.response?.data,
+        });
+    },
+    onSuccess: () => {
+        if (route.query.redirect) {
+            router.push({ path: route.query.redirect.toString() });
+        } else {
+            router.push({ name: 'locations' });
+        }
+
+        showMessage({
+            severity: 'success',
+            summary: 'Ingelogd!',
+            detail: 'Je bent succesvol ingelogd.',
+        });
+    },
+});
+
+const {
+    mutate: register,
+    isPending: registerIsLoading,
+    error: registerError,
+} = useAuthRegister({
+    onError: (error) => {
+        showMessage({
+            severity: 'error',
+            summary: 'Registratie mislukt',
+            detail: error.response?.data,
+        });
+    },
+    onSuccess: () => {
+        showMessage({
+            severity: 'success',
+            summary: 'Geregistreerd!',
+            detail: 'Je bent succesvol geregistreerd. Je kan nu inloggen.',
+        });
+        router.push({ name: 'auth', params: { action: 'login' } });
+    },
+});
+
 const institutionFilter = ref('');
+const isDialogVisible = computed(() => !!route.params.action);
 
 const filteredInstitutions = computed(() => {
     if (!institutions.value) {
@@ -39,37 +89,22 @@ const filteredInstitutions = computed(() => {
     });
 });
 
-const {
-    mutate: login,
-    isPending: loginIsLoading,
-    error: loginError,
-} = useAuthLogin({
-    onError: (error) => {
-        showMessage({
-            severity: 'error',
-            summary: 'An error occurred',
-            detail: error.response?.data,
-        });
-    },
-    onSuccess: () => {
-        if (route.query.redirect) {
-            router.push({ path: route.query.redirect.toString() });
-        } else {
-            router.push({ name: 'locations' });
-        }
-
-        showMessage({
-            severity: 'success',
-            summary: 'Login Successful',
-            detail: 'Successfully logged in.',
-        });
-    },
-});
-
 function handleSelectInstitution(institution: { value: string }): void {
     if (!institution.value) {
         return;
     }
+}
+
+function closeDialog(): void {
+    router.push({ name: 'auth' });
+}
+
+function switchToLogin(): void {
+    router.push({ name: 'auth', params: { action: 'login' } });
+}
+
+function switchToRegister(): void {
+    router.push({ name: 'auth', params: { action: 'register' } });
 }
 </script>
 
@@ -136,22 +171,37 @@ function handleSelectInstitution(institution: { value: string }): void {
         </Button>
     </template>
     <div class="absolute right-4 bottom-4">
-        <Button severity="secondary" size="small" @click="isDialogVisible = true" link>
+        <Button severity="secondary" size="small" @click="switchToLogin" link>
             <span class="hover:underline">Inloggen met wachtwoord</span>
             <FontAwesomeIcon :icon="faArrowRight" />
         </Button>
     </div>
-    <Dialog class="w-[500px]" v-model:visible="isDialogVisible" modal>
+    <Dialog class="w-[500px]" :visible="isDialogVisible" @update:visible="closeDialog" modal>
         <template #header>
-            <h2 class="text-lg font-bold">Inloggen met wachtwoord</h2>
+            <h2 class="text-lg font-bold">
+                {{ route.params.action === 'register' ? 'Registreren' : 'Inloggen met wachtwoord' }}
+            </h2>
         </template>
         <template #default>
-            <LoginForm
-                :idps="authIdentityProviders"
-                :is-loading="loginIsLoading"
-                :error="loginError"
-                @submit="login">
-            </LoginForm>
+            <template v-if="route.params.action === 'login'">
+                <LoginForm :is-loading="loginIsLoading" :error="loginError" @submit="login" />
+                <span
+                    class="mt-4 block cursor-pointer text-center hover:underline"
+                    @click="switchToRegister">
+                    Heb je nog geen account?
+                </span>
+            </template>
+            <template v-else-if="route.params.action === 'register'">
+                <RegisterForm
+                    :is-loading="registerIsLoading"
+                    :error="registerError"
+                    @submit="register" />
+                <span
+                    class="mt-4 block cursor-pointer text-center hover:underline"
+                    @click="switchToLogin">
+                    Heb je al een account?
+                </span>
+            </template>
         </template>
     </Dialog>
 </template>

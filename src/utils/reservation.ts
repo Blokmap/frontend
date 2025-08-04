@@ -1,5 +1,6 @@
+import { formatTimeFromDate, isDateInRange, startOfDay } from './date';
 import type { Location } from '@/types/schema/Location';
-import type { Reservation } from '@/types/schema/Reservation';
+import type { Reservation, TimeSlot } from '@/types/schema/Reservation';
 
 export type ReservationLocationGroup = {
     location: Location;
@@ -42,4 +43,53 @@ export function groupByDayOfWeek(reservations: Reservation[]): ReservationDayGro
     }
 
     return grouped;
+}
+
+/**
+ * Filter reservations by date range
+ */
+export function filterReservationsByDateRange(
+    reservations: Reservation[],
+    startDate: Date,
+    endDate: Date,
+): Reservation[] {
+    return reservations.filter((reservation) => {
+        const reservationDate = new Date(reservation.startTime);
+        return isDateInRange(reservationDate, startDate, endDate);
+    });
+}
+
+/**
+ * Convert a reservation to a calendar time slot
+ */
+export function reservationToTimeSlot(reservation: Reservation): TimeSlot {
+    const startTime = new Date(reservation.startTime);
+    const endTime = new Date(reservation.endTime);
+
+    return {
+        id: `reservation-${reservation.id}`,
+        day: startOfDay(startTime),
+        startTime: formatTimeFromDate(startTime),
+        endTime: formatTimeFromDate(endTime),
+        reservation,
+    };
+}
+
+/**
+ * Convert multiple reservations to time slots, optionally filtered by date range
+ */
+export function reservationsToTimeSlots(
+    reservations?: Reservation[],
+    startDate?: Date,
+    endDate?: Date,
+): TimeSlot[] {
+    if (!reservations) return [];
+
+    let filteredReservations = reservations;
+
+    if (startDate && endDate) {
+        filteredReservations = filterReservationsByDateRange(reservations, startDate, endDate);
+    }
+
+    return filteredReservations.map(reservationToTimeSlot);
 }

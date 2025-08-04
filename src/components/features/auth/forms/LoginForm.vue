@@ -1,15 +1,14 @@
 <script lang="ts" setup>
 import type { LoginRequest } from '@/types/schema/Auth';
-import type { Idp } from '@/types/schema/Profile';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
+import Checkbox from 'primevue/checkbox';
 import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
 import { ref } from 'vue';
 
 defineProps<{
-    idps: Idp[];
     error?: Error | null;
     isLoading?: boolean;
 }>();
@@ -21,6 +20,7 @@ const emit = defineEmits<{
 const form = ref<LoginRequest>({
     username: '',
     password: '',
+    remember: false,
 });
 
 /**
@@ -33,25 +33,27 @@ function handleFormSubmission(): void {
 
 <template>
     <form class="space-y-3" @submit.prevent="handleFormSubmission">
-        <div class="grid grid-cols-1">
-            <FloatLabel variant="on">
-                <label for="username">Username or Email</label>
-                <InputText v-model="form.username" id="username" class="w-full" required>
-                </InputText>
-            </FloatLabel>
-        </div>
-        <div class="grid grid-cols-1">
-            <FloatLabel variant="on">
-                <label for="password">Password</label>
-                <InputText
-                    v-model="form.password"
-                    id="password"
-                    type="password"
-                    class="w-full"
-                    required>
-                </InputText>
-            </FloatLabel>
-        </div>
+        <FloatLabel variant="on">
+            <label for="username">Username or Email</label>
+            <InputText v-model="form.username" id="username" class="w-full" required> </InputText>
+        </FloatLabel>
+
+        <FloatLabel variant="on">
+            <label for="password">Password</label>
+            <InputText
+                v-model="form.password"
+                id="password"
+                type="password"
+                class="w-full"
+                required>
+            </InputText>
+        </FloatLabel>
+
+        <label class="mt-5 mb-4 flex items-center gap-2" for="remember">
+            <Checkbox v-model="form.remember" input-id="remember" binary />
+            <span class="text-md">Ik wil ingelogd blijven op dit apparaat</span>
+        </label>
+
         <Button
             class="mt-2 w-full"
             label="Log in with email"

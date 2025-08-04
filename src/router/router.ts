@@ -2,9 +2,6 @@ import { AuthenticationGuard } from './guards/auth';
 import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
 import AuthLayout from '@/layouts/public/AuthLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
-import OfflinePage from '@/pages/system/OfflinePage.vue';
-import { useQueryClient } from '@tanstack/vue-query';
-import { KeepAlive } from 'vue';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -14,11 +11,11 @@ const routes: RouteRecordRaw[] = [
         component: PublicLayout,
         children: [
             {
-                path: 'profile/:dateInWeek?',
+                path: 'profile',
                 beforeEnter: AuthenticationGuard,
                 children: [
                     {
-                        path: 'reservations',
+                        path: 'reservations/:dateInWeek?',
                         name: 'profile.reservations',
                         component: () => import('@/pages/public/profile/ReservationsPage.vue'),
                     },
@@ -37,14 +34,17 @@ const routes: RouteRecordRaw[] = [
         component: AuthLayout,
         children: [
             {
+                path: 'auth/:action?',
+                name: 'auth',
+                component: () => import('@/pages/auth/AuthPage.vue'),
+            },
+            {
                 path: 'login',
-                name: 'auth.login',
-                component: () => import('@/pages/auth/LoginPage.vue'),
+                redirect: { name: 'auth', params: { action: 'login' } },
             },
             {
                 path: 'register',
-                name: 'auth.register',
-                component: () => import('@/pages/auth/RegisterPage.vue'),
+                redirect: { name: 'auth', params: { action: 'register' } },
             },
         ],
     },

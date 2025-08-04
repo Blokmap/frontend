@@ -39,7 +39,7 @@ export function useAuthProfile(
  * @param {CompMutationOptions} options - Optional mutation options.
  * @returns The mutation object for logging out.
  */
-export function useAuthLogout(options: CompMutationOptions = {}): CompMutation {
+export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<void> {
     const client = useQueryClient();
     const messages = useMessages();
 

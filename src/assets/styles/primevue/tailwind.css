@@ -2,9 +2,9 @@
 
 /* Form */
 @import './autocomplete';
-/* @import './cascadeselect';
+/* @import './cascadeselect'; */
 @import './checkbox';
-@import './colorpicker'; */
+/*@import './colorpicker'; */
 @import './datepicker';
 @import './iconfield';
 /*@import './iftalabel';

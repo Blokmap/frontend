@@ -49,3 +49,45 @@ export function addToDate(date: Date, amount: number, granularity: DateGranulari
 
     return newDate;
 }
+
+export function isDateInRange(date: Date, start: Date, end: Date): boolean {
+    return date >= start && date <= end;
+}
+
+export function formatTimeFromDate(date: Date): string {
+    return date.toTimeString().slice(0, 5);
+}
+
+export function formatTimeFromHoursAndMinutes(hours: number, minutes: number): string {
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+}
+
+export function startOfDay(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+export function formatDateRange(start: Date, end: Date, locale = 'en'): string {
+    const options: Intl.DateTimeFormatOptions = {
+        month: 'short',
+        day: 'numeric',
+    };
+
+    if (start.getFullYear() !== end.getFullYear()) {
+        options.year = 'numeric';
+    }
+
+    return `${start.toLocaleDateString(locale, options)} - ${end.toLocaleDateString(locale, options)}`;
+}
+
+export function formatDayName(date: Date, weekday: any = 'short', locale = 'en'): string {
+    return date.toLocaleDateString(locale, { weekday });
+}
+
+export function isToday(date: Date): boolean {
+    const today = new Date();
+    return (
+        date.getFullYear() === today.getFullYear() &&
+        date.getMonth() === today.getMonth() &&
+        date.getDate() === today.getDate()
+    );
+}

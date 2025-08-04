@@ -19,7 +19,11 @@ export async function AuthenticationGuard(): Promise<NavigationGuardReturn> {
             detail: 'Je moet ingelogd zijn om deze pagina te bekijken.',
         });
 
-        return { name: 'auth.login', query: { redirect: window.location.pathname } };
+        return {
+            name: 'auth',
+            params: { action: 'login' },
+            query: { redirect: window.location.pathname },
+        };
     }
 
     return true;

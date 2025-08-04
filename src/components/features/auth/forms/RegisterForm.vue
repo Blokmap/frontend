@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import type { RegisterRequest } from '@/types/schema/Auth';
-import type { Idp } from '@/types/schema/Profile';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
@@ -9,7 +8,6 @@ import InputText from 'primevue/inputtext';
 import { ref } from 'vue';
 
 defineProps<{
-    idps: Idp[];
     error?: Error | null;
     isLoading?: boolean;
 }>();
@@ -36,7 +34,7 @@ function handleFormSubmission(): void {
 </script>
 
 <template>
-    <form class="my-6 space-y-3" @submit.prevent="handleFormSubmission">
+    <form class="space-y-3" @submit.prevent="handleFormSubmission">
         <div class="grid grid-cols-2 gap-3">
             <FloatLabel variant="on">
                 <label for="first-name">First Name</label>
@@ -94,13 +92,4 @@ function handleFormSubmission(): void {
             </template>
         </Button>
     </form>
-    <div class="my-4 grid grid-cols-1 gap-3">
-        <template v-for="idp in idps" :key="idp.name">
-            <Button class="w-full" severity="contrast" :label="`Continue with ${idp.name}`">
-                <template #icon>
-                    <img :src="idp.logo!" :alt="idp.name" class="h-5 w-5 object-contain" />
-                </template>
-            </Button>
-        </template>
-    </div>
 </template>

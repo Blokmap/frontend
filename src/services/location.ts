@@ -1,7 +1,8 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/endpoints';
+import type { LngLat } from '@/types/contract/Map';
 import type { LocationFilter } from '@/types/schema/Filter';
-import type { Location } from '@/types/schema/Location';
+import type { Location, NearestLocation } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
 import { formatDate } from '@vueuse/core';
 
@@ -16,7 +17,7 @@ export async function searchLocations(
     filters?: Partial<LocationFilter>,
     locale?: string,
 ): Promise<Paginated<Location>> {
-    const [southWest, northEast] = filters?.bounds || [];
+    const [southWest, northEast] = filters?.bounds ?? [];
     const northEastLng = northEast?.[0];
     const northEastLat = northEast?.[1];
     const southWestLng = southWest?.[0];
@@ -26,11 +27,11 @@ export async function searchLocations(
     const centerLat = filters?.center?.coords?.[1];
     const distance = filters?.center?.radius;
 
-    const query = filters?.query || undefined;
+    const query = filters?.query;
     const page = filters?.page;
     const perPage = filters?.perPage;
     const language = locale;
-    const openOnDay = filters?.openOn ? formatDate(filters?.openOn, 'YYYY-MM-DD') : undefined;
+    const openOnDay = filters?.openOn ? formatDate(filters.openOn, 'YYYY-MM-DD') : undefined;
 
     const params = {
         northEastLng,
@@ -60,5 +61,21 @@ export async function searchLocations(
  */
 export async function getLocationById(id: string): Promise<Location> {
     const response = await client.get(endpoints.locations.read.replace('{id}', id));
+    return response.data;
+}
+
+/** Function to get the nearest location based on a center point.
+ *
+ * @param {LngLat} center - The center point to find the nearest location to.
+ * @returns {Promise<NearestLocation>} A promise that resolves to the nearest location data.
+ */
+export async function getNearestLocation(center: LngLat): Promise<NearestLocation> {
+    const response = await client.get(endpoints.locations.nearest, {
+        params: {
+            centerLng: center[0],
+            centerLat: center[1],
+        },
+    });
+
     return response.data;
 }

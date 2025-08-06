@@ -1,15 +1,16 @@
 <script lang="ts" setup>
-import Calendar from '@/components/shared/Calendar.vue';
+import Calendar from '@/components/shared/calendar/Calendar.vue';
+import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useProfileReservations } from '@/composables/data/useReservations';
-import { endOfWeek, formatDateRange, startOfWeek } from '@/utils/date';
+import { endOfWeek, startOfWeek } from '@/utils/date';
 import { reservationsToTimeSlots } from '@/utils/reservation';
+import { formatDate } from '@vueuse/core';
 import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
-const { locale } = useI18n();
 const route = useRoute();
+const router = useRouter();
 const profile = useAuthProfile();
 const reservations = useProfileReservations(profile.profileId);
 
@@ -27,24 +28,58 @@ const reservationTimeSlots = computed(() =>
     reservationsToTimeSlots(reservations.data.value, weekStart.value, weekEnd.value),
 );
 
-const weekRangeText = computed(() => formatDateRange(weekStart.value, weekEnd.value, locale.value));
+function goToPreviousWeek(): void {
+    const newDate = new Date(weekStart.value);
+    newDate.setDate(newDate.getDate() - 7);
+    navigateToWeek(newDate);
+}
+
+function goToNextWeek(): void {
+    const newDate = new Date(weekStart.value);
+    newDate.setDate(newDate.getDate() + 7);
+    navigateToWeek(newDate);
+}
+
+function goToToday(): void {
+    navigateToWeek(new Date());
+}
+
+function handleDateSelect(date: any): void {
+    if (date && date instanceof Date) {
+        navigateToWeek(date);
+    }
+}
+
+function navigateToWeek(date: Date): void {
+    const dateString = formatDate(date, 'YYYY-MM-DD');
+
+    router.push({
+        name: route.name,
+        params: {
+            ...route.params,
+            dateInWeek: dateString,
+        },
+    });
+}
 </script>
 
 <template>
-    <div class="mt-2 mb-8 space-y-2 text-center">
-        <h1 class="text-3xl font-bold text-gray-900">Mijn reservaties</h1>
-        <p class="text-lg text-gray-600">Week van {{ weekRangeText }}</p>
-    </div>
-    <Calendar :current-week="dateInWeek" :time-slots="reservationTimeSlots">
-        <template #timeSlot="{ slot }"> {{ slot.startTime }} - {{ slot.endTime }} </template>
-    </Calendar>
-
-    <div v-if="reservationTimeSlots.length === 0" class="flex items-center justify-center py-16">
-        <div class="max-w-md space-y-4 text-center">
-            <div class="text-6xl">📅</div>
-            <h3 class="text-xl font-semibold text-gray-900">Geen reservaties deze week</h3>
-            <p class="text-gray-600">Je hebt geen reservaties voor de geselecteerde week.</p>
+    <div class="mt-3 space-y-6">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-gray-900">Mijn reservaties</h1>
         </div>
+
+        <CalendarControls
+            :current-week="dateInWeek"
+            @click:previous-week="goToPreviousWeek"
+            @click:next-week="goToNextWeek"
+            @click:current-week="goToToday"
+            @select:date="handleDateSelect">
+        </CalendarControls>
+
+        <Calendar :current-week="dateInWeek" :time-slots="reservationTimeSlots">
+            <template #time-slot="{ slot }"></template>
+        </Calendar>
     </div>
 </template>
 

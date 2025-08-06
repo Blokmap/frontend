@@ -58,6 +58,7 @@ export const endpoints = {
         approve: '/locations/{id}/approve',
         reject: '/locations/{id}/reject',
         permissions: '/locations/permissions',
+        nearest: '/locations/nearest',
         openingTimes: {
             create: '/locations/{id}/opening-times',
             update: '/locations/{id}/opening-times/{openingTimeId}',

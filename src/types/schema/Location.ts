@@ -31,9 +31,8 @@ export type Location = {
     images?: Image[];
 };
 
-export type SearchedLocation = {
+export type NearestLocation = {
     id: number;
-    name: Translation;
     latitude: number;
     longitude: number;
 };

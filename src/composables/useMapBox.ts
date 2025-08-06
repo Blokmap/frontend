@@ -1,7 +1,7 @@
 import { defaultMapOptions } from '@/config/map';
 import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/types/contract/Map';
 import mapboxgl from 'mapbox-gl';
-import { type Ref, computed, h, onMounted, onUnmounted, ref, render } from 'vue';
+import { type Ref, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
@@ -174,19 +174,26 @@ export function useMapBox<T>(
      * Flies the map to the specified bounds.
      *
      * @param bounds - The bounds to fly to, defined by southwest and northeast coordinates.
+     * @returns A promise that resolves when the animation completes.
      */
-    function flyToBounds(bounds: LngLatBounds): void {
-        if (!map.value) {
-            return console.error('Map is not initialized, cannot fly to bounds');
-        }
+    function flyToBounds(bounds: LngLatBounds): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (!map.value) {
+                const error = new Error('Map is not initialized, cannot fly to bounds');
+                console.error(error.message);
+                return reject(error);
+            }
 
-        const sw = new mapboxgl.LngLat(bounds[0][0], bounds[0][1]);
-        const ne = new mapboxgl.LngLat(bounds[1][0], bounds[1][1]);
-        const mapBounds = new mapboxgl.LngLatBounds(sw, ne);
+            const sw = new mapboxgl.LngLat(bounds[0][0], bounds[0][1]);
+            const ne = new mapboxgl.LngLat(bounds[1][0], bounds[1][1]);
+            const mapBounds = new mapboxgl.LngLatBounds(sw, ne);
 
-        map.value.fitBounds(mapBounds, {
-            padding: { top: 20, bottom: 20, left: 20, right: 20 },
-            duration: 1000,
+            map.value.once('moveend', () => resolve());
+
+            map.value.fitBounds(mapBounds, {
+                padding: { top: 20, bottom: 20, left: 20, right: 20 },
+                duration: 1000,
+            });
         });
     }
 
@@ -194,17 +201,24 @@ export function useMapBox<T>(
      * Flies the map to the specified longitude and latitude.
      *
      * @param lngLat - The longitude and latitude to fly to.
+     * @returns A promise that resolves when the animation completes.
      */
-    function flyTo(lngLat: LngLat): void {
-        if (!map.value) {
-            return console.error('Map is not initialized, cannot fly to location');
-        }
+    function flyTo(lngLat: LngLat): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (!map.value) {
+                const error = new Error('Map is not initialized, cannot fly to location');
+                console.error(error.message);
+                return reject(error);
+            }
 
-        map.value.flyTo({
-            center: lngLat,
-            zoom: 12,
-            duration: 1000,
-            essential: true,
+            map.value.once('moveend', () => resolve());
+
+            map.value.flyTo({
+                center: lngLat,
+                zoom: 12,
+                duration: 1000,
+                essential: true,
+            });
         });
     }
 

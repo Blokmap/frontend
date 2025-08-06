@@ -1,12 +1,12 @@
 import type {
     MutationOptions,
-    QueryOptions,
     UseMutationReturnType,
+    UseQueryOptions,
     UseQueryReturnType,
 } from '@tanstack/vue-query';
 import type { AxiosError } from 'axios';
 
-export type CompQueryOptions = Partial<QueryOptions<any, any, any, any>>;
+export type CompQueryOptions = Partial<UseQueryOptions<any, any, any, any, any>>;
 export type CompMutationOptions = Partial<MutationOptions<any, any, any, any>>;
 
 export type CompQuery<T = unknown> = UseQueryReturnType<T, AxiosError | Error>;

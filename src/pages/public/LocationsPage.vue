@@ -6,12 +6,11 @@ import { useItemAnimation } from '@/composables/anim/useItemAnimation';
 import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useMessages } from '@/composables/useMessages';
-import { searchLocations } from '@/services/location';
+import { getNearestLocation } from '@/services/location';
 import type { LngLat, LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
-import { faFilter, faHelicopter } from '@fortawesome/free-solid-svg-icons';
+import { faFilter, faHelicopter, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useQueryClient } from '@tanstack/vue-query';
 import { useTemplateRefsList } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
@@ -21,16 +20,15 @@ import { ref, useTemplateRef, watch } from 'vue';
 
 const filterStore = useLocationFilters();
 const messages = useMessages();
-const client = useQueryClient();
 const { filters, geoLocation } = storeToRefs(filterStore);
 const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(filters);
 
-const mapRef = useTemplateRef('map');
-const locationRefs = useTemplateRefsList();
-useItemAnimation(locationRefs);
-
+const isFetchingNearest = ref(false);
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
+
+const mapRef = useTemplateRef('map');
+const locationRefs = useTemplateRefsList();
 
 watch(locations, (locations) => {
     if (!locations || !locations.data?.length) {
@@ -52,6 +50,8 @@ watch(
     { immediate: true, deep: true },
 );
 
+useItemAnimation(locationRefs);
+
 function handleBoundsChange(bounds: LngLatBounds): void {
     filterStore.updateFilters({ bounds, page: 1 });
 }
@@ -63,19 +63,19 @@ function handlePageChange(event: { page: number }): void {
 
 async function flyToNearestLocation(): Promise<void> {
     if (!mapRef.value) return;
-    const center = { coords: mapRef.value.map.getCenter() };
-    const query = await searchLocations({ center, perPage: 1 });
 
-    if (query.data && query.data.length > 0) {
-        const nearestLocation = query.data[0];
-        client.setQueryData(['search', 'locations'], { data: [nearestLocation] });
-        mapRef.value.map.flyTo([nearestLocation.longitude, nearestLocation.latitude]);
-    } else {
+    try {
+        isFetchingNearest.value = true;
+        const location = await getNearestLocation(mapRef.value.map.getCenter() as LngLat);
+        await mapRef.value.map.flyTo([location.longitude, location.latitude]);
+    } catch {
         messages.showMessage({
-            severity: 'info',
-            summary: 'Geen resultaten',
-            detail: 'Er zijn geen locaties gevonden in de buurt.',
+            severity: 'error',
+            summary: 'Fout bij het ophalen van de dichtstbijzijnde locatie',
+            detail: 'Probeer het later opnieuw.',
         });
+    } finally {
+        isFetchingNearest.value = false;
     }
 }
 </script>
@@ -128,8 +128,17 @@ async function flyToNearestLocation(): Promise<void> {
 
                     <template v-else>
                         <p>Probeer je zoekcriteria of filters aan te passen.</p>
-                        <Button class="mt-6" @click="flyToNearestLocation" outlined rounded>
-                            <FontAwesomeIcon :icon="faHelicopter" /> Vlieg naar dichtstbijzijnde
+                        <Button
+                            class="mt-6"
+                            @click="flyToNearestLocation"
+                            :loading="isFetchingNearest"
+                            outlined
+                            rounded>
+                            <FontAwesomeIcon
+                                :icon="isFetchingNearest ? faSpinner : faHelicopter"
+                                :spin="isFetchingNearest">
+                            </FontAwesomeIcon>
+                            Vlieg naar dichtstbijzijnde
                             <span class="text-gradient-conic">Blokspot</span>
                         </Button>
                     </template>

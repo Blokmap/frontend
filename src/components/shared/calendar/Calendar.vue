@@ -1,25 +1,16 @@
 <script setup lang="ts">
 import type { TimeSlot } from '@/types/schema/Reservation';
-import {
-    daysInRange,
-    formatDayName,
-    formatTimeFromHoursAndMinutes,
-    isToday,
-    startOfWeek,
-} from '@/utils/date';
+import { daysInRange, formatDayName, isToday, startOfWeek } from '@/utils/date';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const props = withDefaults(
     defineProps<{
-        currentWeek?: Date;
+        currentWeek: Date;
         timeSlots?: TimeSlot[];
-        timeInterval?: number;
     }>(),
     {
-        currentWeek: () => new Date(),
         timeSlots: () => [],
-        timeInterval: 60,
     },
 );
 
@@ -30,10 +21,9 @@ const emit = defineEmits<{
 
 const { locale } = useI18n();
 
+const updateInterval = ref<number>(0);
 const currentTime = ref(new Date());
 const calendarBodyRef = ref<HTMLElement>();
-
-let updateInterval: number;
 
 const weekStart = computed(() => startOfWeek(props.currentWeek));
 
@@ -44,20 +34,35 @@ const weekDays = computed(() => {
     return daysInRange(start, end);
 });
 
-const hourlyTimeSlots = computed(() => {
-    const slots: string[] = [];
+const hourlyTimePeriods = computed(() => {
+    const periods: string[] = [];
     for (let hour = 0; hour < 24; hour++) {
-        for (let minute = 0; minute < 60; minute += props.timeInterval) {
-            slots.push(formatTimeFromHoursAndMinutes(hour, minute));
+        for (let minute = 0; minute < 60; minute += 60) {
+            const formatted = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+            periods.push(formatted);
         }
     }
-    return slots;
+    return periods;
 });
 
 const currentTimePosition = computed(() => {
     const now = currentTime.value;
     const totalMinutes = now.getHours() * 60 + now.getMinutes();
     return (totalMinutes / (24 * 60)) * 100;
+});
+
+onMounted(() => {
+    updateInterval.value = setInterval(() => {
+        currentTime.value = new Date();
+    }, 1000);
+
+    setTimeout(scrollToCurrentTime, 100);
+});
+
+onUnmounted(() => {
+    if (updateInterval.value) {
+        clearInterval(updateInterval.value);
+    }
 });
 
 function getDayTimeSlots(day: Date): TimeSlot[] {
@@ -83,9 +88,9 @@ function scrollToCurrentTime(): void {
 
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    const timeSlotHeight = 50;
-    const scrollPosition = (currentMinutes / props.timeInterval) * timeSlotHeight;
-    const offset = timeSlotHeight * 2;
+    const timePeriodHeight = 50;
+    const scrollPosition = (currentMinutes / 60) * timePeriodHeight;
+    const offset = timePeriodHeight * 2;
 
     calendarBodyRef.value.scrollTo({
         top: Math.max(0, scrollPosition - offset),
@@ -93,27 +98,13 @@ function scrollToCurrentTime(): void {
     });
 }
 
-function handleTimeSlotClick(day: Date, time: string): void {
+function handleTimePeriodClick(day: Date, time: string): void {
     emit('click:time-slot', { day, time });
 }
 
 function handleDayClick(day: Date): void {
     emit('click:day', day);
 }
-
-onMounted(() => {
-    updateInterval = setInterval(() => {
-        currentTime.value = new Date();
-    }, 1000);
-
-    setTimeout(scrollToCurrentTime, 100);
-});
-
-onUnmounted(() => {
-    if (updateInterval) {
-        clearInterval(updateInterval);
-    }
-});
 </script>
 
 <template>
@@ -138,36 +129,32 @@ onUnmounted(() => {
 
         <!-- Calendar body -->
         <div ref="calendarBodyRef" class="calendar-body">
-            <!-- Time slots grid -->
-            <div class="time-slots-grid">
+            <!-- Time periods grid -->
+            <div class="time-periods-grid">
                 <!-- Time column -->
                 <div class="time-column">
-                    <div v-for="time in hourlyTimeSlots" :key="time" class="time-slot">
+                    <div v-for="time in hourlyTimePeriods" :key="time" class="time-period">
                         {{ time }}
                     </div>
                 </div>
 
                 <!-- Day columns -->
                 <div v-for="(day, dayIndex) in weekDays" :key="dayIndex" class="day-column">
-                    <!-- Time slot grid for each day -->
+                    <!-- Time period grid for each day -->
                     <div
-                        v-for="time in hourlyTimeSlots"
+                        v-for="time in hourlyTimePeriods"
                         :key="time"
-                        class="time-slot-cell"
-                        @click="handleTimeSlotClick(day, time)"></div>
+                        class="time-period-cell"
+                        @click="handleTimePeriodClick(day, time)"></div>
 
                     <!-- Custom time slots positioned absolutely within the day -->
-                    <div
-                        v-for="slot in getDayTimeSlots(day)"
-                        :key="slot.id"
-                        class="custom-time-slot"
-                        :style="getSlotPosition(slot)">
-                        <slot name="timeSlot" :slot="slot">
-                            <div class="slot-content">
-                                {{ slot.startTime }} - {{ slot.endTime }}
+                    <template v-for="slot in getDayTimeSlots(day)" :key="slot.id">
+                        <Transition name="time-slot" appear>
+                            <div class="custom-time-slot" :style="getSlotPosition(slot)">
+                                <slot name="time-slot" :slot="slot"> </slot>
                             </div>
-                        </slot>
-                    </div>
+                        </Transition>
+                    </template>
 
                     <!-- Current time indicator for today -->
                     <div
@@ -189,14 +176,16 @@ onUnmounted(() => {
 @reference '@/assets/styles/main.css';
 
 .calendar-container {
-    @apply flex flex-col rounded-lg border border-gray-200 bg-white;
+    @apply flex flex-col;
+    @apply rounded-lg border border-gray-200 bg-white;
+    @apply overflow-hidden;
     min-height: 500px;
     max-height: 75vh;
-    overflow: hidden;
 }
 
 .calendar-header {
-    @apply sticky top-0 z-30 grid border-b border-gray-200 bg-gray-50;
+    @apply sticky top-0 z-30;
+    @apply grid border-b border-gray-200 bg-gray-50;
     grid-template-columns: 80px repeat(7, minmax(120px, 1fr));
 
     @media (max-width: 768px) {
@@ -204,13 +193,15 @@ onUnmounted(() => {
     }
 
     & > div {
-        @apply border-r border-gray-200 p-3 last:border-r-0;
+        @apply border-r border-gray-200 last:border-r-0;
+        @apply p-3;
 
         &:not(:first-child) {
-            @apply cursor-pointer text-center transition-colors hover:bg-gray-100;
+            @apply cursor-pointer text-center;
+            @apply transition-colors hover:bg-gray-100;
 
             &.today {
-                @apply bg-blue-50 text-blue-600;
+                @apply bg-secondary-50 text-secondary-500;
             }
         }
     }
@@ -225,25 +216,31 @@ onUnmounted(() => {
 }
 
 .day-header-number {
-    @apply mt-1 text-lg font-semibold;
+    @apply mt-1;
+    @apply text-lg font-semibold;
 
     @media (max-width: 768px) {
         @apply text-base;
     }
 
     &.today-indicator {
-        @apply mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white;
+        @apply mx-auto flex;
+        @apply h-8 w-8;
+        @apply items-center justify-center;
+        @apply bg-secondary-500 rounded-full text-white;
 
         @media (max-width: 768px) {
-            @apply h-6 w-6 text-sm;
+            @apply h-6 w-6;
+            @apply text-sm;
         }
     }
 }
 
 .calendar-body {
-    @apply relative flex-1 overflow-auto;
+    @apply relative flex-1;
+    @apply overflow-auto;
 
-    .time-slots-grid {
+    .time-periods-grid {
         @apply relative grid;
         grid-template-columns: 80px repeat(7, minmax(120px, 1fr));
         min-width: 920px;
@@ -255,8 +252,7 @@ onUnmounted(() => {
     }
 
     &::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+        @apply h-2 w-2;
     }
 
     &::-webkit-scrollbar-track {
@@ -273,51 +269,80 @@ onUnmounted(() => {
 }
 
 .time-column {
-    @apply sticky left-0 z-20 border-r border-gray-200 bg-gray-50;
+    @apply sticky left-0 z-20;
+    @apply border-r border-gray-200 bg-gray-50;
     min-width: 80px;
 
     @media (max-width: 768px) {
         min-width: 60px;
     }
 
-    .time-slot {
-        @apply border-b border-gray-100 p-2 pr-3 text-right text-sm text-gray-600;
+    .time-period {
+        @apply border-b border-gray-100;
+        @apply p-2 pr-3;
+        @apply text-right text-sm text-gray-600;
         height: 50px;
 
         @media (max-width: 768px) {
-            @apply p-1 pr-2 text-xs;
+            @apply p-1 pr-2;
+            @apply text-xs;
             height: 40px;
         }
     }
 }
 
 .day-column {
-    @apply relative border-r border-gray-200 last:border-r-0;
+    @apply relative;
+    @apply border-r border-gray-200 last:border-r-0;
     min-width: 120px;
 
     @media (max-width: 768px) {
         min-width: 100px;
     }
 
-    .time-slot-cell {
-        @apply relative cursor-pointer border-b border-gray-100 transition-colors hover:bg-blue-50;
-        height: 50px;
+    .time-period-cell {
+        @apply relative h-[50px] cursor-pointer;
+        @apply border-b border-gray-100;
+        @apply hover:bg-primary-50 transition-colors;
 
         @media (max-width: 768px) {
-            height: 40px;
+            @apply h-[40px];
         }
 
         &:hover::before {
             @apply pointer-events-none absolute inset-0;
-            content: '';
-            background-color: rgba(59, 130, 246, 0.1);
         }
     }
 }
 
+/* Time slot enter/leave transitions */
+.time-slot-enter-active,
+.time-slot-leave-active {
+    @apply transition-all duration-300 ease-out;
+}
+
+.time-slot-enter-from {
+    @apply -translate-y-2 scale-90 opacity-0;
+}
+
+.time-slot-enter-to {
+    @apply translate-y-0 scale-100 opacity-100;
+}
+
+.time-slot-leave-from {
+    @apply translate-y-0 scale-100 opacity-100;
+}
+
+.time-slot-leave-to {
+    @apply translate-y-2 scale-90 opacity-0;
+}
+
 .custom-time-slot {
-    @apply absolute right-1 left-1 z-10 overflow-hidden rounded border border-blue-300 bg-blue-200 px-2 py-1 text-xs;
-    min-height: 20px;
+    @apply absolute right-1 left-1 z-10 min-h-[20px];
+    @apply overflow-hidden rounded;
+    @apply bg-primary-200;
+    @apply px-2 py-1;
+    @apply text-primary-950 text-xs;
 
     .slot-content {
         @apply font-medium;
@@ -331,11 +356,14 @@ onUnmounted(() => {
         @apply flex items-center;
 
         .time-dot {
-            @apply -ml-1 h-2 w-2 rounded-full bg-red-500;
+            @apply -ml-1;
+            @apply h-2 w-2;
+            @apply rounded-full bg-red-500;
         }
 
         .time-line-bar {
-            @apply h-0.5 flex-1 bg-red-500;
+            @apply flex-1;
+            @apply h-0.5 bg-red-500;
         }
     }
 }

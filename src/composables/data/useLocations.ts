@@ -1,12 +1,13 @@
 import { client, getRandomDelay } from '@/config/axios';
 import { endpoints } from '@/endpoints';
-import { getLocationById, searchLocations } from '@/services/location';
+import { getLocationById, getNearestLocation, searchLocations } from '@/services/location';
 import type { CompQuery, CompQueryOptions } from '@/types/contract/Composable';
+import type { LngLat } from '@/types/contract/Map';
 import type { LocationFilter } from '@/types/schema/Filter';
-import type { Location } from '@/types/schema/Location';
+import type { Location, NearestLocation } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
 import { keepPreviousData, useQuery } from '@tanstack/vue-query';
-import { type MaybeRef, toValue, watch } from 'vue';
+import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 /**
@@ -48,6 +49,19 @@ export function useLocation(id: MaybeRef<string>): CompQuery<Location> {
     const query = useQuery({
         queryKey: ['location', id],
         queryFn: () => getLocationById(toValue(id)),
+    });
+
+    return query;
+}
+
+export function useNearestLocation(
+    center: MaybeRef<LngLat>,
+    options: CompQueryOptions = {},
+): CompQuery<NearestLocation> {
+    const query = useQuery({
+        ...options,
+        queryKey: ['location', 'nearest', center],
+        queryFn: () => getNearestLocation(toValue(center)),
     });
 
     return query;

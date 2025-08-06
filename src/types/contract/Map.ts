@@ -22,8 +22,8 @@ export interface MapAdapter<T = number> {
     removeMarker(id: T): void;
     setOnMove(callback: (lngLat: LngLat) => void): void;
     setOnBoundsChange(callback: (bounds: LngLatBounds) => void): void;
-    flyToBounds(bounds: LngLatBounds): void;
-    flyTo(lngLat: LngLat): void;
+    flyToBounds(bounds: LngLatBounds): Promise<void>;
+    flyTo(lngLat: LngLat): Promise<void>;
     getZoom(): number;
     getBounds(): LngLatBounds;
     getCenter(): LngLat;

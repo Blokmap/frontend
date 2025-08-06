@@ -32,6 +32,10 @@ async function handleLogoutClick(): Promise<void> {
     await logout();
     popoverRef.value?.hide();
 }
+
+function handleNavigationClick(): void {
+    popoverRef.value?.hide();
+}
 </script>
 
 <template>
@@ -78,12 +82,18 @@ async function handleLogoutClick(): Promise<void> {
                             <span>Uitloggen</span>
                         </div>
                     </div>
-                    <RouterLink class="menu-link" :to="{ name: 'profile.reservations' }">
+                    <RouterLink
+                        class="menu-link"
+                        :to="{ name: 'profile.reservations' }"
+                        @click="handleNavigationClick">
                         <FontAwesomeIcon :icon="faUser" class="text-secondary" />
                         <span> Bekijk <span class="text-gradient-conic">Account</span> </span>
                     </RouterLink>
 
-                    <RouterLink class="menu-link" :to="{ name: 'profile.reservations' }">
+                    <RouterLink
+                        class="menu-link"
+                        :to="{ name: 'profile.reservations' }"
+                        @click="handleNavigationClick">
                         <FontAwesomeIcon :icon="faCalendarDays" class="text-secondary" />
                         <span> Bekijk <span class="text-gradient-conic">Reservaties</span> </span>
                     </RouterLink>
@@ -97,11 +107,17 @@ async function handleLogoutClick(): Promise<void> {
                     <span class="text-gradient-conic">Blokspots</span> of meld zelf een plek aan.
                 </p>
                 <div class="flex gap-1">
-                    <RouterLink class="menu-link" :to="{ name: 'auth' }">
+                    <RouterLink
+                        class="menu-link"
+                        :to="{ name: 'auth' }"
+                        @click="handleNavigationClick">
                         <FontAwesomeIcon :icon="faRightToBracket" class="text-secondary" />
                         <span>Inloggen</span>
                     </RouterLink>
-                    <RouterLink class="menu-link" :to="{ name: 'auth' }">
+                    <RouterLink
+                        class="menu-link"
+                        :to="{ name: 'auth' }"
+                        @click="handleNavigationClick">
                         <FontAwesomeIcon :icon="faUserPlus" class="text-secondary" />
                         <span>Registreren</span>
                     </RouterLink>
@@ -113,11 +129,17 @@ async function handleLogoutClick(): Promise<void> {
 
             <!-- Navigation -->
             <div class="flex flex-col gap-2">
-                <RouterLink class="menu-link" :to="{ name: 'locations' }">
+                <RouterLink
+                    class="menu-link"
+                    :to="{ name: 'locations' }"
+                    @click="handleNavigationClick">
                     <FontAwesomeIcon :icon="faMapLocation" class="text-secondary" />
                     <span>Ontdek alle <span class="text-gradient-conic">Blokspots</span></span>
                 </RouterLink>
-                <RouterLink class="menu-link" :to="{ name: 'locations' }">
+                <RouterLink
+                    class="menu-link"
+                    :to="{ name: 'locations' }"
+                    @click="handleNavigationClick">
                     <FontAwesomeIcon :icon="faInfoCircle" class="text-secondary" />
                     <span>Open de <span class="text-gradient-conic">Handleiding</span></span>
                 </RouterLink>

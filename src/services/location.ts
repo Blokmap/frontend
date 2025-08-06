@@ -27,7 +27,7 @@ export async function searchLocations(
     const centerLat = filters?.center?.coords?.[1];
     const distance = filters?.center?.radius;
 
-    const query = filters?.query;
+    const query = filters?.query || null;
     const page = filters?.page;
     const perPage = filters?.perPage;
     const language = locale;

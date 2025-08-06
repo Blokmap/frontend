@@ -65,7 +65,7 @@ function navigateToWeek(date: Date): void {
 <template>
     <div class="mt-3 space-y-6">
         <div class="text-center">
-            <h1 class="text-3xl font-bold text-gray-900">Mijn reservaties</h1>
+            <h1 class="text-3xl font-bold text-gray-900">Mijn Reservaties</h1>
         </div>
 
         <CalendarControls

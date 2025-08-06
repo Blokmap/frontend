@@ -23,7 +23,6 @@ const dateInWeek = computed(() => {
 const weekStart = computed(() => startOfWeek(dateInWeek.value));
 const weekEnd = computed(() => endOfWeek(dateInWeek.value));
 
-// Convert reservations to time slots for the current week
 const reservationTimeSlots = computed(() =>
     reservationsToTimeSlots(reservations.data.value, weekStart.value, weekEnd.value),
 );

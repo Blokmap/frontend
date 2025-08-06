@@ -3,6 +3,7 @@ import Calendar from '@/components/shared/calendar/Calendar.vue';
 import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useProfileReservations } from '@/composables/data/useReservations';
+import { useVimControls } from '@/composables/useVimControls';
 import { endOfWeek, startOfWeek } from '@/utils/date';
 import { reservationsToTimeSlots } from '@/utils/reservation';
 import { formatDate } from '@vueuse/core';
@@ -13,6 +14,13 @@ const route = useRoute();
 const router = useRouter();
 const profile = useAuthProfile();
 const reservations = useProfileReservations(profile.profileId);
+
+useVimControls({
+    onDown: goToPreviousWeek,
+    onUp: goToNextWeek,
+    onLeft: goToPreviousWeek,
+    onRight: goToNextWeek,
+});
 
 const dateInWeek = computed(() => {
     const dateParam = route.params.dateInWeek?.toString();
@@ -76,7 +84,11 @@ function navigateToWeek(date: Date): void {
             @select:date="handleDateSelect">
         </CalendarControls>
 
-        <Calendar :current-week="dateInWeek" :time-slots="reservationTimeSlots">
+        <Calendar
+            :current-week="dateInWeek"
+            :time-slots="reservationTimeSlots"
+            :on-previous-week="goToPreviousWeek"
+            :on-next-week="goToNextWeek">
             <template #time-slot="{ slot }"></template>
         </Calendar>
     </div>

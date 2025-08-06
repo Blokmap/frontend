@@ -125,7 +125,7 @@ function goToToday(): void {
                 </button>
 
                 <!-- Date picker overlay -->
-                <Transition name="date-picker">
+                <Transition name="slide-down">
                     <div v-if="showDatePicker" @click.stop class="date-picker-overlay">
                         <DatePicker
                             :model-value="props.currentWeek"
@@ -184,31 +184,6 @@ function goToToday(): void {
 /* Date picker overlay positioning */
 .date-picker-overlay {
     @apply absolute top-full left-1/2 z-50 mt-2 -translate-x-1/2 transform;
-}
-
-/* Date picker transition animations */
-.date-picker-enter-active {
-    @apply transition-all duration-200 ease-out;
-}
-
-.date-picker-enter-from {
-    @apply -translate-y-2 scale-95 opacity-0;
-}
-
-.date-picker-enter-to {
-    @apply translate-y-0 scale-100 opacity-100;
-}
-
-.date-picker-leave-active {
-    @apply transition-all duration-150 ease-in;
-}
-
-.date-picker-leave-from {
-    @apply translate-y-0 scale-100 opacity-100;
-}
-
-.date-picker-leave-to {
-    @apply -translate-y-2 scale-95 opacity-0;
 }
 
 /* Utility transition class */

@@ -149,7 +149,7 @@ function handleDayClick(day: Date): void {
 
                     <!-- Custom time slots positioned absolutely within the day -->
                     <template v-for="slot in getDayTimeSlots(day)" :key="slot.id">
-                        <Transition name="time-slot" appear>
+                        <Transition name="slide-up" appear>
                             <div class="custom-time-slot" :style="getSlotPosition(slot)">
                                 <slot name="time-slot" :slot="slot"> </slot>
                             </div>
@@ -315,34 +315,13 @@ function handleDayClick(day: Date): void {
     }
 }
 
-/* Time slot enter/leave transitions */
-.time-slot-enter-active,
-.time-slot-leave-active {
-    @apply transition-all duration-300 ease-out;
-}
-
-.time-slot-enter-from {
-    @apply -translate-y-2 scale-90 opacity-0;
-}
-
-.time-slot-enter-to {
-    @apply translate-y-0 scale-100 opacity-100;
-}
-
-.time-slot-leave-from {
-    @apply translate-y-0 scale-100 opacity-100;
-}
-
-.time-slot-leave-to {
-    @apply translate-y-2 scale-90 opacity-0;
-}
-
 .custom-time-slot {
     @apply absolute right-1 left-1 z-10 min-h-[20px];
     @apply overflow-hidden rounded;
     @apply bg-primary-200;
     @apply px-2 py-1;
     @apply text-primary-950 text-xs;
+    @apply hover:bg-primary-300 hover:shadow-sm;
 
     .slot-content {
         @apply font-medium;

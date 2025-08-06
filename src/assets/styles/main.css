@@ -1,6 +1,7 @@
 @plugin 'tailwindcss-primeui';
 @import 'tailwindcss';
 @import './primevue/tailwind.css' layer(components);
+@import './transitions.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 

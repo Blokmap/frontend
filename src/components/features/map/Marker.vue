@@ -81,7 +81,7 @@ onMounted(() => {
             @click.stop="emit('click')"
             @mouseenter="handleMouseEnter"
             @mouseleave="handleMouseLeave">
-            <Transition name="marker-popup" appear>
+            <Transition name="bounce-scale" appear>
                 <div class="marker" :class="{ active }">
                     <FontAwesomeIcon :icon="faLocationDot" class="icon text-slate-50" />
                 </div>
@@ -111,21 +111,5 @@ onMounted(() => {
     &.active {
         @apply scale-110;
     }
-}
-
-.marker-popup-enter-active {
-    transition-property: transform, opacity;
-    transition-duration: 400ms;
-    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.marker-popup-enter-from {
-    transform: scale(0);
-    opacity: 0;
-}
-
-.marker-popup-enter-to {
-    transform: scale(1);
-    opacity: 1;
 }
 </style>

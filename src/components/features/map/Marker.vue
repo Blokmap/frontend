@@ -3,7 +3,6 @@ import type { MapAdapter } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
 import { faBuildingColumns, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import gsap from 'gsap';
 import Popover from 'primevue/popover';
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
 
@@ -72,20 +71,6 @@ onMounted(() => {
         coord: [props.location.longitude, props.location.latitude],
         el: markerRef.value,
     });
-
-    gsap.fromTo(
-        markerRef.value,
-        {
-            scale: 0.5,
-            opacity: 0,
-        },
-        {
-            scale: 1,
-            opacity: 1,
-            duration: 0.3,
-            ease: 'back.out(1.7)',
-        },
-    );
 });
 </script>
 
@@ -96,9 +81,11 @@ onMounted(() => {
             @click.stop="emit('click')"
             @mouseenter="handleMouseEnter"
             @mouseleave="handleMouseLeave">
-            <div class="marker" :class="{ active }">
-                <FontAwesomeIcon :icon="faLocationDot" class="icon text-slate-50" />
-            </div>
+            <Transition name="marker-popup" appear>
+                <div class="marker" :class="{ active }">
+                    <FontAwesomeIcon :icon="faLocationDot" class="icon text-slate-50" />
+                </div>
+            </Transition>
         </div>
         <Popover ref="popover">
             <div class="flex items-center gap-1">
@@ -124,5 +111,21 @@ onMounted(() => {
     &.active {
         @apply scale-110;
     }
+}
+
+.marker-popup-enter-active {
+    transition-property: transform, opacity;
+    transition-duration: 400ms;
+    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.marker-popup-enter-from {
+    transform: scale(0);
+    opacity: 0;
+}
+
+.marker-popup-enter-to {
+    transform: scale(1);
+    opacity: 1;
 }
 </style>

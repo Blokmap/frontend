@@ -11,7 +11,7 @@
 }
 
 .p-badge-secondary {
-    @apply bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300;
+    @apply bg-secondary text-primary-contrast;
 }
 
 .p-badge-success {

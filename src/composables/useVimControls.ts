@@ -1,80 +1,82 @@
-import { onMounted, onUnmounted } from 'vue';
+import { type MaybeRef, computed, onMounted, onUnmounted, toRef } from 'vue';
 
 export interface VimControlsOptions {
-    enabled?: boolean;
-    preventDefault?: boolean;
+    enabled?: MaybeRef<boolean>;
+    preventDefault?: MaybeRef<boolean>;
 }
 
-export interface VimKeyBindings {
-    /** Move up/previous (k key) */
-    onUp?: () => void;
-    /** Move down/next (j key) */
-    onDown?: () => void;
-    /** Move left (arrow left key) */
-    onLeft?: () => void;
-    /** Move right (arrow right key) */
-    onRight?: () => void;
-}
+export type KeyBinding = string | string[];
+export type ActionCallback = () => void;
 
-export type UseVimControls = {
-    enable: () => void;
-    disable: () => void;
-    isEnabled: () => boolean;
-};
+export interface VimKeyMap {
+    [actionName: string]: {
+        keys: KeyBinding;
+        callback: ActionCallback;
+    };
+}
 
 /**
- * Composable to add VIM-style keyboard controls to any component.
- * Supports j/k for up/down navigation and arrow keys for left/right.
+ * Composable to add VIM-style keyboard controls with dynamic keybinding system.
+ * Supports multiple keys per action and dynamic binding management.
  *
- * @param bindings - Object containing callback functions for each key
+ * @param keyMap - Object mapping action names to key bindings and callbacks
  * @param options - Configuration options for the VIM controls
  * @returns Object with methods to control the VIM functionality
  */
-export function useVimControls(
-    bindings: VimKeyBindings,
-    options: VimControlsOptions = {},
-): UseVimControls {
+export function useVimControls(keyMap: VimKeyMap = {}, options: VimControlsOptions = {}): void {
     const { enabled = true, preventDefault = true } = options;
 
-    let isCurrentlyEnabled = enabled;
+    const isCurrentlyEnabled = toRef(enabled);
+    const shouldPreventDefault = toRef(preventDefault);
+
+    const currentKeyMap = { ...keyMap };
+
+    const keyLookup = computed(() => {
+        const lookup = new Map<string, string[]>();
+
+        Object.entries(currentKeyMap).forEach(([actionName, binding]) => {
+            const keys = Array.isArray(binding.keys) ? binding.keys : [binding.keys];
+
+            keys.forEach((key) => {
+                if (!lookup.has(key)) {
+                    lookup.set(key, []);
+                }
+                lookup.get(key)!.push(actionName);
+            });
+        });
+
+        return lookup;
+    });
 
     const handleKeyDown = (event: KeyboardEvent): void => {
-        if (!isCurrentlyEnabled) return;
+        if (!isCurrentlyEnabled.value) {
+            return;
+        }
 
         const activeElement = document.activeElement;
-        const inputTagNames = ['INPUT', 'TEXTAREA', 'SELECT'];
-        if (activeElement && inputTagNames.includes(activeElement.tagName)) return;
+        const inputElements = ['INPUT', 'TEXTAREA', 'SELECT'];
+        const isTypingInField = activeElement && inputElements.includes(activeElement.tagName);
 
-        switch (event.key) {
-            case 'j':
-                bindings.onDown?.();
-                break;
-            case 'k':
-                bindings.onUp?.();
-                break;
-            case 'ArrowLeft':
-                bindings.onLeft?.();
-                break;
-            case 'ArrowRight':
-                bindings.onRight?.();
-                break;
+        if (isTypingInField) {
+            return;
         }
 
-        if (preventDefault) {
+        const actions = keyLookup.value.get(event.key);
+        if (!actions || actions.length === 0) return;
+
+        let handled = false;
+
+        actions.forEach((actionName: string) => {
+            const binding = currentKeyMap[actionName];
+            if (binding?.callback) {
+                binding.callback();
+                handled = true;
+            }
+        });
+
+        if (handled && preventDefault) {
             event.preventDefault();
         }
-    };
-
-    const enable = (): void => {
-        isCurrentlyEnabled = true;
-    };
-
-    const disable = (): void => {
-        isCurrentlyEnabled = false;
-    };
-
-    const isEnabled = (): boolean => {
-        return isCurrentlyEnabled;
     };
 
     onMounted(() => {
@@ -84,10 +86,4 @@ export function useVimControls(
     onUnmounted(() => {
         document.removeEventListener('keydown', handleKeyDown);
     });
-
-    return {
-        enable,
-        disable,
-        isEnabled,
-    };
 }

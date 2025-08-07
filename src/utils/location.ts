@@ -10,3 +10,13 @@ import type { Location } from '@/types/schema/Location';
 export function getLocationPlaceholderImage(location: Location): string {
     return placeholder;
 }
+
+/**
+ * Returns the full address of a location as a formatted string.
+ *
+ * @param location - The location object containing address details.
+ * @returns A string representing the full address of the location.
+ */
+export function getLocationAddress(location: Location): string {
+    return `${location?.street || ''} ${location?.number || ''}, ${location?.zip || ''} ${location?.city || ''}`;
+}

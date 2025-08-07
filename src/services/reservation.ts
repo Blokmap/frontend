@@ -1,7 +1,10 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/endpoints';
 import type { Reservation } from '@/types/schema/Reservation';
+import { formatIncludes } from '@/utils/service';
 import { formatDate } from '@vueuse/core';
+
+export type ReservationIncludes = 'profile' | 'location' | 'openingTime' | 'confirmedBy';
 
 /**
  * Function to parse a reservation object. Used to ensure that API responses
@@ -25,16 +28,19 @@ function parseReservation(reservation: Reservation): Reservation {
  * Function to get reservations for a specific profile on a given date.
  *
  * @param {number} profileId - The ID of the profile to fetch reservations for.
- * @param {Date} [date] - The date for which to fetch reservations. Defaults to today.
+ * @param {Date} [dateOfWeek] - The date for which to fetch reservations. Defaults to today.
  * @returns {Promise<Reservation[]>} A promise that resolves to an array of reservations.
  */
 export async function getProfileReservations(
     profileId: number,
     dateOfWeek?: Date,
+    includes: ReservationIncludes[] = [],
 ): Promise<Reservation[]> {
     const endpoint = endpoints.profiles.reservations.list.replace('{id}', profileId.toString());
+
     const params: Record<string, any> = {
         profile: true,
+        ...formatIncludes(includes),
     };
 
     if (dateOfWeek !== undefined) {

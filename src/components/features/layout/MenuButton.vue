@@ -97,18 +97,18 @@ function handleNavigationClick(): void {
                     </RouterLink>
 
                     <RouterLink
-                        class="profile-link"
+                        class="menu-link"
                         :to="{ name: 'profile.reservations' }"
                         @click="handleNavigationClick">
                         <FontAwesomeIcon :icon="faCalendarDays" class="text-secondary" />
-                        <span>Bekijk Reservaties</span>
+                        <span>Bekijk reservaties</span>
                     </RouterLink>
                     <RouterLink
-                        class="profile-link"
+                        class="menu-link"
                         :to="{ name: 'profile.reservations' }"
                         @click="handleNavigationClick">
                         <FontAwesomeIcon :icon="faDashboard" class="text-secondary" />
-                        <span>Blokmap Dashboard</span>
+                        <span>Blokmap dashboard</span>
                         <FontAwesomeIcon
                             :icon="faQuestionCircle"
                             class="ml-auto text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
@@ -155,9 +155,13 @@ function handleNavigationClick(): void {
                     <FontAwesomeIcon :icon="faMapLocation" class="text-secondary" />
                     <span>Ontdek alle <span class="text-gradient-conic">Blokspots</span></span>
                 </RouterLink>
-                <a class="menu-link" :href="DOCS_URL + '/' + locale" @click="handleNavigationClick">
-                    <FontAwesomeIcon :icon="faInfoCircle" class="text-secondary" />
-                    <span>Open de <span class="text-gradient-conic">Handleiding</span></span>
+            </div>
+
+            <!-- Help Section -->
+            <div class="mt-3 flex justify-end">
+                <a class="help-link" :href="DOCS_URL + '/' + locale" @click="handleNavigationClick">
+                    <FontAwesomeIcon :icon="faInfoCircle" class="text-slate-500" />
+                    <span>Handleiding</span>
                 </a>
             </div>
         </div>
@@ -171,7 +175,7 @@ function handleNavigationClick(): void {
     @apply flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition hover:bg-slate-100 dark:hover:bg-slate-800;
 }
 
-.profile-link {
-    @apply flex w-full cursor-pointer items-center gap-2 rounded-md bg-slate-50 px-3 py-2 transition hover:bg-slate-100 dark:bg-slate-800/50 dark:hover:bg-slate-800;
+.help-link {
+    @apply flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200;
 }
 </style>

@@ -1,0 +1,79 @@
+<script setup lang="ts">
+import ReservationCalendar from '@/components/features/reservation/ReservationCalendar.vue';
+import { useAuthProfile } from '@/composables/data/useAuth';
+import { useProfileReservations } from '@/composables/data/useReservations';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { formatDate } from '@vueuse/core';
+import Button from 'primevue/button';
+import Card from 'primevue/card';
+import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
+const router = useRouter();
+const route = useRoute();
+
+const { profileId } = useAuthProfile();
+
+const {
+    isLoading: reservationsIsLoading,
+    isPending: reservationsIsPending,
+    data: reservations,
+} = useProfileReservations(profileId);
+
+const reservationsLoading = computed(
+    () => reservationsIsLoading.value || reservationsIsPending.value,
+);
+
+const dateInWeek = computed(() => {
+    const dateParam = route.params.dateInWeek?.toString();
+    const date = new Date(dateParam);
+    return isNaN(date.getTime()) ? new Date() : date;
+});
+
+function handleDateInWeekUpdate(newDate: Date): void {
+    const dateString = formatDate(newDate, 'YYYY-MM-DD');
+    router.push({
+        name: 'profile.reservations',
+        params: {
+            dateInWeek: dateString,
+        },
+    });
+}
+
+function goBackToProfile(): void {
+    router.push({ name: 'profile' });
+}
+</script>
+
+<template>
+    <div class="space-y-6">
+        <!-- Header -->
+        <div class="flex w-full items-center gap-4 py-3">
+            <Button @click="goBackToProfile" severity="secondary" text rounded>
+                <FontAwesomeIcon :icon="faArrowLeft" />
+            </Button>
+            <h1
+                class="absolute left-1/2 -translate-x-1/2 transform text-3xl font-bold text-gray-900">
+                Mijn Reservaties
+            </h1>
+        </div>
+
+        <!-- Calendar Card -->
+        <Card>
+            <template #content>
+                <div class="h-full">
+                    <ReservationCalendar
+                        v-model:date-in-week="dateInWeek"
+                        :reservations="reservations"
+                        @update:date-in-week="handleDateInWeekUpdate">
+                    </ReservationCalendar>
+                </div>
+            </template>
+        </Card>
+    </div>
+</template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+</style>

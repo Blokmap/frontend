@@ -63,7 +63,7 @@ function handleSubmitLocation() {
             <!-- Description -->
             <p class="mb-8 text-lg md:text-xl" :class="isLight ? 'text-gray-700' : 'text-white/90'">
                 Help andere mensen door jouw favoriete locatie toe te voegen aan Blokmap.
-                <br></br>
+                <br />
                 Van bibliotheken tot coworkingspaces - elke bijdrage maakt het verschil!
             </p>
 

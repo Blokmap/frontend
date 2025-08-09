@@ -1,4 +1,3 @@
-import { AuthenticationGuard } from './guards/auth';
 import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
 import AuthLayout from '@/layouts/public/AuthLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
@@ -12,8 +11,12 @@ const routes: RouteRecordRaw[] = [
         children: [
             {
                 path: 'profile',
-                beforeEnter: AuthenticationGuard,
                 children: [
+                    {
+                        path: '',
+                        name: 'profile',
+                        component: () => import('@/pages/public/profile/ProfilePage.vue'),
+                    },
                     {
                         path: 'reservations/:dateInWeek?',
                         name: 'profile.reservations',
@@ -51,7 +54,6 @@ const routes: RouteRecordRaw[] = [
     {
         path: '/dashboard',
         component: DashboardLayout,
-        beforeEnter: AuthenticationGuard,
         children: [
             {
                 path: '',

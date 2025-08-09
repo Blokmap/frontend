@@ -11,6 +11,13 @@ export type Profile = {
     authorities?: Authority[];
 };
 
+export type ProfileStats = {
+    totalReservations: number;
+    upcomingReservations: number;
+    completedReservations: number;
+    totalReservationHours: number;
+};
+
 export type Idp = {
     name: string;
     logo?: string | null;

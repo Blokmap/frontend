@@ -28,7 +28,7 @@ export const client = axios.create({
  * This includes handling unauthorized responses and mocking certain endpoints.
  */
 export function setupAxiosInterceptors(router: Router, messages: UseMessages): void {
-    client.interceptors.response.use((response) => {
+    client.interceptors.response.use(async (response) => {
         if (response.status === HttpStatusCode.Unauthorized) {
             router.push({
                 name: 'auth',
@@ -47,7 +47,6 @@ export function setupAxiosInterceptors(router: Router, messages: UseMessages): v
 
     client.interceptors.request.use(async (config) => {
         if (config.url === endpoints.institutions.list && config.method === 'get') {
-            await getRandomDelay();
             config.adapter = async () => {
                 return {
                     data: mockInstitutions,

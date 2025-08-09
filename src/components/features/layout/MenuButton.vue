@@ -72,12 +72,12 @@ function handleNavigationClick(): void {
                 <div class="flex flex-col gap-2">
                     <RouterLink
                         class="flex items-center gap-3"
-                        :to="{ name: 'profile.reservations' }"
+                        :to="{ name: 'profile' }"
                         @click="handleNavigationClick">
                         <Avatar
                             shape="circle"
                             :label="getProfileInitials(profile)"
-                            class="aspect-square self-stretch">
+                            class="aspect-square flex-shrink-0 self-stretch">
                         </Avatar>
                         <div class="flex-1 space-y-1 leading-tight">
                             <div class="font-semibold text-slate-900 dark:text-white">
@@ -172,10 +172,12 @@ function handleNavigationClick(): void {
 @reference '@/assets/styles/main.css';
 
 .menu-link {
-    @apply flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition hover:bg-slate-100 dark:hover:bg-slate-800;
+    @apply flex w-full cursor-pointer items-center gap-2 px-2 py-1;
+    @apply rounded-md transition hover:bg-slate-100 dark:hover:bg-slate-800;
 }
 
 .help-link {
-    @apply flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200;
+    @apply flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs;
+    @apply text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200;
 }
 </style>

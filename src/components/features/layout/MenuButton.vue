@@ -53,7 +53,7 @@ function handleNavigationClick(): void {
     <!-- Popover -->
     <Popover
         ref="popover"
-        class="w-full max-w-[275px] rounded-lg border border-slate-200 shadow-lg">
+        class="w-full max-w-[300px] rounded-lg border border-slate-200 shadow-lg">
         <div class="dark:text-slate-20 p-1 text-sm text-slate-800">
             <!-- Profile Section -->
             <template v-if="profileIsLoading">

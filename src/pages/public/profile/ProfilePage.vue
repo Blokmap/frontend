@@ -2,6 +2,7 @@
 import SubmitLocationCTA from '@/components/features/layout/SubmitLocationCTA.vue';
 import StatsCard from '@/components/features/profile/StatsCard.vue';
 import StatsCardSkeleton from '@/components/features/profile/StatsCardSkeleton.vue';
+import ReservationCalendar from '@/components/features/reservation/ReservationCalendar.vue';
 import ReservationItem from '@/components/features/reservation/ReservationItem.vue';
 import ReservationItemSkeleton from '@/components/features/reservation/ReservationItemSkeleton.vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
@@ -19,16 +20,19 @@ import {
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { formatDate } from '@vueuse/core';
 import Avatar from 'primevue/avatar';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Chip from 'primevue/chip';
+import Dialog from 'primevue/dialog';
 import Skeleton from 'primevue/skeleton';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 const { t } = useI18n();
 
 const { isLoading: profileIsLoading, data: profile, profileId } = useAuthProfile();
@@ -52,6 +56,38 @@ const reservationsLoading = computed(
 const profileStatsLoading = computed(
     () => profileStatsIsLoading.value || profileStatsIsPending.value,
 );
+
+const isReservationsModalVisible = computed(() => route.name === 'profile.reservations');
+
+const dateInWeek = computed(() => {
+    const dateParam = route.params.dateInWeek?.toString();
+    const date = new Date(dateParam);
+    return isNaN(date.getTime()) ? new Date() : date;
+});
+
+function handleDateInWeekUpdate(newDate: Date): void {
+    const dateString = formatDate(newDate, 'YYYY-MM-DD');
+    router.push({
+        name: 'profile.reservations',
+        params: {
+            dateInWeek: dateString,
+        },
+    });
+}
+
+function closeReservationsModal(): void {
+    router.push({ name: 'profile' });
+}
+
+function openReservationsModal(): void {
+    router.push({ name: 'profile.reservations' });
+}
+
+function handleReservationsModalUpdate(value: boolean): void {
+    if (!value) {
+        closeReservationsModal();
+    }
+}
 </script>
 
 <template>
@@ -164,11 +200,13 @@ const profileStatsLoading = computed(
                 <template #header>
                     <div class="flex items-center justify-between p-6 pb-0">
                         <h2 class="text-xl font-semibold text-gray-900">Reservaties Deze Week</h2>
-                        <RouterLink :to="{ name: 'profile.reservations' }">
-                            <Button size="small" severity="secondary" text>
-                                Bekijk Kalender
-                            </Button>
-                        </RouterLink>
+                        <Button
+                            @click="openReservationsModal"
+                            size="small"
+                            severity="secondary"
+                            text>
+                            Bekijk Kalender
+                        </Button>
                     </div>
                 </template>
                 <template #content>
@@ -220,6 +258,24 @@ const profileStatsLoading = computed(
 
         <SubmitLocationCTA />
     </div>
+
+    <!-- Reservations Calendar Modal -->
+    <Dialog
+        class="h-[90vh] w-[95vw] max-w-[1460px]"
+        :visible="isReservationsModalVisible"
+        @update:visible="handleReservationsModalUpdate"
+        modal>
+        <template #header>
+            <h2 class="text-center text-2xl font-bold text-gray-900">Mijn Reservaties</h2>
+        </template>
+        <template #default>
+            <ReservationCalendar
+                v-model:date-in-week="dateInWeek"
+                :reservations="reservations"
+                @update:date-in-week="handleDateInWeekUpdate">
+            </ReservationCalendar>
+        </template>
+    </Dialog>
 </template>
 
 <style scoped>

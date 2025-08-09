@@ -37,7 +37,7 @@ function handleSubmitLocation() {
                 class="absolute -bottom-8 -left-8 h-24 w-24 rounded-full"
                 :class="isLight ? 'bg-secondary-300' : 'bg-white'"></div>
             <div
-                class="absolute top-1/2 right-1/5 h-16 w-16 rounded-full"
+                class="absolute top-1/2 right-1/3 h-16 w-16 rounded-full"
                 :class="isLight ? 'bg-primary-400' : 'bg-white'"></div>
         </div>
 

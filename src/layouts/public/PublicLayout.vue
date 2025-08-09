@@ -3,7 +3,7 @@ import PublicHeader from './PublicHeader.vue';
 </script>
 
 <template>
-    <div class="rounded-0 m-3 bg-white pb-6 md:m-6">
+    <div class="m-3 rounded-md bg-white pb-6 md:m-6">
         <div class="px-3 py-6 md:px-6 2xl:mx-auto 2xl:w-7/8">
             <PublicHeader></PublicHeader>
         </div>

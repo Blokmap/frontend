@@ -5,10 +5,8 @@ import { getProfileInitials } from '@/utils/profile';
 import {
     faBars,
     faCalendarDays,
-    faDashboard,
     faInfoCircle,
     faMapLocation,
-    faQuestionCircle,
     faRightToBracket,
     faSignOut,
     faUserPlus,
@@ -56,7 +54,7 @@ function handleNavigationClick(): void {
     <Popover
         ref="popover"
         class="w-full max-w-[275px] rounded-lg border border-slate-200 shadow-lg">
-        <div class="text-sm text-slate-800 dark:text-slate-200">
+        <div class="dark:text-slate-20 p-1 text-sm text-slate-800">
             <!-- Profile Section -->
             <template v-if="profileIsLoading">
                 <div class="flex items-center gap-3">
@@ -69,7 +67,7 @@ function handleNavigationClick(): void {
             </template>
 
             <template v-else-if="profile">
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-3">
                     <RouterLink
                         class="flex items-center gap-3"
                         :to="{ name: 'profile' }"
@@ -98,23 +96,10 @@ function handleNavigationClick(): void {
 
                     <RouterLink
                         class="menu-link"
-                        :to="{ name: 'profile.reservations' }"
+                        :to="{ name: 'profile' }"
                         @click="handleNavigationClick">
                         <FontAwesomeIcon :icon="faCalendarDays" class="text-secondary" />
-                        <span>Bekijk reservaties</span>
-                    </RouterLink>
-                    <RouterLink
-                        class="menu-link"
-                        :to="{ name: 'profile.reservations' }"
-                        @click="handleNavigationClick">
-                        <FontAwesomeIcon :icon="faDashboard" class="text-secondary" />
-                        <span>Blokmap dashboard</span>
-                        <FontAwesomeIcon
-                            :icon="faQuestionCircle"
-                            class="ml-auto text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                            v-tooltip="
-                                'Beheer en voeg je eigen Blokspots toe, bekijk statistieken en meer'
-                            " />
+                        <span>Ga naar je <span class="text-gradient-conic">overzicht</span></span>
                     </RouterLink>
                 </div>
             </template>
@@ -153,7 +138,7 @@ function handleNavigationClick(): void {
                     :to="{ name: 'locations' }"
                     @click="handleNavigationClick">
                     <FontAwesomeIcon :icon="faMapLocation" class="text-secondary" />
-                    <span>Ontdek alle <span class="text-gradient-conic">Blokspots</span></span>
+                    <span>Ontdek alle <span class="text-gradient-conic">blokspots</span></span>
                 </RouterLink>
             </div>
 

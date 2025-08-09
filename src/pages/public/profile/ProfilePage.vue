@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SubmitLocationCTA from '@/components/features/layout/SubmitLocationCTA.vue';
 import StatsCard from '@/components/features/profile/StatsCard.vue';
 import StatsCardSkeleton from '@/components/features/profile/StatsCardSkeleton.vue';
 import ReservationItem from '@/components/features/reservation/ReservationItem.vue';
@@ -54,9 +55,9 @@ const profileStatsLoading = computed(
 </script>
 
 <template>
-    <div class="mx-auto w-full max-w-[1080px] px-4 py-8">
+    <div class="mx-auto w-full max-w-[1080px] space-y-6">
         <!-- Profile Header -->
-        <Card class="mb-8">
+        <Card>
             <template #content>
                 <div class="flex flex-col items-center gap-6 md:flex-row">
                     <!-- Avatar Section -->
@@ -118,7 +119,7 @@ const profileStatsLoading = computed(
         </Card>
 
         <!-- Stats Cards -->
-        <div class="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
             <template v-if="profileStatsLoading">
                 <StatsCardSkeleton v-for="n in 4" :key="n" />
             </template>
@@ -127,7 +128,7 @@ const profileStatsLoading = computed(
                 <StatsCard
                     :icon="faCalendarDays"
                     :value="profileStatsData?.totalReservations || 0"
-                    label="Totaal Reservatie"
+                    label="Aantal reservaties"
                     icon-color="text-primary-500">
                 </StatsCard>
 
@@ -143,7 +144,7 @@ const profileStatsLoading = computed(
                 <StatsCard
                     :icon="faCheckCircle"
                     :value="profileStatsData?.completedReservations || 0"
-                    label="Voltooide Reservatie"
+                    label="Voltooide reservaties"
                     icon-color="text-slate-500">
                 </StatsCard>
 
@@ -151,20 +152,22 @@ const profileStatsLoading = computed(
                 <StatsCard
                     :icon="faChartLine"
                     :value="profileStatsData?.upcomingReservations || 0"
-                    label="Komende Reservatie"
-                    icon-color="text-secondary-500">
+                    label="Komende reservaties"
+                    icon-color="text-slate-500">
                 </StatsCard>
             </template>
         </div>
 
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <!-- Current Week Activity -->
             <Card>
                 <template #header>
                     <div class="flex items-center justify-between p-6 pb-0">
-                        <h2 class="text-xl font-semibold text-gray-900">Deze Week</h2>
+                        <h2 class="text-xl font-semibold text-gray-900">Reservaties Deze Week</h2>
                         <RouterLink :to="{ name: 'profile.reservations' }">
-                            <Button size="small" severity="secondary" text> Alles Bekijken </Button>
+                            <Button size="small" severity="secondary" text>
+                                Bekijk Kalender
+                            </Button>
                         </RouterLink>
                     </div>
                 </template>
@@ -214,6 +217,8 @@ const profileStatsLoading = computed(
                 </template>
             </Card>
         </div>
+
+        <SubmitLocationCTA />
     </div>
 </template>
 

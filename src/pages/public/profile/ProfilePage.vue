@@ -182,7 +182,7 @@ function openReservationsModal(): void {
                         <template v-if="reservationsLoading">
                             <ReservationItemSkeleton v-for="n in 3" :key="n" />
                         </template>
-                        <template v-else-if="reservations">
+                        <template v-else-if="reservations && reservations.length > 0">
                             <ReservationItem
                                 v-for="reservation in reservations"
                                 :key="reservation.id"
@@ -190,13 +190,16 @@ function openReservationsModal(): void {
                             </ReservationItem>
                         </template>
                         <template v-else>
-                            <div class="py-8 text-center text-gray-500">
-                                <FontAwesomeIcon :icon="faCalendarDays" class="mb-4 text-4xl" />
+                            <div class="space-y-4 py-8 text-center text-gray-500">
+                                <FontAwesomeIcon :icon="faCalendarDays" class="text-4xl" />
                                 <p>Geen reservaties deze week</p>
-                                <p class="text-sm">
-                                    Begin met het verkennen van locaties om je eerste reservatie te
-                                    maken!
-                                </p>
+                                <Button
+                                    @click="router.push({ name: 'locations' })"
+                                    severity="secondary"
+                                    outlined
+                                    size="small">
+                                    Bekijk Locaties
+                                </Button>
                             </div>
                         </template>
                     </div>

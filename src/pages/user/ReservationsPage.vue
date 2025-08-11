@@ -6,7 +6,6 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { formatDate } from '@vueuse/core';
 import Button from 'primevue/button';
-import Card from 'primevue/card';
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -51,7 +50,9 @@ function goBackToProfile(): void {
         <!-- Header -->
         <div class="flex w-full items-center gap-4 py-3">
             <Button @click="goBackToProfile" severity="secondary" text rounded>
-                <FontAwesomeIcon :icon="faArrowLeft" />
+                <template #icon>
+                    <FontAwesomeIcon :icon="faArrowLeft" />
+                </template>
             </Button>
             <h1
                 class="absolute left-1/2 -translate-x-1/2 transform text-3xl font-bold text-gray-900">
@@ -59,18 +60,11 @@ function goBackToProfile(): void {
             </h1>
         </div>
 
-        <!-- Calendar Card -->
-        <Card>
-            <template #content>
-                <div class="h-full">
-                    <ReservationCalendar
-                        v-model:date-in-week="dateInWeek"
-                        :reservations="reservations"
-                        @update:date-in-week="handleDateInWeekUpdate">
-                    </ReservationCalendar>
-                </div>
-            </template>
-        </Card>
+        <ReservationCalendar
+            v-model:date-in-week="dateInWeek"
+            :reservations="reservations"
+            @update:date-in-week="handleDateInWeekUpdate">
+        </ReservationCalendar>
     </div>
 </template>
 

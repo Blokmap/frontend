@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TimeSlot } from '@/types/schema/Reservation';
-import { daysInRange, formatDayName, isToday, startOfWeek } from '@/utils/date';
+import { daysInRange, formatDayName, isToday, startOfWeek } from '@/utils/date/date';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 

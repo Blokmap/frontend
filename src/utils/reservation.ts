@@ -1,4 +1,5 @@
-import { formatTimeFromDate, isDateInRange, startOfDay } from './date';
+import { isDateInRange, startOfDay } from './date/date';
+import { calculateDuration, formatTimeFromDate } from './time';
 import type { Reservation, TimeSlot } from '@/types/schema/Reservation';
 
 /**
@@ -33,20 +34,15 @@ export function reservationToTimeSlot(reservation: Reservation): TimeSlot {
     const startTimeString = formatTimeFromDate(startTime);
     const endTimeString = formatTimeFromDate(endTime);
 
-    // Calculate duration
-    const durationMinutes = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
-    const durationHours = Math.floor(durationMinutes / 60);
-    const remainingMinutes = durationMinutes % 60;
+    // Calculate duration using time utility
+    const duration = calculateDuration(startTime, endTime);
 
     return {
         id: `reservation-${reservation.id}`,
         day: startOfDay(startTime),
         startTime: startTimeString,
         endTime: endTimeString,
-        duration: {
-            hours: durationHours,
-            minutes: remainingMinutes,
-        },
+        duration,
         reservation,
     };
 }

@@ -104,16 +104,6 @@ export function isDateInRange(date: Date, start: Date, end: Date): boolean {
 }
 
 /**
- * Formats a Date object to a time string in HH:MM format.
- *
- * @param date - The date to format.
- * @returns A string representing the time in HH:MM format.
- */
-export function formatTimeFromDate(date: Date): string {
-    return date.toTimeString().slice(0, 5);
-}
-
-/**
  * Creates a new Date object representing the start of the day (00:00:00).
  *
  * @param date - The date to get the start of day for.

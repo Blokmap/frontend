@@ -5,8 +5,7 @@ import StatsCardSkeleton from '@/components/features/profile/StatsCardSkeleton.v
 import ReservationItem from '@/components/features/reservation/ReservationItem.vue';
 import ReservationItemSkeleton from '@/components/features/reservation/ReservationItemSkeleton.vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
-import { useProfileStats } from '@/composables/data/useProfile';
-import { useProfileReservations } from '@/composables/data/useReservations';
+import { useProfileReservations, useProfileStats } from '@/composables/data/useProfile';
 import { getProfileInitials } from '@/utils/profile';
 import {
     faAward,

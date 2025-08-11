@@ -18,7 +18,7 @@ const routes: RouteRecordRaw[] = [
                         component: () => import('@/pages/public/profile/ProfilePage.vue'),
                     },
                     {
-                        path: 'reservations/:dateInWeek?',
+                        path: 'reservations/:inWeekOf?',
                         name: 'profile.reservations',
                         component: () => import('@/pages/user/ReservationsPage.vue'),
                     },

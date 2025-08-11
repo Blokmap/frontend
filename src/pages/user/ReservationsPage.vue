@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ReservationCalendar from '@/components/features/reservation/ReservationCalendar.vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
-import { useProfileReservations } from '@/composables/data/useReservations';
+import { useProfileReservations } from '@/composables/data/useProfile';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { formatDate } from '@vueuse/core';
@@ -14,28 +14,28 @@ const route = useRoute();
 
 const { profileId } = useAuthProfile();
 
-const {
-    isLoading: reservationsIsLoading,
-    isPending: reservationsIsPending,
-    data: reservations,
-} = useProfileReservations(profileId);
-
 const reservationsLoading = computed(
     () => reservationsIsLoading.value || reservationsIsPending.value,
 );
 
 const dateInWeek = computed(() => {
-    const dateParam = route.params.dateInWeek?.toString();
+    const dateParam = route.params.inWeekOf?.toString();
     const date = new Date(dateParam);
     return isNaN(date.getTime()) ? new Date() : date;
 });
+
+const {
+    isLoading: reservationsIsLoading,
+    isPending: reservationsIsPending,
+    data: reservations,
+} = useProfileReservations(profileId, dateInWeek);
 
 function handleDateInWeekUpdate(newDate: Date): void {
     const dateString = formatDate(newDate, 'YYYY-MM-DD');
     router.push({
         name: 'profile.reservations',
         params: {
-            dateInWeek: dateString,
+            inWeekOf: dateString,
         },
     });
 }

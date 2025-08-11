@@ -5,7 +5,7 @@ import CalendarControls from '@/components/shared/calendar/CalendarControls.vue'
 import { useVimControls } from '@/composables/useVimControls';
 import type { Reservation } from '@/types/schema/Reservation';
 import { ReservationState } from '@/types/schema/Reservation';
-import { endOfWeek, startOfWeek } from '@/utils/date';
+import { endOfWeek, startOfWeek } from '@/utils/date/date';
 import { getLocationAddress } from '@/utils/location';
 import { reservationsToTimeSlots } from '@/utils/reservation';
 import { faCalendarCheck, faClock, faUsers } from '@fortawesome/free-solid-svg-icons';

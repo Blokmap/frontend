@@ -14,8 +14,7 @@ import type {
 } from '@/types/contract/Composable';
 import type { LngLat } from '@/types/contract/Map';
 import type { LocationFilter } from '@/types/schema/Filter';
-import type { Location, NearestLocation } from '@/types/schema/Location';
-import type { LocationRequest } from '@/types/schema/LocationRequest';
+import type { CreateLocationRequest, Location, NearestLocation } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
@@ -103,7 +102,7 @@ export function useTags(): CompQuery<string[]> {
  */
 export function useCreateLocation(
     options: CompMutationOptions = {},
-): CompMutation<Location, LocationRequest> {
+): CompMutation<Location, CreateLocationRequest> {
     const client = useQueryClient();
 
     const mutation = useMutation({

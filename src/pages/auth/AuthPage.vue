@@ -5,6 +5,8 @@ import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
 import { useInstitutions } from '@/composables/data/useInstitutions';
 import { useMessages } from '@/composables/useMessages';
 import { authIdentityProviders } from '@/config/auth';
+import { API_BASE_URL } from '@/constants';
+import { endpoints } from '@/endpoints';
 import { faArrowRight, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
@@ -160,15 +162,17 @@ function switchToRegister(): void {
         </Select>
     </IconField>
     <template v-for="idp in authIdentityProviders" :key="idp.name">
-        <Button
-            class="w-[300px]"
-            severity="contrast"
-            :label="`Log in met ${idp.name}`"
-            size="small">
-            <template #icon>
-                <img :src="idp.logo!" :alt="idp.name" class="h-5 w-5 object-contain" />
-            </template>
-        </Button>
+        <a :href="API_BASE_URL + endpoints.auth.sso.replace('{provider}', idp.id)">
+            <Button
+                class="w-[300px]"
+                severity="contrast"
+                size="small"
+                :label="`Log in met ${idp.name}`">
+                <template #icon>
+                    <img :src="idp.logo!" :alt="idp.name" class="h-5 w-5 object-contain" />
+                </template>
+            </Button>
+        </a>
     </template>
     <div class="absolute right-4 bottom-4">
         <Button severity="secondary" size="small" @click="switchToLogin" link>

@@ -19,6 +19,7 @@ export type ProfileStats = {
 };
 
 export type Idp = {
+    id: string;
     name: string;
     logo?: string | null;
 };

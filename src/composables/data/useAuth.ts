@@ -1,4 +1,3 @@
-import { useMessages } from '../useMessages';
 import { getAuthProfile, login, logout, register } from '@/services/auth';
 import type {
     CompMutation,
@@ -9,6 +8,7 @@ import type {
 import type { LoginRequest, RegisterRequest } from '@/types/schema/Auth';
 import type { Profile } from '@/types/schema/Profile';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { useToast } from 'primevue';
 import { type Ref, computed } from 'vue';
 
 /**
@@ -41,13 +41,13 @@ export function useAuthProfile(
  */
 export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<void> {
     const client = useQueryClient();
-    const messages = useMessages();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         mutationFn: logout,
         onSuccess: (data, vars, context) => {
-            messages.showMessage({
+            toast.add({
                 severity: 'success',
                 summary: 'Uitgelogd',
                 detail: 'Je bent succesvol uitgelogd.',

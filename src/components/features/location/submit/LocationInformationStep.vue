@@ -2,11 +2,11 @@
 import AddressMap from '../../map/AddressMap.vue';
 import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
 import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
-import { useMessages } from '@/composables/useMessages';
 import type { LngLat } from '@/types/contract/Map';
 import type { CreateLocationRequest } from '@/types/schema/Location';
 import { faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useToast } from 'primevue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
@@ -16,9 +16,10 @@ import { useI18n } from 'vue-i18n';
 
 const form = defineModel<CreateLocationRequest>({ required: true });
 
+const toast = useToast();
+
 const { locale } = useI18n();
 const { geocodeAddress, isLoading } = useForwardGeoSearch();
-const { showMessage } = useMessages();
 
 const currentLanguage = ref(locale.value);
 const showMapDialog = ref(false);
@@ -58,7 +59,7 @@ const handleConfirmAddress = async () => {
         mapCenter.value = coordinates!;
         showMapDialog.value = true;
     } catch (error) {
-        showMessage({
+        toast.add({
             severity: 'error',
             summary: 'Fout bij het ophalen van coördinaten',
             detail: 'Er is iets misgegaan bij het ophalen van de locatie.',

@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import LocationInformationStep from '@/components/features/location/submit/LocationInformationStep.vue';
 import { useCreateLocation } from '@/composables/data/useLocations';
-import { useMessages } from '@/composables/useMessages';
 import type { CreateLocationRequest } from '@/types/schema/Location';
 import { faArrowLeft, faArrowRight, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useToast } from 'primevue';
 import Button from 'primevue/button';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const messages = useMessages();
+const toast = useToast();
 
 const { mutate: createLocation, isPending: isCreating } = useCreateLocation({
     onSuccess: () => {
-        messages.showMessage({
+        toast.add({
             severity: 'success',
             summary: 'Locatie succesvol toegevoegd',
             detail: 'Je locatie is toegevoegd en wacht op goedkeuring.',

@@ -1,4 +1,3 @@
-import { type UseMessages } from '@/composables/useMessages';
 import { mockInstitutions } from '@/config/mock';
 import { endpoints } from '@/endpoints';
 import axios, { HttpStatusCode } from 'axios';
@@ -27,7 +26,7 @@ export const client = axios.create({
  * Sets up Axios interceptors for the client.
  * This includes handling unauthorized responses and mocking certain endpoints.
  */
-export function setupAxiosInterceptors(router: Router, messages: UseMessages): void {
+export function setupAxiosInterceptors(router: Router, toast: any): void {
     client.interceptors.response.use(async (response) => {
         if (response.status === HttpStatusCode.Unauthorized) {
             router.push({
@@ -35,7 +34,7 @@ export function setupAxiosInterceptors(router: Router, messages: UseMessages): v
                 params: { action: 'login' },
                 query: { redirect: window.location.pathname },
             });
-            messages.showMessage({
+            toast.add({
                 severity: 'error',
                 summary: 'Niet ingelogd',
                 detail: 'Je moet ingelogd zijn om deze pagina te bekijken.',

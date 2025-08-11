@@ -3,12 +3,12 @@ import LoginForm from '@/components/features/auth/forms/LoginForm.vue';
 import RegisterForm from '@/components/features/auth/forms/RegisterForm.vue';
 import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
 import { useInstitutions } from '@/composables/data/useInstitutions';
-import { useMessages } from '@/composables/useMessages';
 import { authIdentityProviders } from '@/config/auth';
 import { API_BASE_URL } from '@/constants';
 import { endpoints } from '@/endpoints';
 import { faArrowRight, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useToast } from 'primevue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import IconField from 'primevue/iconfield';
@@ -20,7 +20,7 @@ import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
 const { locale } = useI18n();
-const { showMessage } = useMessages();
+const toast = useToast();
 const router = useRouter();
 const route = useRoute();
 
@@ -32,7 +32,7 @@ const {
     error: loginError,
 } = useAuthLogin({
     onError: (error) => {
-        showMessage({
+        toast.add({
             severity: 'error',
             summary: 'Inloggen mislukt',
             detail: error.response?.data,
@@ -45,7 +45,7 @@ const {
             router.push({ name: 'locations' });
         }
 
-        showMessage({
+        toast.add({
             severity: 'success',
             summary: 'Ingelogd!',
             detail: 'Je bent succesvol ingelogd.',
@@ -59,14 +59,14 @@ const {
     error: registerError,
 } = useAuthRegister({
     onError: (error) => {
-        showMessage({
+        toast.add({
             severity: 'error',
             summary: 'Registratie mislukt',
             detail: error.response?.data,
         });
     },
     onSuccess: () => {
-        showMessage({
+        toast.add({
             severity: 'success',
             summary: 'Geregistreerd!',
             detail: 'Je bent succesvol geregistreerd. Je kan nu inloggen.',

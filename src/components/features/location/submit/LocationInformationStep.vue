@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import AddressMap from '../../map/AddressMap.vue';
 import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
-import AddressMap from '@/components/features/map/AddressMap.vue';
 import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
+import { useMessages } from '@/composables/useMessages';
 import type { LngLat } from '@/types/contract/Map';
 import type { CreateLocationRequest } from '@/types/schema/Location';
 import { faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
-import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import { computed, ref } from 'vue';
@@ -17,12 +17,20 @@ import { useI18n } from 'vue-i18n';
 const form = defineModel<CreateLocationRequest>({ required: true });
 
 const { locale } = useI18n();
+const { geocodeAddress, isLoading } = useForwardGeoSearch();
+const { showMessage } = useMessages();
 
 const currentLanguage = ref(locale.value);
 const showMapDialog = ref(false);
-const mapCenter = ref<LngLat>([4.3517, 50.8503]);
-
-const { geocodeAddress, isLoading } = useForwardGeoSearch();
+const mapCenter = computed<LngLat>({
+    get() {
+        return [form.value.longitude || 0, form.value.latitude || 0] as LngLat;
+    },
+    set([lng, lat]: LngLat) {
+        form.value.longitude = lng;
+        form.value.latitude = lat;
+    },
+});
 
 const currentAddress = computed(() => {
     const { street, number, city } = form.value;
@@ -47,28 +55,15 @@ const handleConfirmAddress = async () => {
 
     try {
         const coordinates = await geocodeAddress(currentAddress.value);
-        if (coordinates) {
-            mapCenter.value = coordinates;
-            form.value.latitude = coordinates[1];
-            form.value.longitude = coordinates[0];
-        }
+        mapCenter.value = coordinates!;
         showMapDialog.value = true;
     } catch (error) {
-        mapCenter.value = [4.3517, 50.8503];
-        form.value.latitude = 50.8503;
-        form.value.longitude = 4.3517;
-        showMapDialog.value = true;
+        showMessage({
+            severity: 'error',
+            summary: 'Fout bij het ophalen van coördinaten',
+            detail: 'Er is iets misgegaan bij het ophalen van de locatie.',
+        });
     }
-};
-
-const handleMapConfirm = () => {
-    form.value.latitude = mapCenter.value[1];
-    form.value.longitude = mapCenter.value[0];
-    showMapDialog.value = false;
-};
-
-const handleMapCancel = () => {
-    showMapDialog.value = false;
 };
 </script>
 
@@ -230,7 +225,8 @@ const handleMapCancel = () => {
                     </div>
 
                     <!-- Address Confirmation Button -->
-                    <div class="flex items-center justify-between rounded-lg bg-gray-50 p-4">
+                    <div
+                        class="flex items-center justify-between rounded-lg border-1 border-slate-200 bg-gray-50 p-4">
                         <div>
                             <h4 class="font-medium text-gray-900">Bevestig locatie op kaart</h4>
                             <p class="text-sm text-gray-600">
@@ -251,58 +247,13 @@ const handleMapCancel = () => {
                             {{ hasCoordinates ? 'Wijzig locatie' : 'Bevestig op kaart' }}
                         </Button>
                     </div>
+                    <template v-if="showMapDialog">
+                        <div class="h-[400px] w-full">
+                            <AddressMap v-model:center="mapCenter" :zoom="18"> </AddressMap>
+                        </div>
+                    </template>
                 </div>
             </template>
         </Card>
-
-        <!-- Address Confirmation Map Dialog -->
-        <Dialog
-            v-model:visible="showMapDialog"
-            modal
-            header="Bevestig locatie op kaart"
-            class="address-confirmation-dialog">
-            <div class="space-y-4">
-                <div class="text-center">
-                    <h3 class="text-lg font-semibold text-gray-900">{{ currentAddress }}</h3>
-                    <p class="text-sm text-gray-600">
-                        Sleep de kaart om de exacte locatie te bepalen. Het kruisje in het midden
-                        toont de gekozen positie.
-                    </p>
-                </div>
-
-                <div class="h-96 overflow-hidden rounded-lg">
-                    <AddressMap v-model:center="mapCenter" :zoom="16"> </AddressMap>
-                </div>
-
-                <div class="rounded-lg bg-gray-50 p-3">
-                    <div class="text-sm text-gray-600">
-                        <strong>Huidige coördinaten:</strong><br />
-                        Lat: {{ mapCenter[1]?.toFixed(6) }}, Lng: {{ mapCenter[0]?.toFixed(6) }}
-                    </div>
-                </div>
-            </div>
-
-            <template #footer>
-                <div class="flex justify-end space-x-2">
-                    <Button @click="handleMapCancel" severity="secondary" outlined>
-                        Annuleren
-                    </Button>
-                    <Button @click="handleMapConfirm"> Locatie bevestigen </Button>
-                </div>
-            </template>
-        </Dialog>
     </div>
 </template>
-
-<style scoped>
-@reference '@/assets/styles/main.css';
-
-.address-confirmation-dialog :deep(.p-dialog-content) {
-    padding: 1.5rem;
-}
-
-.address-confirmation-dialog :deep(.p-dialog) {
-    max-width: 90vw;
-    max-height: 90vh;
-}
-</style>

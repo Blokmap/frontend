@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import LocationInformationStep from '@/components/features/location/submit/steps/LocationInformationStep.vue';
+import LocationInformationStep from '@/components/features/location/submit/LocationInformationStep.vue';
 import { useCreateLocation } from '@/composables/data/useLocations';
 import { useMessages } from '@/composables/useMessages';
 import type { CreateLocationRequest } from '@/types/schema/Location';
 import { faArrowLeft, faArrowRight, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
-import Card from 'primevue/card';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -103,121 +102,101 @@ function goPrevious() {
             </h1>
         </div>
 
-        <!-- Beautiful Progress Steps -->
-        <Card>
-            <template #content>
-                <div class="px-6 py-6">
-                    <!-- Step Indicators -->
-                    <div class="flex items-center justify-center space-x-4">
-                        <div
-                            v-for="(step, index) in steps"
-                            :key="step.id"
-                            class="flex items-center">
-                            <!-- Step Circle -->
-                            <div class="relative">
-                                <div
-                                    class="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300"
-                                    :class="{
-                                        'bg-primary-600 scale-110 text-white shadow-lg':
-                                            index === currentStepIndex,
-                                        'bg-primary-500 text-white': index < currentStepIndex,
-                                        'bg-gray-200 text-gray-500': index > currentStepIndex,
-                                    }">
-                                    <FontAwesomeIcon
-                                        v-if="index < currentStepIndex"
-                                        :icon="faCheck"
-                                        class="text-sm" />
-                                    <span v-else>{{ index + 1 }}</span>
-                                </div>
+        <!-- Step Indicators -->
+        <div class="my-8 flex items-center justify-center space-x-4">
+            <div v-for="(step, index) in steps" :key="step.id" class="flex items-center">
+                <!-- Step Circle -->
+                <div class="relative">
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300"
+                        :class="{
+                            'bg-primary-600 scale-110 text-white shadow-lg':
+                                index === currentStepIndex,
+                            'bg-primary-500 text-white': index < currentStepIndex,
+                            'bg-gray-200 text-gray-500': index > currentStepIndex,
+                        }">
+                        <FontAwesomeIcon
+                            v-if="index < currentStepIndex"
+                            :icon="faCheck"
+                            class="text-sm" />
+                        <span v-else>{{ index + 1 }}</span>
+                    </div>
 
-                                <!-- Current step pulse ring -->
-                                <div
-                                    v-if="index === currentStepIndex"
-                                    class="bg-primary-400 absolute inset-0 animate-ping rounded-full opacity-20"></div>
-                            </div>
+                    <!-- Current step pulse ring -->
+                    <div
+                        v-if="index === currentStepIndex"
+                        class="bg-primary-400 absolute inset-0 animate-ping rounded-full opacity-20"></div>
+                </div>
 
-                            <!-- Step Label -->
-                            <div class="mr-6 ml-3">
-                                <div
-                                    class="text-sm font-medium transition-colors duration-200"
-                                    :class="{
-                                        'text-primary-600': index === currentStepIndex,
-                                        'text-gray-700': index < currentStepIndex,
-                                        'text-gray-400': index > currentStepIndex,
-                                    }">
-                                    {{ step.label }}
-                                </div>
-                                <div
-                                    v-if="index === currentStepIndex"
-                                    class="text-primary-500 text-xs font-medium">
-                                    Actief
-                                </div>
-                                <div
-                                    v-else-if="index < currentStepIndex"
-                                    class="text-xs text-gray-500">
-                                    Voltooid
-                                </div>
-                            </div>
-
-                            <!-- Connecting Arrow -->
-                            <FontAwesomeIcon
-                                v-if="index < steps.length - 1"
-                                :icon="faArrowRight"
-                                class="mr-6 text-sm text-gray-300">
-                            </FontAwesomeIcon>
-                        </div>
+                <!-- Step Label -->
+                <div class="mr-6 ml-3">
+                    <div
+                        class="text-sm font-medium transition-colors duration-200"
+                        :class="{
+                            'text-primary-600': index === currentStepIndex,
+                            'text-gray-700': index < currentStepIndex,
+                            'text-gray-400': index > currentStepIndex,
+                        }">
+                        {{ step.label }}
+                    </div>
+                    <div
+                        v-if="index === currentStepIndex"
+                        class="text-primary-500 text-xs font-medium">
+                        Actief
+                    </div>
+                    <div v-else-if="index < currentStepIndex" class="text-xs text-gray-500">
+                        Voltooid
                     </div>
                 </div>
-            </template>
-        </Card>
-
-        <!-- Step Content -->
-        <div class="p-2">
-            <LocationInformationStep v-if="currentStep === 'basic-info'" v-model="formData">
-            </LocationInformationStep>
+                <FontAwesomeIcon
+                    v-if="index < steps.length - 1"
+                    :icon="faArrowRight"
+                    class="mr-6 text-sm text-gray-300">
+                </FontAwesomeIcon>
+            </div>
         </div>
 
-        <!-- Clean Navigation -->
-        <Card>
-            <template #content>
-                <div class="flex items-center justify-between">
-                    <!-- Previous Button -->
-                    <Button
-                        @click="goPrevious"
-                        :disabled="!canGoPrevious"
-                        severity="secondary"
-                        outlined
-                        size="large"
-                        class="px-6"
-                        :class="{ 'cursor-not-allowed opacity-50': !canGoPrevious }">
-                        <FontAwesomeIcon :icon="faArrowLeft" class="mr-2" />
-                        Vorige
-                    </Button>
+        <!-- Step Content -->
+        <LocationInformationStep v-if="currentStep === 'basic-info'" v-model="formData" />
 
-                    <!-- Next/Submit Button -->
-                    <Button
-                        v-if="!isLastStep"
-                        @click="goNext"
-                        :disabled="!canGoNext"
-                        size="large"
-                        class="px-6"
-                        :class="{ 'cursor-not-allowed opacity-50': !canGoNext }">
-                        Volgende
-                        <FontAwesomeIcon :icon="faArrowRight" class="ml-2" />
-                    </Button>
-                    <Button
-                        v-else
-                        :loading="isCreating"
-                        :disabled="!canGoNext"
-                        size="large"
-                        class="border-green-600 bg-green-600 px-6 hover:border-green-700 hover:bg-green-700"
-                        :class="{ 'cursor-not-allowed opacity-50': !canGoNext }">
-                        <FontAwesomeIcon :icon="faCheck" class="mr-2" />
-                        Locatie Toevoegen
-                    </Button>
-                </div>
-            </template>
-        </Card>
+        <!-- Navigation -->
+
+        <div class="flex items-center justify-between">
+            <!-- Previous Button -->
+            <Button
+                @click="goPrevious"
+                :disabled="!canGoPrevious"
+                severity="secondary"
+                outlined
+                size="large"
+                class="px-6"
+                :class="{ 'cursor-not-allowed opacity-50': !canGoPrevious }">
+                <FontAwesomeIcon :icon="faArrowLeft" class="mr-2" />
+                Vorige
+            </Button>
+
+            <!-- Next/Submit Button -->
+            <Button
+                v-if="!isLastStep"
+                @click="goNext"
+                :disabled="!canGoNext"
+                size="large"
+                class="px-6"
+                :class="{ 'cursor-not-allowed opacity-50': !canGoNext }">
+                Volgende
+                <FontAwesomeIcon :icon="faArrowRight" class="ml-2" />
+            </Button>
+            <Button
+                v-else
+                :loading="isCreating"
+                :disabled="!canGoNext"
+                size="large"
+                class="border-green-600 bg-green-600 px-6 hover:border-green-700 hover:bg-green-700"
+                :class="{ 'cursor-not-allowed opacity-50': !canGoNext }">
+                <FontAwesomeIcon :icon="faCheck" class="mr-2" />
+                Locatie Toevoegen
+            </Button>
+        </div>
     </div>
 </template>
 

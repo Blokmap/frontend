@@ -1,4 +1,4 @@
-import { formatTimeFromDate, isDateInRange, startOfDay } from './date';
+import { formatTimeFromDate, isDateInRange, startOfDay } from './date/date';
 import type { Reservation, TimeSlot } from '@/types/schema/Reservation';
 
 /**

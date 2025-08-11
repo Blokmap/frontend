@@ -1,7 +1,7 @@
 import { defaultMapOptions } from '@/config/map';
 import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/types/contract/Map';
 import mapboxgl from 'mapbox-gl';
-import { type MaybeRef, type Ref, onMounted, onUnmounted, ref, unref, watch } from 'vue';
+import { type Ref, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
@@ -16,8 +16,6 @@ const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 export function useMapBox<T>(
     container: Ref<HTMLElement | null>,
     options: MapOptions = defaultMapOptions,
-    center?: MaybeRef<LngLat>,
-    zoom?: MaybeRef<number>,
 ): MapAdapter<T> {
     const { locale } = useI18n();
 
@@ -47,9 +45,9 @@ export function useMapBox<T>(
             language: locale.value,
             container: container.value,
             style: options.style,
-            center: center ? unref(center) : options.center,
+            center: options.center,
             maxBounds: options.bounds,
-            zoom: zoom ? unref(zoom) : options.zoom,
+            zoom: options.zoom,
         });
 
         newMap.on('move', () => {
@@ -82,34 +80,13 @@ export function useMapBox<T>(
 
         newMap.once('load', () => {
             isLoaded.value = true;
-            geoLocateControl.trigger();
+
+            if (options.autoGeolocation) {
+                geoLocateControl.trigger();
+            }
         });
 
         map.value = newMap;
-
-        // Watch for center changes and update map
-        if (center) {
-            watch(
-                () => unref(center),
-                (newCenter) => {
-                    if (map.value && newCenter) {
-                        map.value.setCenter(newCenter);
-                    }
-                },
-            );
-        }
-
-        // Watch for zoom changes and update map
-        if (zoom) {
-            watch(
-                () => unref(zoom),
-                (newZoom) => {
-                    if (map.value && newZoom !== undefined) {
-                        map.value.setZoom(newZoom);
-                    }
-                },
-            );
-        }
     });
 
     onUnmounted(() => {

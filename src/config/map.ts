@@ -8,4 +8,5 @@ export const defaultMapOptions: MapOptions = {
         [2.5889, 49.9967],
         [6.5083, 51.6509],
     ],
+    autoGeolocation: false,
 };

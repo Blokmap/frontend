@@ -3,7 +3,7 @@ import Marker from './Marker.vue';
 import { useMapBox } from '@/composables/useMapBox';
 import type { LngLatBounds, MapOptions } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faBuildingColumns, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
 import { onMounted, ref, useTemplateRef } from 'vue';
@@ -36,6 +36,14 @@ const map = useMapBox(mapContainerRef, config.value);
 
 function handleMarkerClick(id: number): void {
     emit('click:marker', id);
+}
+
+function handleMarkerMouseEnter(location: Location) {
+    hoveredLocation.value = location;
+}
+
+function handleMarkerMouseLeave() {
+    hoveredLocation.value = null;
 }
 
 onMounted(() => {
@@ -77,12 +85,25 @@ defineExpose({ map });
             <Marker
                 v-for="location in locations"
                 :key="location.id"
+                :id="location.id"
+                :position="[location.longitude, location.latitude]"
                 :map="map"
-                :location="location"
                 :active="location.id === hoveredLocation?.id"
-                @mouseenter="hoveredLocation = location"
-                @mouseleave="hoveredLocation = null"
+                @mouseenter="handleMarkerMouseEnter(location)"
+                @mouseleave="handleMarkerMouseLeave"
                 @click="handleMarkerClick(location.id)">
+                <template #popover>
+                    <div class="flex items-center gap-1">
+                        <FontAwesomeIcon :icon="faBuildingColumns" />
+                        <p class="font-bold">
+                            {{ location.name }}
+                        </p>
+                    </div>
+                    <div class="my-2">
+                        <p>{{ location.street }} {{ location.number }}</p>
+                        <p>{{ location.zip }} {{ location.city }}</p>
+                    </div>
+                </template>
             </Marker>
         </slot>
     </div>

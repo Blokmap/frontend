@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { startOfWeek } from '@/utils/date';
+import { startOfWeek } from '@/utils/date/date';
 import {
     faCalendarDays,
     faChevronDown,

@@ -1,37 +1,56 @@
 <script setup lang="ts">
 import { useMapBox } from '@/composables/useMapBox';
-import type { LngLat } from '@/types/contract/Map';
-import { faLocationCrosshairs } from '@fortawesome/free-solid-svg-icons';
+import type { LngLat, LngLatBounds } from '@/types/contract/Map';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useTemplateRef } from 'vue';
+import { computed, onMounted, useTemplateRef } from 'vue';
 
 const center = defineModel<LngLat>('center', {
-    default: () => [4.3517, 50.8503], // Brussels default
+    default: () => [4.3517, 50.8503],
 });
 
 const props = withDefaults(
     defineProps<{
         zoom?: number;
+        boundsPadding?: number;
     }>(),
     {
         zoom: 16,
+        boundsPadding: 0.005,
     },
 );
 
+// Calculate bounds around the center to limit map movement
+const bounds = computed<LngLatBounds>(() => {
+    const [lng, lat] = center.value;
+    const padding = props.boundsPadding;
+
+    return [
+        [lng - padding, lat - padding],
+        [lng + padding, lat + padding],
+    ];
+});
+
 const mapContainerRef = useTemplateRef('mapContainer');
-const map = useMapBox(mapContainerRef, {}, center, props.zoom);
+const map = useMapBox(mapContainerRef, {
+    center: center.value,
+    zoom: props.zoom,
+    bounds: bounds.value,
+});
+
+onMounted(() => {
+    map.setOnMove(() => {
+        center.value = map.getCenter();
+    });
+});
 
 defineExpose({ map });
 </script>
 
 <template>
     <div class="relative h-full w-full">
-        <div ref="mapContainer" class="map" />
-
-        <!-- Center crosshair marker -->
-        <div class="crosshair">
-            <FontAwesomeIcon :icon="faLocationCrosshairs" class="crosshair-icon" />
-        </div>
+        <div ref="mapContainer" class="map rounded-lg"></div>
+        <FontAwesomeIcon class="crosshair text-xl" :icon="faLocationDot" />
     </div>
 </template>
 
@@ -45,9 +64,5 @@ defineExpose({ map });
 
 .crosshair {
     @apply pointer-events-none absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transform;
-}
-
-.crosshair-icon {
-    @apply text-secondary-600 text-2xl drop-shadow-lg;
 }
 </style>

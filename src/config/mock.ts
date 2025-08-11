@@ -27,12 +27,14 @@ export const mockInstitutions: Institution[] = [
     },
     {
         slug: {
+            id: '2',
             nl: 'KU Leuven',
             en: 'KU Leuven',
             de: 'KU Leuven',
             fr: 'KU Leuven',
         },
         name: {
+            id: '2',
             nl: 'Katholieke Universiteit Leuven',
             en: 'Catholic University of Leuven',
             de: 'Katholische Universität Löwen',
@@ -49,12 +51,14 @@ export const mockInstitutions: Institution[] = [
     },
     {
         slug: {
+            id: '3',
             nl: 'VUB',
             en: 'VUB',
             de: 'VUB',
             fr: 'VUB',
         },
         name: {
+            id: '3',
             nl: 'Vrije Universiteit Brussel',
             en: 'Free University of Brussels',
             de: 'Freie Universität Brüssel',
@@ -73,12 +77,14 @@ export const mockInstitutions: Institution[] = [
     },
     {
         slug: {
+            id: '4',
             nl: 'UAntwerpen',
             en: 'UAntwerpen',
             de: 'UAntwerpen',
             fr: 'UAntwerpen',
         },
         name: {
+            id: '4',
             nl: 'Universiteit Antwerpen',
             en: 'University of Antwerp',
             de: 'Universität Antwerpen',
@@ -97,12 +103,14 @@ export const mockInstitutions: Institution[] = [
     },
     {
         slug: {
+            id: '5',
             nl: 'HOGent',
             en: 'HOGent',
             de: 'HOGent',
             fr: 'HOGent',
         },
         name: {
+            id: '5',
             nl: 'Hogeschool Gent',
             en: 'Ghent University of Applied Sciences and Arts',
             de: 'Hogeschool Gent',
@@ -121,12 +129,14 @@ export const mockInstitutions: Institution[] = [
     },
     {
         slug: {
+            id: '6',
             nl: 'Howest',
             en: 'Howest',
             de: 'Howest',
             fr: 'Howest',
         },
         name: {
+            id: '6',
             nl: 'Hogeschool West-Vlaanderen',
             en: 'University of Applied Sciences West Flanders',
             de: 'Hogeschool West-Vlaanderen',
@@ -145,12 +155,14 @@ export const mockInstitutions: Institution[] = [
     },
     {
         slug: {
+            id: '7',
             nl: 'Arteveldehogeschool',
             en: 'Artevelde University of Applied Sciences',
             de: 'Arteveldehogeschool',
             fr: 'Arteveldehogeschool',
         },
         name: {
+            id: '7',
             nl: 'Arteveldehogeschool',
             en: 'Artevelde University of Applied Sciences',
             de: 'Arteveldehogeschool',
@@ -169,12 +181,14 @@ export const mockInstitutions: Institution[] = [
     },
     {
         slug: {
+            id: '8',
             nl: 'Odisee',
             en: 'Odisee',
             de: 'Odisee',
             fr: 'Odisee',
         },
         name: {
+            id: '8',
             nl: 'Odisee Hogeschool',
             en: 'Odisee University of Applied Sciences',
             de: 'Odisee Hochschule',
@@ -193,12 +207,14 @@ export const mockInstitutions: Institution[] = [
     },
     {
         slug: {
+            id: '9',
             nl: 'Thomas More',
             en: 'Thomas More',
             de: 'Thomas More',
             fr: 'Thomas More',
         },
         name: {
+            id: '9',
             nl: 'Thomas More Hogeschool',
             en: 'Thomas More University of Applied Sciences',
             de: 'Thomas More Hochschule',

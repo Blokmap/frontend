@@ -20,7 +20,7 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: 'reservations/:inWeekOf?',
                         name: 'profile.reservations',
-                        component: () => import('@/pages/user/ReservationsPage.vue'),
+                        component: () => import('@/pages/public/profile/ReservationsPage.vue'),
                     },
                 ],
             },
@@ -28,7 +28,12 @@ const routes: RouteRecordRaw[] = [
                 path: 'locations',
                 name: 'locations',
                 meta: { keepAlive: true },
-                component: () => import('@/pages/public/LocationsPage.vue'),
+                component: () => import('@/pages/public/locations/LocationsPage.vue'),
+            },
+            {
+                path: 'locations/submit',
+                name: 'locations.submit',
+                component: () => import('@/pages/public/locations/LocationSubmitPage.vue'),
             },
         ],
     },

@@ -1,5 +1,22 @@
 .p-textarea {
-    @apply border-surface-300 dark:border-surface-700 enabled:hover:border-surface-400 dark:enabled:hover:border-surface-600 enabled:focus:border-primary bg-surface-0 dark:bg-surface-950 text-surface-700 dark:text-surface-0 disabled:bg-surface-200 disabled:text-surface-500 dark:disabled:bg-surface-700 dark:disabled:text-surface-400 placeholder:text-surface-500 dark:placeholder:text-surface-400 appearance-none rounded-md border px-3 py-2 shadow-[0_1px_2px_0_rgba(18,18,23,0.05)] transition-colors duration-200 outline-none disabled:opacity-100;
+    @apply appearance-none rounded-md border-2 outline-none;
+
+    @apply bg-surface-0 dark:bg-surface-950;
+    @apply text-surface-700 dark:text-surface-0;
+    @apply placeholder:text-surface-500 dark:placeholder:text-surface-400;
+
+    @apply border-slate-200 dark:border-slate-900;
+    @apply enabled:hover:border-slate-200 dark:enabled:hover:border-slate-800;
+    @apply enabled:focus:border-primary;
+
+    @apply disabled:bg-surface-200 disabled:text-surface-500;
+    @apply dark:disabled:bg-surface-700 dark:disabled:text-surface-400;
+    @apply disabled:opacity-100;
+
+    @apply px-3 py-2 shadow-xs;
+    @apply transition-colors duration-200;
+
+    @apply autofill:bg-white;
 }
 
 .p-textarea.p-invalid {

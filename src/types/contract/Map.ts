@@ -14,6 +14,7 @@ export interface MapOptions {
     center?: LngLat;
     bounds?: LngLatBounds;
     zoom?: number;
+    autoGeolocation?: boolean;
 }
 
 export interface MapAdapter<T = number> {

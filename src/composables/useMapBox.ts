@@ -80,7 +80,10 @@ export function useMapBox<T>(
 
         newMap.once('load', () => {
             isLoaded.value = true;
-            geoLocateControl.trigger();
+
+            if (options.autoGeolocation) {
+                geoLocateControl.trigger();
+            }
         });
 
         map.value = newMap;

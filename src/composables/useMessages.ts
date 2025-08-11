@@ -1,6 +1,5 @@
 import { i18n } from '@/config/i18n';
 import { type ToastMessageOptions, useToast } from 'primevue';
-import { useI18n } from 'vue-i18n';
 
 export type UseMessages = {
     showMessage: (options: ToastMessageOptions) => void;

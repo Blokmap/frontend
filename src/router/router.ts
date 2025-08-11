@@ -42,6 +42,20 @@ const routes: RouteRecordRaw[] = [
         component: AuthLayout,
         children: [
             {
+                path: 'auth/sso',
+                name: 'auth.sso',
+                redirect: () => {
+                    const storedRedirectUrl = localStorage.getItem('redirectAfterLogin');
+                    const redirectPath = storedRedirectUrl || { name: 'profile' };
+
+                    if (storedRedirectUrl) {
+                        localStorage.removeItem('redirectAfterLogin');
+                    }
+
+                    return redirectPath;
+                },
+            },
+            {
                 path: 'auth/:action?',
                 name: 'auth',
                 component: () => import('@/pages/auth/AuthPage.vue'),

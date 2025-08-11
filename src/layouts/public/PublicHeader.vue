@@ -5,13 +5,17 @@ import LocationSearch from '@/components/features/location/LocationSearch.vue';
 import Logo from '@/components/shared/Logo.vue';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { LocationFilter } from '@/types/schema/Filter';
+import { useLocalStorage } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { RouterLink, useRouter } from 'vue-router';
 
 defineEmits<{ (e: 'logout'): Promise<void> }>();
 
 const { push } = useRouter();
+const { locale } = useI18n();
+const rememberedLocale = useLocalStorage('locale', 'nl');
 
 const { filters } = storeToRefs(useLocationFilters());
 const locationFilters = useLocationFilters();
@@ -41,6 +45,11 @@ function handleFiltersUpdate(
     isExpandedSearch.value = false;
     push({ name: 'locations' });
 }
+
+function handleLocaleChange(newLocale: string): void {
+    locale.value = newLocale;
+    rememberedLocale.value = newLocale;
+}
 </script>
 
 <template>
@@ -61,7 +70,7 @@ function handleFiltersUpdate(
 
             <div class="header--actions">
                 <MenuButton />
-                <LanguageSelector />
+                <LanguageSelector :model-value="locale" @update:model-value="handleLocaleChange" />
             </div>
         </div>
     </header>

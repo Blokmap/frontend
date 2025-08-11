@@ -3,7 +3,6 @@ import { faMapMarkerAlt, faPlus, faUsers } from '@fortawesome/free-solid-svg-ico
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import { computed } from 'vue';
-import { useRouter } from 'vue-router';
 
 const props = withDefaults(
     defineProps<{
@@ -14,14 +13,7 @@ const props = withDefaults(
     },
 );
 
-const router = useRouter();
-
 const isLight = computed(() => props.variant === 'light');
-
-function handleSubmitLocation() {
-    // TODO: Navigate to submit location page when implemented
-    console.log('Navigate to submit location');
-}
 </script>
 
 <template>
@@ -119,12 +111,12 @@ function handleSubmitLocation() {
             </div>
 
             <!-- CTA Button -->
-            <Button
-                @click="handleSubmitLocation"
-                :class="isLight ? 'cta-button-light' : 'cta-button'">
-                <FontAwesomeIcon :icon="faPlus" class="mr-2" />
-                Locatie Toevoegen
-            </Button>
+            <RouterLink :to="{ name: 'locations.submit' }">
+                <Button :class="isLight ? 'cta-button-light' : 'cta-button'">
+                    <FontAwesomeIcon :icon="faPlus" class="mr-2" />
+                    Locatie Toevoegen
+                </Button>
+            </RouterLink>
         </div>
     </section>
 </template>

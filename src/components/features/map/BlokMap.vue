@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Marker from './Marker.vue';
 import { useMapBox } from '@/composables/useMapBox';
-import type { LngLat, LngLatBounds, MapOptions } from '@/types/contract/Map';
+import type { LngLatBounds, MapOptions } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -73,7 +73,7 @@ defineExpose({ map });
             <span>Loading</span>
             <FontAwesomeIcon :icon="faSpinner" spin />
         </div>
-        <template v-if="map.isLoaded.value">
+        <slot v-if="map.isLoaded.value">
             <Marker
                 v-for="location in locations"
                 :key="location.id"
@@ -84,7 +84,7 @@ defineExpose({ map });
                 @mouseleave="hoveredLocation = null"
                 @click="handleMarkerClick(location.id)">
             </Marker>
-        </template>
+        </slot>
     </div>
 </template>
 

@@ -1,12 +1,23 @@
 import { client, getRandomDelay } from '@/config/axios';
 import { endpoints } from '@/endpoints';
-import { getLocationById, getNearestLocation, searchLocations } from '@/services/location';
-import type { CompQuery, CompQueryOptions } from '@/types/contract/Composable';
+import {
+    createLocation,
+    getLocationById,
+    getNearestLocation,
+    searchLocations,
+} from '@/services/location';
+import type {
+    CompMutation,
+    CompMutationOptions,
+    CompQuery,
+    CompQueryOptions,
+} from '@/types/contract/Composable';
 import type { LngLat } from '@/types/contract/Map';
 import type { LocationFilter } from '@/types/schema/Filter';
 import type { Location, NearestLocation } from '@/types/schema/Location';
+import type { LocationRequest } from '@/types/schema/LocationRequest';
 import type { Paginated } from '@/types/schema/Pagination';
-import { keepPreviousData, useQuery } from '@tanstack/vue-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -82,4 +93,28 @@ export function useTags(): CompQuery<string[]> {
     });
 
     return query;
+}
+
+/**
+ * Composable to handle location creation.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for creating a location.
+ */
+export function useCreateLocation(
+    options: CompMutationOptions = {},
+): CompMutation<Location, LocationRequest> {
+    const client = useQueryClient();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: createLocation,
+        onSuccess: (data, vars, context) => {
+            // Invalidate locations queries to refresh lists
+            client.invalidateQueries({ queryKey: ['locations'] });
+            options.onSuccess?.(data, vars, context);
+        },
+    });
+
+    return mutation;
 }

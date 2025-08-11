@@ -1,5 +1,27 @@
 .p-inputtext {
-    @apply bg-surface-0 dark:bg-surface-950 text-surface-700 dark:text-surface-0 disabled:bg-surface-200 disabled:text-surface-500 dark:disabled:bg-surface-700 dark:disabled:text-surface-400 placeholder:text-surface-500 dark:placeholder:text-surface-400 /* shadow-surface-200 */ appearance-none rounded-md border-2 border-slate-200 px-3 py-2 shadow-xs transition-colors duration-200 outline-none enabled:hover:border-slate-200 disabled:opacity-100 dark:border-slate-900 dark:enabled:hover:border-slate-800;
+    /* Base appearance */
+    @apply appearance-none rounded-md border-2 outline-none;
+
+    /* Colors and backgrounds */
+    @apply bg-surface-0 dark:bg-surface-950;
+    @apply text-surface-700 dark:text-surface-0;
+    @apply placeholder:text-surface-500 dark:placeholder:text-surface-400;
+
+    /* Border states */
+    @apply border-slate-200 dark:border-slate-900;
+    @apply enabled:hover:border-slate-200 dark:enabled:hover:border-slate-800;
+    @apply enabled:focus:border-primary;
+
+    /* Disabled states */
+    @apply disabled:bg-surface-200 disabled:text-surface-500;
+    @apply dark:disabled:bg-surface-700 dark:disabled:text-surface-400;
+    @apply disabled:opacity-100;
+
+    /* Layout and effects */
+    @apply px-3 py-2 shadow-xs;
+    @apply transition-colors duration-200;
+
+    /* Browser autofill */
     @apply autofill:bg-white;
 }
 

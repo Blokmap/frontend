@@ -2,15 +2,29 @@
 import { getFlagImage } from '@/utils/locale';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useLocalStorage } from '@vueuse/core';
 import Button from 'primevue/button';
 import Popover from 'primevue/popover';
-import { useTemplateRef } from 'vue';
+import { computed, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+interface Props {
+    modelValue?: string;
+}
+
+interface Emits {
+    (e: 'update:modelValue', value: string): void;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    modelValue: 'nl',
+});
+
+const emit = defineEmits<Emits>();
+
 const { t, locale, availableLocales } = useI18n();
-const rememberedLocale = useLocalStorage('locale', 'nl');
 const popoverRef = useTemplateRef('popover');
+
+const currentLocale = computed(() => props.modelValue || locale.value);
 
 function toggleLanguageSelector(event: MouseEvent): void {
     if (popoverRef.value) {
@@ -19,24 +33,30 @@ function toggleLanguageSelector(event: MouseEvent): void {
 }
 
 function handleLocaleChange(newLocale: string): void {
-    locale.value = newLocale;
-    rememberedLocale.value = newLocale;
+    emit('update:modelValue', newLocale);
     popoverRef.value?.hide();
 }
 </script>
 
 <template>
-    <Button severity="contrast" @click="toggleLanguageSelector" rounded>
-        <template #icon>
-            <FontAwesomeIcon :icon="faGlobe" />
-        </template>
-    </Button>
+    <slot
+        name="button"
+        :toggle="toggleLanguageSelector"
+        :current-locale="currentLocale"
+        :current-flag="getFlagImage(currentLocale)"
+        :current-label="t(`app.locales.${currentLocale}`)">
+        <Button severity="contrast" @click="toggleLanguageSelector" rounded>
+            <template #icon>
+                <FontAwesomeIcon :icon="faGlobe" />
+            </template>
+        </Button>
+    </slot>
     <Popover pt:content:class="p-0 min-w-[150px]" ref="popover">
         <div class="flex flex-col">
             <template :key="loc" v-for="loc in availableLocales">
                 <div
                     class="locale-item"
-                    :class="{ active: loc === locale }"
+                    :class="{ active: loc === currentLocale }"
                     @click="handleLocaleChange(loc)">
                     <img :src="getFlagImage(loc)" alt="flag" class="h-6 w-6" />
                     <span class="">{{ t(`app.locales.${loc}`) }}</span>

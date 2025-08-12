@@ -177,12 +177,12 @@ const isLight = computed(() => props.variant === 'light');
 /* Button variants */
 .cta-button {
     @apply text-primary-600 bg-white font-semibold shadow-xl;
-    @apply rounded-xl px-8 py-4 text-lg;
+    @apply rounded-xl px-4 py-2 text-lg;
     @apply border-2 border-transparent hover:border-white/20;
 }
 
 .cta-button-light {
     @apply bg-primary-600 font-semibold text-white shadow-lg;
-    @apply rounded-xl px-8 py-4 text-lg;
+    @apply rounded-xl px-4 py-2 text-lg;
 }
 </style>

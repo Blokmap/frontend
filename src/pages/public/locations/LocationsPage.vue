@@ -5,6 +5,7 @@ import BlokMap from '@/components/features/map/BlokMap.vue';
 import { useItemAnimation } from '@/composables/anim/useItemAnimation';
 import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
+import { useToast } from '@/composables/useToast';
 import { getNearestLocation } from '@/services/location';
 import type { LngLat, LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
@@ -12,7 +13,6 @@ import { faFilter, faHelicopter, faSpinner } from '@fortawesome/free-solid-svg-i
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRefsList } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
-import { useToast } from 'primevue';
 import Button from 'primevue/button';
 import Paginator from 'primevue/paginator';
 import Skeleton from 'primevue/skeleton';

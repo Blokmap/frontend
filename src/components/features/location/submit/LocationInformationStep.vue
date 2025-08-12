@@ -2,11 +2,11 @@
 import AddressMap from '../../map/AddressMap.vue';
 import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
 import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
+import { useToast } from '@/composables/useToast';
 import type { LngLat } from '@/types/contract/Map';
 import type { CreateLocationRequest } from '@/types/schema/Location';
 import { faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useToast } from 'primevue';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';

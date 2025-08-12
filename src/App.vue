@@ -2,7 +2,7 @@
 import { setupAxiosInterceptors } from './config/axios';
 import Toast from '@/components/Toast.vue';
 import ProgressBar from '@/components/features/layout/ProgressBar.vue';
-import { useToast } from 'primevue';
+import { useToast } from '@/composables/useToast';
 import { onMounted, useTemplateRef } from 'vue';
 import { useRouter } from 'vue-router';
 

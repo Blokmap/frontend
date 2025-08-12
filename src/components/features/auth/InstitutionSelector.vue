@@ -1,8 +1,8 @@
 <script lang="ts" setup>
+import { useToast } from '@/composables/useToast';
 import type { Institution } from '@/types/schema/Institution';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useToast } from 'primevue';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';

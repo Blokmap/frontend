@@ -1,3 +1,4 @@
+import { useToast } from '@/composables/useToast';
 import { getAuthProfile, login, logout, register } from '@/services/auth';
 import type {
     CompMutation,
@@ -8,7 +9,6 @@ import type {
 import type { LoginRequest, RegisterRequest } from '@/types/schema/Auth';
 import type { Profile } from '@/types/schema/Profile';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { useToast } from 'primevue';
 import { type Ref, computed } from 'vue';
 
 /**

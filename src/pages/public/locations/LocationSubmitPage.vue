@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import LocationInformationStep from '@/components/features/location/submit/LocationInformationStep.vue';
 import { useCreateLocation } from '@/composables/data/useLocations';
+import { useToast } from '@/composables/useToast';
 import type { CreateLocationRequest } from '@/types/schema/Location';
 import { faArrowLeft, faArrowRight, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useToast } from 'primevue';
 import Button from 'primevue/button';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';

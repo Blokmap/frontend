@@ -20,25 +20,21 @@ import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     filters: LocationFilter;
-    geoLocation: GeoJSON.GeoJsonProperties | null;
 }>();
 
 const emit = defineEmits<{
-    (
-        e: 'update:filters',
-        geoLocation: GeoJSON.GeoJsonProperties | null,
-        filters: Partial<LocationFilter>,
-    ): void;
+    (e: 'update:filters', filters: Partial<LocationFilter>): void;
 }>();
 
 const isExpandedSearch = defineModel<boolean>('isExpandedSearch');
+const geoLocation = defineModel<GeoJSON.GeoJsonProperties | null>('geoLocation');
 
-const searchText = ref(props.filters.query ?? '');
 const openOnDate = ref(props.filters.openOn ?? null);
-const geoSearchText = ref(props.geoLocation?.name ?? '');
-const geoLocation = ref(props.geoLocation ?? null);
+const searchText = ref(props.filters.query ?? '');
+const geoSearchText = ref(geoLocation.value?.name ?? '');
 
 const { locale, t } = useI18n();
+
 const { isFetching } = useLocationsSearch(props.filters, { enabled: false });
 const { isLoading: isLoadingGeoSearch, data: geoSearchData } = useGeoSearch(geoSearchText);
 
@@ -68,43 +64,18 @@ const locationInputRef = useTemplateRef<ComponentPublicInstance>('locationInput'
 const queryInputRef = useTemplateRef<ComponentPublicInstance>('queryInput');
 const dateInputRef = useTemplateRef<ComponentPublicInstance>('dateInput');
 
-/**
- * Handles the search button click event.
- * Updates the filters with the current search criteria and resets the input fields.
- */
 function handleSearchClick(): void {
-    emit('update:filters', geoLocation.value, {
+    emit('update:filters', {
         query: searchText.value,
         openOn: openOnDate.value,
     });
 }
 
-/**
- * Handles the selection of a location option from the autocomplete suggestions.
- *
- * @param option - The selected location option.
- */
 function handleLocationOptionSelect(option: AutoCompleteOptionSelectEvent): void {
     geoLocation.value = option.value;
     geoSearchText.value = option.value.name;
 }
 
-/**
- * Handles the change event of the location input.
- * Resets the selected location when the input changes.
- */
-function handleLocationOptionChange(): void {
-    if (geoLocation.value) {
-        geoSearchText.value = '';
-        geoLocation.value = null;
-    }
-}
-
-/**
- * Focuses the specified input field based on the provided field type.
- *
- * @param field - The field to focus ('location', 'query', or 'date').
- */
 async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<void> {
     isExpandedSearch.value = true;
 
@@ -139,14 +110,13 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
                 <AutoComplete
                     ref="locationInput"
                     input-id="city"
+                    option-label="name"
                     placeholder="Zoek op locatie"
                     pt:pcInputText:root:class="search-input"
                     pt:overlay:class="!min-w-[200px] mt-3"
                     :loading="isLoadingGeoSearch"
                     :suggestions="geoSearchData"
                     v-model="geoSearchText"
-                    option-label="name"
-                    @change="handleLocationOptionChange"
                     @option-select="handleLocationOptionSelect">
                     <template #option="{ option }">
                         <div class="flex flex-col gap-1">

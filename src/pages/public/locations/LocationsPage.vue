@@ -3,10 +3,9 @@ import LocationCard from '@/components/features/location/LocationCard.vue';
 import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
 import BlokMap from '@/components/features/map/BlokMap.vue';
 import { useItemAnimation } from '@/composables/anim/useItemAnimation';
-import { useLocationsSearch } from '@/composables/data/useLocations';
+import { useLocationsSearch, useNearestLocation } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useToast } from '@/composables/useToast';
-import { getNearestLocation } from '@/services/location';
 import type { LngLat, LngLatBounds } from '@/types/contract/Map';
 import type { Location } from '@/types/schema/Location';
 import { faFilter, faHelicopter, faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -21,9 +20,22 @@ import { ref, useTemplateRef, watch } from 'vue';
 const filterStore = useLocationFilters();
 const toast = useToast();
 const { filters, geoLocation } = storeToRefs(filterStore);
+
 const { data: locations, isFetching: locationsIsFetching } = useLocationsSearch(filters);
 
-const isFetchingNearest = ref(false);
+const { mutate: flyToNearestLocation, isPending: isFlyingToNearestLocation } = useNearestLocation({
+    onSuccess: async (location) => {
+        await mapRef.value?.map.flyTo([location.longitude, location.latitude]);
+    },
+    onError: () => {
+        toast.add({
+            severity: 'error',
+            summary: 'Fout bij het ophalen van de dichtstbijzijnde locatie',
+            detail: 'Probeer het later opnieuw.',
+        });
+    },
+});
+
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
 
@@ -31,10 +43,7 @@ const mapRef = useTemplateRef('map');
 const locationRefs = useTemplateRefsList();
 
 watch(locations, (locations) => {
-    if (!locations || !locations.data?.length) {
-        return;
-    }
-
+    if (!locations || !locations.data?.length) return;
     previousLocationCount.value = locations.data.length;
 });
 
@@ -42,13 +51,13 @@ watch(
     [() => mapRef.value?.map.isLoaded, geoLocation],
     ([isLoaded, location]) => {
         try {
-            if (!isLoaded || !location || !location.coordinates) {
-                return;
-            }
+            if (!isLoaded || !location || !location.coordinates) return;
+
             const destination: LngLat = [
                 location.coordinates.longitude,
                 location.coordinates.latitude,
             ];
+
             mapRef.value?.map.flyTo(destination);
         } catch (error) {
             console.error('Error flying to geo location:', error);
@@ -66,24 +75,6 @@ function handleBoundsChange(bounds: LngLatBounds): void {
 function handlePageChange(event: { page: number }): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     filterStore.updateFilters({ page: event.page + 1 });
-}
-
-async function flyToNearestLocation(): Promise<void> {
-    if (!mapRef.value) return;
-
-    try {
-        isFetchingNearest.value = true;
-        const location = await getNearestLocation(mapRef.value.map.getCenter() as LngLat);
-        await mapRef.value.map.flyTo([location.longitude, location.latitude]);
-    } catch {
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij het ophalen van de dichtstbijzijnde locatie',
-            detail: 'Probeer het later opnieuw.',
-        });
-    } finally {
-        isFetchingNearest.value = false;
-    }
 }
 </script>
 
@@ -137,13 +128,13 @@ async function flyToNearestLocation(): Promise<void> {
                         <p>Probeer je zoekcriteria of filters aan te passen.</p>
                         <Button
                             class="mt-6"
-                            @click="flyToNearestLocation"
-                            :loading="isFetchingNearest"
+                            @click="flyToNearestLocation(mapRef?.map.getCenter() as LngLat)"
+                            :loading="isFlyingToNearestLocation"
                             outlined
                             rounded>
                             <FontAwesomeIcon
-                                :icon="isFetchingNearest ? faSpinner : faHelicopter"
-                                :spin="isFetchingNearest">
+                                :icon="isFlyingToNearestLocation ? faSpinner : faHelicopter"
+                                :spin="isFlyingToNearestLocation">
                             </FontAwesomeIcon>
                             Vlieg naar dichtstbijzijnde
                             <span class="text-gradient-conic">Blokspot</span>

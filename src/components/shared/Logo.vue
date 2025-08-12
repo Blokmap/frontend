@@ -60,7 +60,7 @@ function handleHoverOut() {
 @reference '@/assets/styles/main.css';
 
 .logo {
-    @apply bg-secondary border-secondary flex h-[46px] items-center rounded-full border-2 px-3 transition-shadow duration-200;
-    @apply font-bowlby text-primary-contrast cursor-pointer text-xl font-bold tracking-wide uppercase select-none;
+    @apply text-secondary border-secondary flex h-[46px] items-center rounded-full border-2 px-3 transition-shadow duration-200;
+    @apply cursor-pointer text-xl font-bold tracking-wide select-none;
 }
 </style>

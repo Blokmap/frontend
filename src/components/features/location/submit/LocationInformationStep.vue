@@ -19,7 +19,7 @@ const form = defineModel<CreateLocationRequest>({ required: true });
 const toast = useToast();
 
 const { locale } = useI18n();
-const { geocodeAddress, isLoading } = useForwardGeoSearch();
+const { mutateAsync: geocodeAddress, isPending: isLoading } = useForwardGeoSearch();
 
 const currentLanguage = ref(locale.value);
 const showMapDialog = ref(false);

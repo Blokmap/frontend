@@ -52,7 +52,6 @@ const formData = ref<CreateLocationRequest>({
 });
 
 const currentStepIndex = computed(() => steps.findIndex((step) => step.id === currentStep.value));
-const progress = computed(() => ((currentStepIndex.value + 1) / steps.length) * 100);
 const canGoPrevious = computed(() => currentStepIndex.value > 0);
 const isLastStep = computed(() => currentStep.value === 'settings');
 
@@ -97,8 +96,8 @@ function goPrevious() {
     <div class="mx-auto max-w-4xl space-y-6">
         <!-- Header -->
         <div class="text-center">
-            <h1 class="text-3xl font-bold text-gray-900">
-                Nieuwe <span class="text-primary-600">Blokspot</span>
+            <h1 class="py-3 text-4xl font-bold text-gray-900">
+                Nieuwe <span class="text-secondary-600">Blokspot</span>
             </h1>
         </div>
 

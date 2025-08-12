@@ -65,16 +65,14 @@ export function useLocation(id: MaybeRef<string>): CompQuery<Location> {
 }
 
 export function useNearestLocation(
-    center: MaybeRef<LngLat>,
-    options: CompQueryOptions = {},
-): CompQuery<NearestLocation> {
-    const query = useQuery({
+    options: CompMutationOptions = {},
+): CompMutation<NearestLocation, LngLat> {
+    const mutation = useMutation<NearestLocation, Error, LngLat, unknown>({
         ...options,
-        queryKey: ['location', 'nearest', center],
-        queryFn: () => getNearestLocation(toValue(center)),
+        mutationFn: getNearestLocation,
     });
 
-    return query;
+    return mutation;
 }
 
 /**

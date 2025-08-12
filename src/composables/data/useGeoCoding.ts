@@ -1,7 +1,8 @@
 import { mapBoxClient } from '@/config/axios';
 import { mapboxEndpoints } from '@/endpoints';
-import { geocodeAddress as geocodeAddressService } from '@/services/geocoding';
-import type { CompQuery } from '@/types/contract/Composable';
+import { geocodeAddress } from '@/services/geocoding';
+import type { CompMutation, CompQuery } from '@/types/contract/Composable';
+import type { LngLat } from '@/types/contract/Map';
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import { useDebounce } from '@vueuse/core';
 import { type Ref, computed } from 'vue';
@@ -82,18 +83,10 @@ export function useGeoSearch(
  * A composable function to perform forward geocoding using Mapbox's geocoding API.
  * Returns coordinates for a given address string.
  */
-export function useForwardGeoSearch() {
-    const {
-        mutateAsync: geocodeAddress,
-        isPending,
-        error,
-    } = useMutation({
-        mutationFn: geocodeAddressService,
+export function useForwardGeoSearch(): CompMutation<LngLat | null, string> {
+    const mutation = useMutation({
+        mutationFn: geocodeAddress,
     });
 
-    return {
-        geocodeAddress,
-        isLoading: isPending,
-        error,
-    };
+    return mutation;
 }

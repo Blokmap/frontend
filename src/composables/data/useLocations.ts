@@ -41,7 +41,7 @@ export function useLocationsSearch(
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const params = toValue(filters);
-            await getRandomDelay(100, 250); // network delay to avoid flickering
+            await getRandomDelay(100, 250);
             return await searchLocations(params, locale.value);
         },
     });

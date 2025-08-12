@@ -11,10 +11,11 @@ import Button from 'primevue/button';
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
-import { computed, ref } from 'vue';
+import { computed, nextTick, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const form = defineModel<CreateLocationRequest>({ required: true });
+const complete = defineModel<boolean>('complete', { default: false });
 
 const toast = useToast();
 
@@ -23,6 +24,7 @@ const { mutateAsync: geocodeAddress, isPending: isLoading } = useForwardGeoSearc
 
 const currentLanguage = ref(locale.value);
 const showMapDialog = ref(false);
+
 const mapCenter = computed<LngLat>({
     get() {
         return [form.value.longitude || 0, form.value.latitude || 0] as LngLat;
@@ -44,25 +46,51 @@ const currentAddress = computed(() => {
 });
 
 const canConfirmAddress = computed(() => {
-    return !!(form.value.street && form.value.number && form.value.city);
+    return !!(form.value.street && form.value.number && form.value.zip && form.value.city);
 });
 
 const hasCoordinates = computed(() => {
     return !!(form.value.latitude && form.value.longitude);
 });
 
+watchEffect(() => {
+    const data = form.value;
+    const ex = data.excerpt;
+    const desc = data.description;
+
+    complete.value = !!(
+        data.name &&
+        ex.nl &&
+        desc.nl &&
+        data.street &&
+        data.number &&
+        data.zip &&
+        data.city &&
+        hasCoordinates.value
+    );
+});
+
 const handleConfirmAddress = async () => {
     if (!canConfirmAddress.value) return;
 
     try {
-        const coordinates = await geocodeAddress(currentAddress.value);
-        mapCenter.value = coordinates!;
+        mapCenter.value = await geocodeAddress(currentAddress.value);
         showMapDialog.value = true;
+        await nextTick();
+
+        const offsetTop = document.getElementById('map-container')?.offsetTop;
+
+        if (offsetTop) {
+            window.scrollTo({
+                top: offsetTop,
+                behavior: 'smooth',
+            });
+        }
     } catch (error) {
         toast.add({
             severity: 'error',
             summary: 'Fout bij het ophalen van coördinaten',
-            detail: 'Er is iets misgegaan bij het ophalen van de locatie.',
+            detail: 'Er is iets misgegaan bij het ophalen van de locatie. Controleer het adres en probeer het opnieuw.',
         });
     }
 };
@@ -115,7 +143,7 @@ const handleConfirmAddress = async () => {
                             class="w-full"
                             placeholder="Bijv. Brugs Beertje, Café Central..." />
                         <small class="mt-1 block text-gray-500">
-                            Kies een herkenbare naam voor uw locatie
+                            Kies een herkenbare naam voor de locatie
                         </small>
                     </div>
 
@@ -186,7 +214,7 @@ const handleConfirmAddress = async () => {
                     </div>
 
                     <!-- Manual Address Entry -->
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label
                                 for="street"
@@ -197,7 +225,8 @@ const handleConfirmAddress = async () => {
                                 id="street"
                                 v-model="form.street"
                                 class="w-full"
-                                placeholder="Bijv. Nieuwstraat" />
+                                placeholder="Bijv. Nieuwstraat">
+                            </InputText>
                         </div>
 
                         <div>
@@ -210,7 +239,20 @@ const handleConfirmAddress = async () => {
                                 id="number"
                                 v-model="form.number"
                                 class="w-full"
-                                placeholder="Bijv. 123" />
+                                placeholder="Bijv. 46">
+                            </InputText>
+                        </div>
+
+                        <div>
+                            <label for="zip" class="mb-2 block text-sm font-medium text-gray-700">
+                                Postcode *
+                            </label>
+                            <InputText
+                                id="zip"
+                                v-model="form.zip"
+                                class="w-full"
+                                placeholder="Bijv. 8610">
+                            </InputText>
                         </div>
 
                         <div>
@@ -221,7 +263,8 @@ const handleConfirmAddress = async () => {
                                 id="city"
                                 v-model="form.city"
                                 class="w-full"
-                                placeholder="Bijv. Brussel" />
+                                placeholder="Bijv. Kortemark">
+                            </InputText>
                         </div>
                     </div>
 
@@ -245,11 +288,11 @@ const handleConfirmAddress = async () => {
                             :loading="isLoading"
                             :outlined="!hasCoordinates">
                             <FontAwesomeIcon :icon="faMapMarkerAlt" class="mr-2" />
-                            {{ hasCoordinates ? 'Wijzig locatie' : 'Bevestig op kaart' }}
+                            Bevestig op kaart
                         </Button>
                     </div>
                     <template v-if="showMapDialog">
-                        <div class="h-[400px] w-full">
+                        <div class="h-[400px] w-full" id="map-container">
                             <AddressMap v-model:center="mapCenter" :zoom="18"> </AddressMap>
                         </div>
                     </template>

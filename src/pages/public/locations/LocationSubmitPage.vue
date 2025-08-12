@@ -5,6 +5,7 @@ import { useToast } from '@/composables/useToast';
 import type { CreateLocationRequest } from '@/types/schema/Location';
 import { faArrowLeft, faArrowRight, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useLocalStorage } from '@vueuse/core';
 import Button from 'primevue/button';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -23,16 +24,7 @@ const { mutate: createLocation, isPending: isCreating } = useCreateLocation({
     },
 });
 
-const steps: { id: string; label: string }[] = [
-    { id: 'basic-info', label: 'Informatie' },
-    { id: 'images', label: 'Afbeeldingen' },
-    { id: 'opening-times', label: 'Openingstijden' },
-    { id: 'settings', label: 'Instellingen' },
-];
-
-const currentStep = ref<string>('basic-info');
-
-const formData = ref<CreateLocationRequest>({
+const formData = useLocalStorage<CreateLocationRequest>('location-form-data', {
     name: '',
     excerpt: {},
     description: {},
@@ -51,36 +43,23 @@ const formData = ref<CreateLocationRequest>({
     isReservable: true,
 });
 
-const currentStepIndex = computed(() => steps.findIndex((step) => step.id === currentStep.value));
-const canGoPrevious = computed(() => currentStepIndex.value > 0);
-const isLastStep = computed(() => currentStep.value === 'settings');
+const steps: { id: string; label: string }[] = [
+    { id: 'basic-info', label: 'Informatie' },
+    { id: 'images', label: 'Afbeeldingen' },
+    { id: 'opening-times', label: 'Openingstijden' },
+    { id: 'settings', label: 'Instellingen' },
+];
 
-const canGoNext = computed(() => {
-    const data = formData.value;
-    switch (currentStep.value) {
-        case 'basic-info':
-            return !!(
-                data.name &&
-                data.excerpt?.nl &&
-                data.excerpt?.en &&
-                data.description?.nl &&
-                data.description?.en &&
-                data.street &&
-                data.number &&
-                data.zip &&
-                data.city &&
-                data.latitude &&
-                data.longitude
-            );
-        case 'settings':
-            return data.seatCount !== undefined && data.seatCount > 0;
-        default:
-            return false;
-    }
-});
+const currentStep = ref<string>('basic-info');
+const canGoNext = ref(true);
+
+const canGoPrevious = computed(() => currentStepIndex.value > 0);
+const currentStepIndex = computed(() => steps.findIndex((step) => step.id === currentStep.value));
+const isLastStep = computed(() => currentStep.value === 'settings');
 
 function goNext() {
     if (canGoNext.value && currentStepIndex.value < steps.length - 1) {
+        canGoNext.value = false;
         currentStep.value = steps[currentStepIndex.value + 1].id;
     }
 }
@@ -117,7 +96,8 @@ function goPrevious() {
                         <FontAwesomeIcon
                             v-if="index < currentStepIndex"
                             :icon="faCheck"
-                            class="text-sm" />
+                            class="text-sm">
+                        </FontAwesomeIcon>
                         <span v-else>{{ index + 1 }}</span>
                     </div>
 
@@ -155,10 +135,11 @@ function goPrevious() {
             </div>
         </div>
 
-        <!-- Step Content -->
-        <LocationInformationStep v-if="currentStep === 'basic-info'" v-model="formData" />
-
-        <!-- Navigation -->
+        <LocationInformationStep
+            v-if="currentStep === 'basic-info'"
+            v-model="formData"
+            v-model:complete="canGoNext">
+        </LocationInformationStep>
 
         <div class="flex items-center justify-between">
             <!-- Previous Button -->

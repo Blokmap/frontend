@@ -64,8 +64,9 @@ onMounted(() => {
     });
 
     if (props.id && props.position && props.map) {
-        props.map?.setOnMove(() => {
-            if (isShowingPopover.value) {
+        // Watch for map movement to update popover position
+        watch(props.map.isMoving, (moving) => {
+            if (moving && isShowingPopover.value) {
                 updatePopoverPosition();
             }
         });

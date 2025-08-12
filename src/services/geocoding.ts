@@ -7,7 +7,7 @@ const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 /**
  * Convert an address string to coordinates using Mapbox Geocoding API
  */
-export async function geocodeAddress(address: string): Promise<LngLat | null> {
+export async function geocodeAddress(address: string): Promise<LngLat> {
     try {
         const response = await mapBoxClient.get<GeoJSON.FeatureCollection>(
             mapboxEndpoints.geocoding.forward,
@@ -22,14 +22,15 @@ export async function geocodeAddress(address: string): Promise<LngLat | null> {
         );
 
         const feature = response.data.features[0];
+
         if (feature?.geometry?.type === 'Point') {
-            const [lng, lat] = feature.geometry.coordinates as [number, number];
+            const [lng, lat] = feature.geometry.coordinates;
             return [lng, lat];
         }
 
-        return null;
+        throw new Error('No valid coordinates found for the given address.');
     } catch (error) {
         console.error('Geocoding error:', error);
-        return null;
+        throw error;
     }
 }

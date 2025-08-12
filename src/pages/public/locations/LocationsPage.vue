@@ -128,7 +128,7 @@ function handlePageChange(event: { page: number }): void {
                         <p>Probeer je zoekcriteria of filters aan te passen.</p>
                         <Button
                             class="mt-6"
-                            @click="flyToNearestLocation(mapRef?.map.getCenter() as LngLat)"
+                            @click="flyToNearestLocation(mapRef?.map.center.value as LngLat)"
                             :loading="isFlyingToNearestLocation"
                             outlined
                             rounded>

@@ -6,7 +6,7 @@ import type { Location } from '@/types/schema/Location';
 import { faBuildingColumns, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
-import { onMounted, ref, useTemplateRef } from 'vue';
+import { onMounted, ref, useTemplateRef, watch } from 'vue';
 
 const props = withDefaults(
     defineProps<{
@@ -49,27 +49,33 @@ function handleMarkerMouseLeave() {
 onMounted(() => {
     const debounceTimer = ref<number>();
 
-    map.setOnMove(() => {
-        if (debounceTimer.value) {
-            clearTimeout(debounceTimer.value);
-            debounceTimer.value = undefined;
-        }
-    });
+    watch(
+        map.bounds,
+        (newBounds) => {
+            if (debounceTimer.value) {
+                clearTimeout(debounceTimer.value);
+                debounceTimer.value = undefined;
+            }
 
-    map.setOnBoundsChange((bounds) => {
-        debounceTimer.value = setTimeout(() => {
-            emit('change:bounds', bounds);
-            debounceTimer.value = undefined;
-            config.value.center = map.getCenter();
-            config.value.zoom = map.getZoom();
-        }, props.boundsDebounce);
-    });
+            debounceTimer.value = setTimeout(() => {
+                emit('change:bounds', newBounds);
+                debounceTimer.value = undefined;
+                config.value.center = map.center.value;
+                config.value.zoom = map.zoom.value;
+            }, props.boundsDebounce);
+        },
+        { deep: true },
+    );
 
-    const bounds = map.getBounds();
-
-    if (bounds) {
-        emit('change:bounds', bounds);
-    }
+    watch(
+        map.isLoaded,
+        (loaded) => {
+            if (loaded) {
+                emit('change:bounds', map.bounds.value);
+            }
+        },
+        { immediate: true },
+    );
 });
 
 defineExpose({ map });

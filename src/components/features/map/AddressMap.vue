@@ -3,7 +3,7 @@ import { useMapBox } from '@/composables/useMapBox';
 import type { LngLat, LngLatBounds } from '@/types/contract/Map';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, onMounted, useTemplateRef } from 'vue';
+import { computed, useTemplateRef } from 'vue';
 
 const center = defineModel<LngLat>('center', {
     default: () => [4.3517, 50.8503],
@@ -16,11 +16,10 @@ const props = withDefaults(
     }>(),
     {
         zoom: 16,
-        boundsPadding: 0.005,
+        boundsPadding: 0.0025,
     },
 );
 
-// Calculate bounds around the center to limit map movement
 const bounds = computed<LngLatBounds>(() => {
     const [lng, lat] = center.value;
     const padding = props.boundsPadding;
@@ -32,16 +31,13 @@ const bounds = computed<LngLatBounds>(() => {
 });
 
 const mapContainerRef = useTemplateRef('mapContainer');
+
+// Pass the reactive center ref directly to useMapBox
+// This creates automatic two-way binding without manual synchronization
 const map = useMapBox(mapContainerRef, {
-    center: center.value,
+    center: center, // Pass the reactive ref directly
     zoom: props.zoom,
     bounds: bounds.value,
-});
-
-onMounted(() => {
-    map.setOnMove(() => {
-        center.value = map.getCenter();
-    });
 });
 
 defineExpose({ map });

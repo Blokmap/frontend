@@ -97,8 +97,8 @@ function goPrevious() {
     <div class="mx-auto max-w-4xl space-y-6">
         <!-- Header -->
         <div class="text-center">
-            <h1 class="text-2xl font-bold text-gray-900">
-                Nieuwe <span class="text-primary-600">Blokspot</span> toevoegen
+            <h1 class="text-3xl font-bold text-gray-900">
+                Nieuwe <span class="text-primary-600">Blokspot</span>
             </h1>
         </div>
 

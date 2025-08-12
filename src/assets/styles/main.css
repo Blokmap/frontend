@@ -3,6 +3,15 @@
 @import './primevue/tailwind.css' layer(components);
 @import './transitions.css';
 
+/* Custom font: Bozlby (Bowlby One) */
+@font-face {
+    font-family: 'Bowlby';
+    src: url('../fonts/bowlby/BowlbyOne-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @utility bg-gradient-conic {
@@ -19,6 +28,9 @@
 }
 
 @theme {
+    /* New Tailwind font token */
+    --font-bowlby: 'Bowlby', ui-sans-serif, system-ui, sans-serif;
+
     --text-base: 14px;
 
     --color-timber-green-50: #f0f9f5;

@@ -41,11 +41,18 @@ watch(locations, (locations) => {
 watch(
     [() => mapRef.value?.map.isLoaded, geoLocation],
     ([isLoaded, location]) => {
-        if (!isLoaded || !location || !location.coordinates) {
-            return;
+        try {
+            if (!isLoaded || !location || !location.coordinates) {
+                return;
+            }
+            const destination: LngLat = [
+                location.coordinates.longitude,
+                location.coordinates.latitude,
+            ];
+            mapRef.value?.map.flyTo(destination);
+        } catch (error) {
+            console.error('Error flying to geo location:', error);
         }
-        const destination: LngLat = [location.coordinates.longitude, location.coordinates.latitude];
-        mapRef.value?.map.flyTo(destination);
     },
     { immediate: true, deep: true },
 );

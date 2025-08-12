@@ -69,7 +69,7 @@ function handleLocaleChange(newLocale: string): void {
 
             <div class="header--actions">
                 <RouterLink :to="{ name: 'locations.submit' }">
-                    <Button class="rounded-full" outlined>
+                    <Button class="rounded-full" size="small" outlined>
                         Blokspot Toevoegen
                         <FontAwesomeIcon :icon="faPlus" />
                     </Button>

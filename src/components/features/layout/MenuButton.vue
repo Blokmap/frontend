@@ -1,7 +1,7 @@
 <script lang="ts" setup>
+import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
 import { DOCS_URL } from '@/constants';
-import { getProfileInitials } from '@/utils/profile';
 import {
     faBars,
     faCalendarDays,
@@ -12,7 +12,6 @@ import {
     faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Avatar from 'primevue/avatar';
 import Button from 'primevue/button';
 import Popover from 'primevue/popover';
 import Skeleton from 'primevue/skeleton';
@@ -72,11 +71,7 @@ function handleNavigationClick(): void {
                         class="flex items-center gap-3"
                         :to="{ name: 'profile' }"
                         @click="handleNavigationClick">
-                        <Avatar
-                            shape="circle"
-                            :label="getProfileInitials(profile)"
-                            class="aspect-square flex-shrink-0 self-stretch">
-                        </Avatar>
+                        <ProfileAvatar :profile="profile" size="3rem" />
                         <div class="flex-1 space-y-1 leading-tight">
                             <div class="font-semibold text-slate-900 dark:text-white">
                                 {{ profile.firstName }}

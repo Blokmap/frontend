@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import SubmitLocationCTA from '@/components/features/layout/SubmitLocationCTA.vue';
-import StatsCard from '@/components/features/profile/StatsCard.vue';
-import StatsCardSkeleton from '@/components/features/profile/StatsCardSkeleton.vue';
+import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
+import StatsCard from '@/components/features/profile/stats/StatsCard.vue';
+import StatsCardSkeleton from '@/components/features/profile/stats/StatsCardSkeleton.vue';
 import ReservationItem from '@/components/features/reservation/ReservationItem.vue';
 import ReservationItemSkeleton from '@/components/features/reservation/ReservationItemSkeleton.vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useProfileReservations, useProfileStats } from '@/composables/data/useProfile';
-import { getProfileInitials } from '@/utils/profile';
 import {
     faAward,
     faBuilding,
@@ -18,7 +18,6 @@ import {
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Avatar from 'primevue/avatar';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Chip from 'primevue/chip';
@@ -69,12 +68,7 @@ function openReservationsModal(): void {
                             <Skeleton shape="circle" size="96px" />
                         </template>
                         <template v-else>
-                            <Avatar
-                                :label="getProfileInitials(profile)"
-                                class="profile-avatar"
-                                size="xlarge"
-                                shape="circle">
-                            </Avatar>
+                            <ProfileAvatar :profile="profile" />
                         </template>
                     </div>
 

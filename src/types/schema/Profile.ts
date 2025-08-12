@@ -3,6 +3,7 @@ import type { Institution } from '@/types/schema/Institution';
 
 export type Profile = {
     id: number;
+    avatarUrl: string | null;
     username: string | null;
     firstName: string;
     lastName: string;

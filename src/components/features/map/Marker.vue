@@ -3,7 +3,7 @@ import type { LngLat, MapAdapter } from '@/types/contract/Map';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Popover from 'primevue/popover';
-import { onMounted, ref, useTemplateRef, watch } from 'vue';
+import { onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
 const props = defineProps<{
     id?: number;
@@ -35,6 +35,29 @@ watch(
     },
 );
 
+watch(() => props.map?.bounds.value, updatePopoverPosition);
+
+onMounted(() => {
+    if (!markerRef.value) return;
+    if (!props.id || !props.position) return;
+
+    window.addEventListener('scroll', updatePopoverPosition);
+
+    props.map?.addMarker({
+        id: props.id,
+        coord: props.position,
+        el: markerRef.value,
+    });
+});
+
+onUnmounted(() => {
+    if (!markerRef.value) return;
+    if (!props.id || !props.position) return;
+
+    window.removeEventListener('scroll', updatePopoverPosition);
+    props.map?.removeMarker(props.id);
+});
+
 function handleMouseEnter(event: MouseEvent) {
     isShowingPopover.value = true;
     popoverRef?.value?.show(event);
@@ -51,33 +74,6 @@ function updatePopoverPosition() {
     if (!isShowingPopover.value || !popoverRef.value) return;
     popoverRef.value?.alignOverlay();
 }
-
-onMounted(() => {
-    if (!markerRef.value) {
-        return;
-    }
-
-    window.addEventListener('scroll', () => {
-        if (isShowingPopover.value) {
-            updatePopoverPosition();
-        }
-    });
-
-    if (props.id && props.position && props.map) {
-        // Watch for map movement to update popover position
-        watch(props.map.isMoving, (moving) => {
-            if (moving && isShowingPopover.value) {
-                updatePopoverPosition();
-            }
-        });
-
-        props.map.addMarker({
-            id: props.id,
-            coord: props.position,
-            el: markerRef.value,
-        });
-    }
-});
 </script>
 
 <template>

@@ -20,7 +20,7 @@ const props = withDefaults(
     },
 );
 
-const mapContainerRef = useTemplateRef('mapContainer');
+const mapContainerRef = useTemplateRef('map');
 
 const map = useMapBox(mapContainerRef, {
     center: center,
@@ -32,7 +32,7 @@ defineExpose({ map });
 
 <template>
     <div class="relative h-full w-full">
-        <div ref="mapContainer" class="map rounded-lg"></div>
+        <div ref="map" class="map rounded-lg"></div>
         <FontAwesomeIcon class="crosshair text-xl" :icon="faLocationDot" />
     </div>
 </template>
@@ -46,6 +46,7 @@ defineExpose({ map });
 }
 
 .crosshair {
-    @apply pointer-events-none absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transform;
+    @apply absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transform;
+    @apply pointer-events-none text-lg;
 }
 </style>

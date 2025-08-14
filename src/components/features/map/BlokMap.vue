@@ -6,9 +6,9 @@ import type { Location } from '@/types/schema/Location';
 import { faBuildingColumns, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
-import { onMounted, ref, useTemplateRef, watch } from 'vue';
+import { onMounted, useTemplateRef, watch } from 'vue';
 
-const props = withDefaults(
+withDefaults(
     defineProps<{
         locations?: Location[];
         isLoading?: boolean;

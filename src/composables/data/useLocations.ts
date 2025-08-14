@@ -36,8 +36,6 @@ export function useLocationsSearch(
     const query = useQuery({
         ...options,
         queryKey: ['locations', 'search', filters, locale],
-        refetchOnWindowFocus: false,
-        refetchOnMount: true,
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const params = toValue(filters);

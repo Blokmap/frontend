@@ -47,34 +47,14 @@ function handleMarkerMouseLeave() {
 }
 
 onMounted(() => {
-    const debounceTimer = ref<number>();
-
     watch(
         map.bounds,
         (newBounds) => {
-            if (debounceTimer.value) {
-                clearTimeout(debounceTimer.value);
-                debounceTimer.value = undefined;
-            }
-
-            debounceTimer.value = setTimeout(() => {
-                emit('change:bounds', newBounds);
-                debounceTimer.value = undefined;
-                config.value.center = map.center.value;
-                config.value.zoom = map.zoom.value;
-            }, props.boundsDebounce);
+            emit('change:bounds', newBounds);
+            config.value.center = map.center.value;
+            config.value.zoom = map.zoom.value;
         },
         { deep: true },
-    );
-
-    watch(
-        map.isLoaded,
-        (loaded) => {
-            if (loaded) {
-                emit('change:bounds', map.bounds.value);
-            }
-        },
-        { immediate: true },
     );
 });
 

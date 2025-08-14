@@ -159,13 +159,14 @@ export function useMapBox<T>(
     );
 
     watch(zoom, (newZoom) => {
-        if (!isUpdatingFromMap.value && map.value && isLoaded.value) {
-            const currentZoom = map.value.getZoom();
-            const tolerance = 0.01;
+        if (!isUpdatingFromMap.value) return;
+        if (!map.value || !isLoaded.value) return;
 
-            if (Math.abs(currentZoom - newZoom) > tolerance) {
-                map.value.setZoom(newZoom);
-            }
+        const currentZoom = map.value.getZoom();
+        const tolerance = 0.01;
+
+        if (Math.abs(currentZoom - newZoom) > tolerance) {
+            map.value.setZoom(newZoom);
         }
     });
 

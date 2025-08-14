@@ -140,12 +140,20 @@ export function useMapBox<T>(
         map.value?.remove();
     });
 
+    watch(maxBounds, (newBounds) => {
+        const bounds = newBounds ?? [
+            [-180, -90],
+            [180, 90],
+        ];
+        map.value?.setMaxBounds(bounds);
+    });
+
     watch(
         center,
         (newCenter) => {
             if (!isUpdatingFromMap.value && map.value && isLoaded.value) {
                 const currentCenter = map.value.getCenter();
-                const tolerance = 0.000001;
+                const tolerance = 0.1;
 
                 if (
                     Math.abs(currentCenter.lng - newCenter[0]) > tolerance ||
@@ -168,14 +176,6 @@ export function useMapBox<T>(
         if (Math.abs(currentZoom - newZoom) > tolerance) {
             map.value.setZoom(newZoom);
         }
-    });
-
-    watch(maxBounds, (newBounds) => {
-        const bounds = newBounds ?? [
-            [-180, -90],
-            [180, 90],
-        ];
-        map.value?.setMaxBounds(bounds);
     });
 
     /**

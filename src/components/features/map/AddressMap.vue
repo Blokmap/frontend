@@ -20,22 +20,11 @@ const props = withDefaults(
     },
 );
 
-const maxBounds = computed<LngLatBounds>(() => {
-    const [lng, lat] = center.value;
-    const padding = props.padding;
-
-    return [
-        [lng - padding, lat - padding],
-        [lng + padding, lat + padding],
-    ];
-});
-
 const mapContainerRef = useTemplateRef('mapContainer');
 
 const map = useMapBox(mapContainerRef, {
     center: center,
     zoom: props.zoom,
-    maxBounds,
 });
 
 defineExpose({ map });

@@ -1,17 +1,7 @@
 import { defaultMapOptions } from '@/config/map';
 import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/types/contract/Map';
 import mapboxgl from 'mapbox-gl';
-import {
-    type Ref,
-    isRef,
-    nextTick,
-    onMounted,
-    onUnmounted,
-    readonly,
-    ref,
-    unref,
-    watch,
-} from 'vue';
+import { type Ref, isRef, nextTick, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
@@ -37,7 +27,7 @@ export function useMapBox<T>(
     };
 
     // Bypass deep type inference issues with mapbox-gl types
-    // by explictely casting the correc types.
+    // by explictely casting the correct types.
     const markers = new Map<T, mapboxgl.Marker>() as Map<T, mapboxgl.Marker>;
     const map = ref(null) as Ref<mapboxgl.Map | null>;
 
@@ -46,15 +36,13 @@ export function useMapBox<T>(
     const isMoving = ref(false);
 
     // Handle MaybeRef options - convert to reactive refs or use provided refs
-    const center = isRef(options.center)
-        ? options.center
-        : ref<LngLat>(unref(options.center) || [0, 0]);
+    const center = isRef(options.center) ? options.center : ref<LngLat>(options.center || [0, 0]);
+    const zoom = isRef(options.zoom) ? options.zoom : ref<number>(options.zoom || 1);
+    const maxBounds = isRef(options.maxBounds) ? options.maxBounds : ref(options.maxBounds);
 
-    const zoom = isRef(options.zoom) ? options.zoom : ref<number>(unref(options.zoom) || 1);
-
-    const bounds = ref<LngLatBounds>([
-        [0, 0],
-        [0, 0],
+    const bounds: Ref<LngLatBounds> = ref([
+        [-180, -90],
+        [180, 90],
     ]);
 
     // Internal flag to prevent infinite loops when updating from map events
@@ -71,7 +59,7 @@ export function useMapBox<T>(
             container: container.value,
             style: options.style,
             center: center.value,
-            maxBounds: unref(options.bounds),
+            maxBounds: maxBounds.value,
             zoom: zoom.value,
         });
 
@@ -179,6 +167,14 @@ export function useMapBox<T>(
                 map.value.setZoom(newZoom);
             }
         }
+    });
+
+    watch(maxBounds, (newBounds) => {
+        const bounds = newBounds ?? [
+            [-180, -90],
+            [180, 90],
+        ];
+        map.value?.setMaxBounds(bounds);
     });
 
     /**

@@ -12,7 +12,7 @@ export type Marker<T = number> = {
 export interface MapOptions {
     style?: string;
     center?: MaybeRef<LngLat>;
-    bounds?: MaybeRef<LngLatBounds>;
+    maxBounds?: MaybeRef<LngLatBounds>;
     zoom?: MaybeRef<number>;
     autoGeolocation?: boolean;
 }

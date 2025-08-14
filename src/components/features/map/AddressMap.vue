@@ -12,17 +12,17 @@ const center = defineModel<LngLat>('center', {
 const props = withDefaults(
     defineProps<{
         zoom?: number;
-        boundsPadding?: number;
+        padding?: number;
     }>(),
     {
         zoom: 16,
-        boundsPadding: 0.0025,
+        padding: 0.0025,
     },
 );
 
-const bounds = computed<LngLatBounds>(() => {
+const maxBounds = computed<LngLatBounds>(() => {
     const [lng, lat] = center.value;
-    const padding = props.boundsPadding;
+    const padding = props.padding;
 
     return [
         [lng - padding, lat - padding],
@@ -32,12 +32,10 @@ const bounds = computed<LngLatBounds>(() => {
 
 const mapContainerRef = useTemplateRef('mapContainer');
 
-// Pass the reactive center ref directly to useMapBox
-// This creates automatic two-way binding without manual synchronization
 const map = useMapBox(mapContainerRef, {
-    center: center, // Pass the reactive ref directly
+    center: center,
     zoom: props.zoom,
-    bounds: bounds.value,
+    maxBounds,
 });
 
 defineExpose({ map });

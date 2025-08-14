@@ -4,6 +4,7 @@ import { useLocationsSearch } from '@/composables/data/useLocations';
 import type { LocationFilter } from '@/types/schema/Filter';
 import {
     faCalendarDays,
+    faClose,
     faMagnifyingGlass,
     faMapLocation,
     faQuoteLeft,
@@ -42,6 +43,10 @@ const locationLabel = computed(() => {
     return geoLocation.value?.name || geoSearchText.value || t('components.search.inNeighborhood');
 });
 
+const hasActiveLocationFilter = computed(() => {
+    return !!geoLocation.value;
+});
+
 const searchLabel = computed(() => {
     return props.filters.query || searchText.value || t('components.search.allLocations');
 });
@@ -74,6 +79,16 @@ function handleSearchClick(): void {
 function handleLocationOptionSelect(option: AutoCompleteOptionSelectEvent): void {
     geoLocation.value = option.value;
     geoSearchText.value = option.value.name;
+    isExpandedSearch.value = false;
+}
+
+function handleClickOutside(): void {
+    isExpandedSearch.value = false;
+}
+
+function clearLocationFilter(): void {
+    geoLocation.value = null;
+    geoSearchText.value = '';
 }
 
 async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<void> {
@@ -102,9 +117,12 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
 </script>
 
 <template>
-    <div ref="search" class="search" @keydown.enter="handleSearchClick">
+    <!-- Invisible overlay to handle outside clicks -->
+    <div v-if="isExpandedSearch" class="fixed inset-0 z-10" @click="handleClickOutside"></div>
+
+    <div ref="search" class="search" @keydown.enter="handleSearchClick" tabindex="-1">
         <!-- City filter -->
-        <div class="search--filter">
+        <div class="search--filter" :class="{ 'has-active-filter': hasActiveLocationFilter }">
             <FontAwesomeIcon :icon="faMapLocation" />
             <template v-if="isExpandedSearch">
                 <AutoComplete
@@ -141,6 +159,12 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
                 <span class="w-full truncate" @click="handleFocusField('location')">
                     {{ locationLabel }}
                 </span>
+                <FontAwesomeIcon
+                    :icon="faClose"
+                    @click.stop="clearLocationFilter"
+                    class="me-4"
+                    v-if="hasActiveLocationFilter">
+                </FontAwesomeIcon>
             </template>
         </div>
 
@@ -187,7 +211,7 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
 
         <!--  Search button -->
         <Button
-            class="bg-gradient-conic h-8 w-8 rounded-full"
+            class="search-button bg-gradient-conic flex-shrink-0 rounded-full"
             :disabled="isFetching"
             @click.stop="handleSearchClick">
             <FontAwesomeIcon :icon="faSpinner" spin v-if="isFetching" />
@@ -200,15 +224,29 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
 @reference '@/assets/styles/main.css';
 
 .search {
-    @apply relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer flex-row items-center justify-between gap-3;
-    @apply rounded-full border-2 border-slate-200 bg-white px-5 py-1.5 text-center text-sm transition-all duration-300;
+    @apply relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer flex-row items-center gap-3;
+    @apply rounded-full border-2 border-slate-200 bg-white text-center text-sm transition-all duration-300;
+    @apply ps-5;
 
     .search--filter {
         @apply flex w-full items-center justify-center gap-2 font-medium text-slate-700;
+        @apply relative; /* For absolute positioning of clear button */
 
         .search-input {
             @apply w-full border-0 p-0 text-center text-sm shadow-none;
         }
+
+        &.has-active-filter {
+            @apply text-secondary-500;
+
+            .fa-map-location {
+                @apply text-secondary-500;
+            }
+        }
+    }
+
+    .search-button {
+        @apply aspect-square h-[40px];
     }
 }
 </style>

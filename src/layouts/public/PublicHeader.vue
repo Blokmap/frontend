@@ -69,9 +69,8 @@ function handleLocaleChange(newLocale: string): void {
 
             <div class="header--actions">
                 <RouterLink :to="{ name: 'locations.submit' }">
-                    <Button class="rounded-full" size="small" outlined>
+                    <Button class="h-full rounded-full px-4 text-[16px]" size="small" outlined>
                         Blokspot Toevoegen
-                        <FontAwesomeIcon :icon="faPlus" />
                     </Button>
                 </RouterLink>
                 <MenuButton />
@@ -96,7 +95,7 @@ function handleLocaleChange(newLocale: string): void {
     }
 
     .header--actions {
-        @apply hidden transform items-center gap-3 sm:absolute sm:top-1 sm:right-0 sm:flex;
+        @apply hidden transform items-center gap-3 sm:absolute sm:top-0 sm:right-0 sm:flex sm:h-full;
     }
 }
 </style>

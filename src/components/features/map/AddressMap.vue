@@ -38,8 +38,8 @@ defineExpose({ map });
 </template>
 
 <style scoped>
-@reference '@/assets/styles/main.css';
 @import '@/assets/styles/maps.css';
+@reference '@/assets/styles/main.css';
 
 .map {
     @apply h-full w-full;

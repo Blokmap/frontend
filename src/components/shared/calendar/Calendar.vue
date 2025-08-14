@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TimeSlot } from '@/types/schema/Reservation';
-import { daysInRange, formatDayName, isToday, startOfWeek } from '@/utils/date';
+import { daysInRange, formatDayName, isToday, startOfWeek } from '@/utils/date/date';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -317,15 +317,7 @@ function handleDayClick(day: Date): void {
 
 .custom-time-slot {
     @apply absolute right-1 left-1 z-10 min-h-[20px];
-    @apply overflow-hidden rounded;
-    @apply bg-primary-200;
-    @apply px-2 py-1;
-    @apply text-primary-950 text-xs;
-    @apply hover:bg-primary-300 hover:shadow-sm;
-
-    .slot-content {
-        @apply font-medium;
-    }
+    @apply overflow-hidden;
 }
 
 .current-time-indicator {

@@ -5,15 +5,22 @@ import LocationSearch from '@/components/features/location/LocationSearch.vue';
 import Logo from '@/components/shared/Logo.vue';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { LocationFilter } from '@/types/schema/Filter';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useLocalStorage } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
+import Button from 'primevue/button';
 import { onMounted, onUnmounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { RouterLink, useRouter } from 'vue-router';
 
 defineEmits<{ (e: 'logout'): Promise<void> }>();
 
 const { push } = useRouter();
+const { locale } = useI18n();
+const rememberedLocale = useLocalStorage('locale', 'nl');
 
-const { filters } = storeToRefs(useLocationFilters());
+const { filters, geoLocation } = storeToRefs(useLocationFilters());
 const locationFilters = useLocationFilters();
 const isExpandedSearch = ref(false);
 
@@ -32,14 +39,15 @@ function handleEscape(event: KeyboardEvent): void {
     }
 }
 
-function handleFiltersUpdate(
-    newGeoLocation: GeoJSON.GeoJsonProperties | null,
-    newFilters: Partial<LocationFilter>,
-): void {
+function handleFiltersUpdate(newFilters: Partial<LocationFilter>): void {
     locationFilters.updateFilters(newFilters);
-    locationFilters.geoLocation = { ...newGeoLocation }; // Force update the geoLocation
     isExpandedSearch.value = false;
     push({ name: 'locations' });
+}
+
+function handleLocaleChange(newLocale: string): void {
+    locale.value = newLocale;
+    rememberedLocale.value = newLocale;
 }
 </script>
 
@@ -54,14 +62,19 @@ function handleFiltersUpdate(
 
             <LocationSearch
                 v-model:is-expanded-search="isExpandedSearch"
-                :geo-location="locationFilters.geoLocation"
+                v-model:geo-location="geoLocation"
                 :filters="filters"
                 @update:filters="handleFiltersUpdate">
             </LocationSearch>
 
             <div class="header--actions">
+                <RouterLink :to="{ name: 'locations.submit' }">
+                    <Button class="h-full rounded-full px-4 text-[16px]" size="small" outlined>
+                        Blokspot Toevoegen
+                    </Button>
+                </RouterLink>
                 <MenuButton />
-                <LanguageSelector />
+                <LanguageSelector :model-value="locale" @update:model-value="handleLocaleChange" />
             </div>
         </div>
     </header>
@@ -82,7 +95,7 @@ function handleFiltersUpdate(
     }
 
     .header--actions {
-        @apply hidden transform items-center gap-2 sm:absolute sm:top-1 sm:right-0 sm:flex;
+        @apply hidden transform items-center gap-3 sm:absolute sm:top-0 sm:right-0 sm:flex sm:h-full;
     }
 }
 </style>

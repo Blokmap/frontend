@@ -1,4 +1,3 @@
-import { AuthenticationGuard } from './guards/auth';
 import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
 import AuthLayout from '@/layouts/public/AuthLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
@@ -12,10 +11,14 @@ const routes: RouteRecordRaw[] = [
         children: [
             {
                 path: 'profile',
-                beforeEnter: AuthenticationGuard,
                 children: [
                     {
-                        path: 'reservations/:dateInWeek?',
+                        path: '',
+                        name: 'profile',
+                        component: () => import('@/pages/public/profile/ProfilePage.vue'),
+                    },
+                    {
+                        path: 'reservations/:inWeekOf?',
                         name: 'profile.reservations',
                         component: () => import('@/pages/public/profile/ReservationsPage.vue'),
                     },
@@ -25,7 +28,12 @@ const routes: RouteRecordRaw[] = [
                 path: 'locations',
                 name: 'locations',
                 meta: { keepAlive: true },
-                component: () => import('@/pages/public/LocationsPage.vue'),
+                component: () => import('@/pages/public/locations/LocationsPage.vue'),
+            },
+            {
+                path: 'locations/submit',
+                name: 'locations.submit',
+                component: () => import('@/pages/public/locations/LocationSubmitPage.vue'),
             },
         ],
     },
@@ -33,6 +41,20 @@ const routes: RouteRecordRaw[] = [
         path: '/',
         component: AuthLayout,
         children: [
+            {
+                path: 'auth/sso',
+                name: 'auth.sso',
+                redirect: () => {
+                    const storedRedirectUrl = localStorage.getItem('redirectAfterLogin');
+                    const redirectPath = storedRedirectUrl || { name: 'profile' };
+
+                    if (storedRedirectUrl) {
+                        localStorage.removeItem('redirectAfterLogin');
+                    }
+
+                    return redirectPath;
+                },
+            },
             {
                 path: 'auth/:action?',
                 name: 'auth',
@@ -51,7 +73,6 @@ const routes: RouteRecordRaw[] = [
     {
         path: '/dashboard',
         component: DashboardLayout,
-        beforeEnter: AuthenticationGuard,
         children: [
             {
                 path: '',

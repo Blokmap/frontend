@@ -1,8 +1,16 @@
 import type { Location, OpeningTime } from '@/types/schema/Location';
 import type { Profile } from '@/types/schema/Profile';
 
+export enum ReservationState {
+    Created = 'Created',
+    Absent = 'Absent',
+    Present = 'Present',
+    Cancelled = 'Cancelled',
+}
+
 export type Reservation = {
     id: number;
+    state: ReservationState;
     blockIndex: number;
     startTime: Date;
     endTime: Date;
@@ -20,5 +28,9 @@ export interface TimeSlot {
     day: Date;
     startTime: string;
     endTime: string;
+    duration: {
+        hours: number;
+        minutes: number;
+    };
     reservation?: Reservation;
 }

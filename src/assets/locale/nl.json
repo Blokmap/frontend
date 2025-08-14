@@ -5,6 +5,12 @@
             "nl": "Nederlands",
             "fr": "Français",
             "de": "Deutsch"
+        },
+        "status": {
+            "created": "Bevestigd",
+            "present": "Aanwezig",
+            "absent": "Afwezig",
+            "cancelled": "Afgezegd"
         }
     },
     "layout": {
@@ -33,6 +39,7 @@
             "inNeighborhood": "In de buurt",
             "allLocations": "Alle locaties",
             "anyDay": "Alle data"
-        }
+        },
+        "reservation": {}
     }
 }

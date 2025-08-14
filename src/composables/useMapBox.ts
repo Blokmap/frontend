@@ -1,7 +1,7 @@
 import { defaultMapOptions } from '@/config/map';
 import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/types/contract/Map';
 import mapboxgl from 'mapbox-gl';
-import { type Ref, onMounted, onUnmounted, ref } from 'vue';
+import { type Ref, isRef, nextTick, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
@@ -27,13 +27,26 @@ export function useMapBox<T>(
     };
 
     // Bypass deep type inference issues with mapbox-gl types
-    // by explictely casting the correc types.
+    // by explictely casting the correct types.
     const markers = new Map<T, mapboxgl.Marker>() as Map<T, mapboxgl.Marker>;
     const map = ref(null) as Ref<mapboxgl.Map | null>;
 
     const markerCount = ref(0);
     const isLoaded = ref(false);
     const isMoving = ref(false);
+
+    // Handle MaybeRef options - convert to reactive refs or use provided refs
+    const center = isRef(options.center) ? options.center : ref<LngLat>(options.center || [0, 0]);
+    const zoom = isRef(options.zoom) ? options.zoom : ref<number>(options.zoom || 1);
+    const maxBounds = isRef(options.maxBounds) ? options.maxBounds : ref(options.maxBounds);
+
+    const bounds: Ref<LngLatBounds> = ref([
+        [-180, -90],
+        [180, 90],
+    ]);
+
+    // Internal flag to prevent infinite loops when updating from map events
+    const isUpdatingFromMap = ref(false);
 
     onMounted(() => {
         if (container.value === null) {
@@ -45,17 +58,61 @@ export function useMapBox<T>(
             language: locale.value,
             container: container.value,
             style: options.style,
-            center: options.center,
-            maxBounds: options.bounds,
-            zoom: options.zoom,
+            center: center.value,
+            maxBounds: maxBounds.value,
+            zoom: zoom.value,
         });
 
-        newMap.on('move', () => {
+        newMap.on('move', async () => {
             isMoving.value = true;
+
+            if (!isUpdatingFromMap.value) {
+                isUpdatingFromMap.value = true;
+
+                const mapBounds = newMap.getBounds();
+                const mapCenter = newMap.getCenter();
+                const mapZoom = newMap.getZoom();
+
+                center.value = [mapCenter.lng, mapCenter.lat];
+                zoom.value = mapZoom;
+
+                if (mapBounds) {
+                    bounds.value = [
+                        [mapBounds.getSouthWest().lng, mapBounds.getSouthWest().lat],
+                        [mapBounds.getNorthEast().lng, mapBounds.getNorthEast().lat],
+                    ];
+                }
+
+                await nextTick();
+
+                isUpdatingFromMap.value = false;
+            }
         });
 
         newMap.on('moveend', () => {
             isMoving.value = false;
+        });
+
+        newMap.once('load', () => {
+            isLoaded.value = true;
+
+            const mapBounds = newMap.getBounds();
+            const mapCenter = newMap.getCenter();
+            const mapZoom = newMap.getZoom();
+
+            center.value = [mapCenter.lng, mapCenter.lat];
+            zoom.value = mapZoom;
+
+            if (mapBounds) {
+                bounds.value = [
+                    [mapBounds.getSouthWest().lng, mapBounds.getSouthWest().lat],
+                    [mapBounds.getNorthEast().lng, mapBounds.getNorthEast().lat],
+                ];
+            }
+
+            if (options.autoGeolocation) {
+                geoLocateControl.trigger();
+            }
         });
 
         // Add geolocate control to the map
@@ -65,8 +122,6 @@ export function useMapBox<T>(
 
         newMap.addControl(geoLocateControl);
 
-        // Override the default geolocate control behavior
-        // to fly to the user's location when geolocated.
         geoLocateControl.on('geolocate', (position) => {
             const { longitude, latitude } = position.coords;
 
@@ -78,16 +133,49 @@ export function useMapBox<T>(
             });
         });
 
-        newMap.once('load', () => {
-            isLoaded.value = true;
-            geoLocateControl.trigger();
-        });
-
         map.value = newMap;
     });
 
     onUnmounted(() => {
         map.value?.remove();
+    });
+
+    watch(maxBounds, (newBounds) => {
+        const bounds = newBounds ?? [
+            [-180, -90],
+            [180, 90],
+        ];
+        map.value?.setMaxBounds(bounds);
+    });
+
+    watch(
+        center,
+        (newCenter) => {
+            if (!isUpdatingFromMap.value && map.value && isLoaded.value) {
+                const currentCenter = map.value.getCenter();
+                const tolerance = 0.1;
+
+                if (
+                    Math.abs(currentCenter.lng - newCenter[0]) > tolerance ||
+                    Math.abs(currentCenter.lat - newCenter[1]) > tolerance
+                ) {
+                    map.value.setCenter(newCenter);
+                }
+            }
+        },
+        { deep: true },
+    );
+
+    watch(zoom, (newZoom) => {
+        if (!isUpdatingFromMap.value) return;
+        if (!map.value || !isLoaded.value) return;
+
+        const currentZoom = map.value.getZoom();
+        const tolerance = 0.01;
+
+        if (Math.abs(currentZoom - newZoom) > tolerance) {
+            map.value.setZoom(newZoom);
+        }
     });
 
     /**
@@ -142,35 +230,6 @@ export function useMapBox<T>(
     }
 
     /**
-     * Sets a callback to be called when the map's bounds change.
-     *
-     * @param callback - A function that will be called with the new bounds of the map.
-     */
-    function setOnBoundsChange(callback: (bounds: LngLatBounds) => void): void {
-        map.value?.on('moveend', () => {
-            const bounds = map.value?.getBounds();
-
-            if (bounds) {
-                callback([bounds.getSouthWest().toArray(), bounds.getNorthEast().toArray()]);
-            }
-        });
-    }
-
-    /**
-     * Sets a callback to be called when the map is moved.
-     *
-     * @param callback - A function that will be called with the new center of the map.
-     */
-    function setOnMove(callback: (lngLat: LngLat) => void): void {
-        map.value?.on('move', () => {
-            const center = map.value?.getCenter();
-            if (center) {
-                callback(center.toArray());
-            }
-        });
-    }
-
-    /**
      * Flies the map to the specified bounds.
      *
      * @param bounds - The bounds to fly to, defined by southwest and northeast coordinates.
@@ -222,83 +281,16 @@ export function useMapBox<T>(
         });
     }
 
-    /**
-     * Returns the current bounds of the map.
-     *
-     * @returns - The current bounds of the map as an array of southwest and northeast coordinates.
-     */
-    function getBounds(): LngLatBounds {
-        if (!map.value) {
-            console.error('Map is not initialized, cannot get bounds');
-            return [
-                [0, 0],
-                [0, 0],
-            ];
-        }
-
-        const bounds = map.value.getBounds();
-
-        if (!bounds) {
-            console.error('Map bounds are not available');
-            return [
-                [0, 0],
-                [0, 0],
-            ];
-        }
-
-        return [
-            [bounds.getSouthWest().lng, bounds.getSouthWest().lat],
-            [bounds.getNorthEast().lng, bounds.getNorthEast().lat],
-        ];
-    }
-
-    /**
-     * Returns the current center of the map.
-     *
-     * @returns - The current center of the map as a longitude and latitude pair.
-     */
-    function getCenter(): LngLat {
-        if (!map.value) {
-            console.error('Map is not initialized, cannot get center');
-            return [0, 0];
-        }
-
-        const center = map.value.getCenter();
-
-        if (!center) {
-            console.error('Map center is not available');
-            return [0, 0];
-        }
-
-        return [center.lng, center.lat];
-    }
-
-    /**
-     * Returns the current zoom level of the map.
-     *
-     * @returns - The current zoom level of the map.
-     */
-    function getZoom(): number {
-        if (!map.value) {
-            console.error('Map is not initialized, cannot get zoom level');
-            return 0;
-        }
-
-        return map.value.getZoom();
-    }
-
     return {
         setMarkers,
         addMarker,
         removeMarker,
-        setOnBoundsChange,
-        setOnMove,
         flyToBounds,
         flyTo,
-        getBounds,
-        getCenter,
-        getZoom,
-        isLoaded,
-        isMoving,
+        center,
+        zoom,
+        bounds,
+        isLoaded: readonly(isLoaded),
+        isMoving: readonly(isMoving),
     };
 }

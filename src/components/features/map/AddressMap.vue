@@ -1,0 +1,52 @@
+<script setup lang="ts">
+import { useMapBox } from '@/composables/useMapBox';
+import type { LngLat, LngLatBounds } from '@/types/contract/Map';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { computed, useTemplateRef } from 'vue';
+
+const center = defineModel<LngLat>('center', {
+    default: () => [4.3517, 50.8503],
+});
+
+const props = withDefaults(
+    defineProps<{
+        zoom?: number;
+        padding?: number;
+    }>(),
+    {
+        zoom: 16,
+        padding: 0.0025,
+    },
+);
+
+const mapContainerRef = useTemplateRef('map');
+
+const map = useMapBox(mapContainerRef, {
+    center: center,
+    zoom: props.zoom,
+});
+
+defineExpose({ map });
+</script>
+
+<template>
+    <div class="relative h-full w-full">
+        <div ref="map" class="map rounded-lg"></div>
+        <FontAwesomeIcon class="crosshair text-xl" :icon="faLocationDot" />
+    </div>
+</template>
+
+<style scoped>
+@import '@/assets/styles/maps.css';
+@reference '@/assets/styles/main.css';
+
+.map {
+    @apply h-full w-full;
+}
+
+.crosshair {
+    @apply absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transform;
+    @apply pointer-events-none text-lg;
+}
+</style>

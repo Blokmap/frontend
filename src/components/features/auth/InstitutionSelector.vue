@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useMessages } from '@/composables/useMessages';
+import { useToast } from '@/composables/useToast';
 import type { Institution } from '@/types/schema/Institution';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -14,11 +14,11 @@ defineProps<{
     isLoading: boolean;
 }>();
 
-const { showMessage } = useMessages();
+const toast = useToast();
 const { locale } = useI18n();
 
 function handleInstitutionSelection(institution: Institution): void {
-    showMessage({
+    toast.add({
         severity: 'warn',
         summary: 'Not implemented',
         detail: `You can't log in with ${institution.slug[locale.value as any]!} yet.`,

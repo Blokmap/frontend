@@ -2,7 +2,7 @@ import { client } from '@/config/axios';
 import { endpoints } from '@/endpoints';
 import type { LngLat } from '@/types/contract/Map';
 import type { LocationFilter } from '@/types/schema/Filter';
-import type { Location, NearestLocation } from '@/types/schema/Location';
+import type { CreateLocationRequest, Location, NearestLocation } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
 import { formatDate } from '@vueuse/core';
 
@@ -77,5 +77,16 @@ export async function getNearestLocation(center: LngLat): Promise<NearestLocatio
         },
     });
 
+    return response.data;
+}
+
+/**
+ * Function to create a new location.
+ *
+ * @param {LocationRequest} locationData - The location data to create.
+ * @returns {Promise<Location>} A promise that resolves to the created location.
+ */
+export async function createLocation(locationData: CreateLocationRequest): Promise<Location> {
+    const response = await client.post(endpoints.locations.create, locationData);
     return response.data;
 }

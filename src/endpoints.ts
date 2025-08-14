@@ -17,6 +17,7 @@ export const endpoints = {
         avatar: '/profiles/{id}/avatar',
         block: '/profiles/{id}/block',
         unblock: '/profiles/{id}/unblock',
+        stats: '/profiles/{id}/stats',
         authorities: {
             list: '/profiles/{id}/authorities',
         },

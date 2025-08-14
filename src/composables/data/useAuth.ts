@@ -1,4 +1,4 @@
-import { useMessages } from '../useMessages';
+import { useToast } from '@/composables/useToast';
 import { getAuthProfile, login, logout, register } from '@/services/auth';
 import type {
     CompMutation,
@@ -41,13 +41,13 @@ export function useAuthProfile(
  */
 export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<void> {
     const client = useQueryClient();
-    const messages = useMessages();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         mutationFn: logout,
         onSuccess: (data, vars, context) => {
-            messages.showMessage({
+            toast.add({
                 severity: 'success',
                 summary: 'Uitgelogd',
                 detail: 'Je bent succesvol uitgelogd.',

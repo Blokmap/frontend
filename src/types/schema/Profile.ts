@@ -3,6 +3,7 @@ import type { Institution } from '@/types/schema/Institution';
 
 export type Profile = {
     id: number;
+    avatarUrl: string | null;
     username: string | null;
     firstName: string;
     lastName: string;
@@ -11,7 +12,15 @@ export type Profile = {
     authorities?: Authority[];
 };
 
+export type ProfileStats = {
+    totalReservations: number;
+    upcomingReservations: number;
+    completedReservations: number;
+    totalReservationHours: number;
+};
+
 export type Idp = {
+    id: string;
     name: string;
     logo?: string | null;
 };

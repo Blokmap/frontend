@@ -4,10 +4,12 @@ import type { Idp } from '@/types/schema/Profile';
 
 export const authIdentityProviders: Idp[] = [
     {
+        id: 'google',
         name: 'Google',
         logo: google,
     },
     {
+        id: 'microsoft',
         name: 'Microsoft',
         logo: microsoft,
     },

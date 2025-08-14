@@ -1,97 +1,73 @@
-<script lang="ts" setup>
-import Calendar from '@/components/shared/calendar/Calendar.vue';
-import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
+<script setup lang="ts">
+import ReservationCalendar from '@/components/features/reservation/ReservationCalendar.vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
-import { useProfileReservations } from '@/composables/data/useReservations';
-import { useVimControls } from '@/composables/useVimControls';
-import { endOfWeek, startOfWeek } from '@/utils/date';
-import { reservationsToTimeSlots } from '@/utils/reservation';
+import { useProfileReservations } from '@/composables/data/useProfile';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { formatDate } from '@vueuse/core';
+import Button from 'primevue/button';
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-const route = useRoute();
 const router = useRouter();
-const profile = useAuthProfile();
-const reservations = useProfileReservations(profile.profileId);
+const route = useRoute();
 
-useVimControls({
-    onDown: goToPreviousWeek,
-    onUp: goToNextWeek,
-    onLeft: goToPreviousWeek,
-    onRight: goToNextWeek,
-});
+const { profileId } = useAuthProfile();
+
+const reservationsLoading = computed(
+    () => reservationsIsLoading.value || reservationsIsPending.value,
+);
 
 const dateInWeek = computed(() => {
-    const dateParam = route.params.dateInWeek?.toString();
+    const dateParam = route.params.inWeekOf?.toString();
     const date = new Date(dateParam);
     return isNaN(date.getTime()) ? new Date() : date;
 });
 
-const weekStart = computed(() => startOfWeek(dateInWeek.value));
-const weekEnd = computed(() => endOfWeek(dateInWeek.value));
+const {
+    isLoading: reservationsIsLoading,
+    isPending: reservationsIsPending,
+    data: reservations,
+} = useProfileReservations(profileId, dateInWeek);
 
-const reservationTimeSlots = computed(() =>
-    reservationsToTimeSlots(reservations.data.value, weekStart.value, weekEnd.value),
-);
-
-function goToPreviousWeek(): void {
-    const newDate = new Date(weekStart.value);
-    newDate.setDate(newDate.getDate() - 7);
-    navigateToWeek(newDate);
-}
-
-function goToNextWeek(): void {
-    const newDate = new Date(weekStart.value);
-    newDate.setDate(newDate.getDate() + 7);
-    navigateToWeek(newDate);
-}
-
-function goToToday(): void {
-    navigateToWeek(new Date());
-}
-
-function handleDateSelect(date: any): void {
-    if (date && date instanceof Date) {
-        navigateToWeek(date);
-    }
-}
-
-function navigateToWeek(date: Date): void {
-    const dateString = formatDate(date, 'YYYY-MM-DD');
-
+function handleDateInWeekUpdate(newDate: Date): void {
+    const dateString = formatDate(newDate, 'YYYY-MM-DD');
     router.push({
-        name: route.name,
+        name: 'profile.reservations',
         params: {
-            ...route.params,
-            dateInWeek: dateString,
+            inWeekOf: dateString,
         },
     });
+}
+
+function goBackToProfile(): void {
+    router.push({ name: 'profile' });
 }
 </script>
 
 <template>
-    <div class="mt-3 space-y-6">
-        <div class="text-center">
-            <h1 class="text-3xl font-bold text-gray-900">Mijn Reservaties</h1>
+    <div class="space-y-6">
+        <!-- Header -->
+        <div class="flex w-full items-center gap-4 py-3">
+            <Button @click="goBackToProfile" severity="secondary" text rounded>
+                <template #icon>
+                    <FontAwesomeIcon :icon="faArrowLeft" />
+                </template>
+            </Button>
+            <h1
+                class="absolute left-1/2 -translate-x-1/2 transform text-3xl font-bold text-gray-900">
+                Mijn Reservaties
+            </h1>
         </div>
 
-        <CalendarControls
-            :current-week="dateInWeek"
-            @click:previous-week="goToPreviousWeek"
-            @click:next-week="goToNextWeek"
-            @click:current-week="goToToday"
-            @select:date="handleDateSelect">
-        </CalendarControls>
-
-        <Calendar
-            :current-week="dateInWeek"
-            :time-slots="reservationTimeSlots"
-            :on-previous-week="goToPreviousWeek"
-            :on-next-week="goToNextWeek">
-            <template #time-slot="{ slot }"></template>
-        </Calendar>
+        <ReservationCalendar
+            v-model:date-in-week="dateInWeek"
+            :reservations="reservations"
+            @update:date-in-week="handleDateInWeekUpdate">
+        </ReservationCalendar>
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+@reference '@/assets/styles/main.css';
+</style>

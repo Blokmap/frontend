@@ -4,6 +4,7 @@ import { useLocationsSearch } from '@/composables/data/useLocations';
 import type { LocationFilter } from '@/types/schema/Filter';
 import {
     faCalendarDays,
+    faClose,
     faMagnifyingGlass,
     faMapLocation,
     faQuoteLeft,
@@ -20,30 +21,30 @@ import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     filters: LocationFilter;
-    geoLocation: GeoJSON.GeoJsonProperties | null;
 }>();
 
 const emit = defineEmits<{
-    (
-        e: 'update:filters',
-        geoLocation: GeoJSON.GeoJsonProperties | null,
-        filters: Partial<LocationFilter>,
-    ): void;
+    (e: 'update:filters', filters: Partial<LocationFilter>): void;
 }>();
 
 const isExpandedSearch = defineModel<boolean>('isExpandedSearch');
+const geoLocation = defineModel<GeoJSON.GeoJsonProperties | null>('geoLocation');
 
-const searchText = ref(props.filters.query ?? '');
 const openOnDate = ref(props.filters.openOn ?? null);
-const geoSearchText = ref(props.geoLocation?.name ?? '');
-const geoLocation = ref(props.geoLocation ?? null);
+const searchText = ref(props.filters.query ?? '');
+const geoSearchText = ref(geoLocation.value?.name ?? '');
 
 const { locale, t } = useI18n();
+
 const { isFetching } = useLocationsSearch(props.filters, { enabled: false });
 const { isLoading: isLoadingGeoSearch, data: geoSearchData } = useGeoSearch(geoSearchText);
 
 const locationLabel = computed(() => {
     return geoLocation.value?.name || geoSearchText.value || t('components.search.inNeighborhood');
+});
+
+const hasActiveLocationFilter = computed(() => {
+    return !!geoLocation.value;
 });
 
 const searchLabel = computed(() => {
@@ -68,43 +69,28 @@ const locationInputRef = useTemplateRef<ComponentPublicInstance>('locationInput'
 const queryInputRef = useTemplateRef<ComponentPublicInstance>('queryInput');
 const dateInputRef = useTemplateRef<ComponentPublicInstance>('dateInput');
 
-/**
- * Handles the search button click event.
- * Updates the filters with the current search criteria and resets the input fields.
- */
 function handleSearchClick(): void {
-    emit('update:filters', geoLocation.value, {
+    emit('update:filters', {
         query: searchText.value,
         openOn: openOnDate.value,
     });
 }
 
-/**
- * Handles the selection of a location option from the autocomplete suggestions.
- *
- * @param option - The selected location option.
- */
 function handleLocationOptionSelect(option: AutoCompleteOptionSelectEvent): void {
     geoLocation.value = option.value;
     geoSearchText.value = option.value.name;
+    isExpandedSearch.value = false;
 }
 
-/**
- * Handles the change event of the location input.
- * Resets the selected location when the input changes.
- */
-function handleLocationOptionChange(): void {
-    if (geoLocation.value) {
-        geoSearchText.value = '';
-        geoLocation.value = null;
-    }
+function handleClickOutside(): void {
+    isExpandedSearch.value = false;
 }
 
-/**
- * Focuses the specified input field based on the provided field type.
- *
- * @param field - The field to focus ('location', 'query', or 'date').
- */
+function clearLocationFilter(): void {
+    geoLocation.value = null;
+    geoSearchText.value = '';
+}
+
 async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<void> {
     isExpandedSearch.value = true;
 
@@ -131,22 +117,24 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
 </script>
 
 <template>
-    <div ref="search" class="search" @keydown.enter="handleSearchClick">
+    <!-- Invisible overlay to handle outside clicks -->
+    <div v-if="isExpandedSearch" class="fixed inset-0 z-10" @click="handleClickOutside"></div>
+
+    <div ref="search" class="search" @keydown.enter="handleSearchClick" tabindex="-1">
         <!-- City filter -->
-        <div class="search--filter">
+        <div class="search--filter" :class="{ 'has-active-filter': hasActiveLocationFilter }">
             <FontAwesomeIcon :icon="faMapLocation" />
             <template v-if="isExpandedSearch">
                 <AutoComplete
                     ref="locationInput"
                     input-id="city"
+                    option-label="name"
                     placeholder="Zoek op locatie"
                     pt:pcInputText:root:class="search-input"
                     pt:overlay:class="!min-w-[200px] mt-3"
                     :loading="isLoadingGeoSearch"
                     :suggestions="geoSearchData"
                     v-model="geoSearchText"
-                    option-label="name"
-                    @change="handleLocationOptionChange"
                     @option-select="handleLocationOptionSelect">
                     <template #option="{ option }">
                         <div class="flex flex-col gap-1">
@@ -171,6 +159,12 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
                 <span class="w-full truncate" @click="handleFocusField('location')">
                     {{ locationLabel }}
                 </span>
+                <FontAwesomeIcon
+                    :icon="faClose"
+                    @click.stop="clearLocationFilter"
+                    class="me-4"
+                    v-if="hasActiveLocationFilter">
+                </FontAwesomeIcon>
             </template>
         </div>
 
@@ -217,7 +211,7 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
 
         <!--  Search button -->
         <Button
-            class="bg-gradient-conic h-8 w-8 rounded-full"
+            class="search-button bg-gradient-conic flex-shrink-0 rounded-full"
             :disabled="isFetching"
             @click.stop="handleSearchClick">
             <FontAwesomeIcon :icon="faSpinner" spin v-if="isFetching" />
@@ -230,15 +224,29 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
 @reference '@/assets/styles/main.css';
 
 .search {
-    @apply relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer flex-row items-center justify-between gap-3;
-    @apply rounded-full border-2 border-slate-200 bg-white px-5 py-1.5 text-center text-sm transition-all duration-300;
+    @apply relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer flex-row items-center gap-3;
+    @apply rounded-full border-2 border-slate-200 bg-white text-center text-sm transition-all duration-300;
+    @apply ps-5;
 
     .search--filter {
         @apply flex w-full items-center justify-center gap-2 font-medium text-slate-700;
+        @apply relative; /* For absolute positioning of clear button */
 
         .search-input {
             @apply w-full border-0 p-0 text-center text-sm shadow-none;
         }
+
+        &.has-active-filter {
+            @apply text-secondary-500;
+
+            .fa-map-location {
+                @apply text-secondary-500;
+            }
+        }
+    }
+
+    .search-button {
+        @apply aspect-square h-[40px];
     }
 }
 </style>

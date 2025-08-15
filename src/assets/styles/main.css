@@ -15,11 +15,10 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @utility bg-gradient-conic {
-    background-image: conic-gradient(
-        from 180deg,
+    background-image: linear-gradient(
+        to bottom right,
         var(--color-primary-500),
-        var(--color-secondary-500),
-        var(--color-primary-500)
+        var(--color-secondary-500)
     );
 }
 

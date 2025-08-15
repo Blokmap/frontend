@@ -50,7 +50,8 @@ export function useMapBox<T>(
 
     onMounted(() => {
         if (container.value === null) {
-            return console.error('Map container is not defined, cannot initialize map');
+            console.error('Map container is not defined, cannot initialize map');
+            return;
         }
 
         const newMap = new mapboxgl.Map({
@@ -151,23 +152,24 @@ export function useMapBox<T>(
     watch(
         center,
         (newCenter) => {
-            if (!isUpdatingFromMap.value && map.value && isLoaded.value) {
-                const currentCenter = map.value.getCenter();
-                const tolerance = 0.1;
+            if (isUpdatingFromMap.value) return;
+            if (!map.value || !isLoaded.value) return;
 
-                if (
-                    Math.abs(currentCenter.lng - newCenter[0]) > tolerance ||
-                    Math.abs(currentCenter.lat - newCenter[1]) > tolerance
-                ) {
-                    map.value.setCenter(newCenter);
-                }
+            const currentCenter = map.value.getCenter();
+            const tolerance = 0.1;
+
+            if (
+                Math.abs(currentCenter.lng - newCenter[0]) > tolerance ||
+                Math.abs(currentCenter.lat - newCenter[1]) > tolerance
+            ) {
+                map.value.setCenter(newCenter);
             }
         },
         { deep: true },
     );
 
     watch(zoom, (newZoom) => {
-        if (!isUpdatingFromMap.value) return;
+        if (isUpdatingFromMap.value) return;
         if (!map.value || !isLoaded.value) return;
 
         const currentZoom = map.value.getZoom();
@@ -185,7 +187,8 @@ export function useMapBox<T>(
      */
     function addMarker(marker: Marker<T>): void {
         if (!map.value) {
-            return console.error('Map is not initialized, cannot add marker');
+            console.error('Map is not initialized, cannot add marker');
+            return;
         }
 
         const { id, coord, el } = marker;

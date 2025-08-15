@@ -76,14 +76,15 @@ const handleConfirmAddress = async () => {
     try {
         mapCenter.value = await geocodeAddress(currentAddress.value);
         showMapDialog.value = true;
+
         await nextTick();
 
-        const offsetTop = document.getElementById('map-container')?.offsetTop;
+        const mapContainer = document.getElementById('map-container');
 
-        if (offsetTop) {
-            window.scrollTo({
-                top: offsetTop,
+        if (mapContainer) {
+            mapContainer.scrollIntoView({
                 behavior: 'smooth',
+                block: 'start',
             });
         }
     } catch (error) {

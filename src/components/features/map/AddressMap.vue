@@ -20,33 +20,25 @@ const props = withDefaults(
     },
 );
 
-const mapContainerRef = useTemplateRef('map');
+const mapContainerRef = useTemplateRef('mapContainer');
 
 const map = useMapBox(mapContainerRef, {
     center: center,
     zoom: props.zoom,
 });
-
-defineExpose({ map });
 </script>
 
 <template>
-    <div class="relative h-full w-full">
-        <div ref="map" class="map rounded-lg"></div>
-        <FontAwesomeIcon class="crosshair text-xl" :icon="faLocationDot" />
+    <div ref="mapContainer" class="map relative h-full w-full rounded-lg">
+        <FontAwesomeIcon class="crosshair" :icon="faLocationDot" />
     </div>
 </template>
 
 <style scoped>
-@import '@/assets/styles/maps.css';
 @reference '@/assets/styles/main.css';
-
-.map {
-    @apply h-full w-full;
-}
 
 .crosshair {
     @apply absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transform;
-    @apply pointer-events-none text-lg;
+    @apply pointer-events-none text-3xl;
 }
 </style>

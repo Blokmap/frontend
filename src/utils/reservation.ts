@@ -27,7 +27,7 @@ export function filterReservationsByDateRange(
  * @param reservation - The reservation to convert.
  * @returns A TimeSlot object representing the reservation.
  */
-export function reservationToTimeSlot(reservation: Reservation): TimeSlot {
+export function reservationToTimeSlot(reservation: Reservation): TimeSlot<Reservation> {
     const startTime = new Date(reservation.startTime);
     const endTime = new Date(reservation.endTime);
 
@@ -43,7 +43,7 @@ export function reservationToTimeSlot(reservation: Reservation): TimeSlot {
         startTime: startTimeString,
         endTime: endTimeString,
         duration,
-        reservation,
+        metadata: reservation,
     };
 }
 
@@ -59,7 +59,7 @@ export function reservationsToTimeSlots(
     reservations?: Reservation[],
     startDate?: Date,
     endDate?: Date,
-): TimeSlot[] {
+): TimeSlot<Reservation>[] {
     if (!reservations) return [];
 
     let filteredReservations = reservations;

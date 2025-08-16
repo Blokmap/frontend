@@ -23,7 +23,7 @@ export type Reservation = {
     updatedAt: Date;
 };
 
-export interface TimeSlot {
+export interface TimeSlot<T = any> {
     id: string;
     day: Date;
     startTime: string;
@@ -32,5 +32,5 @@ export interface TimeSlot {
         hours: number;
         minutes: number;
     };
-    reservation?: Reservation;
+    metadata?: T;
 }

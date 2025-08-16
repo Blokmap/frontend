@@ -84,13 +84,13 @@ function handleDateSelect(date: any): void {
                 :on-previous-week="goToPreviousWeek"
                 :on-next-week="goToNextWeek"
                 class="h-full">
-                <template #time-slot="{ slot: { reservation, startTime, endTime, duration } }">
-                    <div v-if="reservation?.location" class="reservation-card">
+                <template #time-slot="{ slot: { metadata, startTime, endTime, duration } }">
+                    <div v-if="metadata?.location" class="reservation-card">
                         <!-- Header with status and time -->
                         <div class="mb-3 flex items-center justify-between">
                             <ReservationStateLabel
-                                :state="reservation.state"
-                                v-if="reservation.state !== ReservationState.Created">
+                                :state="metadata.state"
+                                v-if="metadata.state !== ReservationState.Created">
                             </ReservationStateLabel>
                             <div class="time-display">
                                 <FontAwesomeIcon :icon="faClock" class="time-icon" />
@@ -101,11 +101,11 @@ function handleDateSelect(date: any): void {
                         <!-- Location details -->
                         <div class="space-y-3">
                             <h4 class="text-sm font-semibold text-gray-900">
-                                {{ reservation.location.name }}
+                                {{ metadata.location.name }}
                             </h4>
 
                             <div class="text-xs">
-                                {{ getLocationAddress(reservation.location) }}
+                                {{ getLocationAddress(metadata.location) }}
                             </div>
 
                             <!-- Capacity info with vertical layout -->
@@ -114,8 +114,8 @@ function handleDateSelect(date: any): void {
                                     <FontAwesomeIcon :icon="faUsers" class="capacity-icon" />
                                     <span>
                                         {{
-                                            reservation.openingTime?.seatCount ??
-                                            reservation.location.seatCount
+                                            metadata.openingTime?.seatCount ??
+                                            metadata.location.seatCount
                                         }}
                                         plaatsen
                                     </span>

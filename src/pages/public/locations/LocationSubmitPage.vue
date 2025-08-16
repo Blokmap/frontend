@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import LocationImagesStep from '@/components/features/location/submit/LocationImagesStep.vue';
 import LocationInformationStep from '@/components/features/location/submit/LocationInformationStep.vue';
+import LocationOpeningsStep from '@/components/features/location/submit/LocationOpeningsStep.vue';
 import { useCreateLocation } from '@/composables/data/useLocations';
 import { useToast } from '@/composables/useToast';
+import type { CreateImageRequest } from '@/types/schema/Image';
 import type { CreateLocationRequest } from '@/types/schema/Location';
 import { faArrowLeft, faArrowRight, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -41,7 +44,10 @@ const formData = useLocalStorage<CreateLocationRequest>('location-form-data', {
     minReservationLength: null,
     maxReservationLength: null,
     isReservable: true,
+    openingTimes: [],
 });
+
+const images = ref<CreateImageRequest[]>([]);
 
 const steps: { id: string; label: string }[] = [
     { id: 'basic-info', label: 'Informatie' },
@@ -50,7 +56,7 @@ const steps: { id: string; label: string }[] = [
     { id: 'settings', label: 'Instellingen' },
 ];
 
-const currentStep = ref<string>('basic-info');
+const currentStep = ref('basic-info');
 const canGoNext = ref(true);
 
 const canGoPrevious = computed(() => currentStepIndex.value > 0);
@@ -69,27 +75,31 @@ function goPrevious() {
         currentStep.value = steps[currentStepIndex.value - 1].id;
     }
 }
+
+function submitLocation() {
+    if (!canGoNext.value) return;
+
+    // Combine form data with images
+    const locationData: CreateLocationRequest = {
+        ...formData.value,
+        images: images.value,
+    };
+
+    createLocation(locationData);
+}
 </script>
 
 <template>
     <div class="mx-auto max-w-4xl space-y-6">
-        <!-- Header -->
-        <div class="text-center">
-            <h1 class="py-3 text-4xl font-bold text-gray-900">
-                Nieuwe <span class="text-secondary-600">Blokspot</span>
-            </h1>
-        </div>
-
         <!-- Step Indicators -->
-        <div class="my-8 flex items-center justify-center space-x-4">
+        <div class="flex items-center justify-center space-x-4 py-3">
             <div v-for="(step, index) in steps" :key="step.id" class="flex items-center">
                 <!-- Step Circle -->
                 <div class="relative">
                     <div
-                        class="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300"
+                        class="indicator"
                         :class="{
-                            'bg-primary-600 scale-110 text-white shadow-lg':
-                                index === currentStepIndex,
+                            'bg-primary-600 scale-110 text-white': index === currentStepIndex,
                             'bg-primary-500 text-white': index < currentStepIndex,
                             'bg-gray-200 text-gray-500': index > currentStepIndex,
                         }">
@@ -101,7 +111,6 @@ function goPrevious() {
                         <span v-else>{{ index + 1 }}</span>
                     </div>
 
-                    <!-- Current step pulse ring -->
                     <div
                         v-if="index === currentStepIndex"
                         class="bg-primary-400 absolute inset-0 animate-ping rounded-full opacity-20"></div>
@@ -141,38 +150,32 @@ function goPrevious() {
             v-model:complete="canGoNext">
         </LocationInformationStep>
 
+        <LocationImagesStep
+            v-if="currentStep === 'images'"
+            v-model="images"
+            v-model:complete="canGoNext">
+        </LocationImagesStep>
+
+        <LocationOpeningsStep
+            v-if="currentStep === 'opening-times'"
+            v-model="formData"
+            v-model:complete="canGoNext">
+        </LocationOpeningsStep>
+
         <div class="flex items-center justify-between">
             <!-- Previous Button -->
-            <Button
-                @click="goPrevious"
-                :disabled="!canGoPrevious"
-                severity="secondary"
-                outlined
-                size="large"
-                class="px-6"
-                :class="{ 'cursor-not-allowed opacity-50': !canGoPrevious }">
+            <Button @click="goPrevious" :disabled="!canGoPrevious" severity="secondary" outlined>
                 <FontAwesomeIcon :icon="faArrowLeft" class="mr-2" />
                 Vorige
             </Button>
 
             <!-- Next/Submit Button -->
-            <Button
-                v-if="!isLastStep"
-                @click="goNext"
-                :disabled="!canGoNext"
-                size="large"
-                class="px-6"
-                :class="{ 'cursor-not-allowed opacity-50': !canGoNext }">
+            <Button v-if="!isLastStep" @click="goNext" :disabled="!canGoNext">
                 Volgende
                 <FontAwesomeIcon :icon="faArrowRight" class="ml-2" />
             </Button>
-            <Button
-                v-else
-                :loading="isCreating"
-                :disabled="!canGoNext"
-                size="large"
-                class="border-green-600 bg-green-600 px-6 hover:border-green-700 hover:bg-green-700"
-                :class="{ 'cursor-not-allowed opacity-50': !canGoNext }">
+
+            <Button v-else @click="submitLocation" :loading="isCreating" :disabled="!canGoNext">
                 <FontAwesomeIcon :icon="faCheck" class="mr-2" />
                 Locatie Toevoegen
             </Button>
@@ -182,4 +185,9 @@ function goPrevious() {
 
 <style scoped>
 @reference '@/assets/styles/main.css';
+
+.indicator {
+    @apply flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300;
+    @apply cursor-pointer text-sm font-semibold;
+}
 </style>

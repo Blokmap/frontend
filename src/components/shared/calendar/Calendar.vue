@@ -7,7 +7,7 @@ import { useI18n } from 'vue-i18n';
 const props = withDefaults(
     defineProps<{
         currentWeek: Date;
-        timeSlots?: TimeSlot[];
+        timeSlots?: TimeSlot<any>[];
     }>(),
     {
         timeSlots: () => [],
@@ -65,11 +65,11 @@ onUnmounted(() => {
     }
 });
 
-function getDayTimeSlots(day: Date): TimeSlot[] {
+function getDayTimeSlots(day: Date): TimeSlot<any>[] {
     return props.timeSlots.filter((slot) => slot.day.toDateString() === day.toDateString());
 }
 
-function getSlotPosition(slot: TimeSlot): { top: string; height: string } {
+function getSlotPosition(slot: TimeSlot<any>): { top: string; height: string } {
     const [startHour, startMinute] = slot.startTime.split(':').map(Number);
     const [endHour, endMinute] = slot.endTime.split(':').map(Number);
 
@@ -109,61 +109,64 @@ function handleDayClick(day: Date): void {
 
 <template>
     <div class="calendar-container">
-        <!-- Header with days -->
-        <div class="calendar-header">
-            <!-- Empty corner for time column -->
-            <div></div>
+        <!-- Scrollable container for both header and body -->
+        <div class="calendar-scroll-container">
+            <!-- Header with days -->
+            <div class="calendar-header">
+                <!-- Empty corner for time column -->
+                <div></div>
 
-            <!-- Day headers -->
-            <div
-                v-for="(day, index) in weekDays"
-                :key="index"
-                :class="{ today: isToday(day) }"
-                @click="handleDayClick(day)">
-                <div class="day-header-name">{{ formatDayName(day, 'short', locale) }}</div>
-                <div class="day-header-number" :class="{ 'today-indicator': isToday(day) }">
-                    {{ day.getDate() }}
-                </div>
-            </div>
-        </div>
-
-        <!-- Calendar body -->
-        <div ref="calendarBodyRef" class="calendar-body">
-            <!-- Time periods grid -->
-            <div class="time-periods-grid">
-                <!-- Time column -->
-                <div class="time-column">
-                    <div v-for="time in hourlyTimePeriods" :key="time" class="time-period">
-                        {{ time }}
+                <!-- Day headers -->
+                <div
+                    v-for="(day, index) in weekDays"
+                    :key="index"
+                    :class="{ today: isToday(day) }"
+                    @click="handleDayClick(day)">
+                    <div class="day-header-name">{{ formatDayName(day, 'short', locale) }}</div>
+                    <div class="day-header-number" :class="{ 'today-indicator': isToday(day) }">
+                        {{ day.getDate() }}
                     </div>
                 </div>
+            </div>
 
-                <!-- Day columns -->
-                <div v-for="(day, dayIndex) in weekDays" :key="dayIndex" class="day-column">
-                    <!-- Time period grid for each day -->
-                    <div
-                        v-for="time in hourlyTimePeriods"
-                        :key="time"
-                        class="time-period-cell"
-                        @click="handleTimePeriodClick(day, time)"></div>
+            <!-- Calendar body -->
+            <div ref="calendarBodyRef" class="calendar-body">
+                <!-- Time periods grid -->
+                <div class="time-periods-grid">
+                    <!-- Time column -->
+                    <div class="time-column">
+                        <div v-for="time in hourlyTimePeriods" :key="time" class="time-period">
+                            {{ time }}
+                        </div>
+                    </div>
 
-                    <!-- Custom time slots positioned absolutely within the day -->
-                    <template v-for="slot in getDayTimeSlots(day)" :key="slot.id">
-                        <Transition name="slide-up" appear>
-                            <div class="custom-time-slot" :style="getSlotPosition(slot)">
-                                <slot name="time-slot" :slot="slot"> </slot>
+                    <!-- Day columns -->
+                    <div v-for="(day, dayIndex) in weekDays" :key="dayIndex" class="day-column">
+                        <!-- Time period grid for each day -->
+                        <div
+                            v-for="time in hourlyTimePeriods"
+                            :key="time"
+                            class="time-period-cell"
+                            @click="handleTimePeriodClick(day, time)"></div>
+
+                        <!-- Custom time slots positioned absolutely within the day -->
+                        <template v-for="slot in getDayTimeSlots(day)" :key="slot.id">
+                            <Transition name="slide-up" appear>
+                                <div class="custom-time-slot" :style="getSlotPosition(slot)">
+                                    <slot name="time-slot" :slot="slot"> </slot>
+                                </div>
+                            </Transition>
+                        </template>
+
+                        <!-- Current time indicator for today -->
+                        <div
+                            v-if="isToday(day)"
+                            class="current-time-indicator"
+                            :style="{ top: `${currentTimePosition}%` }">
+                            <div class="time-line">
+                                <div class="time-dot"></div>
+                                <div class="time-line-bar"></div>
                             </div>
-                        </Transition>
-                    </template>
-
-                    <!-- Current time indicator for today -->
-                    <div
-                        v-if="isToday(day)"
-                        class="current-time-indicator"
-                        :style="{ top: `${currentTimePosition}%` }">
-                        <div class="time-line">
-                            <div class="time-dot"></div>
-                            <div class="time-line-bar"></div>
                         </div>
                     </div>
                 </div>
@@ -183,13 +186,35 @@ function handleDayClick(day: Date): void {
     max-height: 75vh;
 }
 
+.calendar-scroll-container {
+    @apply flex-1 overflow-auto;
+
+    &::-webkit-scrollbar {
+        @apply h-2 w-2;
+    }
+
+    &::-webkit-scrollbar-track {
+        @apply bg-gray-100;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        @apply rounded bg-gray-300;
+
+        &:hover {
+            @apply bg-gray-400;
+        }
+    }
+}
+
 .calendar-header {
     @apply sticky top-0 z-30;
     @apply grid border-b border-gray-200 bg-gray-50;
     grid-template-columns: 80px repeat(7, minmax(120px, 1fr));
+    min-width: 920px;
 
     @media (max-width: 768px) {
         grid-template-columns: 60px repeat(7, minmax(100px, 1fr));
+        min-width: 760px;
     }
 
     & > div {
@@ -237,8 +262,7 @@ function handleDayClick(day: Date): void {
 }
 
 .calendar-body {
-    @apply relative flex-1;
-    @apply overflow-auto;
+    @apply relative;
 
     .time-periods-grid {
         @apply relative grid;
@@ -248,22 +272,6 @@ function handleDayClick(day: Date): void {
         @media (max-width: 768px) {
             grid-template-columns: 60px repeat(7, minmax(100px, 1fr));
             min-width: 760px;
-        }
-    }
-
-    &::-webkit-scrollbar {
-        @apply h-2 w-2;
-    }
-
-    &::-webkit-scrollbar-track {
-        @apply bg-gray-100;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        @apply rounded bg-gray-300;
-
-        &:hover {
-            @apply bg-gray-400;
         }
     }
 }

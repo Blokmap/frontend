@@ -10,10 +10,11 @@ import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { RouterLink, useRouter } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 defineEmits<{ (e: 'logout'): Promise<void> }>();
 
+const route = useRoute();
 const { push } = useRouter();
 const { locale } = useI18n();
 const rememberedLocale = useLocalStorage('locale', 'nl');
@@ -34,18 +35,19 @@ onUnmounted(() => {
 });
 
 function handleEscape(event: KeyboardEvent): void {
-    if (event.key === 'Escape') {
-        event.preventDefault();
-        isExpandedSearch.value = false;
-    }
+    if (event.key !== 'Escape') return;
+    event.preventDefault();
+    isExpandedSearch.value = false;
 }
 
 function handleSearch(): void {
-    // If we have a geo location, just trigger map update (map bounds change will handle refetch)
+    // If we have a geo location, just trigger map update
+    // (map bounds change will handle refetch)
     if (geoLocation.value) {
         locationFilters.triggerGeoLocationAction();
     } else {
-        // Only refetch if no geo location (no map flyTo will happen)
+        // Only refetch if no geo location
+        // (no map flyTo will happen)
         refetch();
     }
 
@@ -77,7 +79,9 @@ function handleLocaleChange(newLocale: string): void {
             </LocationSearch>
 
             <div class="header--actions">
-                <RouterLink :to="{ name: 'locations.submit' }">
+                <RouterLink
+                    :to="{ name: 'locations.submit' }"
+                    v-if="route.name !== 'locations.submit'">
                     <Button class="h-full rounded-full px-4 text-[16px]" size="small" outlined>
                         Blokspot Toevoegen
                     </Button>

@@ -1,4 +1,4 @@
-import type { Image } from '@/types/schema/Image';
+import type { CreateImageRequest, Image } from '@/types/schema/Image';
 import type { Profile } from '@/types/schema/Profile';
 import type { CreateTranslationRequest, Translation } from '@/types/schema/Translation';
 
@@ -48,6 +48,16 @@ export type CreateLocationRequest = {
     province: string;
     latitude: number;
     longitude: number;
+    images?: CreateImageRequest[];
+    openingTimes?: CreateOpeningTimeRequest[];
+};
+
+export type CreateOpeningTimeRequest = {
+    startTime: Date;
+    endTime: Date;
+    seatCount: number | null;
+    reservableFrom: Date | null;
+    reservableUntil: Date | null;
 };
 
 export type NearestLocation = {

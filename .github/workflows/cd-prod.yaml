@@ -50,19 +50,3 @@ jobs:
                   tags: ${{ steps.meta.outputs.tags }}
                   cache-from: type=registry,ref=ghcr.io/blokmap/blokmap-frontend:buildcache
                   cache-to: type=registry,ref=ghcr.io/blokmap/blokmap-frontend:buildcache,mode=max
-
-    deploy-prod:
-        runs-on: self-hosted
-        needs: [build-prod]
-        steps:
-            - name: Deploy frontend
-              uses: appleboy/ssh-action@v1.2.1
-              with:
-                  host: ${{ secrets.PRODUCTION_HOST }}
-                  username: ${{ secrets.PRODUCTION_USERNAME }}
-                  key: ${{ secrets.PRODUCTION_SSH_KEY }}
-                  debug: true
-                  script: |
-                      set -e
-                      docker compose -f /home/blokmap/deploy/production/compose.prod.yaml pull
-                      docker compose -f /home/blokmap/deploy/production/compose.prod.yaml up blokmap-prod-frontend

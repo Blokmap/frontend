@@ -90,7 +90,7 @@ function submitLocation() {
 </script>
 
 <template>
-    <div class="mx-auto max-w-4xl space-y-6">
+    <div class="mx-auto w-full max-w-5xl space-y-6">
         <!-- Step Indicators -->
         <div class="flex items-center justify-center space-x-4 py-3">
             <div v-for="(step, index) in steps" :key="step.id" class="flex items-center">

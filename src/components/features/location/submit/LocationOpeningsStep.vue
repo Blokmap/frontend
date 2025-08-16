@@ -252,24 +252,24 @@ function removeTimeSlot(index: number): void {
                         </Button>
                     </div>
                 </div>
-
-                <div class="space-y-4">
-                    <OpeningTimesCalendar
-                        v-model:date-in-week="currentWeek"
-                        :opening-times="openingTimes"
-                        @select:slot="handleCalendarSlotClick"
-                        @edit:slot="handleEditSlot"
-                        @delete:slot="handleDeleteSlot"
-                        class="h-96">
-                    </OpeningTimesCalendar>
-
-                    <p class="text-center text-sm text-gray-500">
-                        Klik op een tijdslot in de kalender om een openingstijd toe te voegen
-                    </p>
-                </div>
             </div>
         </template>
     </Card>
+
+    <div class="space-y-4">
+        <OpeningTimesCalendar
+            v-model:date-in-week="currentWeek"
+            :opening-times="openingTimes"
+            @select:slot="handleCalendarSlotClick"
+            @edit:slot="handleEditSlot"
+            @delete:slot="handleDeleteSlot"
+            class="h-96">
+        </OpeningTimesCalendar>
+
+        <p class="text-center text-sm text-gray-500">
+            Klik op een tijdslot in de kalender om een openingstijd toe te voegen
+        </p>
+    </div>
 
     <!-- Opening Time Dialog -->
     <OpeningTimeDialog

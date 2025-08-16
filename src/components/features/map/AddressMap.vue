@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useMapBox } from '@/composables/useMapBox';
-import type { LngLat, LngLatBounds } from '@/types/contract/Map';
+import type { LngLat } from '@/types/contract/Map';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, useTemplateRef } from 'vue';
+import { useTemplateRef } from 'vue';
 
 const center = defineModel<LngLat>('center', {
     default: () => [4.3517, 50.8503],
@@ -20,9 +20,7 @@ const props = withDefaults(
     },
 );
 
-const mapContainerRef = useTemplateRef('mapContainer');
-
-const map = useMapBox(mapContainerRef, {
+useMapBox(useTemplateRef('mapContainer'), {
     center: center,
     zoom: props.zoom,
 });

@@ -3,10 +3,8 @@ import LanguageSelector from '@/components/features/layout/LanguageSelector.vue'
 import MenuButton from '@/components/features/layout/MenuButton.vue';
 import LocationSearch from '@/components/features/location/LocationSearch.vue';
 import Logo from '@/components/shared/Logo.vue';
+import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import type { LocationFilter } from '@/types/schema/Filter';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
@@ -24,6 +22,9 @@ const { filters, geoLocation } = storeToRefs(useLocationFilters());
 const locationFilters = useLocationFilters();
 const isExpandedSearch = ref(false);
 
+// Get the search query for refetching
+const { isFetching, refetch } = useLocationsSearch(filters, { enabled: false });
+
 onMounted(() => {
     window.addEventListener('keydown', handleEscape);
 });
@@ -39,8 +40,15 @@ function handleEscape(event: KeyboardEvent): void {
     }
 }
 
-function handleFiltersUpdate(newFilters: Partial<LocationFilter>): void {
-    locationFilters.updateFilters(newFilters);
+function handleSearch(): void {
+    // If we have a geo location, just trigger map update (map bounds change will handle refetch)
+    if (geoLocation.value) {
+        locationFilters.triggerGeoLocationAction();
+    } else {
+        // Only refetch if no geo location (no map flyTo will happen)
+        refetch();
+    }
+
     isExpandedSearch.value = false;
     push({ name: 'locations' });
 }
@@ -63,8 +71,9 @@ function handleLocaleChange(newLocale: string): void {
             <LocationSearch
                 v-model:is-expanded-search="isExpandedSearch"
                 v-model:geo-location="geoLocation"
-                :filters="filters"
-                @update:filters="handleFiltersUpdate">
+                v-model:filters="filters"
+                :is-searching="isFetching"
+                @search="handleSearch">
             </LocationSearch>
 
             <div class="header--actions">

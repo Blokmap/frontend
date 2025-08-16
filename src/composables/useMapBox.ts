@@ -156,7 +156,7 @@ export function useMapBox<T>(
             if (!map.value || !isLoaded.value) return;
 
             const currentCenter = map.value.getCenter();
-            const tolerance = 0.1;
+            const tolerance = 0.000001;
 
             if (
                 Math.abs(currentCenter.lng - newCenter[0]) > tolerance ||

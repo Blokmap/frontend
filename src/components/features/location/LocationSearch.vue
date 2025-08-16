@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useGeoSearch } from '@/composables/data/useGeoCoding';
-import { useLocationsSearch } from '@/composables/data/useLocations';
 import type { LocationFilter } from '@/types/schema/Filter';
 import {
     faCalendarDays,
@@ -16,27 +15,38 @@ import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import DatePicker from 'primevue/datepicker';
 import InputText from 'primevue/inputtext';
-import { type ComponentPublicInstance, computed, nextTick, ref, useTemplateRef } from 'vue';
+import {
+    type ComponentPublicInstance,
+    computed,
+    nextTick,
+    ref,
+    useTemplateRef,
+    withDefaults,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const props = defineProps<{
-    filters: LocationFilter;
-}>();
-
 const emit = defineEmits<{
-    (e: 'update:filters', filters: Partial<LocationFilter>): void;
+    search: [];
 }>();
 
+const props = withDefaults(
+    defineProps<{
+        isSearching?: boolean;
+    }>(),
+    {
+        isSearching: false,
+    },
+);
+
+const filters = defineModel<LocationFilter>('filters', { required: true });
 const isExpandedSearch = defineModel<boolean>('isExpandedSearch');
 const geoLocation = defineModel<GeoJSON.GeoJsonProperties | null>('geoLocation');
 
-const openOnDate = ref(props.filters.openOn ?? null);
-const searchText = ref(props.filters.query ?? '');
+const openOnDate = ref(filters.value.openOn);
+const searchText = ref(filters.value.query);
 const geoSearchText = ref(geoLocation.value?.name ?? '');
 
 const { locale, t } = useI18n();
-
-const { isFetching } = useLocationsSearch(props.filters, { enabled: false });
 const { isLoading: isLoadingGeoSearch, data: geoSearchData } = useGeoSearch(geoSearchText);
 
 const locationLabel = computed(() => {
@@ -48,11 +58,11 @@ const hasActiveLocationFilter = computed(() => {
 });
 
 const searchLabel = computed(() => {
-    return props.filters.query || searchText.value || t('components.search.allLocations');
+    return filters.value.query || searchText.value || t('components.search.allLocations');
 });
 
 const dateLabel = computed(() => {
-    const date = props.filters.openOn || openOnDate.value;
+    const date = filters.value.openOn || openOnDate.value;
 
     if (date) {
         return date.toLocaleDateString(locale.value, {
@@ -70,10 +80,9 @@ const queryInputRef = useTemplateRef<ComponentPublicInstance>('queryInput');
 const dateInputRef = useTemplateRef<ComponentPublicInstance>('dateInput');
 
 function handleSearchClick(): void {
-    emit('update:filters', {
-        query: searchText.value,
-        openOn: openOnDate.value,
-    });
+    filters.value.query = searchText.value;
+    filters.value.openOn = openOnDate.value;
+    emit('search');
 }
 
 function handleLocationOptionSelect(option: AutoCompleteOptionSelectEvent): void {
@@ -212,9 +221,9 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
         <!--  Search button -->
         <Button
             class="search-button bg-gradient-conic flex-shrink-0 rounded-full"
-            :disabled="isFetching"
+            :disabled="props.isSearching"
             @click.stop="handleSearchClick">
-            <FontAwesomeIcon :icon="faSpinner" spin v-if="isFetching" />
+            <FontAwesomeIcon :icon="faSpinner" spin v-if="props.isSearching" />
             <FontAwesomeIcon :icon="faMagnifyingGlass" v-else />
         </Button>
     </div>

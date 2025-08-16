@@ -19,7 +19,7 @@ import { computed, ref, useTemplateRef, watch } from 'vue';
 
 const filterStore = useLocationFilters();
 const toast = useToast();
-const { filters, geoLocation } = storeToRefs(filterStore);
+const { filters, geoLocation, geoLocationActionTrigger } = storeToRefs(filterStore);
 
 const {
     data: locations,
@@ -56,15 +56,13 @@ watch(locations, (locations) => {
 });
 
 watch(
-    [() => mapRef.value?.map.isLoaded, geoLocation],
+    [() => mapRef.value?.map.isLoaded, geoLocation, geoLocationActionTrigger],
     ([isLoaded, geoLocation]) => {
+        if (!isLoaded || !geoLocation) return;
         try {
-            if (!isLoaded || !geoLocation) return;
-            if (!geoLocation.coordinates) return;
-
             mapRef.value?.map.flyTo([
-                geoLocation.coordinates.longitude,
-                geoLocation.coordinates.latitude,
+                geoLocation.coordinates?.longitude,
+                geoLocation.coordinates?.latitude,
             ]);
         } catch (error) {
             console.error('Error flying to geo location:', error);

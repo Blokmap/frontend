@@ -58,5 +58,5 @@ jobs:
                   file: Dockerfile.staging
                   push: true
                   tags: ${{ steps.meta.outputs.tags }}
-                  cache-from: type=registry,ref=ghcr.io/blokmap/blokmap-frontend:buildcache
-                  cache-to: type=registry,ref=ghcr.io/blokmap/blokmap-frontend:buildcache,mode=max
+                  cache-from: type=registry,ref=ghcr.io/blokmap/blokmap-staging-frontend:buildcache
+                  cache-to: type=registry,ref=ghcr.io/blokmap/blokmap-staging-frontend:buildcache,mode=max

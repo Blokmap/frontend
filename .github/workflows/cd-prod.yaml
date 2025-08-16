@@ -1,4 +1,4 @@
-name: Build, publish, and deploy new production images
+name: Build and release new production images
 
 permissions:
     packages: write
@@ -7,6 +7,16 @@ permissions:
 on:
     push:
         branches: ["main"]
+        paths-ignore:
+            - ".github/**"
+            - ".vscode/**"
+            - ".editorconfig"
+            - ".env.example"
+            - ".gitignore"
+            - "LICENSE"
+            - "README.md"
+
+    workflow_dispatch:
 
 concurrency:
     group: deploy-${{ github.ref }}

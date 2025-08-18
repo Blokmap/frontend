@@ -3,6 +3,7 @@ import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/typ
 import mapboxgl from 'mapbox-gl';
 import { type Ref, isRef, nextTick, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useTheme } from './useTheme';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 
@@ -18,6 +19,14 @@ export function useMapBox<T>(
     options: MapOptions = defaultMapOptions,
 ): MapAdapter<T> {
     const { locale } = useI18n();
+    const { isDark } = useTheme();
+
+    // Theme-aware map styles
+    const getMapStyle = () => {
+        return isDark.value 
+            ? 'mapbox://styles/mapbox/dark-v11'
+            : 'mapbox://styles/mapbox/outdoors-v11';
+    };
 
     // Merge default options with provided options
     // This allows for overriding default values while keeping the defaults intact.
@@ -58,7 +67,7 @@ export function useMapBox<T>(
             accessToken: MAPBOX_ACCESS_TOKEN,
             language: locale.value,
             container: container.value,
-            style: options.style,
+            style: getMapStyle(),
             center: center.value,
             maxBounds: maxBounds.value,
             zoom: zoom.value,
@@ -178,6 +187,12 @@ export function useMapBox<T>(
         if (Math.abs(currentZoom - newZoom) > tolerance) {
             map.value.setZoom(newZoom);
         }
+    });
+
+    // Watch for theme changes and update map style
+    watch(isDark, () => {
+        if (!map.value || !isLoaded.value) return;
+        map.value.setStyle(getMapStyle());
     });
 
     /**

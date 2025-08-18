@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useTheme } from '@/composables/useTheme';
 import type { Location } from '@/types/schema/Location';
 import { getLocationPlaceholderImage } from '@/utils/location';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
@@ -6,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
 
 const { locale } = useI18n();
+const { isDark } = useTheme();
 
 withDefaults(
     defineProps<{
@@ -21,7 +23,7 @@ withDefaults(
 <template>
     <div class="location">
         <div class="location--image" :class="{ active }">
-            <img :src="getLocationPlaceholderImage(location)" />
+            <img :src="getLocationPlaceholderImage(location, isDark)" />
             <div class="address" v-tooltip="location.city">
                 <FontAwesomeIcon :icon="faLocationDot" class="text-secondary" />
                 {{ location.city }}
@@ -30,8 +32,10 @@ withDefaults(
                 <FontAwesomeIcon :icon="faHeart" />
             </div> -->
         </div>
-        <h2 class="text-md mt-1 truncate font-semibold">{{ location.name }}</h2>
-        <p class="line-clamp-2 text-xs text-gray-600">
+        <h2 class="text-md mt-1 truncate font-semibold text-slate-900 dark:text-slate-100">
+            {{ location.name }}
+        </h2>
+        <p class="line-clamp-2 text-xs text-slate-600 dark:text-slate-400">
             {{ location.excerpt?.[locale] }}
         </p>
     </div>
@@ -49,14 +53,14 @@ withDefaults(
 
     .location--image {
         @apply relative h-full w-full overflow-hidden;
-        @apply rounded-2xl border-2 border-slate-200;
+        @apply rounded-2xl border-2 border-slate-200 dark:border-slate-700;
 
         .heart {
             @apply absolute top-1 right-2 text-2xl text-white transition-colors duration-200 hover:text-red-500;
         }
 
         .address {
-            @apply absolute top-2 left-2 flex max-w-30 items-center gap-2 truncate rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium shadow;
+            @apply absolute top-2 left-2 flex max-w-30 items-center gap-2 truncate rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-slate-800 shadow dark:bg-slate-700/90 dark:text-slate-200;
         }
 
         img {

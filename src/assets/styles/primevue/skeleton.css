@@ -1,5 +1,5 @@
 .p-skeleton {
-    @apply bg-surface-200 dark:bg-surface-700 animate-pulse overflow-hidden rounded-md;
+    @apply bg-surface-200 dark:bg-slate-700 animate-pulse overflow-hidden rounded-md;
 }
 
 .p-skeleton-circle {

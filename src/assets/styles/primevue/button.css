@@ -144,9 +144,9 @@
     @apply bg-slate-200 enabled:hover:bg-slate-300 enabled:active:bg-slate-300;
     @apply border-surface-100 enabled:hover:border-surface-200 enabled:active:border-surface-300;
     @apply text-surface-600 enabled:hover:text-surface-700 enabled:active:text-surface-800;
-    @apply dark:bg-surface-800 dark:enabled:hover:bg-surface-700 dark:enabled:active:bg-surface-600;
-    @apply dark:border-surface-800 dark:enabled:hover:border-surface-700 dark:enabled:active:border-surface-600;
-    @apply dark:text-surface-300 dark:enabled:hover:text-surface-200 dark:enabled:active:text-surface-100;
+    @apply dark:bg-slate-600 dark:enabled:hover:bg-slate-500 dark:enabled:active:bg-slate-400;
+    @apply dark:border-slate-600 dark:enabled:hover:border-slate-500 dark:enabled:active:border-slate-400;
+    @apply dark:text-slate-100 dark:enabled:hover:text-slate-50 dark:enabled:active:text-white;
 }
 
 .p-button-outlined {
@@ -183,7 +183,7 @@
 }
 
 .p-button-outlined.p-button-contrast {
-    @apply border-slate-200 bg-transparent text-slate-500 enabled:hover:border-slate-200 enabled:hover:bg-slate-100 enabled:hover:text-slate-700 enabled:active:border-slate-300 enabled:active:bg-slate-200 enabled:active:text-slate-800 dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:enabled:hover:border-slate-700 dark:enabled:hover:bg-slate-700 dark:enabled:hover:text-slate-200 dark:enabled:active:border-slate-600 dark:enabled:active:bg-slate-600 dark:enabled:active:text-slate-100;
+    @apply border-slate-200 bg-transparent text-slate-500 enabled:hover:border-slate-200 enabled:hover:bg-slate-100 enabled:hover:text-slate-700 enabled:active:border-slate-300 enabled:active:bg-slate-200 enabled:active:text-slate-800 dark:border-slate-800 dark:bg-transparent dark:text-slate-300 dark:enabled:hover:border-slate-700 dark:enabled:hover:bg-slate-700 dark:enabled:hover:text-slate-200 dark:enabled:active:border-slate-700 dark:enabled:active:bg-slate-600 dark:enabled:active:text-slate-100;
 }
 
 .p-button-outlined.p-button-plain {

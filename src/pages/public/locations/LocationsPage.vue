@@ -118,12 +118,12 @@ const handlePageChange = (event: { page: number }): void => {
                     </h2>
 
                     <template v-if="locations?.data?.length">
-                        <p class="text-slate-500" v-if="locations.total > locations.perPage">
+                        <p class="text-slate-500 dark:text-slate-400" v-if="locations.total > locations.perPage">
                             {{ locations.perPage }} van {{ locations.total }}
                             <span class="text-gradient-conic">Blokspots</span> getoond. Gebruik de
                             filters om je zoekopdracht te verfijnen.
                         </p>
-                        <p class="text-slate-500" v-else>
+                        <p class="text-slate-500 dark:text-slate-400" v-else>
                             Klik op een <span class="text-gradient-conic">Blokspot</span> voor meer
                             informatie of om een plek te reserveren.
                         </p>

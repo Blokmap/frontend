@@ -70,10 +70,17 @@ function handleLocaleChange(newLocale: string): void {
 @reference '@/assets/styles/main.css';
 
 .locale-item {
-    @apply flex cursor-pointer items-center gap-2 px-2 py-1 hover:bg-gray-100;
+    @apply flex cursor-pointer items-center gap-2 px-2 py-1;
+    @apply text-slate-800;
+    @apply dark:text-slate-200;
+    @apply hover:bg-slate-100;
+    @apply dark:hover:bg-slate-700;
 
     &.active {
-        @apply bg-primary-100;
+        @apply bg-primary-50;
+        @apply dark:bg-slate-600;
+        @apply text-primary-700;
+        @apply dark:text-primary-300;
     }
 }
 </style>

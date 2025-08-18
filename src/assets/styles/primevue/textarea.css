@@ -1,16 +1,16 @@
 .p-textarea {
     @apply appearance-none rounded-md border-2 outline-none;
 
-    @apply bg-surface-0 dark:bg-surface-950;
-    @apply text-surface-700 dark:text-surface-0;
-    @apply placeholder:text-surface-500 dark:placeholder:text-surface-400;
+    @apply bg-white dark:bg-slate-700;
+    @apply text-slate-900 dark:text-slate-100;
+    @apply placeholder:text-slate-500 dark:placeholder:text-slate-400;
 
-    @apply border-slate-200 dark:border-slate-900;
-    @apply enabled:hover:border-slate-200 dark:enabled:hover:border-slate-800;
+    @apply border-slate-300 dark:border-slate-600;
+    @apply enabled:hover:border-slate-400 dark:enabled:hover:border-slate-500;
     @apply enabled:focus:border-primary;
 
-    @apply disabled:bg-surface-200 disabled:text-surface-500;
-    @apply dark:disabled:bg-surface-700 dark:disabled:text-surface-400;
+    @apply disabled:bg-slate-100 disabled:text-slate-500;
+    @apply dark:disabled:bg-slate-700 dark:disabled:text-slate-400;
     @apply disabled:opacity-100;
 
     @apply px-3 py-2 shadow-xs;
@@ -24,7 +24,7 @@
 }
 
 .p-textarea.p-variant-filled {
-    @apply bg-surface-50 dark:bg-surface-800;
+    @apply bg-slate-50 dark:bg-slate-800;
 }
 
 .p-textarea-fluid {

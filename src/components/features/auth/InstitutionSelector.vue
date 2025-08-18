@@ -44,8 +44,8 @@ function handleInstitutionSelection(institution: Institution): void {
                     :alt="institution.name[locale as any]!"
                     class="h-15 w-15 object-contain" />
                 <div>
-                    <h3 class="text-lg font-semibold">{{ institution.name[locale] }}</h3>
-                    <p class="text-sm text-gray-600">{{ institution.slug[locale] }}</p>
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ institution.name[locale] }}</h3>
+                    <p class="text-sm text-gray-600 dark:text-slate-400">{{ institution.slug[locale] }}</p>
                 </div>
             </div>
         </template>
@@ -56,6 +56,9 @@ function handleInstitutionSelection(institution: Institution): void {
 @reference '@/assets/styles/main.css';
 
 .institution {
-    @apply flex cursor-pointer items-center gap-4 rounded-lg border-2 border-slate-200 p-4 transition-colors hover:bg-gray-50;
+    @apply flex cursor-pointer items-center gap-4 rounded-lg border-2 border-slate-200 p-4 transition-colors;
+    @apply hover:bg-gray-50;
+    @apply dark:border-slate-700;
+    @apply dark:hover:bg-slate-700;
 }
 </style>

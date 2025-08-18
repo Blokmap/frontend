@@ -3,7 +3,7 @@ import Skeleton from 'primevue/skeleton';
 </script>
 
 <template>
-    <div class="flex items-center gap-4 rounded-lg bg-gray-50 p-3">
+    <div class="flex items-center gap-4 rounded-lg bg-gray-50 dark:bg-slate-700 p-3">
         <div class="flex-shrink-0">
             <Skeleton shape="circle" size="2.5rem" />
         </div>

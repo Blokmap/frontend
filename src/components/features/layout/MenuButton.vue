@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
+import ThemeSelector from '@/components/features/layout/ThemeSelector.vue';
 import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
 import { DOCS_URL } from '@/constants';
 import {
@@ -52,8 +53,8 @@ function handleNavigationClick(): void {
     <!-- Popover -->
     <Popover
         ref="popover"
-        class="w-full max-w-[300px] rounded-lg border border-slate-200 shadow-lg">
-        <div class="dark:text-slate-20 p-1 text-sm text-slate-800">
+        class="w-full max-w-[300px] rounded-lg border border-slate-200 dark:border-slate-700 shadow-lg">
+        <div class="dark:text-slate-200 p-1 text-sm text-slate-800">
             <!-- Profile Section -->
             <template v-if="profileIsLoading">
                 <div class="flex items-center gap-3">
@@ -73,7 +74,7 @@ function handleNavigationClick(): void {
                         @click="handleNavigationClick">
                         <ProfileAvatar :profile="profile" size="3rem" />
                         <div class="flex-1 space-y-1 leading-tight">
-                            <div class="font-semibold text-slate-900 dark:text-white">
+                            <div class="font-semibold text-slate-900 dark:text-slate-100">
                                 {{ profile.firstName }}
                             </div>
                             <div class="text-xs text-slate-500 dark:text-slate-400">
@@ -138,7 +139,8 @@ function handleNavigationClick(): void {
             </div>
 
             <!-- Help Section -->
-            <div class="mt-3 flex justify-end">
+            <div class="mt-3 flex items-center justify-between">
+                <ThemeSelector />
                 <a class="help-link" :href="DOCS_URL + '/' + locale" @click="handleNavigationClick">
                     <FontAwesomeIcon :icon="faInfoCircle" class="text-slate-500" />
                     <span>Handleiding</span>
@@ -153,11 +155,11 @@ function handleNavigationClick(): void {
 
 .menu-link {
     @apply flex w-full cursor-pointer items-center gap-2 px-2 py-1;
-    @apply rounded-md transition hover:bg-slate-100 dark:hover:bg-slate-800;
+    @apply rounded-md transition hover:bg-slate-100 dark:hover:bg-slate-700;
 }
 
 .help-link {
     @apply flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs;
-    @apply text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200;
+    @apply text-slate-500 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200;
 }
 </style>

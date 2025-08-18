@@ -76,10 +76,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
         <div class="footer__bottom">
             <div class="footer__bottom-content">
-                <div class="text-surface-600 text-sm font-medium">
+                <div class="text-xs text-slate-500 dark:text-slate-400">
                     © {{ new Date().getFullYear() }} Blokmap. Alle rechten voorbehouden.
                 </div>
-                <div class="text-surface-500 text-xs">
+                <div class="text-xs text-slate-500 dark:text-slate-400">
                     Gemaakt met ❤️ in België • In samenwerking met UGent en Stad Gent
                 </div>
             </div>
@@ -91,7 +91,9 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 @reference '@/assets/styles/main.css';
 
 .footer {
-    @apply border-surface-200 mt-8 border-t-2 bg-white;
+    @apply mt-8 border-t-2 border-slate-200 bg-white;
+    @apply dark:border-slate-700 dark:bg-slate-800;
+    @apply rounded-b-md;
 
     .footer__content {
         @apply mx-auto grid max-w-7xl grid-cols-1 gap-6 px-6 py-8;
@@ -104,20 +106,20 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
     .footer__title {
         @apply text-sm font-semibold tracking-wider uppercase;
-        @apply text-primary-600;
+        @apply text-primary-600 dark:text-primary-400;
     }
 
     .footer__description {
         @apply max-w-sm text-sm leading-relaxed;
-        @apply text-surface-600;
+        @apply text-slate-600 dark:text-slate-300;
     }
 
     .footer__link {
-        @apply text-surface-600 block text-sm;
+        @apply block text-sm text-slate-600 dark:text-slate-300;
         @apply transition-colors duration-200;
 
         &:hover {
-            @apply text-primary-600;
+            @apply text-primary-600 dark:text-primary-400;
         }
     }
 
@@ -127,16 +129,16 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
     .footer__social-link {
         @apply flex h-8 w-8 items-center justify-center rounded-full;
-        @apply bg-surface-100 border-surface-200 text-surface-600 border;
+        @apply border border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-700 dark:text-slate-300;
         @apply transition-all duration-200;
 
         &:hover {
-            @apply bg-primary-500 border-primary-500 text-white;
+            @apply bg-primary-500 dark:bg-primary-600 border-primary-500 dark:border-primary-600 text-white;
         }
     }
 
     .footer__bottom {
-        @apply border-surface-200 bg-surface-50 border-t;
+        @apply border-t-2 border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800;
 
         .footer__bottom-content {
             @apply mx-auto flex max-w-7xl flex-col items-center justify-between;

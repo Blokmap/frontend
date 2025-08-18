@@ -47,13 +47,13 @@ const isLight = computed(() => props.variant === 'light');
             <!-- Heading -->
             <h2
                 class="my-6 text-3xl font-bold md:text-4xl"
-                :class="isLight ? 'text-gray-900' : 'text-white'">
+                :class="isLight ? 'text-gray-900 dark:text-slate-100' : 'text-white'">
                 Ken jij de perfecte
                 <span :class="isLight ? 'cta-highlight-light' : 'cta-highlight'">blokspot</span>?
             </h2>
 
             <!-- Description -->
-            <p class="mb-8 text-lg md:text-xl" :class="isLight ? 'text-gray-700' : 'text-white/90'">
+            <p class="mb-8 text-lg md:text-xl" :class="isLight ? 'text-gray-700 dark:text-slate-300' : 'text-white/90'">
                 Help andere mensen door jouw favoriete locatie toe te voegen aan Blokmap.
                 <br />
                 Van bibliotheken tot coworkingspaces - elke bijdrage maakt het verschil!
@@ -131,6 +131,7 @@ const isLight = computed(() => props.variant === 'light');
 
 .cta-light {
     @apply border-2 border-gray-200 bg-gradient-to-br from-slate-50 to-slate-100;
+    @apply dark:border-slate-700 dark:from-slate-700 dark:to-slate-800;
 }
 
 /* Main icon variants */

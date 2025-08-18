@@ -114,7 +114,7 @@ function switchToRegister(): void {
     <h1 class="text-bold text-center text-4xl" ref="title">
         <span class="text-gradient-conic font-bold">Blokmap Account</span>
     </h1>
-    <p class="text-md mt-1 max-w-80 text-center text-slate-500">
+    <p class="text-md mt-1 max-w-80 text-center text-slate-500 dark:text-slate-400">
         Gebruik je onderwijsinstelling of een ander type account om in te loggen.
     </p>
     <IconField class="my-2">
@@ -144,7 +144,7 @@ function switchToRegister(): void {
                         class="h-10 w-10 object-contain" />
                     <div class="flex flex-col">
                         <p class="text-sm font-bold">{{ option.slug[locale] }}</p>
-                        <p class="text-sm text-gray-400">{{ option.name[locale] }}</p>
+                        <p class="text-sm text-gray-400 dark:text-slate-400">{{ option.name[locale] }}</p>
                     </div>
                 </div>
             </template>

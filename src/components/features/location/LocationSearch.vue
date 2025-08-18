@@ -152,7 +152,7 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
                                 {{ option.name }}
                                 {{ option.province }}
                             </div>
-                            <div class="text-sm text-slate-600">
+                            <div class="text-sm text-slate-600 dark:text-slate-400">
                                 {{ option.full_address }}
                             </div>
                         </div>
@@ -234,22 +234,22 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
 
 .search {
     @apply relative z-20 flex w-full max-w-[600px] min-w-[350px] origin-top cursor-pointer flex-row items-center gap-3;
-    @apply rounded-full border-2 border-slate-200 bg-white text-center text-sm transition-all duration-300;
+    @apply rounded-full border-2 border-slate-200 bg-white text-center text-sm transition-all duration-300 dark:border-slate-700 dark:bg-slate-700;
     @apply ps-5;
 
     .search--filter {
-        @apply flex w-full items-center justify-center gap-2 font-medium text-slate-700;
+        @apply flex w-full items-center justify-center gap-2 font-medium text-slate-700 dark:text-slate-300;
         @apply relative; /* For absolute positioning of clear button */
 
         .search-input {
-            @apply w-full border-0 p-0 text-center text-sm shadow-none;
+            @apply w-full border-0 bg-transparent p-0 text-center text-sm shadow-none dark:text-slate-100;
         }
 
         &.has-active-filter {
-            @apply text-secondary-500;
+            @apply text-secondary-500 dark:text-secondary-400;
 
             .fa-map-location {
-                @apply text-secondary-500;
+                @apply text-secondary-500 dark:text-secondary-400;
             }
         }
     }

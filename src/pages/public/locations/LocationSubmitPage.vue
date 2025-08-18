@@ -126,10 +126,10 @@ function submitLocation() {
     <div class="mx-auto flex w-full max-w-[2048px] gap-6">
         <div class="sticky top-6 h-fit w-full space-y-6 rounded-md md:w-2/7">
             <div class="space-y-4">
-                <h1 class="text-2xl font-bold">
+                <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">
                     {{ steps[stepIndex].label }}
                 </h1>
-                <p class="text-sm text-slate-500">
+                <p class="text-sm text-slate-500 dark:text-slate-400">
                     {{ steps[stepIndex].desc }}
                 </p>
             </div>
@@ -140,7 +140,7 @@ function submitLocation() {
                     </Checkbox>
                     <span
                         class="ms-3 text-sm"
-                        :class="substep.isCompleted ? 'text-gray-900' : 'text-gray-500'">
+                        :class="substep.isCompleted ? 'text-slate-900 dark:text-slate-100' : 'text-slate-500 dark:text-slate-400'">
                         {{ substep.label }}
                     </span>
                 </div>
@@ -209,7 +209,7 @@ function submitLocation() {
 @reference '@/assets/styles/main.css';
 
 .progressbar {
-    @apply relative h-2 w-full rounded-xl bg-slate-300;
+    @apply relative h-2 w-full rounded-xl bg-slate-300 dark:bg-slate-700;
 
     .indicator {
         @apply bg-primary-500 absolute top-0 left-0 h-full rounded-xl;

@@ -100,7 +100,7 @@ defineExpose({ map });
 @import '@/assets/styles/maps.css';
 
 .map {
-    @apply relative z-2 h-full overflow-hidden rounded-xl border-2 border-slate-200;
+    @apply relative z-2 h-full overflow-hidden rounded-xl border-2 border-slate-200 dark:border-slate-700;
 
     .loader {
         @apply absolute top-4 left-1/2 z-50 -translate-x-1/2 transform;

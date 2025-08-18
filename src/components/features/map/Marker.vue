@@ -101,7 +101,7 @@ function updatePopoverPosition() {
 @reference '@/assets/styles/main.css';
 
 .marker {
-    @apply flex h-6 w-9 cursor-pointer items-center justify-center rounded-full bg-slate-800 transition-transform duration-200 hover:scale-110;
+    @apply flex h-6 w-9 cursor-pointer items-center justify-center rounded-full bg-slate-800 dark:bg-slate-600 transition-transform duration-200 hover:scale-110;
 
     &.active {
         @apply scale-110;

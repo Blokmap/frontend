@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CreateOpeningTimeRequest } from '@/types/schema/Location';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import Calendar from 'primevue/calendar';
@@ -17,6 +17,7 @@ const props = defineProps<{
 const emit = defineEmits<{
     'update:visible': [value: boolean];
     save: [openingTime: CreateOpeningTimeRequest];
+    delete: [];
     close: [];
 }>();
 
@@ -39,6 +40,10 @@ watch(
 
 function handleSave(): void {
     emit('save', localOpeningTime.value);
+}
+
+function handleDelete(): void {
+    emit('delete');
 }
 
 function handleClose(): void {
@@ -65,7 +70,8 @@ function updateVisible(value: boolean): void {
                 <Calendar
                     v-model="localOpeningTime.startTime"
                     show-time
-                    hour-format="24"
+                    time-only
+                    hour-format="12"
                     class="w-full" />
             </div>
 
@@ -74,7 +80,8 @@ function updateVisible(value: boolean): void {
                 <Calendar
                     v-model="localOpeningTime.endTime"
                     show-time
-                    hour-format="24"
+                    time-only
+                    hour-format="12"
                     class="w-full" />
             </div>
 
@@ -85,14 +92,24 @@ function updateVisible(value: boolean): void {
         </div>
 
         <template #footer>
-            <div class="flex justify-end gap-3">
-                <Button @click="handleClose" severity="secondary" outlined size="small">
-                    Annuleren
-                </Button>
-                <Button @click="handleSave" size="small">
-                    <FontAwesomeIcon :icon="faPlus" class="mr-2" />
-                    {{ buttonText }}
-                </Button>
+            <div class="flex w-full justify-between">
+                <div>
+                    <Button
+                        v-if="editingIndex !== null"
+                        @click="handleDelete"
+                        severity="danger"
+                        outlined
+                        size="small">
+                        <FontAwesomeIcon :icon="faTrash" class="mr-2" />
+                        Verwijderen
+                    </Button>
+                </div>
+                <div class="flex gap-3">
+                    <Button @click="handleSave" size="small">
+                        <FontAwesomeIcon :icon="faPlus" class="mr-2" />
+                        {{ buttonText }}
+                    </Button>
+                </div>
             </div>
         </template>
     </Dialog>

@@ -2,18 +2,22 @@
 import LocationImagesStep from '@/components/features/location/submit/LocationImagesStep.vue';
 import LocationInformationStep from '@/components/features/location/submit/LocationInformationStep.vue';
 import LocationOpeningsStep from '@/components/features/location/submit/LocationOpeningsStep.vue';
+import LocationSettingsStep from '@/components/features/location/submit/LocationSettingsStep.vue';
 import { useCreateLocation } from '@/composables/data/useLocations';
 import { useToast } from '@/composables/useToast';
+import type { SubStep } from '@/types/contract/LocationWizard';
 import type { CreateImageRequest } from '@/types/schema/Image';
 import type { CreateLocationRequest } from '@/types/schema/Location';
 import { faArrowLeft, faArrowRight, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
 import Button from 'primevue/button';
-import { computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import Checkbox from 'primevue/checkbox';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 const toast = useToast();
 
 const { mutate: createLocation, isPending: isCreating } = useCreateLocation({
@@ -27,7 +31,7 @@ const { mutate: createLocation, isPending: isCreating } = useCreateLocation({
     },
 });
 
-const formData = useLocalStorage<CreateLocationRequest>('location-form-data', {
+const form = useLocalStorage<CreateLocationRequest>('location-form-data', {
     name: '',
     excerpt: {},
     description: {},
@@ -48,40 +52,69 @@ const formData = useLocalStorage<CreateLocationRequest>('location-form-data', {
 });
 
 const images = ref<CreateImageRequest[]>([]);
+const substeps = ref<SubStep[]>([]);
 
-const steps: { id: string; label: string }[] = [
-    { id: 'basic-info', label: 'Informatie' },
-    { id: 'images', label: 'Afbeeldingen' },
-    { id: 'opening-times', label: 'Openingstijden' },
-    { id: 'settings', label: 'Instellingen' },
+const steps: { id: string; label: string; desc: string }[] = [
+    {
+        id: 'basics',
+        label: 'Registreer nieuwe Blokspot',
+        desc: 'Start met wat basisinformatie zoals de naam en een beschrijving van de nieuwe locatie. Bevestig het adres op de kaart.',
+    },
+    {
+        id: 'images',
+        label: 'Afbeeldingen',
+        desc: "Voeg een paar foto's to die de locatie mooi in beeld brengen.",
+    },
+    {
+        id: 'settings',
+        label: 'Instellingen',
+        desc: 'De instellingen van de locatie bepalen hoe men reservaties kan maken.',
+    },
+    {
+        id: 'openings',
+        label: 'Openingstijden',
+        desc: 'Voeg de openingstijden toe. Geen zorgen, je kan deze op elk moment aanpassen!',
+    },
 ];
 
-const currentStep = ref('basic-info');
-const canGoNext = ref(true);
+// Initialize step from URL query parameter or default to 'basics'
+const step = ref((route.query.step as string) || 'basics');
 
-const canGoPrevious = computed(() => currentStepIndex.value > 0);
-const currentStepIndex = computed(() => steps.findIndex((step) => step.id === currentStep.value));
-const isLastStep = computed(() => currentStep.value === 'settings');
+// Watch for route changes to sync step
+watch(
+    () => route.query.step,
+    (newStep) => {
+        if (typeof newStep === 'string' && steps.some((s) => s.id === newStep)) {
+            step.value = newStep;
+        }
+    },
+);
 
-function goNext() {
-    if (canGoNext.value && currentStepIndex.value < steps.length - 1) {
-        canGoNext.value = false;
-        currentStep.value = steps[currentStepIndex.value + 1].id;
+const canGoNext = computed(() => substeps.value.every((substep) => substep.isCompleted));
+const canGoPrevious = computed(() => stepIndex.value > 0);
+const stepIndex = computed(() => steps.findIndex((curr) => curr.id === step.value));
+const progressPercentage = computed(() => Math.round(((stepIndex.value + 1) * 100) / steps.length));
+const isLastStep = computed(() => step.value === 'openings');
+
+function goNext(): void {
+    if (canGoNext.value && stepIndex.value < steps.length - 1) {
+        const nextStep = steps[stepIndex.value + 1].id;
+        router.push({ query: { step: nextStep } });
     }
 }
 
-function goPrevious() {
-    if (currentStepIndex.value > 0) {
-        currentStep.value = steps[currentStepIndex.value - 1].id;
+function goPrevious(): void {
+    if (stepIndex.value > 0) {
+        const prevStep = steps[stepIndex.value - 1].id;
+        router.push({ query: { step: prevStep } });
     }
 }
 
 function submitLocation() {
     if (!canGoNext.value) return;
 
-    // Combine form data with images
     const locationData: CreateLocationRequest = {
-        ...formData.value,
+        ...form.value,
         images: images.value,
     };
 
@@ -90,95 +123,84 @@ function submitLocation() {
 </script>
 
 <template>
-    <div class="mx-auto w-full max-w-5xl space-y-6">
-        <!-- Step Indicators -->
-        <div class="flex items-center justify-center space-x-4 py-3">
-            <div v-for="(step, index) in steps" :key="step.id" class="flex items-center">
-                <!-- Step Circle -->
-                <div class="relative">
-                    <div
-                        class="indicator"
-                        :class="{
-                            'bg-primary-600 scale-110 text-white': index === currentStepIndex,
-                            'bg-primary-500 text-white': index < currentStepIndex,
-                            'bg-gray-200 text-gray-500': index > currentStepIndex,
-                        }">
-                        <FontAwesomeIcon
-                            v-if="index < currentStepIndex"
-                            :icon="faCheck"
-                            class="text-sm">
-                        </FontAwesomeIcon>
-                        <span v-else>{{ index + 1 }}</span>
-                    </div>
+    <div class="mx-auto flex w-full max-w-[2048px] gap-6">
+        <div class="sticky top-6 h-fit w-full space-y-6 rounded-md md:w-2/7">
+            <div class="space-y-4">
+                <h1 class="text-2xl font-bold">
+                    {{ steps[stepIndex].label }}
+                </h1>
+                <p class="text-sm text-slate-500">
+                    {{ steps[stepIndex].desc }}
+                </p>
+            </div>
 
-                    <div
-                        v-if="index === currentStepIndex"
-                        class="bg-primary-400 absolute inset-0 animate-ping rounded-full opacity-20"></div>
+            <div class="space-y-3">
+                <div v-for="substep in substeps" :key="substep.label">
+                    <Checkbox :model-value="substep.isCompleted" :disabled="true" :binary="true">
+                    </Checkbox>
+                    <span
+                        class="ms-3 text-sm"
+                        :class="substep.isCompleted ? 'text-gray-900' : 'text-gray-500'">
+                        {{ substep.label }}
+                    </span>
                 </div>
+            </div>
 
-                <!-- Step Label -->
-                <div class="mr-6 ml-3">
-                    <div
-                        class="text-sm font-medium transition-colors duration-200"
-                        :class="{
-                            'text-primary-600': index === currentStepIndex,
-                            'text-gray-700': index < currentStepIndex,
-                            'text-gray-400': index > currentStepIndex,
-                        }">
-                        {{ step.label }}
-                    </div>
-                    <div
-                        v-if="index === currentStepIndex"
-                        class="text-primary-500 text-xs font-medium">
-                        Actief
-                    </div>
-                    <div v-else-if="index < currentStepIndex" class="text-xs text-gray-500">
-                        Voltooid
-                    </div>
-                </div>
-                <FontAwesomeIcon
-                    v-if="index < steps.length - 1"
-                    :icon="faArrowRight"
-                    class="mr-6 text-sm text-gray-300">
-                </FontAwesomeIcon>
+            <div class="progressbar">
+                <div class="indicator" :style="{ width: progressPercentage + '%' }"></div>
+            </div>
+
+            <div class="flex justify-between space-x-3">
+                <Button
+                    @click="goPrevious"
+                    :disabled="!canGoPrevious"
+                    severity="secondary"
+                    outlined
+                    size="small">
+                    <FontAwesomeIcon :icon="faArrowLeft" class="mr-2" />
+                    Vorige
+                </Button>
+
+                <Button
+                    @click="isLastStep ? submitLocation() : goNext()"
+                    :disabled="!canGoNext"
+                    :loading="isCreating"
+                    size="small">
+                    <template v-if="isLastStep">
+                        <FontAwesomeIcon :icon="faCheck" class="mr-2" />
+                        Voltooien
+                    </template>
+                    <template v-else>
+                        Volgende
+                        <FontAwesomeIcon :icon="faArrowRight" class="ml-2" />
+                    </template>
+                </Button>
             </div>
         </div>
+        <div class="w-full md:w-5/7">
+            <LocationInformationStep
+                v-model="form"
+                v-model:substeps="substeps"
+                v-if="step === 'basics'">
+            </LocationInformationStep>
 
-        <LocationInformationStep
-            v-if="currentStep === 'basic-info'"
-            v-model="formData"
-            v-model:complete="canGoNext">
-        </LocationInformationStep>
+            <LocationImagesStep
+                v-model="images"
+                v-model:substeps="substeps"
+                v-if="step === 'images'">
+            </LocationImagesStep>
 
-        <LocationImagesStep
-            v-if="currentStep === 'images'"
-            v-model="images"
-            v-model:complete="canGoNext">
-        </LocationImagesStep>
+            <LocationSettingsStep
+                v-model="form"
+                v-model:substeps="substeps"
+                v-if="step === 'settings'">
+            </LocationSettingsStep>
 
-        <LocationOpeningsStep
-            v-if="currentStep === 'opening-times'"
-            v-model="formData"
-            v-model:complete="canGoNext">
-        </LocationOpeningsStep>
-
-        <div class="flex items-center justify-between">
-            <!-- Previous Button -->
-            <Button @click="goPrevious" :disabled="!canGoPrevious" severity="secondary" outlined>
-                <FontAwesomeIcon :icon="faArrowLeft" class="mr-2" />
-                Vorige
-            </Button>
-
-            <!-- Next/Submit Button -->
-            <Button v-if="!isLastStep" @click="goNext" :disabled="!canGoNext">
-                Volgende
-                <FontAwesomeIcon :icon="faArrowRight" class="ml-2" />
-            </Button>
-
-            <Button v-else @click="submitLocation" :loading="isCreating" :disabled="!canGoNext">
-                <FontAwesomeIcon :icon="faCheck" class="mr-2" />
-                Locatie Toevoegen
-            </Button>
+            <LocationOpeningsStep
+                v-model="form"
+                v-model:substeps="substeps"
+                v-if="step === 'openings'">
+            </LocationOpeningsStep>
         </div>
     </div>
 </template>
@@ -186,8 +208,12 @@ function submitLocation() {
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.indicator {
-    @apply flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300;
-    @apply cursor-pointer text-sm font-semibold;
+.progressbar {
+    @apply relative h-2 w-full rounded-xl bg-slate-300;
+
+    .indicator {
+        @apply bg-primary-500 absolute top-0 left-0 h-full rounded-xl;
+        @apply transition-all duration-300;
+    }
 }
 </style>

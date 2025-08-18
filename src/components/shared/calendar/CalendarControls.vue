@@ -14,6 +14,8 @@ import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     currentWeek: Date;
+    minDate?: Date;
+    maxDate?: Date;
 }>();
 
 const emit = defineEmits<{
@@ -130,6 +132,8 @@ function goToToday(): void {
                         <DatePicker
                             :model-value="props.currentWeek"
                             :locale="locale"
+                            :min-date="minDate"
+                            :max-date="maxDate"
                             @update:model-value="handleDateSelect"
                             inline>
                             <template #footer v-if="isSelectedDateOutsideCurrentWeek">

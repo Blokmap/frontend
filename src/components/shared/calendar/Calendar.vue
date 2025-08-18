@@ -8,9 +8,13 @@ const props = withDefaults(
     defineProps<{
         currentWeek: Date;
         timeSlots?: TimeSlot<any>[];
+        minDate?: Date;
+        maxDate?: Date;
     }>(),
     {
         timeSlots: () => [],
+        minDate: undefined,
+        maxDate: undefined,
     },
 );
 
@@ -51,6 +55,12 @@ const currentTimePosition = computed(() => {
     return (totalMinutes / (24 * 60)) * 100;
 });
 
+const isDayDisabled = (day: Date): boolean => {
+    if (props.minDate && day < props.minDate) return true;
+    if (props.maxDate && day > props.maxDate) return true;
+    return false;
+};
+
 onMounted(() => {
     updateInterval.value = setInterval(() => {
         currentTime.value = new Date();
@@ -70,16 +80,48 @@ function getDayTimeSlots(day: Date): TimeSlot<any>[] {
 }
 
 function getSlotPosition(slot: TimeSlot<any>): { top: string; height: string } {
-    const [startHour, startMinute] = slot.startTime.split(':').map(Number);
-    const [endHour, endMinute] = slot.endTime.split(':').map(Number);
+    // Parse AM/PM time format to 24-hour for calculations
+    function parseTimeString(timeStr: string): { hour: number; minute: number } {
+        // Check if it's AM/PM format
+        if (timeStr.includes('AM') || timeStr.includes('PM')) {
+            const isPM = timeStr.includes('PM');
+            const cleanTime = timeStr.replace(/\s*(AM|PM)/i, '');
+            const [hourStr, minuteStr] = cleanTime.split(':');
+            let hour = parseInt(hourStr);
+            const minute = parseInt(minuteStr);
 
-    const startMinutes = startHour * 60 + startMinute;
-    const endMinutes = endHour * 60 + endMinute;
-    const totalMinutes = 24 * 60;
+            // Convert to 24-hour format
+            if (isPM && hour !== 12) {
+                hour += 12;
+            } else if (!isPM && hour === 12) {
+                hour = 0;
+            }
+
+            return { hour, minute };
+        } else {
+            // Assume 24-hour format
+            const [hour, minute] = timeStr.split(':').map(Number);
+            return { hour, minute };
+        }
+    }
+
+    const startParsed = parseTimeString(slot.startTime);
+    const endParsed = parseTimeString(slot.endTime);
+
+    const startMinutes = startParsed.hour * 60 + startParsed.minute;
+    const endMinutes = endParsed.hour * 60 + endParsed.minute;
+    const durationMinutes = endMinutes - startMinutes;
+
+    // Each hour is 50px (as defined in .time-period-cell height)
+    const pixelsPerHour = 50;
+    const pixelsPerMinute = pixelsPerHour / 60;
+
+    const topPosition = startMinutes * pixelsPerMinute;
+    const height = durationMinutes * pixelsPerMinute;
 
     return {
-        top: `${(startMinutes / totalMinutes) * 100}%`,
-        height: `${((endMinutes - startMinutes) / totalMinutes) * 100}%`,
+        top: `${topPosition}px`,
+        height: `${Math.max(height, 20)}px`, // Minimum height of 20px for visibility
     };
 }
 
@@ -99,6 +141,9 @@ function scrollToCurrentTime(): void {
 }
 
 function handleTimePeriodClick(day: Date, time: string): void {
+    if (props.minDate && day < props.minDate) return;
+    if (props.maxDate && day > props.maxDate) return;
+
     emit('click:time-slot', { day, time });
 }
 
@@ -147,6 +192,7 @@ function handleDayClick(day: Date): void {
                             v-for="time in hourlyTimePeriods"
                             :key="time"
                             class="time-period-cell"
+                            :class="{ disabled: isDayDisabled(day) }"
                             @click="handleTimePeriodClick(day, time)"></div>
 
                         <!-- Custom time slots positioned absolutely within the day -->
@@ -320,12 +366,39 @@ function handleDayClick(day: Date): void {
         &:hover::before {
             @apply pointer-events-none absolute inset-0;
         }
+
+        &.disabled {
+            @apply cursor-not-allowed bg-gray-200 opacity-40;
+            position: relative;
+
+            &:hover {
+                @apply bg-gray-200;
+            }
+
+            /* Add diagonal stripes pattern for disabled dates */
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-image: repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(156, 163, 175, 0.3) 2px,
+                    rgba(156, 163, 175, 0.3) 4px
+                );
+                pointer-events: none;
+            }
+        }
     }
 }
 
 .custom-time-slot {
-    @apply absolute right-1 left-1 z-10 min-h-[20px];
-    @apply overflow-hidden;
+    @apply absolute right-0 left-0 z-10 min-h-[20px];
+    overflow: visible;
 }
 
 .current-time-indicator {

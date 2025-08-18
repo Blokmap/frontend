@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { SubStep } from '@/types/contract/LocationWizard';
 import type { CreateImageRequest } from '@/types/schema/Image';
 import type { CreateLocationRequest } from '@/types/schema/Location';
 import {
@@ -12,17 +13,16 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
-import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
 import FileUpload from 'primevue/fileupload';
 import InputText from 'primevue/inputtext';
 import TabPanel from 'primevue/tabpanel';
 import TabView from 'primevue/tabview';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const images = defineModel<CreateImageRequest[]>({ required: true, default: () => [] });
-const complete = defineModel<boolean>('complete', { default: true });
+const substeps = defineModel<SubStep[]>('substeps', { default: [] });
 
 const showAddDialog = ref(false);
 const urlInput = ref('');
@@ -33,18 +33,28 @@ const primaryImage = computed(() => images.value.find((img) => img.isPrimary));
 const secondaryImages = computed(() => images.value.filter((img) => !img.isPrimary));
 const primaryImageIndex = computed(() => images.value.findIndex((img) => img.isPrimary) || 0);
 
-watch(
-    images,
-    (newImages) => {
-        complete.value = newImages.length > 0;
-    },
-    { immediate: true },
-);
-
 onMounted(() => {
     if (images.value.length === 0) {
         showAddDialog.value = true;
     }
+});
+
+// Populate substeps for sidebar display
+watchEffect(() => {
+    const data = images.value;
+    const hasPrimaryImage = data.some((img) => img.isPrimary);
+    const hasImages = data.length > 0;
+
+    substeps.value = [
+        {
+            label: 'Afbeeldingen toevoegen',
+            isCompleted: hasImages,
+        },
+        {
+            label: 'Hoofdafbeelding instellen',
+            isCompleted: hasPrimaryImage,
+        },
+    ];
 });
 
 function getImageIndex(image: CreateImageRequest): number {
@@ -100,20 +110,21 @@ function handleFileUpload(event: any): void {
     const files = event.files;
 
     if (!files || files.length === 0) return;
-    if (!canAddMore.value) return;
 
-    const file = files[0];
-    const mockUrl = URL.createObjectURL(file);
+    // Calculate how many files we can actually add
+    const remainingSlots = 10 - images.value.length;
+    const filesToAdd = files.slice(0, remainingSlots);
 
-    images.value = [
-        ...images.value,
-        {
+    const newImages = filesToAdd.map((file: File, index: number) => {
+        const mockUrl = URL.createObjectURL(file);
+        return {
             url: mockUrl,
-            isPrimary: images.value.length === 0,
-            order: images.value.length,
-        },
-    ];
+            isPrimary: images.value.length === 0 && index === 0, // Make first uploaded image primary if no images exist
+            order: images.value.length + index,
+        };
+    });
 
+    images.value = [...images.value, ...newImages];
     showAddDialog.value = false;
 }
 
@@ -145,14 +156,11 @@ function onDrop(event: DragEvent, targetIndex: number): void {
     const newImages = [...images.value];
     const draggedImage = newImages[draggedIndex.value];
 
-    // Remove dragged image
     newImages.splice(draggedIndex.value, 1);
 
-    // Insert at new position
     const insertIndex = draggedIndex.value < targetIndex ? targetIndex - 1 : targetIndex;
     newImages.splice(insertIndex, 0, draggedImage);
 
-    // Update order
     newImages.forEach((img, idx) => {
         img.order = idx;
     });
@@ -167,146 +175,146 @@ function onDragEnd(): void {
 </script>
 
 <template>
-    <Card class="border-l-secondary-500 border-l-4">
-        <template #content>
-            <div class="space-y-6 p-6">
-                <!-- Header -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div
-                            class="bg-secondary-100 flex h-10 w-10 items-center justify-center rounded-full">
-                            <FontAwesomeIcon :icon="faImage" class="text-secondary-600" />
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-semibold text-gray-900">Afbeeldingen</h3>
-                            <p class="text-sm text-gray-600">
-                                Voeg afbeeldingen toe van uw locatie
-                                <span class="ml-2 text-gray-500">({{ images.length }}/10)</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Images Gallery -->
-                <div v-if="images.length > 0" class="space-y-4">
-                    <!-- Main Image (Primary) -->
-                    <div v-if="primaryImage" class="relative overflow-hidden rounded-lg">
-                        <div
-                            class="primary-image group"
-                            draggable="true"
-                            @dragstart="onDragStart($event, primaryImageIndex)"
-                            @dragover="onDragOver"
-                            @drop="onDrop($event, 0)"
-                            @dragend="onDragEnd">
-                            <img
-                                :src="primaryImage.url"
-                                alt="Hoofdafbeelding"
-                                class="primary-image__img" />
-
-                            <!-- Primary Badge -->
-                            <div class="primary-badge">
-                                <FontAwesomeIcon :icon="faStar" class="h-3 w-3" />
-                                Hoofdafbeelding
-                            </div>
-
-                            <!-- Actions -->
-                            <div class="image-actions">
-                                <div class="image-actions__buttons">
-                                    <Button
-                                        @click.stop="removeImage(primaryImageIndex)"
-                                        size="small"
-                                        severity="danger"
-                                        class="action-button action-button--danger"
-                                        rounded>
-                                        <FontAwesomeIcon :icon="faTrash" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Additional Images Grid -->
+    <div class="rounded-lg border-2 border-slate-200 bg-white p-6">
+        <div class="space-y-6">
+            <!-- Header -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
                     <div
-                        v-if="secondaryImages.length > 0 || canAddMore"
-                        class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                        <div
-                            v-for="(image, index) in secondaryImages"
-                            :key="`secondary-${index}`"
-                            class="secondary-image group"
-                            draggable="true"
-                            @dragstart="onDragStart($event, getImageIndex(image))"
-                            @dragover="onDragOver"
-                            @drop="onDrop($event, getImageIndex(image))"
-                            @dragend="onDragEnd">
-                            <img
-                                :src="image.url"
-                                :alt="`Afbeelding ${index + 2}`"
-                                class="secondary-image__img" />
-
-                            <!-- Actions -->
-                            <div class="image-actions">
-                                <div class="image-actions__buttons">
-                                    <Button
-                                        @click.stop="setPrimary(getImageIndex(image))"
-                                        size="small"
-                                        severity="secondary"
-                                        class="action-button action-button--secondary"
-                                        rounded>
-                                        <FontAwesomeIcon :icon="faStar" />
-                                    </Button>
-                                    <Button
-                                        @click.stop="removeImage(getImageIndex(image))"
-                                        size="small"
-                                        severity="danger"
-                                        class="action-button action-button--danger"
-                                        rounded>
-                                        <FontAwesomeIcon :icon="faTrash" />
-                                    </Button>
-                                </div>
-                            </div>
-
-                            <!-- Index Number -->
-                            <div
-                                class="absolute right-2 bottom-2 rounded bg-black/60 px-1.5 py-0.5 text-xs text-white">
-                                {{ index + 2 }}
-                            </div>
-                        </div>
-
-                        <!-- Add New Image Placeholder -->
-                        <div v-if="canAddMore" class="add-image-placeholder" @click="openAddDialog">
-                            <div class="text-center">
-                                <FontAwesomeIcon
-                                    :icon="faPlus"
-                                    class="mb-2 h-8 w-8 text-gray-400" />
-                                <div class="text-xs text-gray-500">Voeg toe</div>
-                            </div>
-                        </div>
+                        class="bg-secondary-100 flex h-10 w-10 items-center justify-center rounded-full">
+                        <FontAwesomeIcon :icon="faImage" class="text-secondary-600" />
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900">Afbeeldingen</h3>
+                        <p class="text-sm text-gray-600">
+                            Voeg afbeeldingen toe van uw locatie
+                            <span class="ml-2 text-gray-500">({{ images.length }}/10)</span>
+                        </p>
                     </div>
                 </div>
 
-                <!-- Add Images -->
-                <div v-if="canAddMore && images.length === 0" class="space-y-3">
-                    <div
-                        class="hover:border-primary-400 hover:bg-primary-50 flex h-48 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors duration-200"
-                        @click="openAddDialog">
-                        <div class="text-center">
-                            <FontAwesomeIcon :icon="faImage" class="mb-3 h-12 w-12 text-gray-400" />
-                            <h4 class="text-lg font-medium text-gray-900">Voeg afbeeldingen toe</h4>
-                            <p class="text-sm text-gray-500">
-                                Klik hier om uw eerste afbeelding toe te voegen
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Help Text -->
-                <p v-if="images.length > 0" class="text-center text-sm text-gray-500">
-                    Sleep afbeeldingen om de volgorde te wijzigen. Klik op de ster om een
-                    hoofdafbeelding in te stellen.
-                </p>
+                <Button v-if="canAddMore" @click="openAddDialog" size="small" text class="p-2">
+                    <FontAwesomeIcon :icon="faPlus" />
+                </Button>
             </div>
-        </template>
-    </Card>
+
+            <!-- Images Gallery -->
+            <div v-if="images.length > 0" class="space-y-4">
+                <!-- Main Image (Primary) -->
+                <div v-if="primaryImage" class="relative overflow-hidden rounded-lg">
+                    <div
+                        class="primary-image group"
+                        draggable="true"
+                        @dragstart="onDragStart($event, primaryImageIndex)"
+                        @dragover="onDragOver"
+                        @drop="onDrop($event, 0)"
+                        @dragend="onDragEnd">
+                        <img
+                            :src="primaryImage.url"
+                            alt="Hoofdafbeelding"
+                            class="primary-image__img" />
+
+                        <!-- Primary Badge -->
+                        <div class="primary-badge">
+                            <FontAwesomeIcon :icon="faStar" class="h-3 w-3" />
+                            Hoofdafbeelding
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="image-actions">
+                            <div class="image-actions__buttons">
+                                <Button
+                                    @click.stop="removeImage(primaryImageIndex)"
+                                    size="small"
+                                    severity="danger"
+                                    class="action-button action-button--danger"
+                                    rounded>
+                                    <FontAwesomeIcon :icon="faTrash" />
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Images Grid -->
+                <div
+                    v-if="secondaryImages.length > 0 || canAddMore"
+                    class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                    <div
+                        v-for="(image, index) in secondaryImages"
+                        :key="`secondary-${index}`"
+                        class="secondary-image group"
+                        draggable="true"
+                        @dragstart="onDragStart($event, getImageIndex(image))"
+                        @dragover="onDragOver"
+                        @drop="onDrop($event, getImageIndex(image))"
+                        @dragend="onDragEnd">
+                        <img
+                            :src="image.url"
+                            :alt="`Afbeelding ${index + 2}`"
+                            class="secondary-image__img" />
+
+                        <!-- Actions -->
+                        <div class="image-actions">
+                            <div class="image-actions__buttons">
+                                <Button
+                                    @click.stop="setPrimary(getImageIndex(image))"
+                                    size="small"
+                                    severity="secondary"
+                                    class="action-button action-button--secondary"
+                                    rounded>
+                                    <FontAwesomeIcon :icon="faStar" />
+                                </Button>
+                                <Button
+                                    @click.stop="removeImage(getImageIndex(image))"
+                                    size="small"
+                                    severity="danger"
+                                    class="action-button action-button--danger"
+                                    rounded>
+                                    <FontAwesomeIcon :icon="faTrash" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        <!-- Index Number -->
+                        <div
+                            class="absolute right-2 bottom-2 rounded bg-black/60 px-1.5 py-0.5 text-xs text-white">
+                            {{ index + 2 }}
+                        </div>
+                    </div>
+
+                    <!-- Add New Image Placeholder -->
+                    <div v-if="canAddMore" class="add-image-placeholder" @click="openAddDialog">
+                        <div class="text-center">
+                            <FontAwesomeIcon :icon="faPlus" class="mb-2 h-8 w-8 text-gray-400" />
+                            <div class="text-xs text-gray-500">Voeg toe</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Images -->
+            <div v-if="canAddMore && images.length === 0" class="space-y-3">
+                <div
+                    class="hover:border-primary-400 hover:bg-primary-50 flex h-48 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors duration-200"
+                    @click="openAddDialog">
+                    <div class="text-center">
+                        <FontAwesomeIcon :icon="faImage" class="mb-3 h-12 w-12 text-gray-400" />
+                        <h4 class="text-lg font-medium text-gray-900">Voeg afbeeldingen toe</h4>
+                        <p class="text-sm text-gray-500">
+                            Klik hier om uw eerste afbeelding toe te voegen
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Text -->
+            <p v-if="images.length > 0" class="text-center text-sm text-gray-500">
+                Sleep afbeeldingen om de volgorde te wijzigen. Klik op de ster om een
+                hoofdafbeelding in te stellen.
+            </p>
+        </div>
+    </div>
 
     <!-- Add Image Dialog -->
     <Dialog
@@ -325,22 +333,27 @@ function onDragEnd(): void {
                         <FontAwesomeIcon :icon="faUpload" />
                     </div>
                     <div>
-                        <h4 class="font-semibold text-gray-900">Bestand uploaden</h4>
-                        <p class="text-sm text-gray-500">Kies een bestand van uw computer</p>
+                        <h4 class="font-semibold text-gray-900">Bestanden uploaden</h4>
+                        <p class="text-sm text-gray-500">
+                            Kies een of meerdere bestanden van uw computer
+                        </p>
                     </div>
                 </div>
                 <FileUpload
                     mode="basic"
                     accept="image/*"
+                    :multiple="true"
                     :auto="true"
-                    choose-label="Selecteer bestand"
+                    choose-label="Selecteer bestanden"
                     class="w-full"
                     @select="handleFileUpload">
                     <template #chooseicon>
                         <FontAwesomeIcon :icon="faUpload" />
                     </template>
                 </FileUpload>
-                <div class="text-xs text-gray-500">JPG, PNG, GIF • Max. 10MB</div>
+                <div class="text-xs text-gray-500">
+                    JPG, PNG, GIF • Max. 10MB per bestand • Tot {{ 10 - images.length }} bestanden
+                </div>
             </div>
 
             <!-- Divider -->
@@ -397,8 +410,8 @@ function onDragEnd(): void {
 }
 
 .primary-badge {
-    @apply absolute top-3 left-3 flex items-center gap-1 rounded-full px-2 py-1;
-    @apply bg-yellow-500 text-xs font-medium text-white shadow-sm;
+    @apply absolute top-3 right-3 flex items-center gap-1 rounded-full px-2 py-1;
+    @apply bg-white text-sm font-medium;
 }
 
 .secondary-image {

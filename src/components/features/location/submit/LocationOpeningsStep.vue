@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import OpeningTimeDialog from '@/components/features/location/submit/OpeningTimeDialog.vue';
 import OpeningTimesCalendar from '@/components/features/location/submit/OpeningTimesCalendar.vue';
+import type { SubStep } from '@/types/contract/LocationWizard';
 import type { CreateLocationRequest, CreateOpeningTimeRequest } from '@/types/schema/Location';
 import { addToDate } from '@/utils/date/date';
 import {
@@ -13,21 +14,31 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import Calendar from 'primevue/calendar';
-import Card from 'primevue/card';
 import Checkbox from 'primevue/checkbox';
+import ConfirmDialog from 'primevue/confirmdialog';
 import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
 import InputNumber from 'primevue/inputnumber';
-import { computed, ref, watch } from 'vue';
+import { useConfirm } from 'primevue/useconfirm';
+import { computed, ref, watch, watchEffect } from 'vue';
 
 const form = defineModel<CreateLocationRequest>({ required: true });
-const complete = defineModel<boolean>('complete', { default: false });
+const substeps = defineModel<SubStep[]>('substeps', { default: [] });
+
+const confirm = useConfirm();
 
 const openingTimes = computed(() => form.value.openingTimes || []);
 const currentWeek = ref(new Date());
 const showAddDialog = ref(false);
 const showQuickActionsDialog = ref(false);
 const editingIndex = ref<number | null>(null);
+
+// Date constraints: today to 2 months in the future
+const today = new Date();
+today.setHours(0, 0, 0, 0); // Start of today
+const maxDate = new Date();
+maxDate.setMonth(maxDate.getMonth() + 2);
+maxDate.setHours(23, 59, 59, 999); // End of the max day
 
 const newOpeningTime = ref<CreateOpeningTimeRequest>({
     startTime: new Date(),
@@ -51,6 +62,31 @@ const quickAction = ref({
     ],
 });
 
+// Ensure quick action dates stay within constraints
+watch(
+    () => quickAction.value.startDate,
+    (newStartDate) => {
+        if (newStartDate < today) {
+            quickAction.value.startDate = new Date(today);
+        }
+        if (newStartDate > maxDate) {
+            quickAction.value.startDate = new Date(maxDate);
+        }
+    },
+);
+
+watch(
+    () => quickAction.value.endDate,
+    (newEndDate) => {
+        if (newEndDate < today) {
+            quickAction.value.endDate = new Date(today);
+        }
+        if (newEndDate > maxDate) {
+            quickAction.value.endDate = new Date(maxDate);
+        }
+    },
+);
+
 const dayOptions = [
     { label: 'Maandag', value: 1 },
     { label: 'Dinsdag', value: 2 },
@@ -66,15 +102,32 @@ const quickActionTypes = [
     { label: 'Dagelijks (doordeweeks)', value: 'daily' },
 ];
 
-watch(
-    [openingTimes],
-    ([times]) => {
-        complete.value = times.length > 0;
-    },
-    { immediate: true, deep: true },
-);
+watchEffect(() => {
+    const times = openingTimes.value;
+    const hasOpeningTimes = times.length > 0;
+    const hasUpcomingTimes = times.some((time) => new Date(time.startTime) > new Date());
+
+    substeps.value = [
+        {
+            label: 'Openingstijden toevoegen',
+            isCompleted: hasOpeningTimes,
+        },
+        {
+            label: 'Toekomstige beschikbaarheid',
+            isCompleted: hasUpcomingTimes,
+        },
+    ];
+});
 
 function handleSaveOpeningTime(openingTime: CreateOpeningTimeRequest): void {
+    // Validate that end time is after start time
+    if (new Date(openingTime.endTime) <= new Date(openingTime.startTime)) {
+        // Auto-fix: set end time to 1 hour after start time
+        const correctedEndTime = new Date(openingTime.startTime);
+        correctedEndTime.setHours(correctedEndTime.getHours() + 1);
+        openingTime.endTime = correctedEndTime;
+    }
+
     if (editingIndex.value !== null) {
         // Edit existing opening time
         const newTimes = [...openingTimes.value];
@@ -88,28 +141,6 @@ function handleSaveOpeningTime(openingTime: CreateOpeningTimeRequest): void {
     closeDialog();
 }
 
-function addOpeningTime(): void {
-    if (editingIndex.value !== null) {
-        const newTimes = [...openingTimes.value];
-        newTimes[editingIndex.value] = { ...newOpeningTime.value };
-        form.value.openingTimes = newTimes;
-        editingIndex.value = null;
-    } else {
-        form.value.openingTimes = [...openingTimes.value, { ...newOpeningTime.value }];
-    }
-
-    newOpeningTime.value = {
-        startTime: new Date(),
-        endTime: new Date(),
-        seatCount: form.value.seatCount || 1,
-        reservableFrom: null,
-        reservableUntil: null,
-    };
-
-    showAddDialog.value = false;
-    editingIndex.value = null;
-}
-
 function removeOpeningTime(index: number): void {
     const newTimes = [...openingTimes.value];
     newTimes.splice(index, 1);
@@ -117,6 +148,15 @@ function removeOpeningTime(index: number): void {
 }
 
 function handleCalendarSlotClick(slot: { day: Date; time: string }): void {
+    // Additional validation: ensure the selected day is not in the past
+    if (slot.day < today) {
+        return; // Don't allow creating slots in the past
+    }
+
+    if (slot.day > maxDate) {
+        return; // Don't allow creating slots beyond 2 months
+    }
+
     const [hours, minutes] = slot.time.split(':').map(Number);
     const startTime = new Date(slot.day);
     startTime.setHours(hours, minutes, 0, 0);
@@ -166,7 +206,15 @@ function executeQuickAction(): void {
 
     const days = type === 'daily' ? [1, 2, 3, 4, 5] : selectedDays;
 
-    for (let date = new Date(startDate); date <= endDate; date = addToDate(date, 1, 'day')) {
+    // Ensure dates are within constraints
+    const constrainedStartDate = new Date(Math.max(startDate.getTime(), today.getTime()));
+    const constrainedEndDate = new Date(Math.min(endDate.getTime(), maxDate.getTime()));
+
+    for (
+        let date = new Date(constrainedStartDate);
+        date <= constrainedEndDate;
+        date = addToDate(date, 1, 'day')
+    ) {
         const dayOfWeek = date.getDay();
 
         if (!days.includes(dayOfWeek)) continue;
@@ -182,6 +230,11 @@ function executeQuickAction(): void {
 
             const endTime = new Date(date);
             endTime.setHours(endHours, endMinutes, 0, 0);
+
+            // Validate that end time is after start time
+            if (endTime <= startTime) {
+                endTime.setHours(startHours + 1, startMinutes, 0, 0);
+            }
 
             newTimes.push({
                 startTime,
@@ -208,67 +261,81 @@ function addTimeSlot(): void {
 function removeTimeSlot(index: number): void {
     quickAction.value.timeSlots.splice(index, 1);
 }
+
+function handleDeleteSlotFromDialog(): void {
+    if (editingIndex.value !== null) {
+        removeOpeningTime(editingIndex.value);
+        closeDialog();
+    }
+}
+
+function confirmClearAll(): void {
+    confirm.require({
+        message:
+            'Weet je zeker dat je alle openingstijden wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
+        header: 'Alle openingstijden verwijderen',
+        rejectProps: {
+            label: 'Annuleren',
+            severity: 'secondary',
+            outlined: true,
+        },
+        acceptProps: {
+            label: 'Verwijderen',
+            severity: 'danger',
+        },
+        accept: () => {
+            form.value.openingTimes = [];
+        },
+    });
+}
 </script>
 
 <template>
-    <Card class="border-l-secondary-500 border-l-4">
-        <template #content>
-            <div class="space-y-6 p-6">
-                <!-- Header -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div
-                            class="bg-secondary-100 flex h-10 w-10 items-center justify-center rounded-full">
-                            <FontAwesomeIcon :icon="faCalendarDays" class="text-secondary-600" />
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-semibold text-gray-900">Openingstijden</h3>
-                            <p class="text-sm text-gray-600">
-                                Plan wanneer uw locatie beschikbaar is
-                                <span class="ml-2 text-gray-500">
-                                    ({{ openingTimes.length }} tijdsloten)
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        <Button
-                            @click="showQuickActionsDialog = true"
-                            size="small"
-                            severity="secondary"
-                            outlined>
-                            <FontAwesomeIcon :icon="faRepeat" class="mr-1" />
-                            Snelle Acties
-                        </Button>
-
-                        <Button
-                            v-if="openingTimes.length > 0"
-                            @click="form.openingTimes = []"
-                            severity="danger"
-                            rounded
-                            text>
-                            <FontAwesomeIcon :icon="faTrash" />
-                        </Button>
-                    </div>
-                </div>
-            </div>
-        </template>
-    </Card>
-
-    <div class="space-y-4">
+    <ConfirmDialog />
+    <div class="space-y-4 pb-20">
         <OpeningTimesCalendar
             v-model:date-in-week="currentWeek"
             :opening-times="openingTimes"
+            :min-date="today"
+            :max-date="maxDate"
             @select:slot="handleCalendarSlotClick"
             @edit:slot="handleEditSlot"
             @delete:slot="handleDeleteSlot"
-            class="h-96">
+            class="h-96 overflow-visible">
         </OpeningTimesCalendar>
 
         <p class="text-center text-sm text-gray-500">
             Klik op een tijdslot in de kalender om een openingstijd toe te voegen
         </p>
+    </div>
+
+    <!-- Sticky Bottom Action Bar -->
+    <div class="fixed right-0 bottom-0 left-0 z-30">
+        <div
+            class="mx-3 mb-3 rounded-lg border border-slate-200 bg-white/95 shadow-lg backdrop-blur-sm md:mx-6">
+            <div class="px-4 py-3">
+                <div class="flex items-center justify-between">
+                    <Button
+                        @click="showQuickActionsDialog = true"
+                        size="small"
+                        severity="secondary"
+                        outlined>
+                        <FontAwesomeIcon :icon="faRepeat" class="mr-2" />
+                        Snelle acties
+                    </Button>
+
+                    <Button
+                        v-if="openingTimes.length > 0"
+                        @click="confirmClearAll"
+                        size="small"
+                        severity="danger"
+                        outlined>
+                        <FontAwesomeIcon :icon="faTrash" class="mr-2" />
+                        Alles wissen
+                    </Button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Opening Time Dialog -->
@@ -277,6 +344,7 @@ function removeTimeSlot(index: number): void {
         :opening-time="newOpeningTime"
         :editing-index="editingIndex"
         @save="handleSaveOpeningTime"
+        @delete="handleDeleteSlotFromDialog"
         @close="closeDialog" />
 
     <!-- Quick Actions Dialog -->
@@ -302,11 +370,19 @@ function removeTimeSlot(index: number): void {
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700">Start Datum</label>
-                    <Calendar v-model="quickAction.startDate" class="w-full" />
+                    <Calendar
+                        v-model="quickAction.startDate"
+                        :min-date="today"
+                        :max-date="maxDate"
+                        class="w-full" />
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700">Eind Datum</label>
-                    <Calendar v-model="quickAction.endDate" class="w-full" />
+                    <Calendar
+                        v-model="quickAction.endDate"
+                        :min-date="today"
+                        :max-date="maxDate"
+                        class="w-full" />
                 </div>
             </div>
 
@@ -340,7 +416,7 @@ function removeTimeSlot(index: number): void {
                                 v-model="slot.startTime"
                                 show-time
                                 time-only
-                                hour-format="24"
+                                hour-format="12"
                                 class="w-full" />
                         </div>
                         <div class="flex-1">
@@ -349,7 +425,7 @@ function removeTimeSlot(index: number): void {
                                 v-model="slot.endTime"
                                 show-time
                                 time-only
-                                hour-format="24"
+                                hour-format="12"
                                 class="w-full">
                             </Calendar>
                         </div>

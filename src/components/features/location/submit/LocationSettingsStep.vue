@@ -33,7 +33,8 @@ watchEffect(() => {
 <template>
     <div class="space-y-8">
         <!-- Seat Configuration -->
-        <div class="rounded-lg border-2 border-slate-200 bg-white dark:bg-slate-700 dark:border-slate-600 p-6">
+        <div
+            class="rounded-lg border-2 border-slate-200 bg-white p-6 dark:border-slate-600 dark:bg-slate-700">
             <div class="space-y-6">
                 <!-- Header -->
                 <div class="flex items-center space-x-3">
@@ -42,7 +43,9 @@ watchEffect(() => {
                         <FontAwesomeIcon :icon="faUsers" class="text-secondary-600" />
                     </div>
                     <div>
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-slate-100">Zitplaatsen</h3>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-slate-100">
+                            Zitplaatsen
+                        </h3>
                         <p class="text-sm text-gray-600 dark:text-slate-400">
                             Configureer het aantal beschikbare zitplaatsen voor reservaties
                         </p>
@@ -51,7 +54,9 @@ watchEffect(() => {
 
                 <!-- Content -->
                 <div>
-                    <label for="seatCount" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                    <label
+                        for="seatCount"
+                        class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
                         Aantal zitplaatsen
                     </label>
                     <InputNumber
@@ -69,7 +74,8 @@ watchEffect(() => {
         </div>
 
         <!-- Reservation Settings -->
-        <div class="rounded-lg border-2 border-slate-200 bg-white dark:bg-slate-700 dark:border-slate-600 p-6">
+        <div
+            class="rounded-lg border-2 border-slate-200 bg-white p-6 dark:border-slate-600 dark:bg-slate-700">
             <div class="space-y-6">
                 <!-- Header -->
                 <div class="flex items-center space-x-3">
@@ -78,7 +84,9 @@ watchEffect(() => {
                         <FontAwesomeIcon :icon="faClock" class="text-secondary-600" />
                     </div>
                     <div>
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-slate-100">Reservatie-instellingen</h3>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-slate-100">
+                            Reservatie-instellingen
+                        </h3>
                         <p class="text-sm text-gray-600 dark:text-slate-400">
                             Bepaal hoe mensen reservaties kunnen maken voor deze locatie
                         </p>
@@ -89,13 +97,17 @@ watchEffect(() => {
                 <div class="space-y-6">
                     <div class="flex items-center gap-3">
                         <Checkbox id="isReservable" v-model="form.isReservable" :binary="true" />
-                        <label for="isReservable" class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        <label
+                            for="isReservable"
+                            class="text-sm font-medium text-slate-700 dark:text-slate-300">
                             Reservaties toestaan
                         </label>
                     </div>
 
                     <div v-if="form.isReservable">
-                        <label for="reservationBlockSize" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                        <label
+                            for="reservationBlockSize"
+                            class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
                             Reservatieblok (in minuten)
                         </label>
                         <InputNumber

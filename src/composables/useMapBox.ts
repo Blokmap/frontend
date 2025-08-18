@@ -1,9 +1,9 @@
+import { useTheme } from './useTheme';
 import { defaultMapOptions } from '@/config/map';
 import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/types/contract/Map';
 import mapboxgl from 'mapbox-gl';
 import { type Ref, isRef, nextTick, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useTheme } from './useTheme';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 
@@ -23,7 +23,7 @@ export function useMapBox<T>(
 
     // Theme-aware map styles
     const getMapStyle = () => {
-        return isDark.value 
+        return isDark.value
             ? 'mapbox://styles/mapbox/dark-v11'
             : 'mapbox://styles/mapbox/outdoors-v11';
     };

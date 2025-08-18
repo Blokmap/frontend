@@ -12,7 +12,7 @@ const authorities = ref([
 </script>
 
 <template>
-    <nav class="flex w-64 flex-col justify-between bg-white dark:bg-surface-800"></nav>
+    <nav class="dark:bg-surface-800 flex w-64 flex-col justify-between bg-white"></nav>
 </template>
 
 <style scoped>

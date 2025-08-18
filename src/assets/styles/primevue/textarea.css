@@ -5,8 +5,8 @@
     @apply text-slate-900 dark:text-slate-100;
     @apply placeholder:text-slate-500 dark:placeholder:text-slate-400;
 
-    @apply border-slate-300 dark:border-slate-600;
-    @apply enabled:hover:border-slate-400 dark:enabled:hover:border-slate-500;
+    @apply border-slate-200 dark:border-slate-600;
+    @apply enabled:hover:border-slate-300 dark:enabled:hover:border-slate-500;
     @apply enabled:focus:border-primary;
 
     @apply disabled:bg-slate-100 disabled:text-slate-500;

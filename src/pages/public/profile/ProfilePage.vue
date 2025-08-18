@@ -80,21 +80,29 @@ function openReservationsModal(): void {
                             <Skeleton height="21px" width="250px" />
                         </template>
                         <template v-else-if="profile">
-                            <h1 class="text-3xl font-bold text-gray-900">
+                            <h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100">
                                 {{ profile.firstName }} {{ profile.lastName }}
                             </h1>
-                            <div class="flex items-center gap-2 text-gray-600">
-                                <FontAwesomeIcon :icon="faUser" class="text-gray-400" />
+                            <div class="flex items-center gap-2 text-gray-600 dark:text-slate-400">
+                                <FontAwesomeIcon
+                                    :icon="faUser"
+                                    class="text-gray-400 dark:text-slate-500" />
                                 @{{ profile.username }}
                             </div>
                             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div class="flex items-center gap-3">
-                                    <FontAwesomeIcon :icon="faEnvelope" class="text-gray-400" />
-                                    <span class="text-gray-700">{{ profile.email }}</span>
+                                    <FontAwesomeIcon
+                                        :icon="faEnvelope"
+                                        class="text-gray-400 dark:text-slate-500" />
+                                    <span class="text-gray-700 dark:text-slate-300">{{
+                                        profile.email
+                                    }}</span>
                                 </div>
                                 <div class="flex items-center gap-3" v-if="profile.institution">
-                                    <FontAwesomeIcon :icon="faBuilding" class="text-gray-400" />
-                                    <span class="text-gray-700">{{
+                                    <FontAwesomeIcon
+                                        :icon="faBuilding"
+                                        class="text-gray-400 dark:text-slate-500" />
+                                    <span class="text-gray-700 dark:text-slate-300">{{
                                         profile.institution?.name
                                     }}</span>
                                 </div>
@@ -160,7 +168,9 @@ function openReservationsModal(): void {
             <Card>
                 <template #header>
                     <div class="flex items-center justify-between p-6 pb-0">
-                        <h2 class="text-xl font-semibold text-gray-900">Reservaties Deze Week</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-slate-100">
+                            Reservaties Deze Week
+                        </h2>
                         <Button
                             @click="openReservationsModal"
                             size="small"
@@ -183,7 +193,8 @@ function openReservationsModal(): void {
                             </ReservationItem>
                         </template>
                         <template v-else>
-                            <div class="space-y-4 py-8 text-center text-gray-500">
+                            <div
+                                class="space-y-4 py-8 text-center text-gray-500 dark:text-slate-400">
                                 <FontAwesomeIcon :icon="faCalendarDays" class="text-4xl" />
                                 <p>Geen reservaties deze week</p>
                                 <Button
@@ -202,13 +213,15 @@ function openReservationsModal(): void {
             <!-- Achievements -->
             <Card>
                 <template #header>
-                    <h2 class="p-6 pb-0 text-xl font-semibold text-gray-900">Prestaties</h2>
+                    <h2 class="p-6 pb-0 text-xl font-semibold text-gray-900 dark:text-slate-100">
+                        Prestaties
+                    </h2>
                 </template>
                 <template #content>
                     <div class="space-y-3">
                         <template v-if="false"> </template>
                         <template v-else>
-                            <div class="py-6 text-center text-gray-500">
+                            <div class="py-6 text-center text-gray-500 dark:text-slate-400">
                                 <FontAwesomeIcon :icon="faAward" class="mb-3 text-3xl" />
                                 <p class="text-sm">
                                     Maak meer reservatie om prestaties te ontgrendelen!

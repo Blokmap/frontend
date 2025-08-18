@@ -175,7 +175,8 @@ function onDragEnd(): void {
 </script>
 
 <template>
-    <div class="rounded-lg border-2 border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 p-6">
+    <div
+        class="rounded-lg border-2 border-slate-200 bg-white p-6 dark:border-slate-600 dark:bg-slate-700">
         <div class="space-y-6">
             <!-- Header -->
             <div class="flex items-center justify-between">

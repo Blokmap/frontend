@@ -1,13 +1,12 @@
 .p-popover {
-    @apply bg-surface-0 text-surface-600;
-    @apply dark:bg-surface-900 dark:text-surface-0;
-    @apply after:border-b-surface-0;
-    @apply dark:after:border-b-surface-900;
+    @apply bg-white text-slate-900;
+    @apply dark:bg-slate-800 dark:text-slate-100;
     @apply mt-[10px] rounded-md border border-slate-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)];
     @apply before:pointer-events-none before:absolute before:bottom-full before:left-5 before:-ms-[10px] before:h-0 before:w-0 before:border-[10px] before:border-transparent before:border-b-slate-200;
-    @apply after:pointer-events-none after:absolute after:bottom-full after:left-5 after:-ms-[8px] after:h-0 after:w-0 after:border-[8px] after:border-transparent;
+    @apply after:pointer-events-none after:absolute after:bottom-full after:left-5 after:-ms-[8px] after:h-0 after:w-0 after:border-[8px] after:border-transparent after:border-b-white;
     @apply dark:border-slate-700;
     @apply dark:before:border-b-slate-700;
+    @apply dark:after:border-b-slate-800;
 }
 
 .p-popover:after,
@@ -44,8 +43,8 @@
 }
 
 .p-popover.p-popover-flipped:after {
-    @apply border-t-surface-0 border-b-transparent;
-    @apply dark:border-t-surface-900;
+    @apply border-t-white border-b-transparent;
+    @apply dark:border-t-slate-800;
 }
 
 .p-popover.p-popover-flipped:before {

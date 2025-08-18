@@ -44,8 +44,12 @@ function handleInstitutionSelection(institution: Institution): void {
                     :alt="institution.name[locale as any]!"
                     class="h-15 w-15 object-contain" />
                 <div>
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ institution.name[locale] }}</h3>
-                    <p class="text-sm text-gray-600 dark:text-slate-400">{{ institution.slug[locale] }}</p>
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                        {{ institution.name[locale] }}
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-slate-400">
+                        {{ institution.slug[locale] }}
+                    </p>
                 </div>
             </div>
         </template>

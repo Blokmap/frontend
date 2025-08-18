@@ -11,12 +11,12 @@
     @apply dark:placeholder:text-slate-400;
 
     /* Border states */
-    @apply border-slate-300;
+    @apply border-slate-200;
     @apply dark:border-slate-600;
-    @apply enabled:hover:border-slate-400;
+    @apply enabled:hover:border-slate-300;
     @apply dark:enabled:hover:border-slate-500;
-    @apply enabled:focus:border-slate-400;
-    @apply dark:enabled:focus:border-slate-400;
+    @apply enabled:focus:border-primary-400;
+    @apply dark:enabled:focus:border-primary-400;
 
     /* Disabled states */
     @apply disabled:bg-slate-100 disabled:text-slate-500;

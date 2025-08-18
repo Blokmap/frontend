@@ -124,18 +124,21 @@ const handleConfirmAddress = async () => {
 <template>
     <div class="space-y-8">
         <!-- Basic Information -->
-        <div class="rounded-lg border-2 border-slate-200 bg-white">
-            <div class="space-y-6 p-6">
+        <div
+            class="rounded-lg border-2 border-slate-200 bg-white p-6 dark:border-slate-600 dark:bg-slate-700">
+            <div class="space-y-6">
                 <div class="flex items-center space-x-3">
                     <div
                         class="bg-secondary-50 flex h-10 w-10 items-center justify-center rounded-full">
-                        <FontAwesomeIcon :icon="faEdit" class="text-secondary-600" />
+                        <FontAwesomeIcon :icon="faEdit" class="text-secondary-700" />
                     </div>
                     <div class="flex w-full items-center justify-between">
                         <div>
-                            <h3 class="text-xl font-semibold text-gray-900">Basis informatie</h3>
-                            <p class="text-sm text-gray-600">
-                                Voer de basisgegevens van uw locatie in
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-slate-300">
+                                Naam en beschrijving
+                            </h3>
+                            <p class="text-sm text-gray-600 dark:text-slate-400">
+                                Geef uw locatie een duidelijke naam en beschrijving
                             </p>
                         </div>
                         <div class="flex items-center space-x-2">
@@ -151,9 +154,11 @@ const handleConfirmAddress = async () => {
                     </div>
                 </div>
 
-                <!-- Location Name -->
+                <!-- Name Field -->
                 <div>
-                    <label for="name" class="mb-2 block text-sm font-medium text-gray-700">
+                    <label
+                        for="name"
+                        class="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-200">
                         Locatie naam *
                     </label>
                     <InputText
@@ -161,42 +166,43 @@ const handleConfirmAddress = async () => {
                         v-model="form.name"
                         class="w-full"
                         placeholder="Bijv. Brugs Beertje, Café Central..." />
-                    <small class="mt-1 block text-gray-500">
+                    <small class="mt-1 block text-gray-500 dark:text-slate-400">
                         Kies een herkenbare naam voor de locatie
                     </small>
                 </div>
 
-                <!-- Short description (current language) -->
+                <!-- Language Selector for Descriptions -->
                 <div>
-                    <label
-                        :for="`excerpt-${currentLanguage}`"
-                        class="mb-2 block text-sm font-medium text-gray-700">
-                        Korte beschrijving ({{ currentLanguage }})
-                    </label>
-                    <Textarea
-                        rows="3"
-                        class="w-full"
-                        placeholder="Bijv. Gezellig café met lokale bieren"
-                        :id="`excerpt-${currentLanguage}`"
-                        :maxlength="100"
-                        v-model="form.excerpt![currentLanguage]">
-                    </Textarea>
-                    <small class="mt-1 block text-gray-500">
-                        {{ (form.excerpt?.[currentLanguage] || '').length }}/100 karakters
-                    </small>
+                    <div class="mb-4 flex items-center justify-between">
+                        <label class="text-sm font-medium text-gray-700 dark:text-slate-300">
+                            Korte beschrijving *
+                        </label>
+                    </div>
+
+                    <div>
+                        <Textarea
+                            rows="3"
+                            class="w-full"
+                            placeholder="Bijv. Gezellig café met lokale bieren"
+                            :id="`excerpt-${currentLanguage}`"
+                            :maxlength="100"
+                            v-model="form.excerpt![currentLanguage]">
+                        </Textarea>
+                        <small class="mt-1 block text-gray-500 dark:text-slate-400">
+                            {{ (form.excerpt?.[currentLanguage] || '').length }}/200 karakters
+                        </small>
+                    </div>
                 </div>
 
                 <!-- Detailed Description -->
-                <div class="border-t border-gray-200 pt-6">
-                    <h4 class="mb-4 text-lg font-medium text-gray-900">Uitgebreide beschrijving</h4>
-
-                    <!-- Current language description -->
-                    <div>
-                        <label
-                            :for="`description-${currentLanguage}`"
-                            class="mb-2 block text-sm font-medium text-gray-700">
-                            Beschrijving ({{ currentLanguage }})
+                <div>
+                    <div class="mb-4 flex items-center justify-between">
+                        <label class="text-sm font-medium text-gray-700 dark:text-slate-300">
+                            Uitgebreide beschrijving *
                         </label>
+                    </div>
+
+                    <div>
                         <Textarea
                             :id="`description-${currentLanguage}`"
                             v-model="form.description![currentLanguage]"
@@ -205,7 +211,7 @@ const handleConfirmAddress = async () => {
                             rows="5"
                             placeholder="Bijv. Gezellige café met lokale bieren">
                         </Textarea>
-                        <small class="mt-1 block text-gray-500">
+                        <small class="mt-1 block text-gray-500 dark:text-slate-400">
                             {{ (form.description?.[currentLanguage] || '').length }}/500 karakters
                         </small>
                     </div>
@@ -214,23 +220,30 @@ const handleConfirmAddress = async () => {
         </div>
 
         <!-- Location Details -->
-        <div class="rounded-lg border-2 border-gray-200 bg-white">
-            <div class="space-y-6 p-6">
+        <div
+            class="rounded-lg border-2 border-slate-200 bg-white p-6 dark:border-slate-600 dark:bg-slate-700">
+            <div class="space-y-6">
                 <div class="flex items-center space-x-3">
                     <div
                         class="bg-primary-100 flex h-10 w-10 items-center justify-center rounded-full">
                         <FontAwesomeIcon :icon="faHome" class="text-primary-600" />
                     </div>
                     <div>
-                        <h3 class="text-xl font-semibold text-gray-900">Adres informatie</h3>
-                        <p class="text-sm text-gray-600">Voer het adres van uw locatie in</p>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-slate-300">
+                            Adres informatie
+                        </h3>
+                        <p class="text-sm text-gray-600 dark:text-slate-400">
+                            Voer het adres van uw locatie in
+                        </p>
                     </div>
                 </div>
 
                 <!-- Manual Address Entry -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label for="street" class="mb-2 block text-sm font-medium text-gray-700">
+                        <label
+                            for="street"
+                            class="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-300">
                             Straatnaam *
                         </label>
                         <InputText
@@ -242,7 +255,9 @@ const handleConfirmAddress = async () => {
                     </div>
 
                     <div>
-                        <label for="number" class="mb-2 block text-sm font-medium text-gray-700">
+                        <label
+                            for="number"
+                            class="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-300">
                             Huisnummer *
                         </label>
                         <InputText
@@ -254,7 +269,9 @@ const handleConfirmAddress = async () => {
                     </div>
 
                     <div>
-                        <label for="zip" class="mb-2 block text-sm font-medium text-gray-700">
+                        <label
+                            for="zip"
+                            class="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-300">
                             Postcode *
                         </label>
                         <InputText
@@ -266,7 +283,9 @@ const handleConfirmAddress = async () => {
                     </div>
 
                     <div>
-                        <label for="city" class="mb-2 block text-sm font-medium text-gray-700">
+                        <label
+                            for="city"
+                            class="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-300">
                             Stad *
                         </label>
                         <InputText
@@ -280,13 +299,17 @@ const handleConfirmAddress = async () => {
 
                 <!-- Address Confirmation Button -->
                 <div
-                    class="flex items-center justify-between rounded-lg border-1 border-slate-200 bg-gray-50 p-4">
+                    class="flex items-center justify-between rounded-lg border-2 border-slate-200 bg-gray-50 p-4 dark:border-slate-600 dark:bg-slate-700">
                     <div>
-                        <h4 class="font-medium text-gray-900">Bevestig locatie op kaart</h4>
-                        <p class="text-sm text-gray-600">
+                        <h4 class="font-medium text-gray-900 dark:text-slate-100">
+                            Bevestig locatie op kaart
+                        </h4>
+                        <p class="text-sm text-gray-600 dark:text-slate-400">
                             Controleer en bevestig de exacte locatie op de kaart
                         </p>
-                        <div v-if="hasCoordinates" class="text-primary-600 mt-1 text-xs">
+                        <div
+                            v-if="hasCoordinates"
+                            class="text-primary-600 dark:text-primary-400 mt-1 text-xs">
                             ✓ Bevestigd:
                             {{ form.latitude?.toFixed(6) }},
                             {{ form.longitude?.toFixed(6) }}

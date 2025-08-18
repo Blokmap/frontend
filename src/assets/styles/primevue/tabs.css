@@ -19,7 +19,7 @@
 }
 
 .p-tablist-tab-list {
-    @apply bg-surface-0 dark:bg-surface-900 dark:border-slate-700 relative flex border-0 border-b-2 border-slate-200;
+    @apply bg-surface-0 dark:bg-surface-900 relative flex border-0 border-b-2 border-slate-200 dark:border-slate-700;
 }
 
 .p-tablist-content {

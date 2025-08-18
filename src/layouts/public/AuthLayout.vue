@@ -20,7 +20,7 @@ const route = useRoute();
                 <img src="@/assets/img/partners/kuleuven.png" alt="KU Leuven" />
             </Carousel>
         </div>
-        <div class="auth--section relative rounded-2xl bg-white dark:bg-slate-700 p-8">
+        <div class="auth--section relative rounded-2xl bg-white p-8 dark:bg-slate-700">
             <RouterLink :to="{ name: 'locations' }" class="absolute top-6 right-6">
                 <Logo />
             </RouterLink>

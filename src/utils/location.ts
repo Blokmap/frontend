@@ -1,5 +1,5 @@
-import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import placeholderDark from '@/assets/img/placeholder/location-placeholder-dark.svg';
+import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import type { Location } from '@/types/schema/Location';
 
 /**

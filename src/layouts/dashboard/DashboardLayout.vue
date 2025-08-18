@@ -8,7 +8,7 @@ const profile = useAuthProfile({
 </script>
 
 <template>
-    <div class="m-3 flex min-h-full rounded-lg bg-white dark:bg-slate-800 md:m-6">
+    <div class="m-3 flex min-h-full rounded-lg bg-white md:m-6 dark:bg-slate-800">
         <main class="mx-auto w-full px-6 2xl:w-7/8">
             <RouterView />
         </main>

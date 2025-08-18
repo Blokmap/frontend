@@ -4,7 +4,7 @@ import PublicHeader from './PublicHeader.vue';
 </script>
 
 <template>
-    <div class="m-3 rounded-md bg-gray-50 pb-0 md:m-6 dark:bg-slate-800 overflow-hidden">
+    <div class="m-3 rounded-md bg-gray-50 pb-0 md:m-6 dark:bg-slate-800">
         <div class="px-3 py-6 md:px-6 2xl:mx-auto 2xl:w-7/8">
             <PublicHeader></PublicHeader>
         </div>
@@ -18,6 +18,8 @@ import PublicHeader from './PublicHeader.vue';
             </RouterView>
         </main>
 
-        <PublicFooter></PublicFooter>
+        <div class="overflow-hidden rounded-b-md">
+            <PublicFooter></PublicFooter>
+        </div>
     </div>
 </template>

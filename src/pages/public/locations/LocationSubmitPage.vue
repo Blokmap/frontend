@@ -140,7 +140,11 @@ function submitLocation() {
                     </Checkbox>
                     <span
                         class="ms-3 text-sm"
-                        :class="substep.isCompleted ? 'text-slate-900 dark:text-slate-100' : 'text-slate-500 dark:text-slate-400'">
+                        :class="
+                            substep.isCompleted
+                                ? 'text-slate-900 dark:text-slate-100'
+                                : 'text-slate-500 dark:text-slate-400'
+                        ">
                         {{ substep.label }}
                     </span>
                 </div>

@@ -53,7 +53,9 @@ const isLight = computed(() => props.variant === 'light');
             </h2>
 
             <!-- Description -->
-            <p class="mb-8 text-lg md:text-xl" :class="isLight ? 'text-gray-700 dark:text-slate-300' : 'text-white/90'">
+            <p
+                class="mb-8 text-lg md:text-xl"
+                :class="isLight ? 'text-gray-700 dark:text-slate-300' : 'text-white/90'">
                 Help andere mensen door jouw favoriete locatie toe te voegen aan Blokmap.
                 <br />
                 Van bibliotheken tot coworkingspaces - elke bijdrage maakt het verschil!

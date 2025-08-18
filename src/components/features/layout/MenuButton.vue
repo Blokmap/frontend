@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import ThemeSelector from '@/components/features/layout/ThemeSelector.vue';
+import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
 import { DOCS_URL } from '@/constants';
 import {
@@ -53,8 +53,8 @@ function handleNavigationClick(): void {
     <!-- Popover -->
     <Popover
         ref="popover"
-        class="w-full max-w-[300px] rounded-lg border border-slate-200 dark:border-slate-700 shadow-lg">
-        <div class="dark:text-slate-200 p-1 text-sm text-slate-800">
+        class="w-full max-w-[300px] rounded-lg border border-slate-200 shadow-lg dark:border-slate-700">
+        <div class="p-1 text-sm text-slate-800 dark:text-slate-200">
             <!-- Profile Section -->
             <template v-if="profileIsLoading">
                 <div class="flex items-center gap-3">
@@ -160,6 +160,6 @@ function handleNavigationClick(): void {
 
 .help-link {
     @apply flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs;
-    @apply text-slate-500 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200;
+    @apply text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200;
 }
 </style>

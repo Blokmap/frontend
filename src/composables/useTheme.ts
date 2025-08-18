@@ -5,7 +5,7 @@ type Theme = 'light' | 'dark' | 'system';
 
 /**
  * Composable for managing the application theme (light/dark mode).
- * 
+ *
  * Features:
  * - Persistent theme preference using localStorage
  * - System theme detection and automatic switching
@@ -102,7 +102,7 @@ export function useTheme() {
         () => {
             applyTheme(currentTheme.value);
         },
-        { immediate: true }
+        { immediate: true },
     );
 
     // Listen for system theme changes

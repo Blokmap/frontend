@@ -144,7 +144,9 @@ function switchToRegister(): void {
                         class="h-10 w-10 object-contain" />
                     <div class="flex flex-col">
                         <p class="text-sm font-bold">{{ option.slug[locale] }}</p>
-                        <p class="text-sm text-gray-400 dark:text-slate-400">{{ option.name[locale] }}</p>
+                        <p class="text-sm text-gray-400 dark:text-slate-400">
+                            {{ option.name[locale] }}
+                        </p>
                     </div>
                 </div>
             </template>

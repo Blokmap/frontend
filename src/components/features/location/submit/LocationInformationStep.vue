@@ -214,7 +214,7 @@ const handleConfirmAddress = async () => {
         </div>
 
         <!-- Location Details -->
-        <div class="rounded-lg border border-gray-200 bg-white">
+        <div class="rounded-lg border-2 border-gray-200 bg-white">
             <div class="space-y-6 p-6">
                 <div class="flex items-center space-x-3">
                     <div

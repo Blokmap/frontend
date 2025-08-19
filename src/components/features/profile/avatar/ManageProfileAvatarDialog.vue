@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import ProfileAvatar from './ProfileAvatar.vue';
 import { useDeleteAvatar, useUpdateAvatar } from '@/composables/data/useProfile';
+import { useToast } from '@/composables/useToast';
 import type { Profile } from '@/types/schema/Profile';
 import { faClose, faImagePortrait, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -12,17 +13,30 @@ import { ref } from 'vue';
 const props = defineProps<{ profile: Profile }>();
 const visible = defineModel<boolean>('visible', { default: false });
 
+const messages = useToast();
 const client = useQueryClient();
 
 const { mutate: updateAvatar, isPending: isUpdating } = useUpdateAvatar({
     onSuccess: () => {
         client.invalidateQueries({ queryKey: ['profile'] });
+        visible.value = false;
+        messages.add({
+            severity: 'success',
+            summary: 'Profielfoto bijgewerkt',
+            detail: 'Je profielfoto is succesvol bijgewerkt.',
+        });
     },
 });
 
 const { mutate: deleteAvatar, isPending: isDeleting } = useDeleteAvatar({
     onSuccess: () => {
         client.invalidateQueries({ queryKey: ['profile'] });
+        visible.value = false;
+        messages.add({
+            severity: 'success',
+            summary: 'Profielfoto verwijderd',
+            detail: 'Je profielfoto is succesvol verwijderd.',
+        });
     },
 });
 
@@ -79,7 +93,7 @@ function onFileChange(e: Event): void {
                         severity="primary"
                         label="Opslaan"
                         :loading="isUpdating"
-                        :disabled="!selectedFile"
+                        :disabled="!selectedFile || isUpdating"
                         @click="handleUpdateClick">
                         <template #icon>
                             <FontAwesomeIcon :icon="faImagePortrait" />
@@ -90,7 +104,7 @@ function onFileChange(e: Event): void {
                         severity="contrast"
                         label="Verwijderen"
                         :loading="isDeleting"
-                        :disabled="!props.profile.avatarUrl"
+                        :disabled="!props.profile.avatarUrl || isDeleting"
                         @click="handleDeleteClick">
                         <template #icon>
                             <FontAwesomeIcon :icon="faTrash" />

@@ -65,7 +65,7 @@ export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<v
  *
  * @returns The mutation object for logging in.
  */
-export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<void, LoginRequest> {
+export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<LoginRequest> {
     const client = useQueryClient();
 
     const mutation = useMutation({
@@ -87,9 +87,7 @@ export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<vo
  *
  * @returns The mutation object for registering a new user.
  */
-export function useAuthRegister(
-    options: CompMutationOptions = {},
-): CompMutation<void, RegisterRequest> {
+export function useAuthRegister(options: CompMutationOptions = {}): CompMutation<RegisterRequest> {
     const client = useQueryClient();
 
     const mutation = useMutation({

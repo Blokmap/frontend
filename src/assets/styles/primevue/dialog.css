@@ -1,7 +1,12 @@
 @import './button';
 
 .p-dialog {
-    @apply border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0 max-h-[90%] scale-100 rounded-xl border shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)];
+    @apply border-surface-200 dark:border-surface-700;
+    @apply bg-surface-0 dark:bg-surface-900;
+    @apply dark:text-surface-0 text-slate-800;
+    @apply max-h-[90%] scale-100;
+    @apply rounded-xl border;
+    @apply shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)];
 }
 
 .p-dialog-content {
@@ -9,7 +14,9 @@
 }
 
 .p-dialog-header {
-    @apply flex shrink-0 items-center justify-between border-b-2 border-b-slate-200 px-5 py-3;
+    @apply flex shrink-0 items-center justify-between;
+    @apply border-b-2 border-b-slate-200;
+    @apply px-5 py-3;
 }
 
 .p-dialog-title {
@@ -17,7 +24,9 @@
 }
 
 .p-dialog-footer {
-    @apply flex shrink-0 justify-end gap-2 border-t-2 border-slate-200 px-5 py-3;
+    @apply flex shrink-0 justify-end gap-2;
+    @apply border-t-2 border-slate-200;
+    @apply px-5 py-3;
 }
 
 .p-dialog-header-actions {
@@ -45,7 +54,8 @@
 .p-dialog-topright .p-dialog,
 .p-dialog-bottomleft .p-dialog,
 .p-dialog-bottomright .p-dialog {
-    @apply m-3 [transform:translate3d(0,0,0)];
+    @apply m-3;
+    @apply [transform:translate3d(0,0,0)];
 }
 
 .p-dialog-top .p-dialog-enter-active,
@@ -113,7 +123,9 @@
 }
 
 .p-dialog-maximized {
-    @apply start-0 top-0 !h-screen max-h-full !w-screen rounded-none;
+    @apply start-0 top-0;
+    @apply !h-screen max-h-full !w-screen;
+    @apply rounded-none;
 }
 
 .p-dialog-maximized .p-dialog-content {

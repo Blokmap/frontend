@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -31,24 +31,28 @@ const { mutateAsync: createLocation, isPending: isCreating } = useCreateLocation
     },
 });
 
-const form = useLocalStorage<CreateLocationRequest>('location-form-data', {
-    name: '',
-    excerpt: {},
-    description: {},
-    street: '',
-    number: '',
-    zip: '',
-    city: '',
-    country: 'be',
-    province: '',
-    latitude: 0,
-    longitude: 0,
-    seatCount: 0,
-    reservationBlockSize: 60,
-    minReservationLength: null,
-    maxReservationLength: null,
-    isReservable: true,
-});
+const form = useLocalStorage<CreateLocationRequest>(
+    'location-form-data',
+    {
+        name: '',
+        excerpt: {},
+        description: {},
+        street: '',
+        number: '',
+        zip: '',
+        city: '',
+        country: 'be',
+        province: '',
+        latitude: 0,
+        longitude: 0,
+        seatCount: 0,
+        reservationBlockSize: 60,
+        minReservationLength: null,
+        maxReservationLength: null,
+        isReservable: true,
+    },
+    { mergeDefaults: true },
+);
 
 const images = ref<CreateImageRequest[]>([]);
 const openingTimes = ref<CreateOpeningTimeRequest[]>([]);

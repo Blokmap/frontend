@@ -7,75 +7,60 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 <template>
     <footer class="footer">
-        <div class="footer__content">
-            <div class="footer__section">
+        <div class="footer-content">
+            <div class="footer-section">
                 <div class="w-fit">
                     <Logo />
                 </div>
-                <p class="footer__description">
+                <p class="footer-description">
                     Ontdek en reserveer de perfecte studeerplekken in België. Van stille
                     bibliotheken tot gezellige cafés.
                 </p>
-                <div class="footer__social">
-                    <a href="#" aria-label="Facebook" class="footer__social-link">
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook" class="footer-social-link">
                         <FontAwesomeIcon :icon="faFacebook" class="h-3 w-3" />
                     </a>
-                    <a href="#" aria-label="Twitter" class="footer__social-link">
+                    <a href="#" aria-label="Twitter" class="footer-social-link">
                         <FontAwesomeIcon :icon="faTwitter" class="h-3 w-3" />
                     </a>
-                    <a href="#" aria-label="Instagram" class="footer__social-link">
+                    <a href="#" aria-label="Instagram" class="footer-social-link">
                         <FontAwesomeIcon :icon="faInstagram" class="h-3 w-3" />
                     </a>
                 </div>
             </div>
 
-            <div class="footer__section">
-                <h4 class="footer__title">Platform</h4>
+            <div class="footer-section">
+                <h4 class="footer-title">Platform</h4>
                 <ul class="space-y-1">
                     <li>
-                        <RouterLink :to="{ name: 'locations' }" class="footer__link">
+                        <RouterLink :to="{ name: 'locations' }" class="footer-link">
                             Locaties zoeken
                         </RouterLink>
                     </li>
                     <li>
-                        <RouterLink :to="{ name: 'locations.submit' }" class="footer__link">
+                        <RouterLink :to="{ name: 'locations.submit' }" class="footer-link">
                             Locatie registreren
                         </RouterLink>
                     </li>
                     <li>
-                        <a :href="DOCS_URL" target="_blank" rel="noopener" class="footer__link">
+                        <a :href="DOCS_URL" target="_blank" rel="noopener" class="footer-link">
                             Hoe het werkt
                         </a>
                     </li>
                 </ul>
             </div>
 
-            <div class="footer__section">
-                <h4 class="footer__title">Support</h4>
+            <div class="footer-section">
+                <h4 class="footer-title">Informatie</h4>
                 <ul class="space-y-1">
-                    <li>
-                        <a :href="DOCS_URL" target="_blank" rel="noopener" class="footer__link">
-                            Hulp centrum
-                        </a>
-                    </li>
-                    <li><a href="#" class="footer__link">Veelgestelde vragen</a></li>
-                    <li><a href="#" class="footer__link">Feedback</a></li>
-                    <li><a href="#" class="footer__link">Contact</a></li>
-                </ul>
-            </div>
-
-            <div class="footer__section">
-                <h4 class="footer__title">Informatie</h4>
-                <ul class="space-y-1">
-                    <li><a href="#" class="footer__link">Privacybeleid</a></li>
-                    <li><a href="#" class="footer__link">Gebruiksvoorwaarden</a></li>
-                    <li><a href="#" class="footer__link">Cookiebeleid</a></li>
+                    <li><a href="#" class="footer-link">Privacybeleid</a></li>
+                    <li><a href="#" class="footer-link">Algemene Voorwaarden</a></li>
                 </ul>
             </div>
         </div>
 
-        <div class="footer__bottom">
-            <div class="footer__bottom-content">
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
                 <div class="text-surface-600 text-sm font-medium">
                     © {{ new Date().getFullYear() }} Blokmap. Alle rechten voorbehouden.
                 </div>
@@ -93,52 +78,52 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 .footer {
     @apply border-surface-200 mt-8 border-t-2 bg-white;
 
-    .footer__content {
+    .footer-content {
         @apply mx-auto grid max-w-7xl grid-cols-1 gap-6 px-6 py-8;
-        @apply md:grid-cols-2 lg:grid-cols-4;
-    }
+        @apply md:grid-cols-1 lg:grid-cols-3;
 
-    .footer__section {
-        @apply space-y-3;
-    }
+        .footer-section {
+            @apply space-y-3;
 
-    .footer__title {
-        @apply text-sm font-semibold tracking-wider uppercase;
-        @apply text-primary-600;
-    }
+            .footer-title {
+                @apply text-sm font-semibold tracking-wider uppercase;
+                @apply text-primary-600;
+            }
 
-    .footer__description {
-        @apply max-w-sm text-sm leading-relaxed;
-        @apply text-surface-600;
-    }
+            .footer-description {
+                @apply max-w-sm text-sm leading-relaxed;
+                @apply text-surface-600;
+            }
 
-    .footer__link {
-        @apply text-surface-600 block text-sm;
-        @apply transition-colors duration-200;
+            .footer-link {
+                @apply text-surface-600 block text-sm;
+                @apply transition-colors duration-200;
 
-        &:hover {
-            @apply text-primary-600;
+                &:hover {
+                    @apply text-primary-600;
+                }
+            }
         }
     }
 
-    .footer__social {
+    .footer-social {
         @apply flex space-x-2 pt-2;
-    }
 
-    .footer__social-link {
-        @apply flex h-8 w-8 items-center justify-center rounded-full;
-        @apply bg-surface-100 border-surface-200 text-surface-600 border;
-        @apply transition-all duration-200;
+        .footer-social-link {
+            @apply flex h-8 w-8 items-center justify-center rounded-full;
+            @apply bg-surface-100 border-surface-200 text-surface-600 border;
+            @apply transition-all duration-200;
 
-        &:hover {
-            @apply bg-primary-500 border-primary-500 text-white;
+            &:hover {
+                @apply bg-primary-500 border-primary-500 text-white;
+            }
         }
     }
 
-    .footer__bottom {
+    .footer-bottom {
         @apply border-surface-200 bg-surface-50 border-t;
 
-        .footer__bottom-content {
+        .footer-bottom-content {
             @apply mx-auto flex max-w-7xl flex-col items-center justify-between;
             @apply px-6 py-3 text-center;
             @apply md:flex-row md:text-left;
@@ -148,18 +133,18 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
-    .footer .footer__section:first-child {
+    .footer .footer-section:first-child {
         @apply text-center;
 
         .w-fit {
             @apply mx-auto;
         }
 
-        .footer__description {
+        .footer-description {
             @apply mx-auto;
         }
 
-        .footer__social {
+        .footer-social {
             @apply justify-center;
         }
     }

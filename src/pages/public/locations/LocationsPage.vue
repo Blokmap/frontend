@@ -100,11 +100,11 @@ const handlePageChange = (event: { page: number }): void => {
                             <template v-if="locations?.data?.length">
                                 <template v-if="locations.truncated">
                                     Meer dan {{ locations.total }}
-                                    <span class="text-gradient-conic">Blokspots</span> gevonden
+                                    <span class="text-gradient-conic">locaties</span> gevonden
                                 </template>
                                 <template v-else>
                                     {{ locations.total }}
-                                    <span class="text-gradient-conic">Blokspots</span> gevonden
+                                    <span class="text-gradient-conic">locaties</span> gevonden
                                 </template>
                             </template>
                             <template v-else> Geen exacte resultaten gevonden </template>
@@ -120,7 +120,7 @@ const handlePageChange = (event: { page: number }): void => {
                     <template v-if="locations?.data?.length">
                         <p class="text-slate-500" v-if="locations.total > locations.perPage">
                             {{ locations.perPage }} van {{ locations.total }}
-                            <span class="text-gradient-conic">Blokspots</span> getoond. Gebruik de
+                            <span class="text-gradient-conic">locaties</span> getoond. Gebruik de
                             filters om je zoekopdracht te verfijnen.
                         </p>
                         <p class="text-slate-500" v-else>

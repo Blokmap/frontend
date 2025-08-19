@@ -9,16 +9,17 @@ import InputNumber from 'primevue/inputnumber';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
-    visible: boolean;
     openingTime: CreateOpeningTimeRequest;
     editingIndex: number | null;
 }>();
 
+const visible = defineModel<boolean>('visible', {
+    default: false,
+});
+
 const emit = defineEmits<{
-    'update:visible': [value: boolean];
     save: [openingTime: CreateOpeningTimeRequest];
     delete: [];
-    close: [];
 }>();
 
 const localOpeningTime = ref<CreateOpeningTimeRequest>({ ...props.openingTime });
@@ -29,7 +30,6 @@ const dialogTitle = computed(() =>
 
 const buttonText = computed(() => (props.editingIndex !== null ? 'Bijwerken' : 'Toevoegen'));
 
-// Watch for prop changes to update local state
 watch(
     () => props.openingTime,
     (newValue) => {
@@ -45,25 +45,16 @@ function handleSave(): void {
 function handleDelete(): void {
     emit('delete');
 }
-
-function handleClose(): void {
-    emit('close');
-}
-
-function updateVisible(value: boolean): void {
-    emit('update:visible', value);
-}
 </script>
 
 <template>
     <Dialog
-        :visible="visible"
-        @update:visible="updateVisible"
+        v-model:visible="visible"
         :header="dialogTitle"
         :style="{ width: '500px' }"
-        modal
         :draggable="false"
-        :resizable="false">
+        :resizable="false"
+        modal>
         <div class="space-y-4">
             <div>
                 <label class="mb-2 block text-sm font-medium text-gray-700">Start Tijd</label>
@@ -72,7 +63,8 @@ function updateVisible(value: boolean): void {
                     show-time
                     time-only
                     hour-format="12"
-                    class="w-full" />
+                    class="w-full">
+                </Calendar>
             </div>
 
             <div>
@@ -82,7 +74,8 @@ function updateVisible(value: boolean): void {
                     show-time
                     time-only
                     hour-format="12"
-                    class="w-full" />
+                    class="w-full">
+                </Calendar>
             </div>
 
             <div>

@@ -71,7 +71,7 @@ function handleNavigationClick(): void {
                         class="flex items-center gap-3"
                         :to="{ name: 'profile' }"
                         @click="handleNavigationClick">
-                        <ProfileAvatar :profile="profile" size="3rem" />
+                        <ProfileAvatar :profile="profile" class="h-[3rem] w-[3rem]" />
                         <div class="flex-1 space-y-1 leading-tight">
                             <div class="font-semibold text-slate-900 dark:text-white">
                                 {{ profile.firstName }}
@@ -103,7 +103,7 @@ function handleNavigationClick(): void {
                 <h3 class="text-lg font-bold">Jouw Profiel</h3>
                 <p class="mt-2 mb-3 text-sm text-slate-500 dark:text-slate-400">
                     Reserveer een plek op een van onze
-                    <span class="text-gradient-conic">Blokspots</span> of meld zelf een plek aan.
+                    <span class="text-gradient-conic">locaties</span> of meld zelf een plek aan.
                 </p>
                 <div class="flex gap-1">
                     <RouterLink
@@ -133,7 +133,7 @@ function handleNavigationClick(): void {
                     :to="{ name: 'locations' }"
                     @click="handleNavigationClick">
                     <FontAwesomeIcon :icon="faMapLocation" class="text-secondary" />
-                    <span>Ontdek alle <span class="text-gradient-conic">blokspots</span></span>
+                    <span>Ontdek alle <span class="text-gradient-conic">locaties</span></span>
                 </RouterLink>
             </div>
 

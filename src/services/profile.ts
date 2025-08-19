@@ -45,3 +45,33 @@ export async function getProfileReservations(
 
     return response.data.map(parseReservation);
 }
+
+/**
+ * Updates the profile avatar for a given profile ID.
+ *
+ * @param profileId - The ID of the profile to update the avatar for.
+ * @param file - The file to upload as the new avatar.
+ * @returns A promise that resolves when the avatar is updated.
+ */
+export async function updateProfileAvatar(profileId: number, file: File): Promise<void> {
+    const url = endpoints.profiles.avatar.replace('{id}', String(profileId));
+    const formData = new FormData();
+    formData.append('image', file);
+
+    await client.post(url, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+}
+
+/**
+ * Deletes the profile avatar for a given profile ID.
+ *
+ * @param profileId - The ID of the profile to delete the avatar for.
+ * @returns A promise that resolves when the avatar is deleted.
+ */
+export async function deleteProfileAvatar(profileId: number): Promise<void> {
+    const url = endpoints.profiles.avatar.replace('{id}', String(profileId));
+    await client.delete(url);
+}

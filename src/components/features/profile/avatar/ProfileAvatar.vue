@@ -1,40 +1,66 @@
 <script setup lang="ts">
 import type { Profile } from '@/types/schema/Profile';
-import { getProfileInitials } from '@/utils/schema/profile';
+import { faPencil, faUser } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Avatar from 'primevue/avatar';
 
 withDefaults(
     defineProps<{
         profile: Profile;
-        size?: string;
+        editable?: boolean;
+        avatarClass?: string;
     }>(),
     {
-        size: '96px',
+        editable: false,
     },
 );
+
+defineEmits<{
+    (e: 'click:edit'): void;
+}>();
 </script>
 
 <template>
-    <Avatar
-        :label="getProfileInitials(profile)"
-        :style="{ width: `${size}`, height: `${size}` }"
-        class="profile-avatar"
-        shape="circle"
-        v-if="!profile.avatarUrl">
-    </Avatar>
-    <img
-        alt="Profile Avatar"
-        class="avatar-image"
-        loading="lazy"
-        :style="{ width: `${size}`, height: `${size}` }"
-        :src="profile.avatarUrl"
-        v-else />
+    <div class="avatar-wrapper">
+        <div class="avatar-overlay" v-if="editable" @click="$emit('click:edit')">
+            <FontAwesomeIcon class="icon text-white" :icon="faPencil" />
+        </div>
+        <Avatar
+            class="avatar-initials aspect-square h-full w-full"
+            :class="avatarClass"
+            shape="circle"
+            v-if="!profile.avatarUrl">
+            <FontAwesomeIcon class="icon text-surface" :icon="faUser" />
+        </Avatar>
+        <img
+            alt="Profile Avatar"
+            class="aspect-square h-full w-full rounded-full"
+            :class="avatarClass"
+            loading="lazy"
+            :src="profile.avatarUrl"
+            v-else />
+    </div>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.avatar-image {
-    @apply rounded-full;
+.avatar-wrapper {
+    @apply relative flex items-center justify-center;
+
+    .avatar-overlay {
+        @apply flex items-center justify-center opacity-0;
+        @apply absolute inset-0 rounded-full transition-all duration-300;
+    }
+
+    .icon {
+        width: clamp(1rem, 25%, 4rem);
+        height: clamp(1rem, 25%, 4rem);
+        font-size: clamp(1rem, 25%, 4rem);
+    }
+
+    &:hover .avatar-overlay {
+        @apply cursor-pointer bg-black/50 opacity-100;
+    }
 }
 </style>

@@ -83,7 +83,7 @@ export function useGeoSearch(
  * A composable function to perform forward geocoding using Mapbox's geocoding API.
  * Returns coordinates for a given address string.
  */
-export function useForwardGeoSearch(): CompMutation<LngLat, string> {
+export function useForwardGeoSearch(): CompMutation<string, LngLat> {
     const mutation = useMutation({
         mutationFn: geocodeAddress,
     });

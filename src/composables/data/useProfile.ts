@@ -1,9 +1,13 @@
-import { getProfileReservations, getProfileStats } from '@/services/profile';
-import type { ReservationIncludes } from '@/services/reservation';
-import type { CompQuery } from '@/types/contract/Composable';
+import {
+    deleteProfileAvatar,
+    getProfileReservations,
+    getProfileStats,
+    updateProfileAvatar,
+} from '@/services/profile';
+import type { CompMutation, CompMutationOptions, CompQuery } from '@/types/contract/Composable';
 import type { ProfileStats } from '@/types/schema/Profile';
 import type { Reservation } from '@/types/schema/Reservation';
-import { useQuery } from '@tanstack/vue-query';
+import { useMutation, useQuery } from '@tanstack/vue-query';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
 
 export function useProfileStats(
@@ -12,7 +16,10 @@ export function useProfileStats(
     const enabled = computed(() => toValue(profileId) !== null);
     const query = useQuery<ProfileStats>({
         queryKey: ['profile', 'stats', profileId],
-        queryFn: () => getProfileStats(toValue(profileId)!),
+        queryFn: () => {
+            const profileIdValue = toValue(profileId)!;
+            return getProfileStats(profileIdValue);
+        },
         enabled,
     });
 
@@ -31,10 +38,36 @@ export function useProfileReservations(
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
             const dateInWeek = toValue(inWeekOf);
-            const includes: ReservationIncludes[] = ['location', 'openingTime'];
-            return getProfileReservations(profileIdValue, dateInWeek, includes);
+            return getProfileReservations(profileIdValue, dateInWeek, ['location', 'openingTime']);
         },
     });
 
     return query;
+}
+
+export type UpdateAvatarParams = {
+    profileId: number;
+    file: File;
+};
+
+export function useUpdateAvatar(
+    options: CompMutationOptions = {},
+): CompMutation<UpdateAvatarParams> {
+    const mutation = useMutation({
+        ...options,
+        mutationFn: async ({ profileId, file }: UpdateAvatarParams) => {
+            await updateProfileAvatar(profileId, file);
+        },
+    });
+
+    return mutation;
+}
+
+export function useDeleteAvatar(options: CompMutationOptions = {}): CompMutation<number> {
+    const mutation = useMutation({
+        ...options,
+        mutationFn: deleteProfileAvatar,
+    });
+
+    return mutation;
 }

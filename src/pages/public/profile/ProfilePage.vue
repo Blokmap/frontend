@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SubmitLocationCTA from '@/components/features/layout/SubmitLocationCTA.vue';
+import ManageProfileAvatarDialog from '@/components/features/profile/avatar/ManageProfileAvatarDialog.vue';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import StatsCard from '@/components/features/profile/stats/StatsCard.vue';
 import StatsCardSkeleton from '@/components/features/profile/stats/StatsCardSkeleton.vue';
@@ -22,7 +23,7 @@ import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Chip from 'primevue/chip';
 import Skeleton from 'primevue/skeleton';
-import { computed } from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
@@ -43,13 +44,7 @@ const {
     data: profileStatsData,
 } = useProfileStats(profileId);
 
-const reservationsLoading = computed(
-    () => reservationsIsLoading.value || reservationsIsPending.value,
-);
-
-const profileStatsLoading = computed(
-    () => profileStatsIsLoading.value || profileStatsIsPending.value,
-);
+const showAvatarDialog = ref(false);
 
 function openReservationsModal(): void {
     router.push({ name: 'profile.reservations' });
@@ -68,7 +63,16 @@ function openReservationsModal(): void {
                             <Skeleton shape="circle" size="96px" />
                         </template>
                         <template v-else>
-                            <ProfileAvatar :profile="profile" />
+                            <ProfileAvatar
+                                avatar-class="avatar-placeholder"
+                                :profile="profile"
+                                @click:edit="showAvatarDialog = true"
+                                editable>
+                            </ProfileAvatar>
+                            <ManageProfileAvatarDialog
+                                v-model:visible="showAvatarDialog"
+                                :profile="profile">
+                            </ManageProfileAvatarDialog>
                         </template>
                     </div>
 
@@ -80,7 +84,7 @@ function openReservationsModal(): void {
                             <Skeleton height="21px" width="250px" />
                         </template>
                         <template v-else-if="profile">
-                            <h1 class="text-3xl font-bold text-gray-900">
+                            <h1 class="text-2xl font-bold text-gray-900">
                                 {{ profile.firstName }} {{ profile.lastName }}
                             </h1>
                             <div class="flex items-center gap-2 text-gray-600">
@@ -117,7 +121,7 @@ function openReservationsModal(): void {
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <template v-if="profileStatsLoading">
+            <template v-if="profileStatsIsLoading || profileStatsIsPending">
                 <StatsCardSkeleton v-for="n in 4" :key="n" />
             </template>
             <template v-else>
@@ -172,7 +176,7 @@ function openReservationsModal(): void {
                 </template>
                 <template #content>
                     <div class="space-y-4">
-                        <template v-if="reservationsLoading">
+                        <template v-if="reservationsIsLoading || reservationsIsPending">
                             <ReservationItemSkeleton v-for="n in 3" :key="n" />
                         </template>
                         <template v-else-if="reservations && reservations.length > 0">
@@ -224,10 +228,10 @@ function openReservationsModal(): void {
     </div>
 </template>
 
-<style scoped>
+<style>
 @reference '@/assets/styles/main.css';
 
-.profile-avatar {
+.avatar-placeholder {
     @apply bg-gradient-conic text-white;
     @apply h-[6rem] w-[6rem] text-3xl font-bold;
 }

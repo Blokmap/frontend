@@ -64,8 +64,8 @@ export function useLocation(id: MaybeRef<string>): CompQuery<Location> {
 
 export function useNearestLocation(
     options: CompMutationOptions = {},
-): CompMutation<NearestLocation, LngLat> {
-    const mutation = useMutation<NearestLocation, Error, LngLat, unknown>({
+): CompMutation<LngLat, NearestLocation> {
+    const mutation = useMutation({
         ...options,
         mutationFn: getNearestLocation,
     });
@@ -98,7 +98,7 @@ export function useTags(): CompQuery<string[]> {
  */
 export function useCreateLocation(
     options: CompMutationOptions = {},
-): CompMutation<Location, CreateLocationRequest> {
+): CompMutation<CreateLocationRequest, Location> {
     const client = useQueryClient();
 
     const mutation = useMutation({

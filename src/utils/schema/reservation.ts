@@ -1,5 +1,5 @@
-import { isDateInRange, startOfDay } from './date/date';
-import { calculateDuration, formatTimeFromDate } from './time';
+import { isDateInRange, startOfDay } from '../date/date';
+import { calculateDuration, formatTimeFromDate } from '../date/time';
 import type { Reservation, TimeSlot } from '@/types/schema/Reservation';
 
 /**

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { TimeSlot } from '@/types/schema/Reservation';
 import { daysInRange, formatDayName, isToday, startOfWeek } from '@/utils/date/date';
+import { fromTotalMinutes, parseTimeString, toTotalMinutes } from '@/utils/date/time';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -21,33 +22,38 @@ const props = withDefaults(
 const emit = defineEmits<{
     'click:time-slot': [slot: { day: Date; time: string }];
     'click:day': [day: Date];
+    'drag:slot': [slot: TimeSlot<any>, newStartTime: string, newEndTime: string, newDay?: Date];
 }>();
 
 const { locale } = useI18n();
 
+// Refs
 const updateInterval = ref<number>(0);
 const currentTime = ref(new Date());
 const calendarBodyRef = ref<HTMLElement>();
 
-const weekStart = computed(() => startOfWeek(props.currentWeek));
+// Drag state
+const isDragging = ref(false);
+const dragSlot = ref<TimeSlot<any> | null>(null);
+const dragStartY = ref(0);
+const dragStartX = ref(0);
+const dragMode = ref<'move' | 'resize'>('move');
+const dragOriginalStart = ref(0);
+const dragOriginalEnd = ref(0);
+const dragOriginalDay = ref<Date | null>(null);
+const dragCurrentDay = ref<Date | null>(null);
 
+// Computed
 const weekDays = computed(() => {
-    const start = weekStart.value;
+    const start = startOfWeek(props.currentWeek);
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
     return daysInRange(start, end);
 });
 
-const hourlyTimePeriods = computed(() => {
-    const periods: string[] = [];
-    for (let hour = 0; hour < 24; hour++) {
-        for (let minute = 0; minute < 60; minute += 60) {
-            const formatted = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-            periods.push(formatted);
-        }
-    }
-    return periods;
-});
+const hourlyTimePeriods = computed(() =>
+    Array.from({ length: 24 }, (_, hour) => `${hour.toString().padStart(2, '0')}:00`),
+);
 
 const currentTimePosition = computed(() => {
     const now = currentTime.value;
@@ -55,100 +61,181 @@ const currentTimePosition = computed(() => {
     return (totalMinutes / (24 * 60)) * 100;
 });
 
+// Lifecycle
+onMounted(() => {
+    updateInterval.value = setInterval(() => {
+        currentTime.value = new Date();
+    }, 1000);
+    setTimeout(scrollToCurrentTime, 100);
+});
+
+onUnmounted(() => {
+    if (updateInterval.value) clearInterval(updateInterval.value);
+});
+
+// Utils
 const isDayDisabled = (day: Date): boolean => {
     if (props.minDate && day < props.minDate) return true;
     if (props.maxDate && day > props.maxDate) return true;
     return false;
 };
 
-onMounted(() => {
-    updateInterval.value = setInterval(() => {
-        currentTime.value = new Date();
-    }, 1000);
+const getDayTimeSlots = (day: Date): TimeSlot<any>[] =>
+    props.timeSlots.filter((slot) => slot.day.toDateString() === day.toDateString());
 
-    setTimeout(scrollToCurrentTime, 100);
-});
-
-onUnmounted(() => {
-    if (updateInterval.value) {
-        clearInterval(updateInterval.value);
-    }
-});
-
-function getDayTimeSlots(day: Date): TimeSlot<any>[] {
-    return props.timeSlots.filter((slot) => slot.day.toDateString() === day.toDateString());
-}
-
-function getSlotPosition(slot: TimeSlot<any>): { top: string; height: string } {
-    // Parse AM/PM time format to 24-hour for calculations
-    function parseTimeString(timeStr: string): { hour: number; minute: number } {
-        // Check if it's AM/PM format
-        if (timeStr.includes('AM') || timeStr.includes('PM')) {
-            const isPM = timeStr.includes('PM');
-            const cleanTime = timeStr.replace(/\s*(AM|PM)/i, '');
-            const [hourStr, minuteStr] = cleanTime.split(':');
-            let hour = parseInt(hourStr);
-            const minute = parseInt(minuteStr);
-
-            // Convert to 24-hour format
-            if (isPM && hour !== 12) {
-                hour += 12;
-            } else if (!isPM && hour === 12) {
-                hour = 0;
-            }
-
-            return { hour, minute };
-        } else {
-            // Assume 24-hour format
-            const [hour, minute] = timeStr.split(':').map(Number);
-            return { hour, minute };
-        }
-    }
-
+const getSlotPosition = (slot: TimeSlot<any>): { top: string; height: string } => {
     const startParsed = parseTimeString(slot.startTime);
     const endParsed = parseTimeString(slot.endTime);
-
-    const startMinutes = startParsed.hour * 60 + startParsed.minute;
-    const endMinutes = endParsed.hour * 60 + endParsed.minute;
+    const startMinutes = toTotalMinutes(startParsed.hours, startParsed.minutes);
+    const endMinutes = toTotalMinutes(endParsed.hours, endParsed.minutes);
     const durationMinutes = endMinutes - startMinutes;
-
-    // Each hour is 50px (as defined in .time-period-cell height)
-    const pixelsPerHour = 50;
-    const pixelsPerMinute = pixelsPerHour / 60;
-
-    const topPosition = startMinutes * pixelsPerMinute;
-    const height = durationMinutes * pixelsPerMinute;
+    const pixelsPerMinute = 50 / 60; // 50px per hour
 
     return {
-        top: `${topPosition}px`,
-        height: `${Math.max(height, 20)}px`, // Minimum height of 20px for visibility
+        top: `${startMinutes * pixelsPerMinute}px`,
+        height: `${Math.max(durationMinutes * pixelsPerMinute, 20)}px`,
     };
-}
+};
+
+const roundToInterval = (minutes: number, interval = 15): number =>
+    Math.round(minutes / interval) * interval;
 
 function scrollToCurrentTime(): void {
     if (!calendarBodyRef.value) return;
-
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    const timePeriodHeight = 50;
-    const scrollPosition = (currentMinutes / 60) * timePeriodHeight;
-    const offset = timePeriodHeight * 2;
-
+    const scrollPosition = (currentMinutes / 60) * 50; // 50px per hour
     calendarBodyRef.value.scrollTo({
-        top: Math.max(0, scrollPosition - offset),
+        top: Math.max(0, scrollPosition - 100),
         behavior: 'smooth',
     });
 }
 
+// Event handlers
 function handleTimePeriodClick(day: Date, time: string): void {
-    if (props.minDate && day < props.minDate) return;
-    if (props.maxDate && day > props.maxDate) return;
-
+    if (isDayDisabled(day)) return;
     emit('click:time-slot', { day, time });
 }
 
 function handleDayClick(day: Date): void {
     emit('click:day', day);
+}
+
+function handleSlotMouseDown(event: MouseEvent, slot: TimeSlot<any>): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    isDragging.value = true;
+    dragSlot.value = slot;
+    dragStartY.value = event.clientY;
+    dragStartX.value = event.clientX;
+
+    const target = event.target as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const isNearBottom = event.clientY - rect.top > rect.height - 10;
+    dragMode.value = isNearBottom ? 'resize' : 'move';
+
+    const startParsed = parseTimeString(slot.startTime);
+    const endParsed = parseTimeString(slot.endTime);
+    dragOriginalStart.value = toTotalMinutes(startParsed.hours, startParsed.minutes);
+    dragOriginalEnd.value = toTotalMinutes(endParsed.hours, endParsed.minutes);
+    dragOriginalDay.value = new Date(slot.day);
+    dragCurrentDay.value = new Date(slot.day);
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+}
+
+function handleMouseMove(event: MouseEvent): void {
+    if (!isDragging.value || !dragSlot.value || !calendarBodyRef.value) return;
+
+    const deltaY = event.clientY - dragStartY.value;
+    const pixelsPerMinute = 50 / 60;
+    const deltaMinutes = Math.round(deltaY / pixelsPerMinute);
+    const roundedDeltaMinutes = roundToInterval(deltaMinutes, 15);
+
+    // Handle cross-day dragging
+    let newDay = dragOriginalDay.value;
+    if (dragMode.value === 'move') {
+        const timePeriodsGrid = calendarBodyRef.value.querySelector('.time-periods-grid');
+        if (timePeriodsGrid) {
+            const gridRect = timePeriodsGrid.getBoundingClientRect();
+            const timeColumnWidth = 80;
+            const dayColumnWidth = (gridRect.width - timeColumnWidth) / 7;
+            const relativeX = event.clientX - gridRect.left - timeColumnWidth;
+            const dayIndex = Math.floor(relativeX / dayColumnWidth);
+
+            if (dayIndex >= 0 && dayIndex < weekDays.value.length) {
+                newDay = weekDays.value[dayIndex];
+                dragCurrentDay.value = newDay;
+            }
+        }
+    }
+
+    // Calculate new times
+    let newStartMinutes = dragOriginalStart.value;
+    let newEndMinutes = dragOriginalEnd.value;
+
+    if (dragMode.value === 'move') {
+        newStartMinutes = dragOriginalStart.value + roundedDeltaMinutes;
+        newEndMinutes = dragOriginalEnd.value + roundedDeltaMinutes;
+    } else {
+        newEndMinutes = dragOriginalEnd.value + roundedDeltaMinutes;
+        if (newEndMinutes <= newStartMinutes) {
+            newEndMinutes = newStartMinutes + 15;
+        }
+    }
+
+    // Constrain to valid bounds
+    newStartMinutes = Math.max(0, Math.min(1425, newStartMinutes));
+    newEndMinutes = Math.max(15, Math.min(1440, newEndMinutes));
+
+    if (newEndMinutes <= newStartMinutes) {
+        if (dragMode.value === 'move') {
+            newEndMinutes = newStartMinutes + (dragOriginalEnd.value - dragOriginalStart.value);
+        } else {
+            newEndMinutes = newStartMinutes + 15;
+        }
+    }
+
+    // Update slot for real-time visual feedback
+    const startTime = fromTotalMinutes(newStartMinutes);
+    const endTime = fromTotalMinutes(newEndMinutes);
+
+    dragSlot.value.startTime = `${startTime.hours.toString().padStart(2, '0')}:${startTime.minutes.toString().padStart(2, '0')}`;
+    dragSlot.value.endTime = `${endTime.hours.toString().padStart(2, '0')}:${endTime.minutes.toString().padStart(2, '0')}`;
+    if (newDay) {
+        dragSlot.value.day = newDay;
+    }
+}
+
+function handleMouseUp(): void {
+    if (!isDragging.value || !dragSlot.value) return;
+
+    const startParsed = parseTimeString(dragSlot.value.startTime);
+    const endParsed = parseTimeString(dragSlot.value.endTime);
+
+    const startTimeString = `${startParsed.hours.toString().padStart(2, '0')}:${startParsed.minutes.toString().padStart(2, '0')}`;
+    const endTimeString = `${endParsed.hours.toString().padStart(2, '0')}:${endParsed.minutes.toString().padStart(2, '0')}`;
+
+    const newDay =
+        dragCurrentDay.value &&
+        dragOriginalDay.value &&
+        dragCurrentDay.value.toDateString() !== dragOriginalDay.value.toDateString()
+            ? dragCurrentDay.value
+            : undefined;
+
+    emit('drag:slot', dragSlot.value, startTimeString, endTimeString, newDay);
+
+    // Cleanup
+    isDragging.value = false;
+    dragSlot.value = null;
+    dragMode.value = 'move';
+    dragOriginalDay.value = null;
+    dragCurrentDay.value = null;
+
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
 }
 </script>
 
@@ -198,8 +285,20 @@ function handleDayClick(day: Date): void {
                         <!-- Custom time slots positioned absolutely within the day -->
                         <template v-for="slot in getDayTimeSlots(day)" :key="slot.id">
                             <Transition name="slide-up" appear>
-                                <div class="custom-time-slot" :style="getSlotPosition(slot)">
+                                <div
+                                    class="custom-time-slot"
+                                    :class="{
+                                        dragging: isDragging && dragSlot?.id === slot.id,
+                                        'resize-mode':
+                                            isDragging &&
+                                            dragSlot?.id === slot.id &&
+                                            dragMode === 'resize',
+                                    }"
+                                    :style="getSlotPosition(slot)"
+                                    @mousedown="handleSlotMouseDown($event, slot)">
                                     <slot name="time-slot" :slot="slot"> </slot>
+                                    <!-- Resize handle -->
+                                    <div class="resize-handle"></div>
                                 </div>
                             </Transition>
                         </template>
@@ -335,12 +434,12 @@ function handleDayClick(day: Date): void {
         @apply border-b border-gray-100;
         @apply p-2 pr-3;
         @apply text-right text-sm text-gray-600;
-        height: 50px;
+        @apply h-[50px];
 
         @media (max-width: 768px) {
             @apply p-1 pr-2;
             @apply text-xs;
-            height: 40px;
+            @apply h-[40px];
         }
     }
 }
@@ -348,19 +447,20 @@ function handleDayClick(day: Date): void {
 .day-column {
     @apply relative;
     @apply border-r border-gray-200 last:border-r-0;
-    min-width: 120px;
+    @apply min-w-[120px];
 
     @media (max-width: 768px) {
         min-width: 100px;
     }
 
     .time-period-cell {
-        @apply relative h-[50px] cursor-pointer;
+        @apply relative cursor-pointer;
         @apply border-b border-gray-100;
         @apply hover:bg-primary-50 transition-colors;
+        height: 50px;
 
         @media (max-width: 768px) {
-            @apply h-[40px];
+            height: 40px;
         }
 
         &:hover::before {
@@ -369,28 +469,10 @@ function handleDayClick(day: Date): void {
 
         &.disabled {
             @apply cursor-not-allowed bg-gray-200 opacity-40;
-            position: relative;
+            @apply relative;
 
             &:hover {
                 @apply bg-gray-200;
-            }
-
-            /* Add diagonal stripes pattern for disabled dates */
-            &::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-image: repeating-linear-gradient(
-                    45deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(156, 163, 175, 0.3) 2px,
-                    rgba(156, 163, 175, 0.3) 4px
-                );
-                pointer-events: none;
             }
         }
     }
@@ -398,7 +480,51 @@ function handleDayClick(day: Date): void {
 
 .custom-time-slot {
     @apply absolute right-0 left-0 z-10 min-h-[20px];
+    @apply cursor-move;
+    @apply transition-all duration-150 ease-out;
     overflow: visible;
+    user-select: none;
+
+    &.dragging {
+        @apply z-30;
+        @apply transition-none;
+    }
+
+    &.resize-mode {
+        @apply cursor-ns-resize;
+
+        .resize-handle {
+            @apply bg-primary-400 opacity-100;
+        }
+    }
+
+    &:hover .resize-handle {
+        @apply opacity-100;
+    }
+}
+
+.resize-handle {
+    @apply absolute right-0 bottom-0 left-0;
+    @apply h-2;
+    @apply cursor-ns-resize;
+    @apply bg-transparent;
+    @apply opacity-0;
+    @apply transition-all duration-200;
+    @apply hover:bg-primary-300;
+
+    &::after {
+        content: '';
+        @apply absolute bottom-0 left-1/2 -translate-x-1/2 transform;
+        @apply h-1 w-8;
+        @apply bg-primary-600;
+        @apply rounded-full;
+        @apply opacity-0;
+        @apply transition-opacity duration-200;
+    }
+
+    &:hover::after {
+        @apply opacity-100;
+    }
 }
 
 .current-time-indicator {

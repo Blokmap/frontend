@@ -7,7 +7,7 @@ import { useCreateLocation } from '@/composables/data/useLocations';
 import { useToast } from '@/composables/useToast';
 import type { SubStep } from '@/types/contract/LocationWizard';
 import type { CreateImageRequest } from '@/types/schema/Image';
-import type { CreateLocationRequest } from '@/types/schema/Location';
+import type { CreateLocationRequest, CreateOpeningTimeRequest } from '@/types/schema/Location';
 import { faArrowLeft, faArrowRight, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
@@ -20,7 +20,7 @@ const router = useRouter();
 const route = useRoute();
 const toast = useToast();
 
-const { mutate: createLocation, isPending: isCreating } = useCreateLocation({
+const { mutateAsync: createLocation, isPending: isCreating } = useCreateLocation({
     onSuccess: () => {
         toast.add({
             severity: 'success',
@@ -39,7 +39,7 @@ const form = useLocalStorage<CreateLocationRequest>('location-form-data', {
     number: '',
     zip: '',
     city: '',
-    country: 'België',
+    country: 'be',
     province: '',
     latitude: 0,
     longitude: 0,
@@ -48,10 +48,10 @@ const form = useLocalStorage<CreateLocationRequest>('location-form-data', {
     minReservationLength: null,
     maxReservationLength: null,
     isReservable: true,
-    openingTimes: [],
 });
 
 const images = ref<CreateImageRequest[]>([]);
+const openingTimes = ref<CreateOpeningTimeRequest[]>([]);
 const substeps = ref<SubStep[]>([]);
 
 const steps: { id: string; label: string; desc: string }[] = [
@@ -110,15 +110,9 @@ function goPrevious(): void {
     }
 }
 
-function submitLocation() {
+async function submitLocation() {
     if (!canGoNext.value) return;
-
-    const locationData: CreateLocationRequest = {
-        ...form.value,
-        images: images.value,
-    };
-
-    createLocation(locationData);
+    await createLocation(form.value);
 }
 </script>
 
@@ -197,7 +191,8 @@ function submitLocation() {
             </LocationSettingsStep>
 
             <LocationOpeningsStep
-                v-model="form"
+                :form="form"
+                v-model:openings="openingTimes"
                 v-model:substeps="substeps"
                 v-if="step === 'openings'">
             </LocationOpeningsStep>

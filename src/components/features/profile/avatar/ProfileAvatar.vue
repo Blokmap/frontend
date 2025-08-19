@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Profile } from '@/types/schema/Profile';
-import { getProfileInitials } from '@/utils/profile';
+import { getProfileInitials } from '@/utils/schema/profile';
 import Avatar from 'primevue/avatar';
 
 withDefaults(

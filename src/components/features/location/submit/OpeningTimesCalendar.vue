@@ -4,8 +4,8 @@ import CalendarControls from '@/components/shared/calendar/CalendarControls.vue'
 import { useVimControls } from '@/composables/useVimControls';
 import type { CreateOpeningTimeRequest } from '@/types/schema/Location';
 import type { TimeSlot } from '@/types/schema/Reservation';
-import { endOfWeek, startOfWeek } from '@/utils/date/date';
-import { computed } from 'vue';
+import { startOfWeek } from '@/utils/date/date';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
     dateInWeek: Date;
@@ -19,61 +19,52 @@ const emit = defineEmits<{
     'select:slot': [slot: { day: Date; time: string }];
     'edit:slot': [index: number, slot: CreateOpeningTimeRequest];
     'delete:slot': [index: number];
+    'drag:slot': [index: number, slot: CreateOpeningTimeRequest];
 }>();
 
 const weekStart = computed(() => startOfWeek(props.dateInWeek));
-const weekEnd = computed(() => endOfWeek(props.dateInWeek));
+const calendarTimeSlots = ref<TimeSlot<any>[]>([]);
 
-// Convert opening times to time slots for calendar display
-const calendarTimeSlots = computed(() => {
-    return props.openingTimes.map((ot, index) => {
+// Convert opening times to calendar time slots
+function updateCalendarTimeSlots() {
+    calendarTimeSlots.value = props.openingTimes.map((ot, index) => {
         const startTime = new Date(ot.startTime);
         const endTime = new Date(ot.endTime);
-        const duration = {
-            hours: Math.floor((endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60)),
-            minutes: Math.floor(
-                ((endTime.getTime() - startTime.getTime()) % (1000 * 60 * 60)) / (1000 * 60),
-            ),
-        };
 
         return {
             id: `opening-time-${index}`,
             day: new Date(ot.startTime),
             startTime: startTime.toLocaleTimeString('en-US', {
-                hour: 'numeric',
+                hour: '2-digit',
                 minute: '2-digit',
-                hour12: true,
+                hour12: false,
             }),
             endTime: endTime.toLocaleTimeString('en-US', {
-                hour: 'numeric',
+                hour: '2-digit',
                 minute: '2-digit',
-                hour12: true,
+                hour12: false,
             }),
-            duration,
-            metadata: {
-                openingTime: ot,
-                index,
+            duration: {
+                hours: Math.floor((endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60)),
+                minutes: Math.floor(
+                    ((endTime.getTime() - startTime.getTime()) % (1000 * 60 * 60)) / (1000 * 60),
+                ),
             },
+            metadata: { openingTime: ot, index },
         };
     });
-});
+}
 
-// Vim controls for calendar navigation
+watch(() => props.openingTimes, updateCalendarTimeSlots, { immediate: true });
+
+// Vim controls
 useVimControls({
-    previousWeek: {
-        keys: ['j', 'ArrowLeft'],
-        callback: goToPreviousWeek,
-    },
-    nextWeek: {
-        keys: ['k', 'ArrowRight'],
-        callback: goToNextWeek,
-    },
-    goToToday: {
-        keys: ['t', 'Home'],
-        callback: goToToday,
-    },
+    previousWeek: { keys: ['j', 'ArrowLeft'], callback: goToPreviousWeek },
+    nextWeek: { keys: ['k', 'ArrowRight'], callback: goToNextWeek },
+    goToToday: { keys: ['t', 'Home'], callback: goToToday },
 });
 
+// Navigation functions
 function goToPreviousWeek(): void {
     const newDate = new Date(weekStart.value);
     newDate.setDate(newDate.getDate() - 7);
@@ -90,8 +81,9 @@ function goToToday(): void {
     emit('update:dateInWeek', new Date());
 }
 
+// Event handlers
 function handleDateSelect(date: any): void {
-    if (date && date instanceof Date) {
+    if (date instanceof Date) {
         emit('update:dateInWeek', date);
     }
 }
@@ -101,17 +93,42 @@ function handleSlotClick(slot: { day: Date; time: string }): void {
 }
 
 function handleEditSlot(slot: TimeSlot): void {
-    const openingTimeSlot = slot;
-    if (openingTimeSlot.metadata) {
-        emit('edit:slot', openingTimeSlot.metadata.index, openingTimeSlot.metadata.openingTime);
+    if (slot.metadata) {
+        emit('edit:slot', slot.metadata.index, slot.metadata.openingTime);
     }
 }
 
 function handleDeleteSlot(slot: TimeSlot): void {
-    const openingTimeSlot = slot;
-    if (openingTimeSlot.metadata) {
-        emit('delete:slot', openingTimeSlot.metadata.index);
+    if (slot.metadata) {
+        emit('delete:slot', slot.metadata.index);
     }
+}
+
+function handleDragSlot(
+    slot: TimeSlot,
+    newStartTime: string,
+    newEndTime: string,
+    newDay?: Date,
+): void {
+    if (!slot.metadata) return;
+
+    const [startHours, startMinutes] = newStartTime.split(':').map(Number);
+    const [endHours, endMinutes] = newEndTime.split(':').map(Number);
+
+    const baseDate = newDay || new Date(slot.metadata.openingTime.startTime);
+    const startDate = new Date(baseDate);
+    const endDate = new Date(baseDate);
+
+    startDate.setHours(startHours, startMinutes, 0, 0);
+    endDate.setHours(endHours, endMinutes, 0, 0);
+
+    const updatedOpeningTime: CreateOpeningTimeRequest = {
+        ...slot.metadata.openingTime,
+        startTime: startDate,
+        endTime: endDate,
+    };
+
+    emit('drag:slot', slot.metadata.index, updatedOpeningTime);
 }
 </script>
 
@@ -136,6 +153,7 @@ function handleDeleteSlot(slot: TimeSlot): void {
                 :on-previous-week="goToPreviousWeek"
                 :on-next-week="goToNextWeek"
                 @click:time-slot="handleSlotClick"
+                @drag:slot="handleDragSlot"
                 class="h-full">
                 <template #time-slot="{ slot }">
                     <div class="opening-time-card" @click="handleEditSlot(slot)">

@@ -48,8 +48,6 @@ export type CreateLocationRequest = {
     province: string;
     latitude: number;
     longitude: number;
-    images?: CreateImageRequest[];
-    openingTimes?: CreateOpeningTimeRequest[];
 };
 
 export type CreateOpeningTimeRequest = {

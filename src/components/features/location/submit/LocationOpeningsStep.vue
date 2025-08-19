@@ -4,6 +4,7 @@ import OpeningTimesCalendar from '@/components/features/location/submit/OpeningT
 import type { SubStep } from '@/types/contract/LocationWizard';
 import type { CreateLocationRequest, CreateOpeningTimeRequest } from '@/types/schema/Location';
 import { addToDate } from '@/utils/date/date';
+import { parseTimeString } from '@/utils/date/time';
 import {
     faCalendarDays,
     faCalendarPlus,
@@ -22,12 +23,16 @@ import InputNumber from 'primevue/inputnumber';
 import { useConfirm } from 'primevue/useconfirm';
 import { computed, ref, watch, watchEffect } from 'vue';
 
-const form = defineModel<CreateLocationRequest>({ required: true });
+const { form } = defineProps<{
+    form: CreateLocationRequest;
+}>();
+
+const openings = defineModel<CreateOpeningTimeRequest[]>('openings', { default: [] });
 const substeps = defineModel<SubStep[]>('substeps', { default: [] });
 
 const confirm = useConfirm();
 
-const openingTimes = computed(() => form.value.openingTimes || []);
+const openingTimes = computed(() => openings.value || []);
 const currentWeek = ref(new Date());
 const showAddDialog = ref(false);
 const showQuickActionsDialog = ref(false);
@@ -43,7 +48,7 @@ maxDate.setHours(23, 59, 59, 999); // End of the max day
 const newOpeningTime = ref<CreateOpeningTimeRequest>({
     startTime: new Date(),
     endTime: new Date(),
-    seatCount: form.value.seatCount || 1,
+    seatCount: form.seatCount || 1,
     reservableFrom: null,
     reservableUntil: null,
 });
@@ -57,7 +62,7 @@ const quickAction = ref({
         {
             startTime: new Date('2000-01-01T09:00:00'),
             endTime: new Date('2000-01-01T17:00:00'),
-            seatCount: form.value.seatCount || 1,
+            seatCount: form.seatCount || 1,
         },
     ],
 });
@@ -120,22 +125,18 @@ watchEffect(() => {
 });
 
 function handleSaveOpeningTime(openingTime: CreateOpeningTimeRequest): void {
-    // Validate that end time is after start time
     if (new Date(openingTime.endTime) <= new Date(openingTime.startTime)) {
-        // Auto-fix: set end time to 1 hour after start time
         const correctedEndTime = new Date(openingTime.startTime);
         correctedEndTime.setHours(correctedEndTime.getHours() + 1);
         openingTime.endTime = correctedEndTime;
     }
 
     if (editingIndex.value !== null) {
-        // Edit existing opening time
         const newTimes = [...openingTimes.value];
         newTimes[editingIndex.value] = { ...openingTime };
-        form.value.openingTimes = newTimes;
+        openings.value = newTimes;
     } else {
-        // Add new opening time
-        form.value.openingTimes = [...openingTimes.value, { ...openingTime }];
+        openings.value = [...openingTimes.value, { ...openingTime }];
     }
 
     closeDialog();
@@ -144,20 +145,14 @@ function handleSaveOpeningTime(openingTime: CreateOpeningTimeRequest): void {
 function removeOpeningTime(index: number): void {
     const newTimes = [...openingTimes.value];
     newTimes.splice(index, 1);
-    form.value.openingTimes = newTimes;
+    openings.value = newTimes;
 }
 
 function handleCalendarSlotClick(slot: { day: Date; time: string }): void {
-    // Additional validation: ensure the selected day is not in the past
-    if (slot.day < today) {
-        return; // Don't allow creating slots in the past
-    }
+    if (slot.day < today) return;
+    if (slot.day > maxDate) return;
 
-    if (slot.day > maxDate) {
-        return; // Don't allow creating slots beyond 2 months
-    }
-
-    const [hours, minutes] = slot.time.split(':').map(Number);
+    const { hours, minutes } = parseTimeString(slot.time);
     const startTime = new Date(slot.day);
     startTime.setHours(hours, minutes, 0, 0);
 
@@ -167,7 +162,7 @@ function handleCalendarSlotClick(slot: { day: Date; time: string }): void {
     newOpeningTime.value = {
         startTime,
         endTime,
-        seatCount: form.value.seatCount || 1,
+        seatCount: form.seatCount || 1,
         reservableFrom: null,
         reservableUntil: null,
     };
@@ -185,6 +180,12 @@ function handleDeleteSlot(index: number): void {
     removeOpeningTime(index);
 }
 
+function handleDragSlot(index: number, updatedSlot: CreateOpeningTimeRequest): void {
+    const newTimes = [...openingTimes.value];
+    newTimes[index] = updatedSlot;
+    openings.value = newTimes;
+}
+
 function closeDialog(): void {
     showAddDialog.value = false;
     editingIndex.value = null;
@@ -192,7 +193,7 @@ function closeDialog(): void {
     newOpeningTime.value = {
         startTime: new Date(),
         endTime: new Date(),
-        seatCount: form.value.seatCount || 1,
+        seatCount: form.seatCount || 1,
         reservableFrom: null,
         reservableUntil: null,
     };
@@ -246,7 +247,7 @@ function executeQuickAction(): void {
         });
     }
 
-    form.value.openingTimes = [...openingTimes.value, ...newTimes];
+    openings.value = [...openingTimes.value, ...newTimes];
     showQuickActionsDialog.value = false;
 }
 
@@ -254,7 +255,7 @@ function addTimeSlot(): void {
     quickAction.value.timeSlots.push({
         startTime: new Date('2000-01-01T09:00:00'),
         endTime: new Date('2000-01-01T17:00:00'),
-        seatCount: form.value.seatCount || 1,
+        seatCount: form.seatCount || 1,
     });
 }
 
@@ -284,7 +285,7 @@ function confirmClearAll(): void {
             severity: 'danger',
         },
         accept: () => {
-            form.value.openingTimes = [];
+            openings.value = [];
         },
     });
 }
@@ -301,6 +302,7 @@ function confirmClearAll(): void {
             @select:slot="handleCalendarSlotClick"
             @edit:slot="handleEditSlot"
             @delete:slot="handleDeleteSlot"
+            @drag:slot="handleDragSlot"
             class="h-96 overflow-visible">
         </OpeningTimesCalendar>
 

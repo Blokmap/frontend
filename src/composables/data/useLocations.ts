@@ -105,7 +105,6 @@ export function useCreateLocation(
         ...options,
         mutationFn: createLocation,
         onSuccess: (data, vars, context) => {
-            // Invalidate locations queries to refresh lists
             client.invalidateQueries({ queryKey: ['locations'] });
             options.onSuccess?.(data, vars, context);
         },

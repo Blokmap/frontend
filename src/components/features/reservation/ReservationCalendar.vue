@@ -6,7 +6,7 @@ import { useVimControls } from '@/composables/useVimControls';
 import type { Reservation } from '@/types/schema/Reservation';
 import { ReservationState } from '@/types/schema/Reservation';
 import { endOfWeek, startOfWeek } from '@/utils/date/date';
-import { getLocationAddress } from '@/utils/schema/location';
+import { formatLocationAddress } from '@/utils/schema/location';
 import { reservationsToTimeSlots } from '@/utils/schema/reservation';
 import { faCalendarCheck, faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -105,7 +105,7 @@ function handleDateSelect(date: any): void {
                             </h4>
 
                             <div class="text-xs">
-                                {{ getLocationAddress(metadata.location) }}
+                                {{ formatLocationAddress(metadata.location) }}
                             </div>
 
                             <!-- Capacity info with vertical layout -->

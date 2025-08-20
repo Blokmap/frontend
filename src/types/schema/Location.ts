@@ -2,6 +2,13 @@ import type { Image } from '@/types/schema/Image';
 import type { Profile } from '@/types/schema/Profile';
 import type { CreateTranslationRequest, Translation } from '@/types/schema/Translation';
 
+export type LocationAddress = {
+    street: string;
+    number: string;
+    zip: string;
+    city: string;
+};
+
 export type Location = {
     id: number;
     name: string;

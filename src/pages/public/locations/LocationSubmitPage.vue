@@ -53,9 +53,9 @@ const locationForm = useLocalStorage<CreateLocationRequest>(
 );
 
 const openingsForm = useLocalStorage<CreateOpeningTimeRequest[]>('openings-form', []);
-const imagesForm = ref<CreateImageRequest[]>([]);
 
-const step = ref(route.query.step?.toString() || 'basics');
+const imagesForm = ref<CreateImageRequest[]>([]);
+const step = ref<string>(route.query.step?.toString() || 'basics');
 const substeps = ref<SubStep[]>([]);
 
 const steps: { id: string; label: string; desc: string }[] = [

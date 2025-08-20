@@ -6,13 +6,13 @@ import { useToast } from '@/composables/useToast';
 import type { SubStep } from '@/types/contract/LocationWizard';
 import type { LngLat } from '@/types/contract/Map';
 import type { CreateLocationRequest } from '@/types/schema/Location';
+import { formatLocationAddress } from '@/utils/schema/location';
 import { faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
-import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
-import { computed, nextTick, ref, watch, watchEffect } from 'vue';
+import { computed, ref, useTemplateRef, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const form = defineModel<CreateLocationRequest>({ required: true });
@@ -24,27 +24,17 @@ const toast = useToast();
 const { locale } = useI18n();
 const { mutateAsync: geocodeAddress, isPending: isLoading } = useForwardGeoSearch();
 
+const mapContainer = useTemplateRef('map-container');
 const currentLanguage = ref(locale.value);
-const showMapDialog = ref(false);
 
 const mapCenter = computed<LngLat>({
     get() {
-        return [form.value.longitude || 0, form.value.latitude || 0] as LngLat;
+        return [form.value.longitude, form.value.latitude];
     },
     set([lng, lat]: LngLat) {
         form.value.longitude = lng;
         form.value.latitude = lat;
     },
-});
-
-const currentAddress = computed(() => {
-    const { street, number, city } = form.value;
-
-    if (street && number && city) {
-        return `${street} ${number}, ${city}`;
-    }
-
-    return '';
 });
 
 const canConfirmAddress = computed(() => {
@@ -94,23 +84,14 @@ watchEffect(() => {
     ];
 });
 
-const handleConfirmAddress = async () => {
+async function handleConfirmAddress(): Promise<void> {
     if (!canConfirmAddress.value) return;
+    if (!mapContainer.value) return;
 
     try {
-        mapCenter.value = await geocodeAddress(currentAddress.value);
-        showMapDialog.value = true;
-
-        await nextTick();
-
-        const mapContainer = document.getElementById('map-container');
-
-        if (mapContainer) {
-            mapContainer.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-            });
-        }
+        const address = formatLocationAddress(form.value);
+        mapCenter.value = await geocodeAddress(address);
+        mapContainer.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (error) {
         toast.add({
             severity: 'error',
@@ -118,7 +99,7 @@ const handleConfirmAddress = async () => {
             detail: 'Er is iets misgegaan bij het ophalen van de locatie. Controleer het adres en probeer het opnieuw.',
         });
     }
-};
+}
 </script>
 
 <template>
@@ -301,11 +282,9 @@ const handleConfirmAddress = async () => {
                         Bevestig op kaart
                     </Button>
                 </div>
-                <template v-if="showMapDialog">
-                    <div class="h-[400px] w-full" id="map-container">
-                        <AddressMap v-model:center="mapCenter" :zoom="18"> </AddressMap>
-                    </div>
-                </template>
+                <div class="h-[400px] w-full" ref="map-container">
+                    <AddressMap v-model:center="mapCenter" :zoom="18"> </AddressMap>
+                </div>
             </div>
         </div>
     </div>

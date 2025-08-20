@@ -5,7 +5,6 @@ import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
 import { useInstitutions } from '@/composables/data/useInstitutions';
 import { useToast } from '@/composables/useToast';
 import { authIdentityProviders } from '@/config/auth';
-import { API_BASE_URL } from '@/constants';
 import { endpoints } from '@/endpoints';
 import { faArrowRight, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -162,7 +161,7 @@ function switchToRegister(): void {
         </Select>
     </IconField>
     <template v-for="idp in authIdentityProviders" :key="idp.name">
-        <a :href="API_BASE_URL + endpoints.auth.sso.replace('{provider}', idp.id)">
+        <a :href="'/api/' + endpoints.auth.sso.replace('{provider}', idp.id)">
             <Button
                 class="w-[300px]"
                 severity="contrast"

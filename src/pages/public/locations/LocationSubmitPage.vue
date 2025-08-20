@@ -3,11 +3,16 @@ import LocationImagesStep from '@/components/features/location/submit/LocationIm
 import LocationInformationStep from '@/components/features/location/submit/LocationInformationStep.vue';
 import LocationOpeningsStep from '@/components/features/location/submit/LocationOpeningsStep.vue';
 import LocationSettingsStep from '@/components/features/location/submit/LocationSettingsStep.vue';
-import { useCreateLocation } from '@/composables/data/useLocations';
+import {
+    useCreateLocation,
+    useCreateLocationImages,
+    useCreateLocationTimeslots,
+} from '@/composables/data/useLocations';
 import { useToast } from '@/composables/useToast';
 import type { SubStep } from '@/types/contract/LocationWizard';
 import type { CreateImageRequest } from '@/types/schema/Image';
 import type { CreateLocationRequest, CreateOpeningTimeRequest } from '@/types/schema/Location';
+import { syncStorageData } from '@/utils/storage';
 import { faArrowLeft, faArrowRight, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
@@ -20,19 +25,12 @@ const router = useRouter();
 const route = useRoute();
 const toast = useToast();
 
-const { mutateAsync: createLocation, isPending: isCreating } = useCreateLocation({
-    onSuccess: () => {
-        toast.add({
-            severity: 'success',
-            summary: 'Locatie succesvol toegevoegd',
-            detail: 'Je locatie is toegevoegd en wacht op goedkeuring.',
-        });
-        router.push({ name: 'locations' });
-    },
-});
+const { mutateAsync: createLocation, isPending: isCreating } = useCreateLocation();
+const { mutateAsync: createImages, isPending: isCreatingImages } = useCreateLocationImages();
+const { mutateAsync: createOpenings, isPending: isCreatingOpenings } = useCreateLocationTimeslots();
 
-const form = useLocalStorage<CreateLocationRequest>(
-    'location-form-data',
+const locationForm = useLocalStorage<CreateLocationRequest>(
+    'location-form',
     {
         name: '',
         excerpt: {},
@@ -45,17 +43,19 @@ const form = useLocalStorage<CreateLocationRequest>(
         province: '',
         latitude: 0,
         longitude: 0,
-        seatCount: 0,
-        reservationBlockSize: 60,
-        minReservationLength: null,
-        maxReservationLength: null,
+        seatCount: 20,
         isReservable: true,
+        reservationBlockSize: 0, // todo remove
     },
-    { mergeDefaults: true },
+    {
+        mergeDefaults: syncStorageData,
+    },
 );
 
-const images = ref<CreateImageRequest[]>([]);
-const openingTimes = ref<CreateOpeningTimeRequest[]>([]);
+const openingsForm = useLocalStorage<CreateOpeningTimeRequest[]>('openings-form', []);
+const imagesForm = ref<CreateImageRequest[]>([]);
+
+const step = ref(route.query.step?.toString() || 'basics');
 const substeps = ref<SubStep[]>([]);
 
 const steps: { id: string; label: string; desc: string }[] = [
@@ -81,10 +81,6 @@ const steps: { id: string; label: string; desc: string }[] = [
     },
 ];
 
-// Initialize step from URL query parameter or default to 'basics'
-const step = ref((route.query.step as string) || 'basics');
-
-// Watch for route changes to sync step
 watch(
     () => route.query.step,
     (newStep) => {
@@ -114,9 +110,11 @@ function goPrevious(): void {
     }
 }
 
-async function submitLocation() {
+async function submitLocation(): Promise<void> {
     if (!canGoNext.value) return;
-    await createLocation(form.value);
+    const location = await createLocation(locationForm.value);
+    await createImages({ images: imagesForm.value, locationId: location.id });
+    await createOpenings({ timeslots: openingsForm.value, locationId: location.id });
 }
 </script>
 
@@ -177,26 +175,26 @@ async function submitLocation() {
         </div>
         <div class="w-full md:w-5/7">
             <LocationInformationStep
-                v-model="form"
+                v-model="locationForm"
                 v-model:substeps="substeps"
                 v-if="step === 'basics'">
             </LocationInformationStep>
 
             <LocationImagesStep
-                v-model="images"
+                v-model="imagesForm"
                 v-model:substeps="substeps"
                 v-if="step === 'images'">
             </LocationImagesStep>
 
             <LocationSettingsStep
-                v-model="form"
+                v-model="locationForm"
                 v-model:substeps="substeps"
                 v-if="step === 'settings'">
             </LocationSettingsStep>
 
             <LocationOpeningsStep
-                :form="form"
-                v-model:openings="openingTimes"
+                :form="locationForm"
+                v-model:openings="openingsForm"
                 v-model:substeps="substeps"
                 v-if="step === 'openings'">
             </LocationOpeningsStep>

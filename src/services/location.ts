@@ -2,8 +2,15 @@ import { client } from '@/config/axios';
 import { endpoints } from '@/endpoints';
 import type { LngLat } from '@/types/contract/Map';
 import type { LocationFilter } from '@/types/schema/Filter';
-import type { CreateLocationRequest, Location, NearestLocation } from '@/types/schema/Location';
+import type { CreateImageRequest } from '@/types/schema/Image';
+import type {
+    CreateLocationRequest,
+    CreateOpeningTimeRequest,
+    Location,
+    NearestLocation,
+} from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
+import { formatTime } from '@/utils/date/time';
 import { formatDate } from '@vueuse/core';
 
 /**
@@ -88,5 +95,51 @@ export async function getNearestLocation(center: LngLat): Promise<NearestLocatio
  */
 export async function createLocation(locationData: CreateLocationRequest): Promise<Location> {
     const response = await client.post(endpoints.locations.create, locationData);
+    return response.data;
+}
+
+/**
+ * Function to set images for a location.
+ *
+ * @param {number} locationId - The ID of the location to set images for.
+ * @param {File[]} images - The images to set for the location.
+ * @returns {Promise<Location>} A promise that resolves to the updated location.
+ */
+export async function createLocationImages(
+    locationId: number,
+    images: CreateImageRequest[],
+): Promise<Location> {
+    const formData = new FormData();
+
+    for (const image of images) {
+        if (!image.file) continue;
+        formData.append('images', image.file);
+    }
+
+    const response = await client.post(
+        endpoints.locations.images.create.replace('{id}', locationId.toString()),
+        formData,
+    );
+
+    return response.data;
+}
+
+export async function createLocationTimeslots(
+    locationId: number,
+    timeslots: CreateOpeningTimeRequest[],
+): Promise<Location> {
+    // format time strings on startTime and endTime, and format day as ISO date string
+    const mapped = timeslots.map((slot) => ({
+        ...slot,
+        startTime: formatTime(slot.startTime),
+        endTime: formatTime(slot.endTime),
+        day: slot.day.toISOString().split('T')[0], // Format as YYYY-MM-DD
+    }));
+
+    const response = await client.post(
+        endpoints.locations.openingTimes.create.replace('{id}', locationId.toString()),
+        mapped[0],
+    );
+
     return response.data;
 }

@@ -11,6 +11,8 @@ import { computed, ref, watch } from 'vue';
 const props = defineProps<{
     openingTime: CreateOpeningTimeRequest;
     editingIndex: number | null;
+    minDate?: Date;
+    maxDate?: Date;
 }>();
 
 const visible = defineModel<boolean>('visible', {
@@ -23,6 +25,49 @@ const emit = defineEmits<{
 }>();
 
 const localOpeningTime = ref<CreateOpeningTimeRequest>({ ...props.openingTime });
+
+// Computed properties for time-only inputs that preserve the date part
+const startTimeForInput = computed({
+    get: () => {
+        // Create a time-only date for the input
+        const date = new Date('2000-01-01');
+        const original = localOpeningTime.value.startTime;
+        date.setHours(original.getHours(), original.getMinutes(), 0, 0);
+        return date;
+    },
+    set: (timeOnlyDate: Date) => {
+        // Create a new time with the base date but updated time
+        const newDateTime = new Date('2000-01-01');
+        newDateTime.setHours(timeOnlyDate.getHours(), timeOnlyDate.getMinutes(), 0, 0);
+        localOpeningTime.value.startTime = newDateTime;
+    },
+});
+
+const endTimeForInput = computed({
+    get: () => {
+        // Create a time-only date for the input
+        const date = new Date('2000-01-01');
+        const original = localOpeningTime.value.endTime;
+        date.setHours(original.getHours(), original.getMinutes(), 0, 0);
+        return date;
+    },
+    set: (timeOnlyDate: Date) => {
+        // Create a new time with the base date but updated time
+        const newDateTime = new Date('2000-01-01');
+        newDateTime.setHours(timeOnlyDate.getHours(), timeOnlyDate.getMinutes(), 0, 0);
+        localOpeningTime.value.endTime = newDateTime;
+    },
+});
+
+// Computed property for the date input that updates the day field
+const dateForInput = computed({
+    get: () => {
+        return new Date(localOpeningTime.value.day);
+    },
+    set: (newDate: Date) => {
+        localOpeningTime.value.day = new Date(newDate);
+    },
+});
 
 const dialogTitle = computed(() =>
     props.editingIndex !== null ? 'Openingstijd Bewerken' : 'Openingstijd Toevoegen',
@@ -57,25 +102,38 @@ function handleDelete(): void {
         modal>
         <div class="space-y-4">
             <div>
-                <label class="mb-2 block text-sm font-medium text-gray-700">Start Tijd</label>
+                <label class="mb-2 block text-sm font-medium text-gray-700">Datum</label>
                 <Calendar
-                    v-model="localOpeningTime.startTime"
-                    show-time
-                    time-only
-                    hour-format="12"
+                    v-model="dateForInput"
+                    :min-date="minDate"
+                    :max-date="maxDate"
+                    date-format="dd/mm/yy"
                     class="w-full">
                 </Calendar>
             </div>
 
-            <div>
-                <label class="mb-2 block text-sm font-medium text-gray-700">Eind Tijd</label>
-                <Calendar
-                    v-model="localOpeningTime.endTime"
-                    show-time
-                    time-only
-                    hour-format="12"
-                    class="w-full">
-                </Calendar>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700">Start Tijd</label>
+                    <Calendar
+                        v-model="startTimeForInput"
+                        show-time
+                        time-only
+                        hour-format="24"
+                        class="w-full">
+                    </Calendar>
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-medium text-gray-700">Eind Tijd</label>
+                    <Calendar
+                        v-model="endTimeForInput"
+                        show-time
+                        time-only
+                        hour-format="24"
+                        class="w-full">
+                    </Calendar>
+                </div>
             </div>
 
             <div>

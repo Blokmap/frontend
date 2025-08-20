@@ -33,7 +33,7 @@ function updateCalendarTimeSlots() {
 
         return {
             id: `opening-time-${index}`,
-            day: new Date(ot.startTime),
+            day: new Date(ot.day), // Use the day field instead of startTime
             startTime: startTime.toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -115,17 +115,18 @@ function handleDragSlot(
     const [startHours, startMinutes] = newStartTime.split(':').map(Number);
     const [endHours, endMinutes] = newEndTime.split(':').map(Number);
 
-    const baseDate = newDay || new Date(slot.metadata.openingTime.startTime);
-    const startDate = new Date(baseDate);
-    const endDate = new Date(baseDate);
-
+    // Create time-only dates
+    const startDate = new Date('2000-01-01');
     startDate.setHours(startHours, startMinutes, 0, 0);
+
+    const endDate = new Date('2000-01-01');
     endDate.setHours(endHours, endMinutes, 0, 0);
 
     const updatedOpeningTime: CreateOpeningTimeRequest = {
         ...slot.metadata.openingTime,
         startTime: startDate,
         endTime: endDate,
+        day: newDay || new Date(slot.metadata.openingTime.day), // Use the day field
     };
 
     emit('drag:slot', slot.metadata.index, updatedOpeningTime);

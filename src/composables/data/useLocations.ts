@@ -2,6 +2,8 @@ import { client, getRandomDelay } from '@/config/axios';
 import { endpoints } from '@/endpoints';
 import {
     createLocation,
+    createLocationImages,
+    createLocationTimeslots,
     getLocationById,
     getNearestLocation,
     searchLocations,
@@ -14,7 +16,13 @@ import type {
 } from '@/types/contract/Composable';
 import type { LngLat } from '@/types/contract/Map';
 import type { LocationFilter } from '@/types/schema/Filter';
-import type { CreateLocationRequest, Location, NearestLocation } from '@/types/schema/Location';
+import type { CreateImageRequest } from '@/types/schema/Image';
+import type {
+    CreateLocationRequest,
+    CreateOpeningTimeRequest,
+    Location,
+    NearestLocation,
+} from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
@@ -104,9 +112,41 @@ export function useCreateLocation(
     const mutation = useMutation({
         ...options,
         mutationFn: createLocation,
-        onSuccess: (data, vars, context) => {
-            client.invalidateQueries({ queryKey: ['locations'] });
-            options.onSuccess?.(data, vars, context);
+    });
+
+    return mutation;
+}
+
+export type CreateLocationImagesParams = {
+    locationId: number;
+    images: CreateImageRequest[];
+};
+
+export function useCreateLocationImages(
+    options: CompMutationOptions = {},
+): CompMutation<CreateLocationImagesParams> {
+    const mutation = useMutation({
+        ...options,
+        mutationFn: ({ locationId, images }: CreateLocationImagesParams) => {
+            return createLocationImages(locationId, images);
+        },
+    });
+
+    return mutation;
+}
+
+export type CreateLocationTimeslotsParams = {
+    locationId: number;
+    timeslots: CreateOpeningTimeRequest[];
+};
+
+export function useCreateLocationTimeslots(
+    options: CompMutationOptions = {},
+): CompMutation<CreateLocationTimeslotsParams> {
+    const mutation = useMutation({
+        ...options,
+        mutationFn: ({ locationId, timeslots }: CreateLocationTimeslotsParams) => {
+            return createLocationTimeslots(locationId, timeslots);
         },
     });
 

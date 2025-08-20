@@ -1,5 +1,5 @@
 import { isDateInRange, startOfDay } from '../date/date';
-import { calculateDuration, formatTimeFromDate } from '../date/time';
+import { calculateDuration, formatTime } from '../date/time';
 import type { Reservation, TimeSlot } from '@/types/schema/Reservation';
 
 /**
@@ -31,8 +31,8 @@ export function reservationToTimeSlot(reservation: Reservation): TimeSlot<Reserv
     const startTime = new Date(reservation.startTime);
     const endTime = new Date(reservation.endTime);
 
-    const startTimeString = formatTimeFromDate(startTime);
-    const endTimeString = formatTimeFromDate(endTime);
+    const startTimeString = formatTime(startTime);
+    const endTimeString = formatTime(endTime);
 
     // Calculate duration using time utility
     const duration = calculateDuration(startTime, endTime);

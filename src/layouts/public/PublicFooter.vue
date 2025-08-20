@@ -76,7 +76,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 @reference '@/assets/styles/main.css';
 
 .footer {
-    @apply border-surface-200 mt-8 border-t-2 bg-white;
+    @apply border-surface-200 mt-8 rounded-b-md border-t-2 bg-white;
 
     .footer-content {
         @apply mx-auto grid max-w-7xl grid-cols-1 gap-6 px-6 py-8;
@@ -121,10 +121,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
     }
 
     .footer-bottom {
-        @apply border-surface-200 bg-surface-50 border-t;
+        @apply border-surface-200 bg-surface-50 rounded-b-lg border-t;
 
         .footer-bottom-content {
-            @apply mx-auto flex max-w-7xl flex-col items-center justify-between;
+            @apply mx-auto flex max-w-7xl flex-col items-center justify-between rounded-b-lg;
             @apply px-6 py-3 text-center;
             @apply md:flex-row md:text-left;
         }

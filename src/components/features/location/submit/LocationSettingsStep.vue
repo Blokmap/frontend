@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { SubStep } from '@/types/contract/LocationWizard';
 import type { CreateLocationRequest } from '@/types/schema/Location';
-import { faClock, faCog, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
-import { computed, watchEffect } from 'vue';
+import { watchEffect } from 'vue';
 
 const form = defineModel<CreateLocationRequest>({ required: true });
 const substeps = defineModel<SubStep[]>('substeps', { default: [] });
@@ -14,7 +14,6 @@ const substeps = defineModel<SubStep[]>('substeps', { default: [] });
 watchEffect(() => {
     const data = form.value;
     const hasSeats = data.seatCount > 0;
-    const hasReservationSettings = data.reservationBlockSize > 0;
     const hasReservability = typeof data.isReservable === 'boolean';
 
     substeps.value = [
@@ -24,7 +23,7 @@ watchEffect(() => {
         },
         {
             label: 'Reservatie-instellingen',
-            isCompleted: hasReservationSettings && hasReservability,
+            isCompleted: hasReservability,
         },
     ];
 });
@@ -92,57 +91,6 @@ watchEffect(() => {
                         <label for="isReservable" class="text-sm font-medium">
                             Reservaties toestaan
                         </label>
-                    </div>
-
-                    <div v-if="form.isReservable">
-                        <label for="reservationBlockSize" class="mb-2 block text-sm font-medium">
-                            Reservatieblok (in minuten)
-                        </label>
-                        <InputNumber
-                            id="reservationBlockSize"
-                            v-model="form.reservationBlockSize"
-                            :min="15"
-                            :max="480"
-                            :step="15"
-                            placeholder="60"
-                            class="w-full" />
-                        <small class="text-slate-500">
-                            De minimale tijd waarin iemand kan reserveren (bijv. 60 minuten).
-                        </small>
-                    </div>
-
-                    <div v-if="form.isReservable" class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div>
-                            <label
-                                for="minReservationLength"
-                                class="mb-2 block text-sm font-medium">
-                                Minimale reservatieduur (minuten)
-                            </label>
-                            <InputNumber
-                                id="minReservationLength"
-                                v-model="form.minReservationLength"
-                                :min="15"
-                                :max="480"
-                                :step="15"
-                                placeholder="Optioneel"
-                                class="w-full" />
-                        </div>
-
-                        <div>
-                            <label
-                                for="maxReservationLength"
-                                class="mb-2 block text-sm font-medium">
-                                Maximale reservatieduur (minuten)
-                            </label>
-                            <InputNumber
-                                id="maxReservationLength"
-                                v-model="form.maxReservationLength"
-                                :min="15"
-                                :max="1440"
-                                :step="15"
-                                placeholder="Optioneel"
-                                class="w-full" />
-                        </div>
                     </div>
                 </div>
             </div>

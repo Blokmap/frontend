@@ -4,7 +4,7 @@
  * @param date - The date to format.
  * @returns A string representing the time in HH:MM format.
  */
-export function formatTimeFromDate(date: Date): string {
+export function formatTime(date: Date): string {
     return date.toTimeString().slice(0, 5);
 }
 

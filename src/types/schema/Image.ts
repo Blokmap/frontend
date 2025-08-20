@@ -4,7 +4,9 @@ export type Image = {
 };
 
 export type CreateImageRequest = {
-    url: string;
+    imageUrl?: string | null;
+    tempUrl?: string | null;
+    file?: File | null;
     isPrimary?: boolean;
     order?: number;
 };

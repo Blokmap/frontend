@@ -68,7 +68,7 @@ function onFileChange(e: Event): void {
 <template>
     <Dialog v-model:visible="visible" class="w-[350px]" :draggable="false" modal>
         <template #container>
-            <div class="space-y-6 overflow-y-auto p-4">
+            <div class="overflow-y-auto p-4">
                 <div class="flex items-center justify-between">
                     <h2 class="text-xl font-medium">Profielfoto</h2>
                     <Button severity="contrast" @click="visible = false" outlined rounded>
@@ -78,10 +78,14 @@ function onFileChange(e: Event): void {
                     </Button>
                 </div>
 
-                <div class="mb-9 space-y-4 text-center">
-                    <label class="mx-auto block aspect-square w-full max-w-[200px] cursor-pointer">
-                        <img class="profile-img" v-if="selectedImage" :src="selectedImage" />
-                        <ProfileAvatar size="profile-img" :profile="props.profile" v-else />
+                <p class="mt-3 text-slate-700">
+                    Je profielfoto is zichtbaar voor anderen op je reviews en geregistreerde
+                    locaties.
+                </p>
+
+                <div class="my-9 space-y-4 text-center">
+                    <label class="mx-auto block aspect-square w-full max-w-[250px] cursor-pointer">
+                        <ProfileAvatar :profile="props.profile" :image="selectedImage" />
                         <input type="file" accept="image/*" class="hidden" @change="onFileChange" />
                     </label>
                     <p class="text-sm text-gray-500">Klik om foto te wijzigen</p>
@@ -115,9 +119,3 @@ function onFileChange(e: Event): void {
         </template>
     </Dialog>
 </template>
-
-<style scoped>
-.profile-img {
-    @apply mx-auto h-full w-full rounded-full object-cover;
-}
-</style>

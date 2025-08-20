@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { SubStep } from '@/types/contract/LocationWizard';
 import type { CreateImageRequest } from '@/types/schema/Image';
-import type { CreateLocationRequest } from '@/types/schema/Location';
 import {
     faImage,
     faLink,
@@ -9,17 +8,13 @@ import {
     faStar,
     faTrash,
     faUpload,
-    faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import FileUpload from 'primevue/fileupload';
 import InputText from 'primevue/inputtext';
-import TabPanel from 'primevue/tabpanel';
-import TabView from 'primevue/tabview';
-import { computed, onMounted, ref, watch, watchEffect } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 
 const images = defineModel<CreateImageRequest[]>({ required: true, default: () => [] });
 const substeps = defineModel<SubStep[]>('substeps', { default: [] });
@@ -58,7 +53,7 @@ watchEffect(() => {
 });
 
 function getImageIndex(image: CreateImageRequest): number {
-    return images.value.findIndex((img) => img.url === image.url);
+    return images.value.findIndex((img) => img.imageUrl === image.imageUrl);
 }
 
 function addImageFromUrl(): void {
@@ -67,7 +62,8 @@ function addImageFromUrl(): void {
     images.value = [
         ...images.value,
         {
-            url: urlInput.value,
+            imageUrl: urlInput.value,
+            tempUrl: urlInput.value,
             isPrimary: images.value.length === 0,
             order: images.value.length,
         },
@@ -115,12 +111,16 @@ function handleFileUpload(event: any): void {
     const remainingSlots = 10 - images.value.length;
     const filesToAdd = files.slice(0, remainingSlots);
 
-    const newImages = filesToAdd.map((file: File, index: number) => {
-        const mockUrl = URL.createObjectURL(file);
+    const newImages = filesToAdd.map((file: File, index: number): CreateImageRequest => {
+        const tempUrl = URL.createObjectURL(file);
+        const isPrimary = images.value.length === 0 && index === 0;
+        const order = images.value.length + index;
+
         return {
-            url: mockUrl,
-            isPrimary: images.value.length === 0 && index === 0, // Make first uploaded image primary if no images exist
-            order: images.value.length + index,
+            tempUrl,
+            file,
+            isPrimary,
+            order,
         };
     });
 
@@ -210,9 +210,10 @@ function onDragEnd(): void {
                         @drop="onDrop($event, 0)"
                         @dragend="onDragEnd">
                         <img
-                            :src="primaryImage.url"
+                            :src="primaryImage.tempUrl"
                             alt="Hoofdafbeelding"
-                            class="primary-image__img" />
+                            class="primary-image__img"
+                            v-if="primaryImage.tempUrl" />
 
                         <!-- Primary Badge -->
                         <div class="primary-badge">
@@ -250,9 +251,10 @@ function onDragEnd(): void {
                         @drop="onDrop($event, getImageIndex(image))"
                         @dragend="onDragEnd">
                         <img
-                            :src="image.url"
+                            :src="image.tempUrl"
                             :alt="`Afbeelding ${index + 2}`"
-                            class="secondary-image__img" />
+                            class="secondary-image__img"
+                            v-if="image.tempUrl" />
 
                         <!-- Actions -->
                         <div class="image-actions">
@@ -341,7 +343,7 @@ function onDragEnd(): void {
                 </div>
                 <FileUpload
                     mode="basic"
-                    accept="image/*"
+                    accept="image/png,image/jpeg,image/webp,image/jpg"
                     :multiple="true"
                     :auto="true"
                     choose-label="Selecteer bestanden"

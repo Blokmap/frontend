@@ -7,6 +7,7 @@ import Avatar from 'primevue/avatar';
 withDefaults(
     defineProps<{
         profile: Profile;
+        image?: string;
         editable?: boolean;
         avatarClass?: string;
     }>(),
@@ -29,15 +30,15 @@ defineEmits<{
             class="avatar-initials aspect-square h-full w-full"
             :class="avatarClass"
             shape="circle"
-            v-if="!profile.avatarUrl">
+            v-if="!profile.avatarUrl && !image">
             <FontAwesomeIcon class="icon text-surface" :icon="faUser" />
         </Avatar>
         <img
             alt="Profile Avatar"
-            class="aspect-square h-full w-full rounded-full"
+            class="aspect-square h-full w-full rounded-full object-cover"
             :class="avatarClass"
             loading="lazy"
-            :src="profile.avatarUrl"
+            :src="profile.avatarUrl || image"
             v-else />
     </div>
 </template>

@@ -1,4 +1,4 @@
-import type { CreateImageRequest, Image } from '@/types/schema/Image';
+import type { Image } from '@/types/schema/Image';
 import type { Profile } from '@/types/schema/Profile';
 import type { CreateTranslationRequest, Translation } from '@/types/schema/Translation';
 
@@ -38,8 +38,6 @@ export type CreateLocationRequest = {
     seatCount: number;
     isReservable: boolean;
     reservationBlockSize: number;
-    minReservationLength: number | null;
-    maxReservationLength: number | null;
     street: string;
     number: string;
     zip: string;
@@ -53,6 +51,7 @@ export type CreateLocationRequest = {
 export type CreateOpeningTimeRequest = {
     startTime: Date;
     endTime: Date;
+    day: Date;
     seatCount: number | null;
     reservableFrom: Date | null;
     reservableUntil: Date | null;

@@ -5,13 +5,7 @@ import type { SubStep } from '@/types/contract/LocationWizard';
 import type { CreateLocationRequest, CreateOpeningTimeRequest } from '@/types/schema/Location';
 import { addToDate } from '@/utils/date/date';
 import { parseTimeString } from '@/utils/date/time';
-import {
-    faCalendarDays,
-    faCalendarPlus,
-    faPlus,
-    faRepeat,
-    faTrash,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCalendarPlus, faPlus, faRepeat, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import Calendar from 'primevue/calendar';
@@ -38,16 +32,17 @@ const showAddDialog = ref(false);
 const showQuickActionsDialog = ref(false);
 const editingIndex = ref<number | null>(null);
 
-// Date constraints: today to 2 months in the future
 const today = new Date();
-today.setHours(0, 0, 0, 0); // Start of today
+today.setHours(0, 0, 0, 0);
+
 const maxDate = new Date();
 maxDate.setMonth(maxDate.getMonth() + 2);
-maxDate.setHours(23, 59, 59, 999); // End of the max day
+maxDate.setHours(23, 59, 59, 999);
 
 const newOpeningTime = ref<CreateOpeningTimeRequest>({
-    startTime: new Date(),
-    endTime: new Date(),
+    startTime: new Date('2000-01-01T09:00:00'),
+    endTime: new Date('2000-01-01T10:00:00'),
+    day: new Date(),
     seatCount: form.seatCount || 1,
     reservableFrom: null,
     reservableUntil: null,
@@ -110,7 +105,7 @@ const quickActionTypes = [
 watchEffect(() => {
     const times = openingTimes.value;
     const hasOpeningTimes = times.length > 0;
-    const hasUpcomingTimes = times.some((time) => new Date(time.startTime) > new Date());
+    const hasUpcomingTimes = times.some((time) => new Date(time.day) > new Date());
 
     substeps.value = [
         {
@@ -125,7 +120,8 @@ watchEffect(() => {
 });
 
 function handleSaveOpeningTime(openingTime: CreateOpeningTimeRequest): void {
-    if (new Date(openingTime.endTime) <= new Date(openingTime.startTime)) {
+    // Compare times on the same day for validation
+    if (openingTime.endTime.getTime() <= openingTime.startTime.getTime()) {
         const correctedEndTime = new Date(openingTime.startTime);
         correctedEndTime.setHours(correctedEndTime.getHours() + 1);
         openingTime.endTime = correctedEndTime;
@@ -153,15 +149,18 @@ function handleCalendarSlotClick(slot: { day: Date; time: string }): void {
     if (slot.day > maxDate) return;
 
     const { hours, minutes } = parseTimeString(slot.time);
-    const startTime = new Date(slot.day);
+
+    // Create time-only dates
+    const startTime = new Date('2000-01-01');
     startTime.setHours(hours, minutes, 0, 0);
 
-    const endTime = new Date(startTime);
+    const endTime = new Date('2000-01-01');
     endTime.setHours(hours + 1, minutes, 0, 0);
 
     newOpeningTime.value = {
         startTime,
         endTime,
+        day: new Date(slot.day),
         seatCount: form.seatCount || 1,
         reservableFrom: null,
         reservableUntil: null,
@@ -191,8 +190,9 @@ function closeDialog(): void {
     editingIndex.value = null;
 
     newOpeningTime.value = {
-        startTime: new Date(),
-        endTime: new Date(),
+        startTime: new Date('2000-01-01T09:00:00'),
+        endTime: new Date('2000-01-01T10:00:00'),
+        day: new Date(),
         seatCount: form.seatCount || 1,
         reservableFrom: null,
         reservableUntil: null,
@@ -226,10 +226,11 @@ function executeQuickAction(): void {
             const endHours = slot.endTime.getHours();
             const endMinutes = slot.endTime.getMinutes();
 
-            const startTime = new Date(date);
+            // Create time-only dates
+            const startTime = new Date('2000-01-01');
             startTime.setHours(startHours, startMinutes, 0, 0);
 
-            const endTime = new Date(date);
+            const endTime = new Date('2000-01-01');
             endTime.setHours(endHours, endMinutes, 0, 0);
 
             // Validate that end time is after start time
@@ -240,6 +241,7 @@ function executeQuickAction(): void {
             newTimes.push({
                 startTime,
                 endTime,
+                day: new Date(date),
                 seatCount: slot.seatCount,
                 reservableFrom: null,
                 reservableUntil: null,
@@ -292,6 +294,7 @@ function confirmClearAll(): void {
 </script>
 
 <template>
+    {{ openingTimes }}
     <ConfirmDialog />
     <div class="space-y-4 pb-20">
         <OpeningTimesCalendar
@@ -345,6 +348,8 @@ function confirmClearAll(): void {
         v-model:visible="showAddDialog"
         :opening-time="newOpeningTime"
         :editing-index="editingIndex"
+        :min-date="today"
+        :max-date="maxDate"
         @save="handleSaveOpeningTime"
         @delete="handleDeleteSlotFromDialog"
         @close="closeDialog" />
@@ -418,7 +423,7 @@ function confirmClearAll(): void {
                                 v-model="slot.startTime"
                                 show-time
                                 time-only
-                                hour-format="12"
+                                hour-format="24"
                                 class="w-full" />
                         </div>
                         <div class="flex-1">
@@ -427,7 +432,7 @@ function confirmClearAll(): void {
                                 v-model="slot.endTime"
                                 show-time
                                 time-only
-                                hour-format="12"
+                                hour-format="24"
                                 class="w-full">
                             </Calendar>
                         </div>

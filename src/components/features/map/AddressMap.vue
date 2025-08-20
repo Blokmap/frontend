@@ -9,20 +9,22 @@ const center = defineModel<LngLat>('center', {
     default: () => [4.3517, 50.8503],
 });
 
-const props = withDefaults(
+const zoom = defineModel<number>('zoom', {
+    default: 18,
+});
+
+withDefaults(
     defineProps<{
-        zoom?: number;
         padding?: number;
     }>(),
     {
-        zoom: 16,
         padding: 0.0025,
     },
 );
 
 useMapBox(useTemplateRef('mapContainer'), {
-    center: center,
-    zoom: props.zoom,
+    center,
+    zoom,
 });
 </script>
 

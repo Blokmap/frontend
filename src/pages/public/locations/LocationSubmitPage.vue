@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import LocationImagesStep from '@/components/features/location/submit/LocationImagesStep.vue';
-import LocationInformationStep from '@/components/features/location/submit/LocationInformationStep.vue';
-import LocationOpeningsStep from '@/components/features/location/submit/LocationOpeningsStep.vue';
-import LocationSettingsStep from '@/components/features/location/submit/LocationSettingsStep.vue';
+import LocationImagesStep from '@/components/features/location/submit/steps/LocationImagesStep.vue';
+import LocationInformationStep from '@/components/features/location/submit/steps/LocationInformationStep.vue';
+import LocationOpeningsStep from '@/components/features/location/submit/steps/LocationOpeningsStep.vue';
+import LocationSettingsStep from '@/components/features/location/submit/steps/LocationSettingsStep.vue';
 import {
     useCreateLocation,
     useCreateLocationImages,

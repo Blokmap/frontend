@@ -1,4 +1,3 @@
-import { client, getRandomDelay } from '@/config/axios';
 import { endpoints } from '@/endpoints';
 import {
     createLocation,
@@ -24,6 +23,7 @@ import type {
     NearestLocation,
 } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
+import { client, getRandomDelay } from '@/utils/axios';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';

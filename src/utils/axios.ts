@@ -1,5 +1,5 @@
-import { mockInstitutions } from '@/config/mock';
 import { endpoints } from '@/endpoints';
+import { mockInstitutions } from '@/mock';
 import axios, { HttpStatusCode } from 'axios';
 import { type Router } from 'vue-router';
 

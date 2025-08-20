@@ -1,6 +1,6 @@
-import { client } from '@/config/axios';
 import { endpoints } from '@/endpoints';
 import type { Reservation } from '@/types/schema/Reservation';
+import { client } from '@/utils/axios';
 import { formatDate } from '@vueuse/core';
 
 export type ReservationIncludes = 'profile' | 'location' | 'openingTime' | 'confirmedBy';

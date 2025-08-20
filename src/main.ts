@@ -1,6 +1,6 @@
 import App from '@/App.vue';
-import { i18n } from '@/config/i18n';
 import router from '@/router/router';
+import { i18n } from '@/utils/locale';
 import { VueQueryPlugin } from '@tanstack/vue-query';
 import { createPinia } from 'pinia';
 import { ConfirmationService, Ripple, ToastService, Tooltip } from 'primevue';

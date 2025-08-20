@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import AddressMap from '../../map/AddressMap.vue';
 import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
+import LocationSubmitCard from '@/components/features/location/submit/LocationSubmitCard.vue';
+import AddressMap from '@/components/features/map/AddressMap.vue';
 import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/useToast';
 import type { SubStep } from '@/types/contract/LocationWizard';
 import type { LngLat } from '@/types/contract/Map';
 import type { CreateLocationRequest } from '@/types/schema/Location';
 import { formatLocationAddress } from '@/utils/schema/location';
-import { faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
@@ -26,6 +27,8 @@ const { mutateAsync: geocodeAddress, isPending: isLoading } = useForwardGeoSearc
 
 const mapContainer = useTemplateRef('map-container');
 const currentLanguage = ref(locale.value);
+
+const mapZoom = ref<number>(18);
 
 const mapCenter = computed<LngLat>({
     get() {
@@ -91,6 +94,7 @@ async function handleConfirmAddress(): Promise<void> {
     try {
         const address = formatLocationAddress(form.value);
         mapCenter.value = await geocodeAddress(address);
+        mapZoom.value = 18;
         mapContainer.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (error) {
         toast.add({
@@ -104,35 +108,26 @@ async function handleConfirmAddress(): Promise<void> {
 
 <template>
     <div class="space-y-8">
-        <!-- Basic Information -->
-        <div class="rounded-lg border-2 border-slate-200 bg-white">
-            <div class="space-y-6 p-6">
-                <div class="flex items-center space-x-3">
-                    <div
-                        class="bg-secondary-50 flex h-10 w-10 items-center justify-center rounded-full">
-                        <FontAwesomeIcon :icon="faEdit" class="text-secondary-600" />
+        <LocationSubmitCard :icon="faEdit">
+            <template #header>
+                <div class="flex w-full items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900">Basis informatie</h3>
+                        <p class="text-sm text-gray-600">Voer de basisgegevens van uw locatie in</p>
                     </div>
-                    <div class="flex w-full items-center justify-between">
-                        <div>
-                            <h3 class="text-xl font-semibold text-gray-900">Basis informatie</h3>
-                            <p class="text-sm text-gray-600">
-                                Voer de basisgegevens van uw locatie in
-                            </p>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <LanguageSelector v-model="currentLanguage">
-                                <template #button="{ toggle, currentFlag, currentLabel }">
-                                    <Button @click="toggle" severity="contrast" size="small">
-                                        <img :src="currentFlag" alt="flag" class="mr-2 h-4 w-4" />
-                                        <span class="text-sm">{{ currentLabel }}</span>
-                                    </Button>
-                                </template>
-                            </LanguageSelector>
-                        </div>
+                    <div class="flex items-center space-x-2">
+                        <LanguageSelector v-model="currentLanguage">
+                            <template #button="{ toggle, currentFlag, currentLabel }">
+                                <Button @click="toggle" severity="contrast" size="small">
+                                    <img :src="currentFlag" alt="flag" class="mr-2 h-4 w-4" />
+                                    <span class="text-sm">{{ currentLabel }}</span>
+                                </Button>
+                            </template>
+                        </LanguageSelector>
                     </div>
                 </div>
-
-                <!-- Location Name -->
+            </template>
+            <template #default>
                 <div>
                     <label for="name" class="mb-2 block text-sm font-medium text-gray-700">
                         Locatie naam *
@@ -191,23 +186,15 @@ async function handleConfirmAddress(): Promise<void> {
                         </small>
                     </div>
                 </div>
-            </div>
-        </div>
+            </template>
+        </LocationSubmitCard>
 
-        <!-- Location Details -->
-        <div class="rounded-lg border-2 border-gray-200 bg-white">
-            <div class="space-y-6 p-6">
-                <div class="flex items-center space-x-3">
-                    <div
-                        class="bg-primary-100 flex h-10 w-10 items-center justify-center rounded-full">
-                        <FontAwesomeIcon :icon="faHome" class="text-primary-600" />
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-semibold text-gray-900">Adres informatie</h3>
-                        <p class="text-sm text-gray-600">Voer het adres van uw locatie in</p>
-                    </div>
-                </div>
-
+        <LocationSubmitCard :icon="faHome">
+            <template #header>
+                <h3 class="text-xl font-semibold text-gray-900">Adres informatie</h3>
+                <p class="text-sm text-gray-600">Voer het adres van uw locatie in</p>
+            </template>
+            <template #default>
                 <!-- Manual Address Entry -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -268,7 +255,8 @@ async function handleConfirmAddress(): Promise<void> {
                             Controleer en bevestig de exacte locatie op de kaart
                         </p>
                         <div v-if="hasCoordinates" class="text-primary-600 mt-1 text-xs">
-                            ✓ Bevestigd:
+                            <FontAwesomeIcon :icon="faCheck" />
+                            Bevestigd:
                             {{ form.latitude?.toFixed(6) }},
                             {{ form.longitude?.toFixed(6) }}
                         </div>
@@ -282,10 +270,18 @@ async function handleConfirmAddress(): Promise<void> {
                         Bevestig op kaart
                     </Button>
                 </div>
-                <div class="h-[400px] w-full" ref="map-container">
-                    <AddressMap v-model:center="mapCenter" :zoom="18"> </AddressMap>
+                <div class="map-container" ref="map-container">
+                    <AddressMap v-model:center="mapCenter" v-model:zoom="mapZoom"> </AddressMap>
                 </div>
-            </div>
-        </div>
+            </template>
+        </LocationSubmitCard>
     </div>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.map-container {
+    @apply h-[400px] w-full rounded-md border-2 border-slate-200;
+}
+</style>

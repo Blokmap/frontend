@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { setupAxiosInterceptors } from './config/axios';
+import { setupAxiosInterceptors } from './utils/axios';
 import Toast from '@/components/Toast.vue';
 import ProgressBar from '@/components/features/layout/ProgressBar.vue';
 import { useToast } from '@/composables/useToast';

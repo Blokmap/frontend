@@ -1,4 +1,3 @@
-import { client } from '@/config/axios';
 import { endpoints } from '@/endpoints';
 import type { LngLat } from '@/types/contract/Map';
 import type { LocationFilter } from '@/types/schema/Filter';
@@ -10,6 +9,7 @@ import type {
     NearestLocation,
 } from '@/types/schema/Location';
 import type { Paginated } from '@/types/schema/Pagination';
+import { client } from '@/utils/axios';
 import { formatTime } from '@/utils/date/time';
 import { formatDate } from '@vueuse/core';
 

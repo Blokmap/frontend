@@ -1,7 +1,7 @@
-import { client } from '@/config/axios';
 import { endpoints } from '@/endpoints';
 import type { LoginRequest, RegisterRequest } from '@/types/schema/Auth';
 import type { Profile } from '@/types/schema/Profile';
+import { client } from '@/utils/axios';
 
 /**
  * Fetches the authenticated user's profile.
@@ -10,8 +10,8 @@ import type { Profile } from '@/types/schema/Profile';
  */
 export async function getAuthProfile(): Promise<Profile | null> {
     try {
-        const response = await client.get(endpoints.auth.current);
-        return response.data;
+        const { data } = await client.get(endpoints.auth.current);
+        return data;
     } catch {
         return null;
     }

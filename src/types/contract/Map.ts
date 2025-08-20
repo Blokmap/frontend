@@ -15,6 +15,7 @@ export interface MapOptions {
     maxBounds?: MaybeRef<LngLatBounds>;
     zoom?: MaybeRef<number>;
     autoGeolocation?: boolean;
+    geoLocationControl?: boolean;
 }
 
 export interface MapAdapter<T = number> {

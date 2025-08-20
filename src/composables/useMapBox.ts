@@ -1,7 +1,7 @@
-import { defaultMapOptions } from '@/config/map';
 import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/types/contract/Map';
+import { defaultMapOptions } from '@/utils/map';
 import mapboxgl from 'mapbox-gl';
-import { type Ref, isRef, nextTick, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
+import { type Ref, isRef, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
@@ -34,6 +34,7 @@ export function useMapBox<T>(
     const markerCount = ref(0);
     const isLoaded = ref(false);
     const isMoving = ref(false);
+    const isZooming = ref(false);
 
     // Handle MaybeRef options - convert to reactive refs or use provided refs
     const center = isRef(options.center) ? options.center : ref<LngLat>(options.center || [0, 0]);
@@ -45,14 +46,13 @@ export function useMapBox<T>(
         [180, 90],
     ]);
 
-    // Internal flag to prevent infinite loops when updating from map events
-    const isUpdatingFromMap = ref(false);
-
     onMounted(() => {
         if (container.value === null) {
             console.error('Map container is not defined, cannot initialize map');
             return;
         }
+
+        // Configuration //
 
         const newMap = new mapboxgl.Map({
             accessToken: MAPBOX_ACCESS_TOKEN,
@@ -64,45 +64,17 @@ export function useMapBox<T>(
             zoom: zoom.value,
         });
 
+        // Listeners //
+
         newMap.on('move', async () => {
             isMoving.value = true;
 
-            if (!isUpdatingFromMap.value) {
-                isUpdatingFromMap.value = true;
-
-                const mapBounds = newMap.getBounds();
-                const mapCenter = newMap.getCenter();
-                const mapZoom = newMap.getZoom();
-
-                center.value = [mapCenter.lng, mapCenter.lat];
-                zoom.value = mapZoom;
-
-                if (mapBounds) {
-                    bounds.value = [
-                        [mapBounds.getSouthWest().lng, mapBounds.getSouthWest().lat],
-                        [mapBounds.getNorthEast().lng, mapBounds.getNorthEast().lat],
-                    ];
-                }
-
-                await nextTick();
-
-                isUpdatingFromMap.value = false;
-            }
-        });
-
-        newMap.on('moveend', () => {
-            isMoving.value = false;
-        });
-
-        newMap.once('load', () => {
-            isLoaded.value = true;
-
             const mapBounds = newMap.getBounds();
             const mapCenter = newMap.getCenter();
-            const mapZoom = newMap.getZoom();
 
-            center.value = [mapCenter.lng, mapCenter.lat];
-            zoom.value = mapZoom;
+            if (mapCenter) {
+                center.value = [mapCenter.lng, mapCenter.lat];
+            }
 
             if (mapBounds) {
                 bounds.value = [
@@ -110,29 +82,58 @@ export function useMapBox<T>(
                     [mapBounds.getNorthEast().lng, mapBounds.getNorthEast().lat],
                 ];
             }
+        });
 
-            if (options.autoGeolocation) {
-                geoLocateControl.trigger();
+        newMap.on('zoom', async () => {
+            isZooming.value = true;
+
+            const mapZoom = newMap.getZoom();
+
+            if (mapZoom) {
+                zoom.value = mapZoom;
             }
         });
 
-        // Add geolocate control to the map
-        const geoLocateControl = new mapboxgl.GeolocateControl({
-            positionOptions: { enableHighAccuracy: true },
+        newMap.on('moveend', () => {
+            isMoving.value = false;
         });
 
-        newMap.addControl(geoLocateControl);
+        newMap.on('zoomend', () => {
+            isZooming.value = false;
+        });
 
-        geoLocateControl.on('geolocate', (position) => {
-            const { longitude, latitude } = position.coords;
+        newMap.once('load', () => {
+            isLoaded.value = true;
+        });
 
-            newMap.flyTo({
-                center: [longitude, latitude],
-                zoom: 12,
-                duration: 1500,
-                essential: true,
+        // Geolocation configuration //
+
+        if (options.geoLocationControl) {
+            const geoLocateControl = new mapboxgl.GeolocateControl({
+                positionOptions: { enableHighAccuracy: true },
             });
-        });
+
+            newMap.addControl(geoLocateControl);
+
+            geoLocateControl.on('geolocate', (position) => {
+                const { longitude, latitude } = position.coords;
+
+                newMap.flyTo({
+                    center: [longitude, latitude],
+                    zoom: 12,
+                    duration: 1500,
+                    essential: true,
+                });
+            });
+
+            if (options.autoGeolocation) {
+                newMap.once('load', () => {
+                    if (options.autoGeolocation) {
+                        geoLocateControl.trigger();
+                    }
+                });
+            }
+        }
 
         map.value = newMap;
     });
@@ -152,7 +153,6 @@ export function useMapBox<T>(
     watch(
         center,
         (newCenter) => {
-            if (isUpdatingFromMap.value) return;
             if (!map.value || !isLoaded.value) return;
 
             const currentCenter = map.value.getCenter();
@@ -169,7 +169,6 @@ export function useMapBox<T>(
     );
 
     watch(zoom, (newZoom) => {
-        if (isUpdatingFromMap.value) return;
         if (!map.value || !isLoaded.value) return;
 
         const currentZoom = map.value.getZoom();

@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import LocationSubmitCard from '@/components/features/location/submit/LocationSubmitCard.vue';
 import type { SubStep } from '@/types/contract/LocationWizard';
 import type { CreateImageRequest } from '@/types/schema/Image';
+import { maxLocationImages } from '@/utils/schema/location';
 import {
     faImage,
     faLink,
@@ -12,7 +14,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import FileUpload from 'primevue/fileupload';
+import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload';
 import InputText from 'primevue/inputtext';
 import { computed, onMounted, ref, watchEffect } from 'vue';
 
@@ -23,7 +25,7 @@ const showAddDialog = ref(false);
 const urlInput = ref('');
 const draggedIndex = ref<number | null>(null);
 
-const canAddMore = computed(() => images.value.length < 10);
+const canAddMore = computed(() => images.value.length < maxLocationImages);
 const primaryImage = computed(() => images.value.find((img) => img.isPrimary));
 const secondaryImages = computed(() => images.value.filter((img) => !img.isPrimary));
 const primaryImageIndex = computed(() => images.value.findIndex((img) => img.isPrimary) || 0);
@@ -34,7 +36,6 @@ onMounted(() => {
     }
 });
 
-// Populate substeps for sidebar display
 watchEffect(() => {
     const data = images.value;
     const hasPrimaryImage = data.some((img) => img.isPrimary);
@@ -53,7 +54,7 @@ watchEffect(() => {
 });
 
 function getImageIndex(image: CreateImageRequest): number {
-    return images.value.findIndex((img) => img.imageUrl === image.imageUrl);
+    return images.value.findIndex((img) => img === image);
 }
 
 function addImageFromUrl(): void {
@@ -77,38 +78,32 @@ function removeImage(index: number): void {
     const removedImage = newImages[index];
     newImages.splice(index, 1);
 
-    // If we removed the primary image, make the first one primary
     if (removedImage.isPrimary && newImages.length > 0) {
         newImages[0].isPrimary = true;
     }
 
-    // Reorder
-    newImages.forEach((img, idx) => {
-        img.order = idx;
-        if (removedImage.isPrimary && idx === 0) {
-            img.isPrimary = true;
+    for (let i = 0; i < newImages.length; i++) {
+        newImages[i].order = i;
+
+        if (removedImage.isPrimary && i === 0) {
+            newImages[i].isPrimary = true;
         }
-    });
+    }
 
     images.value = newImages;
 }
 
 function setPrimary(index: number): void {
-    const newImages = images.value.map((img, idx) => ({
-        ...img,
-        isPrimary: idx === index,
-    }));
-
-    images.value = newImages;
+    for (let i = 0; i < images.value.length; i++) {
+        images.value[i].isPrimary = i === index;
+    }
 }
 
-function handleFileUpload(event: any): void {
+function handleFileUpload(event: FileUploadSelectEvent): void {
     const files = event.files;
-
     if (!files || files.length === 0) return;
 
-    // Calculate how many files we can actually add
-    const remainingSlots = 10 - images.value.length;
+    const remainingSlots = maxLocationImages - images.value.length;
     const filesToAdd = files.slice(0, remainingSlots);
 
     const newImages = filesToAdd.map((file: File, index: number): CreateImageRequest => {
@@ -150,7 +145,6 @@ function onDragOver(event: DragEvent): void {
 function onDrop(event: DragEvent, targetIndex: number): void {
     if (!draggedIndex.value && draggedIndex.value !== 0) return;
     if (draggedIndex.value === targetIndex) return;
-
     event.preventDefault();
 
     const newImages = [...images.value];
@@ -161,9 +155,9 @@ function onDrop(event: DragEvent, targetIndex: number): void {
     const insertIndex = draggedIndex.value < targetIndex ? targetIndex - 1 : targetIndex;
     newImages.splice(insertIndex, 0, draggedImage);
 
-    newImages.forEach((img, idx) => {
-        img.order = idx;
-    });
+    for (let i = 0; i < newImages.length; i++) {
+        newImages[i].order = i;
+    }
 
     images.value = newImages;
     draggedIndex.value = null;
@@ -175,31 +169,17 @@ function onDragEnd(): void {
 </script>
 
 <template>
-    <div class="rounded-lg border-2 border-slate-200 bg-white p-6">
-        <div class="space-y-6">
-            <!-- Header -->
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div
-                        class="bg-secondary-100 flex h-10 w-10 items-center justify-center rounded-full">
-                        <FontAwesomeIcon :icon="faImage" class="text-secondary-600" />
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-semibold text-gray-900">Afbeeldingen</h3>
-                        <p class="text-sm text-gray-600">
-                            Voeg afbeeldingen toe van uw locatie
-                            <span class="ml-2 text-gray-500">({{ images.length }}/10)</span>
-                        </p>
-                    </div>
-                </div>
-
-                <Button v-if="canAddMore" @click="openAddDialog" size="small" text class="p-2">
-                    <FontAwesomeIcon :icon="faPlus" />
-                </Button>
-            </div>
-
+    <LocationSubmitCard :icon="faImage">
+        <template #header>
+            <h3 class="text-xl font-semibold text-gray-900">Afbeeldingen</h3>
+            <p class="text-sm text-gray-600">
+                Voeg afbeeldingen toe van uw locatie
+                <span class="ml-2 text-gray-500">({{ images.length }}/10)</span>
+            </p>
+        </template>
+        <template #default>
             <!-- Images Gallery -->
-            <div v-if="images.length > 0" class="space-y-4">
+            <template v-if="images.length > 0">
                 <!-- Main Image (Primary) -->
                 <div v-if="primaryImage" class="relative overflow-hidden rounded-lg">
                     <div
@@ -212,11 +192,10 @@ function onDragEnd(): void {
                         <img
                             :src="primaryImage.tempUrl"
                             alt="Hoofdafbeelding"
-                            class="primary-image__img"
                             v-if="primaryImage.tempUrl" />
 
                         <!-- Primary Badge -->
-                        <div class="primary-badge">
+                        <div class="primary-image__badge">
                             <FontAwesomeIcon :icon="faStar" class="h-3 w-3" />
                             Hoofdafbeelding
                         </div>
@@ -238,9 +217,7 @@ function onDragEnd(): void {
                 </div>
 
                 <!-- Additional Images Grid -->
-                <div
-                    v-if="secondaryImages.length > 0 || canAddMore"
-                    class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                <div v-if="secondaryImages.length > 0 || canAddMore" class="images-grid">
                     <div
                         v-for="(image, index) in secondaryImages"
                         :key="`secondary-${index}`"
@@ -253,7 +230,6 @@ function onDragEnd(): void {
                         <img
                             :src="image.tempUrl"
                             :alt="`Afbeelding ${index + 2}`"
-                            class="secondary-image__img"
                             v-if="image.tempUrl" />
 
                         <!-- Actions -->
@@ -263,7 +239,7 @@ function onDragEnd(): void {
                                     @click.stop="setPrimary(getImageIndex(image))"
                                     size="small"
                                     severity="secondary"
-                                    class="action-button action-button--secondary"
+                                    class="image-actions__button image-actions__button--secondary"
                                     rounded>
                                     <FontAwesomeIcon :icon="faStar" />
                                 </Button>
@@ -271,7 +247,7 @@ function onDragEnd(): void {
                                     @click.stop="removeImage(getImageIndex(image))"
                                     size="small"
                                     severity="danger"
-                                    class="action-button action-button--danger"
+                                    class="actions__button actions__button--danger"
                                     rounded>
                                     <FontAwesomeIcon :icon="faTrash" />
                                 </Button>
@@ -279,27 +255,24 @@ function onDragEnd(): void {
                         </div>
 
                         <!-- Index Number -->
-                        <div
-                            class="absolute right-2 bottom-2 rounded bg-black/60 px-1.5 py-0.5 text-xs text-white">
+                        <div class="image-index">
                             {{ index + 2 }}
                         </div>
                     </div>
 
                     <!-- Add New Image Placeholder -->
-                    <div v-if="canAddMore" class="add-image-placeholder" @click="openAddDialog">
+                    <div v-if="canAddMore" class="add-placeholder" @click="openAddDialog">
                         <div class="text-center">
                             <FontAwesomeIcon :icon="faPlus" class="mb-2 h-8 w-8 text-gray-400" />
                             <div class="text-xs text-gray-500">Voeg toe</div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </template>
 
             <!-- Add Images -->
             <div v-if="canAddMore && images.length === 0" class="space-y-3">
-                <div
-                    class="hover:border-primary-400 hover:bg-primary-50 flex h-48 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors duration-200"
-                    @click="openAddDialog">
+                <div class="empty-placeholder" @click="openAddDialog">
                     <div class="text-center">
                         <FontAwesomeIcon :icon="faImage" class="mb-3 h-12 w-12 text-gray-400" />
                         <h4 class="text-lg font-medium text-gray-900">Voeg afbeeldingen toe</h4>
@@ -315,8 +288,8 @@ function onDragEnd(): void {
                 Sleep afbeeldingen om de volgorde te wijzigen. Klik op de ster om een
                 hoofdafbeelding in te stellen.
             </p>
-        </div>
-    </div>
+        </template>
+    </LocationSubmitCard>
 
     <!-- Add Image Dialog -->
     <Dialog
@@ -330,8 +303,7 @@ function onDragEnd(): void {
             <!-- Upload Option -->
             <div class="space-y-3">
                 <div class="flex items-center gap-3">
-                    <div
-                        class="bg-primary-100 text-primary-600 flex h-10 w-10 items-center justify-center rounded-full">
+                    <div class="icon-container icon-container--primary">
                         <FontAwesomeIcon :icon="faUpload" />
                     </div>
                     <div>
@@ -354,7 +326,8 @@ function onDragEnd(): void {
                     </template>
                 </FileUpload>
                 <div class="text-xs text-gray-500">
-                    JPG, PNG, GIF • Max. 10MB per bestand • Tot {{ 10 - images.length }} bestanden
+                    JPG, PNG, GIF • Max. 10MB per bestand • Tot
+                    {{ maxLocationImages - images.length }} bestanden
                 </div>
             </div>
 
@@ -367,8 +340,7 @@ function onDragEnd(): void {
             <!-- URL Option -->
             <div class="space-y-3">
                 <div class="flex items-center gap-3">
-                    <div
-                        class="bg-secondary-100 text-secondary-600 flex h-10 w-10 items-center justify-center rounded-full">
+                    <div class="icon-container icon-container--secondary">
                         <FontAwesomeIcon :icon="faLink" />
                     </div>
                     <div>
@@ -376,11 +348,8 @@ function onDragEnd(): void {
                         <p class="text-sm text-gray-500">Directe link naar een afbeelding</p>
                     </div>
                 </div>
-                <InputText
-                    v-model="urlInput"
-                    placeholder="https://example.com/image.jpg"
-                    class="w-full"
-                    @keyup.enter="addImageFromUrl" />
+                <InputText v-model="urlInput" class="w-full" @keyup.enter="addImageFromUrl">
+                </InputText>
             </div>
         </div>
 
@@ -401,30 +370,56 @@ function onDragEnd(): void {
 <style scoped>
 @reference '@/assets/styles/main.css';
 
+/* Icon containers used throughout the component */
+.icon-container {
+    @apply flex h-10 w-10 items-center justify-center rounded-full;
+}
+
+.icon-container--secondary {
+    @apply bg-secondary-100;
+}
+
+.icon-container--primary {
+    @apply bg-primary-100 text-primary-600;
+}
+
+/* Images grid layout */
+.images-grid {
+    @apply grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4;
+}
+
+/* Primary image block with nested elements */
 .primary-image {
     @apply relative cursor-move overflow-hidden rounded-lg bg-gray-100;
     @apply aspect-[16/9];
+
+    img {
+        @apply h-full w-full object-cover;
+        @apply transition-transform duration-200 group-hover:scale-105;
+    }
 }
 
-.primary-image__img {
-    @apply h-full w-full object-cover;
-    @apply transition-transform duration-200 group-hover:scale-105;
-}
-
-.primary-badge {
+.primary-image__badge {
     @apply absolute top-3 right-3 flex items-center gap-1 rounded-full px-2 py-1;
     @apply bg-white text-sm font-medium;
 }
 
+/* Secondary image block with nested elements */
 .secondary-image {
     @apply relative aspect-square cursor-move overflow-hidden rounded-lg bg-gray-100;
+
+    img {
+        @apply h-full w-full object-cover;
+        @apply transition-transform duration-200 group-hover:scale-105;
+    }
 }
 
-.secondary-image__img {
-    @apply h-full w-full object-cover;
-    @apply transition-transform duration-200 group-hover:scale-105;
+/* Image index nested under secondary-image */
+.image-index {
+    @apply absolute right-2 bottom-2 rounded bg-black/60 px-1.5 py-0.5 text-xs text-white;
 }
 
+/* Image actions overlay block with nested elements */
 .image-actions {
     @apply absolute inset-0 flex items-center justify-center;
     @apply bg-black/0 transition-all duration-200 group-hover:bg-black/40;
@@ -435,21 +430,33 @@ function onDragEnd(): void {
     @apply transition-opacity duration-200 group-hover:opacity-100;
 }
 
-.action-button {
+/* Action buttons - shared base styles */
+.action-button,
+.image-actions__button,
+.actions__button {
     @apply !bg-white/90 hover:!bg-white;
 }
 
-.action-button--danger {
+/* Action button modifiers */
+.action-button--danger,
+.actions__button--danger {
     @apply !text-red-600;
 }
 
-.action-button--secondary {
+.action-button--secondary,
+.image-actions__button--secondary,
+.actions__button--secondary {
     @apply !text-gray-700;
 }
 
-.add-image-placeholder {
+/* Placeholder blocks */
+.add-placeholder {
     @apply flex aspect-square cursor-pointer items-center justify-center rounded-lg;
     @apply border-2 border-dashed border-gray-300 bg-gray-50;
     @apply hover:border-primary-400 hover:bg-primary-50 transition-colors duration-200;
+}
+
+.empty-placeholder {
+    @apply hover:border-primary-400 hover:bg-primary-50 flex h-48 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors duration-200;
 }
 </style>

@@ -27,6 +27,6 @@ defineProps<{
 @reference '@/assets/styles/main.css';
 
 .icon {
-    @apply bg-secondary-50 flex h-10 w-10 items-center justify-center rounded-full;
+    @apply bg-secondary-100 flex h-10 w-10 shrink-0 items-center justify-center rounded-full;
 }
 </style>

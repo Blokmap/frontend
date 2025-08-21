@@ -32,7 +32,10 @@ const startTimeForInput = computed({
         // Create a time-only date for the input
         const date = new Date('2000-01-01');
         const original = localOpeningTime.value.startTime;
-        date.setHours(original.getHours(), original.getMinutes(), 0, 0);
+
+        // Ensure original is a Date object
+        const originalDate = original instanceof Date ? original : new Date(original);
+        date.setHours(originalDate.getHours(), originalDate.getMinutes(), 0, 0);
         return date;
     },
     set: (timeOnlyDate: Date) => {
@@ -48,7 +51,10 @@ const endTimeForInput = computed({
         // Create a time-only date for the input
         const date = new Date('2000-01-01');
         const original = localOpeningTime.value.endTime;
-        date.setHours(original.getHours(), original.getMinutes(), 0, 0);
+
+        // Ensure original is a Date object
+        const originalDate = original instanceof Date ? original : new Date(original);
+        date.setHours(originalDate.getHours(), originalDate.getMinutes(), 0, 0);
         return date;
     },
     set: (timeOnlyDate: Date) => {
@@ -62,7 +68,8 @@ const endTimeForInput = computed({
 // Computed property for the date input that updates the day field
 const dateForInput = computed({
     get: () => {
-        return new Date(localOpeningTime.value.day);
+        const day = localOpeningTime.value.day;
+        return day instanceof Date ? new Date(day) : new Date(day);
     },
     set: (newDate: Date) => {
         localOpeningTime.value.day = new Date(newDate);

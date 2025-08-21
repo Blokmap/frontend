@@ -5,10 +5,11 @@ import LocationOpeningsStep from '@/components/features/location/submit/steps/Lo
 import LocationSettingsStep from '@/components/features/location/submit/steps/LocationSettingsStep.vue';
 import {
     useCreateLocation,
-    useCreateLocationImages,
+    useCreateLocationImage,
     useCreateLocationTimeslots,
 } from '@/composables/data/useLocations';
 import { useToast } from '@/composables/useToast';
+import { DEFAULT_LOCATION_FORM } from '@/constants/defaults';
 import type { SubStep } from '@/types/contract/LocationWizard';
 import type { CreateImageRequest } from '@/types/schema/Image';
 import type { CreateLocationRequest, CreateOpeningTimeRequest } from '@/types/schema/Location';
@@ -26,35 +27,23 @@ const route = useRoute();
 const toast = useToast();
 
 const { mutateAsync: createLocation, isPending: isCreating } = useCreateLocation();
-const { mutateAsync: createImages, isPending: isCreatingImages } = useCreateLocationImages();
+const { mutateAsync: createImage, isPending: isCreatingImages } = useCreateLocationImage();
 const { mutateAsync: createOpenings, isPending: isCreatingOpenings } = useCreateLocationTimeslots();
 
 const locationForm = useLocalStorage<CreateLocationRequest>(
     'location-form',
-    {
-        name: '',
-        excerpt: {},
-        description: {},
-        street: '',
-        number: '',
-        zip: '',
-        city: '',
-        country: 'be',
-        province: '',
-        latitude: 0,
-        longitude: 0,
-        seatCount: 20,
-        isReservable: true,
-        reservationBlockSize: 0, // todo remove
-    },
+    DEFAULT_LOCATION_FORM,
     {
         mergeDefaults: syncStorageData,
     },
 );
 
-const openingsForm = useLocalStorage<CreateOpeningTimeRequest[]>('openings-form', []);
+const openingsForm = useLocalStorage<CreateOpeningTimeRequest[]>('openings-form', [], {
+    // mergeDefaults: syncStorageData,
+});
 
 const imagesForm = ref<CreateImageRequest[]>([]);
+
 const step = ref<string>(route.query.step?.toString() || 'basics');
 const substeps = ref<SubStep[]>([]);
 
@@ -81,6 +70,12 @@ const steps: { id: string; label: string; desc: string }[] = [
     },
 ];
 
+const canGoNext = computed(() => substeps.value.every((substep) => substep.isCompleted));
+const canGoPrevious = computed(() => stepIndex.value > 0);
+const stepIndex = computed(() => steps.findIndex((curr) => curr.id === step.value));
+const progressPercentage = computed(() => Math.round(((stepIndex.value + 1) * 100) / steps.length));
+const isLastStep = computed(() => step.value === 'openings');
+
 watch(
     () => route.query.step,
     (newStep) => {
@@ -89,12 +84,6 @@ watch(
         }
     },
 );
-
-const canGoNext = computed(() => substeps.value.every((substep) => substep.isCompleted));
-const canGoPrevious = computed(() => stepIndex.value > 0);
-const stepIndex = computed(() => steps.findIndex((curr) => curr.id === step.value));
-const progressPercentage = computed(() => Math.round(((stepIndex.value + 1) * 100) / steps.length));
-const isLastStep = computed(() => step.value === 'openings');
 
 function goNext(): void {
     if (canGoNext.value && stepIndex.value < steps.length - 1) {
@@ -112,9 +101,32 @@ function goPrevious(): void {
 
 async function submitLocation(): Promise<void> {
     if (!canGoNext.value) return;
-    const location = await createLocation(locationForm.value);
-    await createImages({ images: imagesForm.value, locationId: location.id });
-    await createOpenings({ timeslots: openingsForm.value, locationId: location.id });
+
+    try {
+        // Create the location
+        const location = await createLocation(locationForm.value);
+
+        // Create the images and opening times in parallel
+        await Promise.all([
+            ...imagesForm.value.map((image) => createImage({ locationId: location.id, image })),
+            createOpenings({ timeslots: openingsForm.value, locationId: location.id }),
+        ]);
+
+        toast.add({
+            severity: 'success',
+            summary: 'Locatie succesvol aangemaakt',
+            detail: 'De locatie is succesvol aangemaakt en wacht op goedkeuring door een beheerder. We houden je op de hoogte!',
+        });
+
+        router.push({ name: 'locations' });
+    } catch (error) {
+        console.error('Error creating location:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Fout bij het aanmaken van de locatie',
+            detail: 'Er is een fout opgetreden bij het aanmaken van de locatie. Probeer het opnieuw.',
+        });
+    }
 }
 </script>
 

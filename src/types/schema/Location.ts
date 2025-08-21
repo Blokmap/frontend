@@ -44,6 +44,7 @@ export type CreateLocationRequest = {
     excerpt: CreateTranslationRequest;
     seatCount: number;
     isReservable: boolean;
+    isVisible: boolean;
     reservationBlockSize: number;
     street: string;
     number: string;

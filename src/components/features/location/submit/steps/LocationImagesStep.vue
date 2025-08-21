@@ -445,6 +445,7 @@ function onTouchEnd(): void {
 
 .images-grid {
     @apply grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4;
+    @apply select-none;
 
     .secondary-image {
         @apply relative aspect-square cursor-move overflow-hidden rounded-lg bg-gray-100;

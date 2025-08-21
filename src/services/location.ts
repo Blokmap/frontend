@@ -102,18 +102,18 @@ export async function createLocation(locationData: CreateLocationRequest): Promi
  * Function to set images for a location.
  *
  * @param {number} locationId - The ID of the location to set images for.
- * @param {File[]} images - The images to set for the location.
+ * @param {CreateImageRequest} image - The images to set for the location.
  * @returns {Promise<Location>} A promise that resolves to the updated location.
  */
-export async function createLocationImages(
+export async function createLocationImage(
     locationId: number,
-    images: CreateImageRequest[],
+    image: CreateImageRequest,
 ): Promise<Location> {
     const formData = new FormData();
 
-    for (const image of images) {
-        if (!image.file) continue;
-        formData.append('images', image.file);
+    if (image.file) {
+        formData.append('image', image.file);
+        formData.append('index', image.order.toString());
     }
 
     const response = await client.post(

@@ -1,7 +1,7 @@
 import { endpoints } from '@/endpoints';
 import {
     createLocation,
-    createLocationImages,
+    createLocationImage,
     createLocationTimeslots,
     getLocationById,
     getNearestLocation,
@@ -117,18 +117,18 @@ export function useCreateLocation(
     return mutation;
 }
 
-export type CreateLocationImagesParams = {
+export type CreateLocationImageParams = {
     locationId: number;
-    images: CreateImageRequest[];
+    image: CreateImageRequest;
 };
 
-export function useCreateLocationImages(
+export function useCreateLocationImage(
     options: CompMutationOptions = {},
-): CompMutation<CreateLocationImagesParams> {
+): CompMutation<CreateLocationImageParams> {
     const mutation = useMutation({
         ...options,
-        mutationFn: ({ locationId, images }: CreateLocationImagesParams) => {
-            return createLocationImages(locationId, images);
+        mutationFn: ({ locationId, image }: CreateLocationImageParams) => {
+            return createLocationImage(locationId, image);
         },
     });
 

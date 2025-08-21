@@ -291,10 +291,35 @@ function confirmClearAll(): void {
         },
     });
 }
+
+function getTimeSlotStartTime(slot: { startTime: Date; endTime: Date; seatCount: number }): Date {
+    return slot.startTime instanceof Date ? new Date(slot.startTime) : new Date(slot.startTime);
+}
+
+function setTimeSlotStartTime(
+    slot: { startTime: Date; endTime: Date; seatCount: number },
+    value: Date,
+): void {
+    if (value instanceof Date) {
+        slot.startTime = new Date(value);
+    }
+}
+
+function getTimeSlotEndTime(slot: { startTime: Date; endTime: Date; seatCount: number }): Date {
+    return slot.endTime instanceof Date ? new Date(slot.endTime) : new Date(slot.endTime);
+}
+
+function setTimeSlotEndTime(
+    slot: { startTime: Date; endTime: Date; seatCount: number },
+    value: Date,
+): void {
+    if (value instanceof Date) {
+        slot.endTime = new Date(value);
+    }
+}
 </script>
 
 <template>
-    {{ openingTimes }}
     <ConfirmDialog />
     <div class="space-y-4 pb-20">
         <OpeningTimesCalendar
@@ -420,7 +445,10 @@ function confirmClearAll(): void {
                         <div class="flex-1">
                             <label class="mb-1 block text-xs text-gray-500">Start</label>
                             <Calendar
-                                v-model="slot.startTime"
+                                :model-value="getTimeSlotStartTime(slot)"
+                                @update:model-value="
+                                    (value: Date) => setTimeSlotStartTime(slot, value)
+                                "
                                 show-time
                                 time-only
                                 hour-format="24"
@@ -429,7 +457,10 @@ function confirmClearAll(): void {
                         <div class="flex-1">
                             <label class="mb-1 block text-xs text-gray-500">Eind</label>
                             <Calendar
-                                v-model="slot.endTime"
+                                :model-value="getTimeSlotEndTime(slot)"
+                                @update:model-value="
+                                    (value: Date) => setTimeSlotEndTime(slot, value)
+                                "
                                 show-time
                                 time-only
                                 hour-format="24"

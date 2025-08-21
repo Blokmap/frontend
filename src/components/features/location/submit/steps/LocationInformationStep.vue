@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
-import { computed, ref, useTemplateRef, watchEffect } from 'vue';
+import { computed, nextTick, ref, useTemplateRef, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const form = defineModel<CreateLocationRequest>({ required: true });
@@ -90,7 +90,6 @@ watchEffect(() => {
 
 async function handleConfirmAddress(): Promise<void> {
     if (!canConfirmAddress.value) return;
-    if (!mapContainer.value) return;
 
     try {
         const address = formatLocationAddress(form.value);
@@ -98,7 +97,9 @@ async function handleConfirmAddress(): Promise<void> {
         mapCenter.value = await geocodeAddress(address);
         mapZoom.value = 18;
 
-        mapContainer.value.$el.scrollIntoView({
+        await nextTick();
+
+        mapContainer.value?.$el.scrollIntoView({
             behavior: 'smooth',
             block: 'start',
         });

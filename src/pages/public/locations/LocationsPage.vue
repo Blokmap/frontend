@@ -73,7 +73,7 @@ watch(
 
 useItemAnimation(locationRefs);
 
-const handleBoundsChange = useDebounceFn((bounds: LngLatBounds) => {
+const handleBoundsChange = useDebounceFn((bounds: LngLatBounds | null) => {
     filterStore.updateFilters({ bounds, page: 1 });
 }, 400);
 
@@ -179,8 +179,9 @@ const handlePageChange = (event: { page: number }): void => {
                     ref="map"
                     :locations="locations?.data"
                     :is-loading="isLoading"
-                    v-model:hovered-location="hoveredLocation"
-                    @change:bounds="handleBoundsChange">
+                    :bounds="filters.bounds"
+                    @update:bounds="handleBoundsChange"
+                    v-model:hovered-location="hoveredLocation">
                 </BlokMap>
             </div>
         </div>

@@ -6,27 +6,25 @@ import type { Location } from '@/types/schema/Location';
 import { faBuildingColumns, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
-import { onMounted, useTemplateRef, watch } from 'vue';
+import { useTemplateRef, watch } from 'vue';
 
-withDefaults(
-    defineProps<{
-        locations?: Location[];
-        isLoading?: boolean;
-        boundsDebounce?: number;
-    }>(),
-    {
-        boundsDebounce: 400,
-        rounded: true,
-        shadow: false,
-    },
-);
+defineProps<{
+    locations?: Location[];
+    isLoading?: boolean;
+}>();
+
+const bounds = defineModel<LngLatBounds | null>('bounds', {
+    default: () => ({
+        northEast: { lat: 0, lng: 0 },
+        southWest: { lat: 0, lng: 0 },
+    }),
+});
 
 const hoveredLocation = defineModel<Location | null>('hoveredLocation', {
     default: null,
 });
 
 const emit = defineEmits<{
-    (e: 'change:bounds', value: LngLatBounds): void;
     (e: 'click:marker', id: number): void;
 }>();
 
@@ -46,17 +44,15 @@ function handleMarkerMouseLeave() {
     hoveredLocation.value = null;
 }
 
-onMounted(() => {
-    watch(
-        map.bounds,
-        (newBounds) => {
-            emit('change:bounds', newBounds);
-            config.value.center = map.center.value;
-            config.value.zoom = map.zoom.value;
-        },
-        { deep: true },
-    );
-});
+watch(
+    map.bounds,
+    (newBounds) => {
+        bounds.value = newBounds;
+        config.value.center = map.center.value;
+        config.value.zoom = map.zoom.value;
+    },
+    { deep: true, immediate: true },
+);
 
 defineExpose({ map });
 </script>

@@ -179,7 +179,6 @@ const handlePageChange = (event: { page: number }): void => {
                     ref="map"
                     :locations="locations?.data"
                     :is-loading="isLoading"
-                    :bounds="filters.bounds"
                     @update:bounds="handleBoundsChange"
                     v-model:hovered-location="hoveredLocation">
                 </BlokMap>

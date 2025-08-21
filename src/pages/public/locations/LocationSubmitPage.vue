@@ -30,6 +30,10 @@ const { mutateAsync: createLocation, isPending: isCreating } = useCreateLocation
 const { mutateAsync: createImage, isPending: isCreatingImages } = useCreateLocationImage();
 const { mutateAsync: createOpenings, isPending: isCreatingOpenings } = useCreateLocationTimeslots();
 
+const isCreatingLocation = computed(
+    () => isCreating.value || isCreatingImages.value || isCreatingOpenings.value,
+);
+
 const locationForm = useLocalStorage<CreateLocationRequest>(
     'location-form',
     DEFAULT_LOCATION_FORM,
@@ -172,7 +176,7 @@ async function submitLocation(): Promise<void> {
                 <Button
                     @click="isLastStep ? submitLocation() : goNext()"
                     :disabled="!canGoNext"
-                    :loading="isCreating"
+                    :loading="isCreatingLocation"
                     size="small">
                     <template v-if="isLastStep">
                         <FontAwesomeIcon :icon="faCheck" class="mr-2" />

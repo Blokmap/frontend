@@ -13,19 +13,13 @@ defineProps<{
     isLoading?: boolean;
 }>();
 
-const bounds = defineModel<LngLatBounds | null>('bounds', {
-    default: () => ({
-        northEast: { lat: 0, lng: 0 },
-        southWest: { lat: 0, lng: 0 },
-    }),
-});
-
 const hoveredLocation = defineModel<Location | null>('hoveredLocation', {
     default: null,
 });
 
 const emit = defineEmits<{
     (e: 'click:marker', id: number): void;
+    (e: 'update:bounds', bounds: LngLatBounds | null): void;
 }>();
 
 const mapContainerRef = useTemplateRef('mapContainer');
@@ -47,7 +41,7 @@ function handleMarkerMouseLeave() {
 watch(
     map.bounds,
     (newBounds) => {
-        bounds.value = newBounds;
+        emit('update:bounds', newBounds as LngLatBounds);
         config.value.center = map.center.value;
         config.value.zoom = map.zoom.value;
     },

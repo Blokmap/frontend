@@ -138,7 +138,7 @@ export async function createLocationTimeslots(
 
     const response = await client.post(
         endpoints.locations.openingTimes.create.replace('{id}', locationId.toString()),
-        mapped[0],
+        mapped,
     );
 
     return response.data;

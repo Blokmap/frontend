@@ -4,10 +4,11 @@ import LocationSubmitCard from '@/components/features/location/submit/LocationSu
 import AddressMap from '@/components/features/map/AddressMap.vue';
 import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/useToast';
+import { LOCATION_SETTINGS } from '@/constants/settings';
 import type { SubStep } from '@/types/contract/LocationWizard';
 import type { LngLat } from '@/types/contract/Map';
 import type { CreateLocationRequest } from '@/types/schema/Location';
-import { formatLocationAddress } from '@/utils/schema/location';
+import { formatLocationAddress } from '@/utils/model/location';
 import { faCheck, faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
@@ -93,9 +94,14 @@ async function handleConfirmAddress(): Promise<void> {
 
     try {
         const address = formatLocationAddress(form.value);
+
         mapCenter.value = await geocodeAddress(address);
         mapZoom.value = 18;
-        mapContainer.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        mapContainer.value.$el.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+        });
     } catch (error) {
         toast.add({
             severity: 'error',
@@ -154,11 +160,14 @@ async function handleConfirmAddress(): Promise<void> {
                         class="w-full"
                         placeholder="Bijv. Gezellig café met lokale bieren"
                         :id="`excerpt-${currentLanguage}`"
-                        :maxlength="100"
+                        :maxlength="LOCATION_SETTINGS.MAX_EXCERPT_LENGTH"
                         v-model="form.excerpt![currentLanguage]">
                     </Textarea>
                     <small class="mt-1 block text-gray-500">
-                        {{ (form.excerpt?.[currentLanguage] || '').length }}/100 karakters
+                        {{ (form.excerpt?.[currentLanguage] || '').length }}/{{
+                            LOCATION_SETTINGS.MAX_EXCERPT_LENGTH
+                        }}
+                        karakters
                     </small>
                 </div>
 
@@ -177,12 +186,15 @@ async function handleConfirmAddress(): Promise<void> {
                             :id="`description-${currentLanguage}`"
                             v-model="form.description![currentLanguage]"
                             class="w-full"
-                            :maxlength="500"
+                            :maxlength="LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH"
                             rows="5"
                             placeholder="Bijv. Gezellige café met lokale bieren">
                         </Textarea>
                         <small class="mt-1 block text-gray-500">
-                            {{ (form.description?.[currentLanguage] || '').length }}/500 karakters
+                            {{ (form.description?.[currentLanguage] || '').length }}/{{
+                                LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH
+                            }}
+                            karakters
                         </small>
                     </div>
                 </div>
@@ -247,8 +259,7 @@ async function handleConfirmAddress(): Promise<void> {
                 </div>
 
                 <!-- Address Confirmation Button -->
-                <div
-                    class="flex items-center justify-between rounded-lg border-1 border-slate-200 bg-gray-50 p-4">
+                <div class="address-confirmation">
                     <div>
                         <h4 class="font-medium text-gray-900">Bevestig locatie op kaart</h4>
                         <p class="text-sm text-gray-600">
@@ -267,12 +278,18 @@ async function handleConfirmAddress(): Promise<void> {
                         :loading="isLoading"
                         :outlined="!hasCoordinates">
                         <FontAwesomeIcon :icon="faMapMarkerAlt" class="mr-2" />
-                        Bevestig op kaart
+                        <span v-if="!hasCoordinates">Bevestig op kaart</span>
+                        <span v-else>Coordinaten Resetten</span>
                     </Button>
                 </div>
-                <div class="map-container" ref="map-container">
-                    <AddressMap v-model:center="mapCenter" v-model:zoom="mapZoom"> </AddressMap>
-                </div>
+
+                <AddressMap
+                    class="aspect-video h-full w-full"
+                    ref="map-container"
+                    v-model:center="mapCenter"
+                    v-model:zoom="mapZoom"
+                    v-if="hasCoordinates">
+                </AddressMap>
             </template>
         </LocationSubmitCard>
     </div>
@@ -281,7 +298,7 @@ async function handleConfirmAddress(): Promise<void> {
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.map-container {
-    @apply h-[400px] w-full rounded-md border-2 border-slate-200;
+.address-confirmation {
+    @apply flex items-center justify-between rounded-lg border-2 border-slate-200 bg-gray-50 p-4;
 }
 </style>

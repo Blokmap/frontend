@@ -291,7 +291,7 @@ export function useMapBox<T>(
         flyTo,
         center,
         zoom,
-        bounds,
+        bounds: readonly(bounds),
         isLoaded: readonly(isLoaded),
         isMoving: readonly(isMoving),
     };

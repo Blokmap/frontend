@@ -1,0 +1,11 @@
+@utility bg-gradient-conic {
+    background-image: linear-gradient(
+        to bottom right,
+        var(--color-primary-500),
+        var(--color-secondary-500)
+    );
+}
+
+@utility text-gradient-conic {
+    @apply bg-gradient-conic bg-clip-text font-semibold text-transparent;
+}

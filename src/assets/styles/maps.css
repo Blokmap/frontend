@@ -1,1 +1,5 @@
 @import 'mapbox-gl';
+
+.map {
+    @apply relative z-2 h-full overflow-hidden rounded-xl border-2 border-slate-200;
+}

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import LocationSubmitCard from '@/components/features/location/submit/LocationSubmitCard.vue';
+import { LOCATION_SETTINGS } from '@/constants/settings';
 import type { SubStep } from '@/types/contract/LocationWizard';
 import type { CreateImageRequest } from '@/types/schema/Image';
-import { maxLocationImages } from '@/utils/schema/location';
 import {
     faImage,
     faLink,
@@ -23,12 +23,16 @@ const substeps = defineModel<SubStep[]>('substeps', { default: [] });
 
 const showAddDialog = ref(false);
 const urlInput = ref('');
-const draggedIndex = ref<number | null>(null);
+const draggedImage = ref<CreateImageRequest | null>(null);
+const isDragging = ref(false);
 
-const canAddMore = computed(() => images.value.length < maxLocationImages);
+const canAddMore = computed(() => images.value.length < LOCATION_SETTINGS.MAX_IMAGES);
 const primaryImage = computed(() => images.value.find((img) => img.isPrimary));
-const secondaryImages = computed(() => images.value.filter((img) => !img.isPrimary));
-const primaryImageIndex = computed(() => images.value.findIndex((img) => img.isPrimary) || 0);
+const secondaryImages = computed(() =>
+    images.value.filter((img) => !img.isPrimary).sort((a, b) => a.order - b.order),
+);
+const sortedImages = computed(() => [...images.value].sort((a, b) => a.order - b.order));
+const primaryImageIndex = computed(() => sortedImages.value.findIndex((img) => img.isPrimary));
 
 onMounted(() => {
     if (images.value.length === 0) {
@@ -54,11 +58,18 @@ watchEffect(() => {
 });
 
 function getImageIndex(image: CreateImageRequest): number {
-    return images.value.findIndex((img) => img === image);
+    return sortedImages.value.findIndex((img) => img === image);
+}
+
+function getImageOrder(image: CreateImageRequest): number {
+    return image.order;
 }
 
 function addImageFromUrl(): void {
     if (!urlInput.value || !canAddMore.value) return;
+
+    const maxOrder =
+        images.value.length > 0 ? Math.max(...images.value.map((img) => img.order)) : -1;
 
     images.value = [
         ...images.value,
@@ -66,7 +77,7 @@ function addImageFromUrl(): void {
             imageUrl: urlInput.value,
             tempUrl: urlInput.value,
             isPrimary: images.value.length === 0,
-            order: images.value.length,
+            order: maxOrder + 1,
         },
     ];
 
@@ -74,28 +85,26 @@ function addImageFromUrl(): void {
 }
 
 function removeImage(index: number): void {
-    const newImages = [...images.value];
-    const removedImage = newImages[index];
-    newImages.splice(index, 1);
+    const imageToRemove = sortedImages.value[index];
+    if (!imageToRemove) return;
 
-    if (removedImage.isPrimary && newImages.length > 0) {
-        newImages[0].isPrimary = true;
-    }
+    const newImages = images.value.filter((img) => img !== imageToRemove);
 
-    for (let i = 0; i < newImages.length; i++) {
-        newImages[i].order = i;
-
-        if (removedImage.isPrimary && i === 0) {
-            newImages[i].isPrimary = true;
-        }
+    if (imageToRemove.isPrimary && newImages.length > 0) {
+        // Find the image with the lowest order to make primary
+        const newPrimary = newImages.reduce((min, img) => (img.order < min.order ? img : min));
+        newPrimary.isPrimary = true;
     }
 
     images.value = newImages;
 }
 
 function setPrimary(index: number): void {
-    for (let i = 0; i < images.value.length; i++) {
-        images.value[i].isPrimary = i === index;
+    const targetImage = sortedImages.value[index];
+    if (!targetImage) return;
+
+    for (const img of images.value) {
+        img.isPrimary = img === targetImage;
     }
 }
 
@@ -103,13 +112,16 @@ function handleFileUpload(event: FileUploadSelectEvent): void {
     const files = event.files;
     if (!files || files.length === 0) return;
 
-    const remainingSlots = maxLocationImages - images.value.length;
+    const remainingSlots = LOCATION_SETTINGS.MAX_IMAGES - images.value.length;
     const filesToAdd = files.slice(0, remainingSlots);
+
+    const maxOrder =
+        images.value.length > 0 ? Math.max(...images.value.map((img) => img.order)) : -1;
 
     const newImages = filesToAdd.map((file: File, index: number): CreateImageRequest => {
         const tempUrl = URL.createObjectURL(file);
         const isPrimary = images.value.length === 0 && index === 0;
-        const order = images.value.length + index;
+        const order = maxOrder + 1 + index;
 
         return {
             tempUrl,
@@ -129,9 +141,14 @@ function openAddDialog(): void {
 }
 
 function onDragStart(event: DragEvent, index: number): void {
-    draggedIndex.value = index;
+    const image = sortedImages.value[index];
+    if (!image) return;
+
+    draggedImage.value = image;
+    isDragging.value = true;
     if (event.dataTransfer) {
         event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', ''); // For iOS compatibility
     }
 }
 
@@ -143,28 +160,42 @@ function onDragOver(event: DragEvent): void {
 }
 
 function onDrop(event: DragEvent, targetIndex: number): void {
-    if (!draggedIndex.value && draggedIndex.value !== 0) return;
-    if (draggedIndex.value === targetIndex) return;
     event.preventDefault();
 
-    const newImages = [...images.value];
-    const draggedImage = newImages[draggedIndex.value];
+    if (!draggedImage.value) return;
 
-    newImages.splice(draggedIndex.value, 1);
-
-    const insertIndex = draggedIndex.value < targetIndex ? targetIndex - 1 : targetIndex;
-    newImages.splice(insertIndex, 0, draggedImage);
-
-    for (let i = 0; i < newImages.length; i++) {
-        newImages[i].order = i;
+    const targetImage = sortedImages.value[targetIndex];
+    if (!targetImage || draggedImage.value === targetImage) {
+        return;
     }
 
-    images.value = newImages;
-    draggedIndex.value = null;
+    const draggedOrder = draggedImage.value.order;
+    const targetOrder = targetImage.order;
+
+    // Swap the order values
+    draggedImage.value.order = targetOrder;
+    targetImage.order = draggedOrder;
+
+    // Force reactivity update
+    images.value = [...images.value];
 }
 
 function onDragEnd(): void {
-    draggedIndex.value = null;
+    draggedImage.value = null;
+    isDragging.value = false;
+}
+
+function onTouchStart(event: TouchEvent, index: number): void {
+    const image = sortedImages.value[index];
+    if (!image) return;
+
+    draggedImage.value = image;
+    isDragging.value = true;
+}
+
+function onTouchEnd(): void {
+    draggedImage.value = null;
+    isDragging.value = false;
 }
 </script>
 
@@ -184,11 +215,14 @@ function onDragEnd(): void {
                 <div v-if="primaryImage" class="relative overflow-hidden rounded-lg">
                     <div
                         class="primary-image group"
+                        :class="{ dragging: isDragging && draggedImage === primaryImage }"
                         draggable="true"
                         @dragstart="onDragStart($event, primaryImageIndex)"
                         @dragover="onDragOver"
-                        @drop="onDrop($event, 0)"
-                        @dragend="onDragEnd">
+                        @drop="onDrop($event, primaryImageIndex)"
+                        @dragend="onDragEnd"
+                        @touchstart="onTouchStart($event, primaryImageIndex)"
+                        @touchend="onTouchEnd">
                         <img
                             :src="primaryImage.tempUrl"
                             alt="Hoofdafbeelding"
@@ -218,47 +252,54 @@ function onDragEnd(): void {
 
                 <!-- Additional Images Grid -->
                 <div v-if="secondaryImages.length > 0 || canAddMore" class="images-grid">
-                    <div
-                        v-for="(image, index) in secondaryImages"
-                        :key="`secondary-${index}`"
-                        class="secondary-image group"
-                        draggable="true"
-                        @dragstart="onDragStart($event, getImageIndex(image))"
-                        @dragover="onDragOver"
-                        @drop="onDrop($event, getImageIndex(image))"
-                        @dragend="onDragEnd">
-                        <img
-                            :src="image.tempUrl"
-                            :alt="`Afbeelding ${index + 2}`"
-                            v-if="image.tempUrl" />
+                    <TransitionGroup tag="div" class="contents">
+                        <div
+                            v-for="(image, index) in secondaryImages"
+                            :key="image.tempUrl || image.imageUrl || index"
+                            class="secondary-image group"
+                            :class="{
+                                dragging: isDragging && draggedImage === image,
+                            }"
+                            draggable="true"
+                            @dragstart="onDragStart($event, getImageIndex(image))"
+                            @dragover="onDragOver"
+                            @drop="onDrop($event, getImageIndex(image))"
+                            @dragend="onDragEnd"
+                            @touchstart="onTouchStart($event, getImageIndex(image))"
+                            @touchend="onTouchEnd">
+                            <img
+                                :src="image.tempUrl"
+                                :alt="`Afbeelding ${index + 2}`"
+                                v-if="image.tempUrl" />
 
-                        <!-- Actions -->
-                        <div class="image-actions">
-                            <div class="image-actions__buttons">
-                                <Button
-                                    @click.stop="setPrimary(getImageIndex(image))"
-                                    size="small"
-                                    severity="secondary"
-                                    class="image-actions__button image-actions__button--secondary"
-                                    rounded>
-                                    <FontAwesomeIcon :icon="faStar" />
-                                </Button>
-                                <Button
-                                    @click.stop="removeImage(getImageIndex(image))"
-                                    size="small"
-                                    severity="danger"
-                                    class="actions__button actions__button--danger"
-                                    rounded>
-                                    <FontAwesomeIcon :icon="faTrash" />
-                                </Button>
+                            <!-- Actions -->
+                            <div class="image-actions">
+                                <div class="image-actions__buttons">
+                                    <Button
+                                        @click.stop="setPrimary(getImageIndex(image))"
+                                        size="small"
+                                        severity="secondary"
+                                        class="action-button action-button--secondary"
+                                        rounded>
+                                        <FontAwesomeIcon :icon="faStar" />
+                                    </Button>
+                                    <Button
+                                        @click.stop="removeImage(getImageIndex(image))"
+                                        size="small"
+                                        severity="danger"
+                                        class="action-button action-button--danger"
+                                        rounded>
+                                        <FontAwesomeIcon :icon="faTrash" />
+                                    </Button>
+                                </div>
+                            </div>
+
+                            <!-- Index Number -->
+                            <div class="image-index">
+                                {{ index + 2 }}
                             </div>
                         </div>
-
-                        <!-- Index Number -->
-                        <div class="image-index">
-                            {{ index + 2 }}
-                        </div>
-                    </div>
+                    </TransitionGroup>
 
                     <!-- Add New Image Placeholder -->
                     <div v-if="canAddMore" class="add-placeholder" @click="openAddDialog">
@@ -284,7 +325,7 @@ function onDragEnd(): void {
             </div>
 
             <!-- Help Text -->
-            <p v-if="images.length > 0" class="text-center text-sm text-gray-500">
+            <p v-if="images.length > 1" class="text-center text-sm text-gray-500">
                 Sleep afbeeldingen om de volgorde te wijzigen. Klik op de ster om een
                 hoofdafbeelding in te stellen.
             </p>
@@ -327,7 +368,7 @@ function onDragEnd(): void {
                 </FileUpload>
                 <div class="text-xs text-gray-500">
                     JPG, PNG, GIF • Max. 10MB per bestand • Tot
-                    {{ maxLocationImages - images.length }} bestanden
+                    {{ LOCATION_SETTINGS.MAX_IMAGES - images.length }} bestanden
                 </div>
             </div>
 
@@ -348,7 +389,11 @@ function onDragEnd(): void {
                         <p class="text-sm text-gray-500">Directe link naar een afbeelding</p>
                     </div>
                 </div>
-                <InputText v-model="urlInput" class="w-full" @keyup.enter="addImageFromUrl">
+                <InputText
+                    v-model="urlInput"
+                    class="w-full"
+                    placeholder="https://example.com/image.jpg"
+                    @keyup.enter="addImageFromUrl">
                 </InputText>
             </div>
         </div>
@@ -370,86 +415,95 @@ function onDragEnd(): void {
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-/* Icon containers used throughout the component */
 .icon-container {
     @apply flex h-10 w-10 items-center justify-center rounded-full;
+
+    &.icon-container--secondary {
+        @apply bg-secondary-100;
+    }
+
+    &.icon-container--primary {
+        @apply bg-primary-100 text-primary-600;
+    }
 }
 
-.icon-container--secondary {
-    @apply bg-secondary-100;
+.primary-image {
+    @apply relative overflow-hidden rounded-lg bg-gray-100;
+    @apply aspect-[16/9] transition-all duration-200;
+    @apply select-none;
+
+    img {
+        @apply h-full w-full object-cover;
+        @apply transition-transform duration-200 group-hover:scale-105;
+    }
+
+    .primary-image__badge {
+        @apply absolute top-3 right-3 flex items-center gap-1 rounded-full px-2 py-1;
+        @apply bg-white text-sm font-medium;
+    }
 }
 
-.icon-container--primary {
-    @apply bg-primary-100 text-primary-600;
-}
-
-/* Images grid layout */
 .images-grid {
     @apply grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4;
-}
 
-/* Primary image block with nested elements */
-.primary-image {
-    @apply relative cursor-move overflow-hidden rounded-lg bg-gray-100;
-    @apply aspect-[16/9];
+    .secondary-image {
+        @apply relative aspect-square cursor-move overflow-hidden rounded-lg bg-gray-100;
+        @apply transition-all duration-200;
 
-    img {
-        @apply h-full w-full object-cover;
-        @apply transition-transform duration-200 group-hover:scale-105;
+        &:active {
+            @apply scale-95 opacity-80;
+        }
+
+        img {
+            @apply h-full w-full object-cover;
+            @apply transition-transform duration-200 group-hover:scale-105;
+        }
+
+        &.dragging {
+            @apply scale-95 opacity-50;
+        }
     }
 }
 
-.primary-image__badge {
-    @apply absolute top-3 right-3 flex items-center gap-1 rounded-full px-2 py-1;
-    @apply bg-white text-sm font-medium;
-}
-
-/* Secondary image block with nested elements */
-.secondary-image {
-    @apply relative aspect-square cursor-move overflow-hidden rounded-lg bg-gray-100;
-
-    img {
-        @apply h-full w-full object-cover;
-        @apply transition-transform duration-200 group-hover:scale-105;
-    }
-}
-
-/* Image index nested under secondary-image */
 .image-index {
     @apply absolute right-2 bottom-2 rounded bg-black/60 px-1.5 py-0.5 text-xs text-white;
 }
 
-/* Image actions overlay block with nested elements */
 .image-actions {
     @apply absolute inset-0 flex items-center justify-center;
-    @apply bg-black/0 transition-all duration-200 group-hover:bg-black/40;
+    @apply bg-black/0 transition-all duration-200;
+    @apply active:bg-black/40 md:hover:bg-black/40;
+
+    .image-actions__buttons {
+        @apply flex gap-2;
+        @apply opacity-80 md:opacity-0 md:group-hover:opacity-100;
+        @apply transition-opacity duration-200;
+    }
 }
 
-.image-actions__buttons {
-    @apply flex gap-2 opacity-0;
-    @apply transition-opacity duration-200 group-hover:opacity-100;
+@media (pointer: coarse) {
+    .primary-image,
+    .secondary-image {
+        @apply touch-manipulation;
+    }
+
+    .image-actions__buttons {
+        @apply opacity-90; /* More visible on touch devices */
+    }
 }
 
-/* Action buttons - shared base styles */
-.action-button,
-.image-actions__button,
-.actions__button {
+.action-button {
     @apply !bg-white/90 hover:!bg-white;
 }
 
-/* Action button modifiers */
-.action-button--danger,
-.actions__button--danger {
+.action-button--danger {
     @apply !text-red-600;
 }
 
-.action-button--secondary,
-.image-actions__button--secondary,
-.actions__button--secondary {
+.action-button--secondary {
     @apply !text-gray-700;
 }
 
-/* Placeholder blocks */
 .add-placeholder {
     @apply flex aspect-square cursor-pointer items-center justify-center rounded-lg;
     @apply border-2 border-dashed border-gray-300 bg-gray-50;
@@ -457,6 +511,8 @@ function onDragEnd(): void {
 }
 
 .empty-placeholder {
-    @apply hover:border-primary-400 hover:bg-primary-50 flex h-48 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors duration-200;
+    @apply flex h-48 cursor-pointer items-center justify-center rounded-lg;
+    @apply border-2 border-dashed border-gray-300;
+    @apply hover:border-primary-400 hover:bg-primary-50 transition-colors duration-200;
 }
 </style>

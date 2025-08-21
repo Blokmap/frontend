@@ -1,8 +1,6 @@
 import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import type { Location, LocationAddress } from '@/types/schema/Location';
 
-export const maxLocationImages = 10;
-
 /**
  * Returns a random placeholder image URL for locations.
  *

@@ -91,17 +91,12 @@ defineExpose({ map });
     </div>
 </template>
 
-<style lang="css">
+<style lang="css" scoped>
 @reference '@/assets/styles/main.css';
-@import '@/assets/styles/maps.css';
 
-.map {
-    @apply relative z-2 h-full overflow-hidden rounded-xl border-2 border-slate-200;
-
-    .loader {
-        @apply absolute top-4 left-1/2 z-50 -translate-x-1/2 transform;
-        @apply rounded-full bg-white px-6 py-2 text-sm font-medium text-slate-700 shadow-md;
-        @apply flex items-center justify-center gap-2;
-    }
+.loader {
+    @apply absolute top-4 left-1/2 z-50 -translate-x-1/2 transform;
+    @apply rounded-full bg-white px-6 py-2 text-sm font-medium text-slate-700 shadow-md;
+    @apply flex items-center justify-center gap-2;
 }
 </style>

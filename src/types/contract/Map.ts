@@ -1,4 +1,4 @@
-import type { MaybeRef, Ref } from 'vue';
+import type { DeepReadonly, MaybeRef, Ref } from 'vue';
 
 export type LngLat = [number, number];
 export type LngLatBounds = [LngLat, LngLat];
@@ -26,7 +26,7 @@ export interface MapAdapter<T = number> {
     flyTo(lngLat: LngLat): Promise<void>;
     center: Ref<LngLat>;
     zoom: Ref<number>;
-    bounds: Ref<LngLatBounds>;
+    bounds: DeepReadonly<Ref<LngLatBounds>>;
     readonly isLoaded: Readonly<Ref<boolean>>;
     readonly isMoving: Readonly<Ref<boolean>>;
 }

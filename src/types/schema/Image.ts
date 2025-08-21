@@ -7,6 +7,6 @@ export type CreateImageRequest = {
     imageUrl?: string | null;
     tempUrl?: string | null;
     file?: File | null;
-    isPrimary?: boolean;
-    order?: number;
+    isPrimary: boolean;
+    order: number;
 };

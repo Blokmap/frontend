@@ -1,30 +1,14 @@
 @plugin 'tailwindcss-primeui';
-@import 'tailwindcss';
-@import './primevue/tailwind.css' layer(components);
-@import './transitions.css';
 
-/* Custom font: Bozlby (Bowlby One) */
-@font-face {
-    font-family: 'Bowlby';
-    src: url('../fonts/bowlby/BowlbyOne-Regular.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
+@import 'tailwindcss';
+
+@import './primevue/tailwind.css' layer(components);
+@import './maps.css';
+@import './transitions.css';
+@import './utilities.css';
+@import './fonts.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
-
-@utility bg-gradient-conic {
-    background-image: linear-gradient(
-        to bottom right,
-        var(--color-primary-500),
-        var(--color-secondary-500)
-    );
-}
-
-@utility text-gradient-conic {
-    @apply bg-gradient-conic bg-clip-text font-semibold text-transparent;
-}
 
 @theme {
     /* New Tailwind font token */

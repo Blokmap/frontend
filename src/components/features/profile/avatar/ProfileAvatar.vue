@@ -38,7 +38,7 @@ defineEmits<{
             class="aspect-square h-full w-full rounded-full object-cover"
             :class="avatarClass"
             loading="lazy"
-            :src="profile.avatarUrl || image"
+            :src="profile.avatarUrl?.url || image"
             v-else />
     </div>
 </template>

@@ -1,6 +1,7 @@
 export type Image = {
     id?: number;
     url: string;
+    index?: number | null;
 };
 
 export type CreateImageRequest = {

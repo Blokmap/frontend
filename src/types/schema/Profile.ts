@@ -1,9 +1,10 @@
 import type { Authority } from '@/types/schema/Authority';
+import type { Image } from '@/types/schema/Image';
 import type { Institution } from '@/types/schema/Institution';
 
 export type Profile = {
     id: number;
-    avatarUrl: string | null;
+    avatarUrl: Image | null;
     username: string | null;
     firstName: string;
     lastName: string;

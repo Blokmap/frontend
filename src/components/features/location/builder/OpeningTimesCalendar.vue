@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { CalendarTimeSlot } from '@/components/shared/calendar/Calendar.types';
 import Calendar from '@/components/shared/calendar/Calendar.vue';
 import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
 import { useVimControls } from '@/composables/useVimControls';
-import type { CreateOpeningTimeRequest } from '@/types/schema/Location';
-import type { TimeSlot } from '@/types/schema/Reservation';
+import type { CreateOpeningTimeRequest, Time } from '@/types/schema/OpeningTime';
 import { startOfWeek } from '@/utils/date/date';
+import { timeToDate } from '@/utils/date/time';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
@@ -23,27 +24,18 @@ const emit = defineEmits<{
 }>();
 
 const weekStart = computed(() => startOfWeek(props.dateInWeek));
-const calendarTimeSlots = ref<TimeSlot<any>[]>([]);
+const calendarTimeSlots = ref<CalendarTimeSlot<any>[]>([]);
 
-// Convert opening times to calendar time slots
 function updateCalendarTimeSlots() {
     calendarTimeSlots.value = props.openingTimes.map((ot, index) => {
-        const startTime = new Date(ot.startTime);
-        const endTime = new Date(ot.endTime);
+        const startTime = timeToDate(ot.startTime);
+        const endTime = timeToDate(ot.endTime);
 
         return {
             id: `opening-time-${index}`,
             day: new Date(ot.day), // Use the day field instead of startTime
-            startTime: startTime.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-            }),
-            endTime: endTime.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-            }),
+            startTime: ot.startTime, // Use the Time string directly
+            endTime: ot.endTime, // Use the Time string directly
             duration: {
                 hours: Math.floor((endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60)),
                 minutes: Math.floor(
@@ -92,40 +84,36 @@ function handleSlotClick(slot: { day: Date; time: string }): void {
     emit('select:slot', slot);
 }
 
-function handleEditSlot(slot: TimeSlot): void {
+function handleEditSlot(slot: CalendarTimeSlot): void {
     if (slot.metadata) {
         emit('edit:slot', slot.metadata.index, slot.metadata.openingTime);
     }
 }
 
-function handleDeleteSlot(slot: TimeSlot): void {
+function handleDeleteSlot(slot: CalendarTimeSlot): void {
     if (slot.metadata) {
         emit('delete:slot', slot.metadata.index);
     }
 }
 
 function handleDragSlot(
-    slot: TimeSlot,
+    slot: CalendarTimeSlot,
     newStartTime: string,
     newEndTime: string,
     newDay?: Date,
 ): void {
     if (!slot.metadata) return;
 
-    const [startHours, startMinutes] = newStartTime.split(':').map(Number);
-    const [endHours, endMinutes] = newEndTime.split(':').map(Number);
-
-    // Create time-only dates
-    const startDate = new Date('2000-01-01');
-    startDate.setHours(startHours, startMinutes, 0, 0);
-
-    const endDate = new Date('2000-01-01');
-    endDate.setHours(endHours, endMinutes, 0, 0);
+    // Ensure the time strings are in the correct HH:mm format
+    const startTime = newStartTime.includes(':')
+        ? (newStartTime as Time)
+        : (`${newStartTime}:00` as Time);
+    const endTime = newEndTime.includes(':') ? (newEndTime as Time) : (`${newEndTime}:00` as Time);
 
     const updatedOpeningTime: CreateOpeningTimeRequest = {
         ...slot.metadata.openingTime,
-        startTime: startDate,
-        endTime: endDate,
+        startTime,
+        endTime,
         day: newDay || new Date(slot.metadata.openingTime.day), // Use the day field
     };
 

@@ -1,6 +1,7 @@
 import { isDateInRange, startOfDay } from '../date/date';
-import { calculateDuration, formatTime } from '../date/time';
-import type { Reservation, TimeSlot } from '@/types/schema/Reservation';
+import { calculateDuration, dateToTime } from '../date/time';
+import type { CalendarTimeSlot } from '@/components/shared/calendar/Calendar.types';
+import type { Reservation } from '@/types/schema/Reservation';
 
 /**
  * Filter reservations by date range
@@ -27,12 +28,12 @@ export function filterReservationsByDateRange(
  * @param reservation - The reservation to convert.
  * @returns A TimeSlot object representing the reservation.
  */
-export function reservationToTimeSlot(reservation: Reservation): TimeSlot<Reservation> {
+export function reservationToTimeSlot(reservation: Reservation): CalendarTimeSlot<Reservation> {
     const startTime = new Date(reservation.startTime);
     const endTime = new Date(reservation.endTime);
 
-    const startTimeString = formatTime(startTime);
-    const endTimeString = formatTime(endTime);
+    const startTimeString = dateToTime(startTime);
+    const endTimeString = dateToTime(endTime);
 
     // Calculate duration using time utility
     const duration = calculateDuration(startTime, endTime);
@@ -59,7 +60,7 @@ export function reservationsToTimeSlots(
     reservations?: Reservation[],
     startDate?: Date,
     endDate?: Date,
-): TimeSlot<Reservation>[] {
+): CalendarTimeSlot<Reservation>[] {
     if (!reservations) return [];
 
     let filteredReservations = reservations;

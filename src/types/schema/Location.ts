@@ -1,4 +1,5 @@
 import type { Image } from '@/types/schema/Image';
+import type { OpeningTime } from '@/types/schema/OpeningTime';
 import type { Profile } from '@/types/schema/Profile';
 import type { CreateTranslationRequest, Translation } from '@/types/schema/Translation';
 
@@ -56,32 +57,10 @@ export type CreateLocationRequest = {
     longitude: number;
 };
 
-export type CreateOpeningTimeRequest = {
-    startTime: Date;
-    endTime: Date;
-    day: Date;
-    seatCount: number | null;
-    reservableFrom: Date | null;
-    reservableUntil: Date | null;
-};
-
 export type NearestLocation = {
     id: number;
     latitude: number;
     longitude: number;
-};
-
-export type OpeningTime = {
-    id: number;
-    startTime: Date;
-    endTime: Date;
-    seatCount: number | null;
-    reservableFrom: Date | null;
-    reservableUntil: Date | null;
-    createdBy?: Profile | null;
-    updatedBy?: Profile | null;
-    createdAt: Date;
-    updatedAt: Date;
 };
 
 export type Tag = {

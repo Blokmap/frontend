@@ -1,4 +1,4 @@
-import type { LngLat } from '@/types/contract/Map';
+import type { LngLat } from '@/types/interfaces/Map';
 
 /**
  * Rounds a latitude or longitude value to a specified number of decimal digits.

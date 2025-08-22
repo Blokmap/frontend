@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useMapBox } from '@/composables/useMapBox';
-import type { LngLat } from '@/types/contract/Map';
+import type { LngLat } from '@/types/interfaces/Map';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRef } from 'vue';

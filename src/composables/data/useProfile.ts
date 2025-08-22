@@ -4,7 +4,7 @@ import {
     getProfileStats,
     updateProfileAvatar,
 } from '@/services/profile';
-import type { CompMutation, CompMutationOptions, CompQuery } from '@/types/contract/Composable';
+import type { CompMutation, CompMutationOptions, CompQuery } from '@/types/interfaces/Composable';
 import type { ProfileStats } from '@/types/schema/Profile';
 import type { Reservation } from '@/types/schema/Reservation';
 import { useMutation, useQuery } from '@tanstack/vue-query';

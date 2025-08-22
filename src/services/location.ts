@@ -1,16 +1,11 @@
 import { endpoints } from '@/endpoints';
-import type { LngLat } from '@/types/contract/Map';
+import type { LngLat } from '@/types/interfaces/Map';
 import type { LocationFilter } from '@/types/schema/Filter';
 import type { CreateImageRequest } from '@/types/schema/Image';
-import type {
-    CreateLocationRequest,
-    CreateOpeningTimeRequest,
-    Location,
-    NearestLocation,
-} from '@/types/schema/Location';
+import type { CreateLocationRequest, Location, NearestLocation } from '@/types/schema/Location';
+import type { CreateOpeningTimeRequest } from '@/types/schema/OpeningTime';
 import type { Paginated } from '@/types/schema/Pagination';
 import { client } from '@/utils/axios';
-import { formatTime } from '@/utils/date/time';
 import { formatDate } from '@vueuse/core';
 
 /**
@@ -124,21 +119,53 @@ export async function createLocationImage(
     return response.data;
 }
 
+/**
+ * Function to update a location.
+ *
+ * @param {number} id - The ID of the location to update.
+ * @param {CreateLocationRequest} locationData - The updated location data.
+ * @returns {Promise<Location>} A promise that resolves to the updated location.
+ */
+export async function updateLocation(
+    id: number,
+    locationData: CreateLocationRequest,
+): Promise<Location> {
+    const response = await client.put(
+        endpoints.locations.update.replace('{id}', id.toString()),
+        locationData,
+    );
+    return response.data;
+}
+
+/**
+ * Function to delete a location by its ID.
+ *
+ * @param {number} id - The ID of the location to delete.
+ * @returns {Promise<void>} A promise that resolves when the deletion is complete.
+ */
+export async function deleteLocation(id: number): Promise<void> {
+    await client.delete(endpoints.locations.delete.replace('{id}', id.toString()));
+}
+
+/**
+ * Function to create time slots for a location.
+ *
+ * @param {number} locationId - The ID of the location to create time slots for.
+ * @param {CreateOpeningTimeRequest[]} openings - The opening times to create as time slots.
+ * @returns {Promise<Location>} A promise that resolves to the updated location with new time slots.
+ */
 export async function createLocationTimeslots(
     locationId: number,
-    timeslots: CreateOpeningTimeRequest[],
+    openings: CreateOpeningTimeRequest[],
 ): Promise<Location> {
-    // format time strings on startTime and endTime, and format day as ISO date string
-    const mapped = timeslots.map((slot) => ({
-        ...slot,
-        startTime: formatTime(slot.startTime),
-        endTime: formatTime(slot.endTime),
-        day: slot.day.toISOString().split('T')[0], // Format as YYYY-MM-DD
-    }));
+    const formatted = openings.map((opening) => {
+        const day = formatDate(opening.day, 'YYYY-MM-DD');
+        return { ...opening, day };
+    });
 
     const response = await client.post(
         endpoints.locations.openingTimes.create.replace('{id}', locationId.toString()),
-        mapped,
+        formatted,
     );
 
     return response.data;

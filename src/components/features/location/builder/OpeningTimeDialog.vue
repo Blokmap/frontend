@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { CreateOpeningTimeRequest } from '@/types/schema/Location';
+import type { CreateOpeningTimeRequest } from '@/types/schema/OpeningTime';
+import { dateToTime, timeToDate } from '@/utils/date/time';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
@@ -29,39 +30,23 @@ const localOpeningTime = ref<CreateOpeningTimeRequest>({ ...props.openingTime })
 // Computed properties for time-only inputs that preserve the date part
 const startTimeForInput = computed({
     get: () => {
-        // Create a time-only date for the input
-        const date = new Date('2000-01-01');
-        const original = localOpeningTime.value.startTime;
-
-        // Ensure original is a Date object
-        const originalDate = original instanceof Date ? original : new Date(original);
-        date.setHours(originalDate.getHours(), originalDate.getMinutes(), 0, 0);
-        return date;
+        // Convert Time string to Date for the input
+        return timeToDate(localOpeningTime.value.startTime);
     },
     set: (timeOnlyDate: Date) => {
-        // Create a new time with the base date but updated time
-        const newDateTime = new Date('2000-01-01');
-        newDateTime.setHours(timeOnlyDate.getHours(), timeOnlyDate.getMinutes(), 0, 0);
-        localOpeningTime.value.startTime = newDateTime;
+        // Convert Date back to Time string
+        localOpeningTime.value.startTime = dateToTime(timeOnlyDate);
     },
 });
 
 const endTimeForInput = computed({
     get: () => {
-        // Create a time-only date for the input
-        const date = new Date('2000-01-01');
-        const original = localOpeningTime.value.endTime;
-
-        // Ensure original is a Date object
-        const originalDate = original instanceof Date ? original : new Date(original);
-        date.setHours(originalDate.getHours(), originalDate.getMinutes(), 0, 0);
-        return date;
+        // Convert Time string to Date for the input
+        return timeToDate(localOpeningTime.value.endTime);
     },
     set: (timeOnlyDate: Date) => {
-        // Create a new time with the base date but updated time
-        const newDateTime = new Date('2000-01-01');
-        newDateTime.setHours(timeOnlyDate.getHours(), timeOnlyDate.getMinutes(), 0, 0);
-        localOpeningTime.value.endTime = newDateTime;
+        // Convert Date back to Time string
+        localOpeningTime.value.endTime = dateToTime(timeOnlyDate);
     },
 });
 

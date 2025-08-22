@@ -16,3 +16,24 @@ export function syncStorageData<T extends Record<string, unknown>>(value: T, def
 
     return merged;
 }
+
+/**
+ * Converts date strings back to Date objects in an array of objects.
+ * Useful for localStorage data that has been serialized.
+ * @param data Array of objects that may contain date strings
+ * @param dateFields Array of field names that should be converted to Date objects
+ */
+export function deserializeDates<T extends Record<string, any>>(
+    data: T[],
+    dateFields: (keyof T)[],
+): T[] {
+    return data.map((item) => {
+        const converted = { ...item };
+        dateFields.forEach((field) => {
+            if (converted[field] && typeof converted[field] === 'string') {
+                converted[field] = new Date(converted[field] as string) as any;
+            }
+        });
+        return converted;
+    });
+}

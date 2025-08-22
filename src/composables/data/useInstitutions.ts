@@ -1,5 +1,5 @@
 import { endpoints } from '@/endpoints';
-import type { CompQuery } from '@/types/contract/Composable';
+import type { CompQuery } from '@/types/interfaces/Composable';
 import type { Institution } from '@/types/schema/Institution';
 import { client } from '@/utils/axios';
 import { useQuery } from '@tanstack/vue-query';

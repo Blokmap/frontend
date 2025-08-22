@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
-import LocationSubmitCard from '@/components/features/location/submit/LocationSubmitCard.vue';
+import type { SubStep } from '@/components/features/location/builder/LocationBuilder.types';
+import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import AddressMap from '@/components/features/map/AddressMap.vue';
 import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/useToast';
 import { LOCATION_SETTINGS } from '@/constants/settings';
-import type { SubStep } from '@/types/contract/LocationWizard';
-import type { LngLat } from '@/types/contract/Map';
+import type { LngLat } from '@/types/interfaces/Map';
 import type { CreateLocationRequest } from '@/types/schema/Location';
 import { formatLocationAddress } from '@/utils/model/location';
 import { faCheck, faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
@@ -115,7 +115,7 @@ async function handleConfirmAddress(): Promise<void> {
 
 <template>
     <div class="space-y-8">
-        <LocationSubmitCard :icon="faEdit">
+        <LocationBuilderCard :icon="faEdit">
             <template #header>
                 <div class="flex w-full items-center justify-between">
                     <div>
@@ -200,9 +200,9 @@ async function handleConfirmAddress(): Promise<void> {
                     </div>
                 </div>
             </template>
-        </LocationSubmitCard>
+        </LocationBuilderCard>
 
-        <LocationSubmitCard :icon="faHome">
+        <LocationBuilderCard :icon="faHome">
             <template #header>
                 <h3 class="text-xl font-semibold text-gray-900">Adres informatie</h3>
                 <p class="text-sm text-gray-600">Voer het adres van uw locatie in</p>
@@ -292,7 +292,7 @@ async function handleConfirmAddress(): Promise<void> {
                     v-if="hasCoordinates">
                 </AddressMap>
             </template>
-        </LocationSubmitCard>
+        </LocationBuilderCard>
     </div>
 </template>
 

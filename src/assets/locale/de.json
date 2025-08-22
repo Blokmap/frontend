@@ -1,3 +1,16 @@
 {
-    "test": "Test"
+    "test": "Test",
+    "components": {
+        "calendar": {
+            "days": {
+                "monday": "Montag",
+                "tuesday": "Dienstag",
+                "wednesday": "Mittwoch",
+                "thursday": "Donnerstag",
+                "friday": "Freitag",
+                "saturday": "Samstag",
+                "sunday": "Sonntag"
+            }
+        }
+    }
 }

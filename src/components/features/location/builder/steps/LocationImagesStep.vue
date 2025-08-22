@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import LocationSubmitCard from '@/components/features/location/submit/LocationSubmitCard.vue';
+import type { SubStep } from '@/components/features/location/builder/LocationBuilder.types';
+import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import { LOCATION_SETTINGS } from '@/constants/settings';
-import type { SubStep } from '@/types/contract/LocationWizard';
 import type { CreateImageRequest } from '@/types/schema/Image';
 import {
     faImage,
@@ -200,7 +200,7 @@ function onTouchEnd(): void {
 </script>
 
 <template>
-    <LocationSubmitCard :icon="faImage">
+    <LocationBuilderCard :icon="faImage">
         <template #header>
             <h3 class="text-xl font-semibold text-gray-900">Afbeeldingen</h3>
             <p class="text-sm text-gray-600">
@@ -330,7 +330,7 @@ function onTouchEnd(): void {
                 hoofdafbeelding in te stellen.
             </p>
         </template>
-    </LocationSubmitCard>
+    </LocationBuilderCard>
 
     <!-- Add Image Dialog -->
     <Dialog

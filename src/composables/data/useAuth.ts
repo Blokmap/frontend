@@ -5,7 +5,7 @@ import type {
     CompMutationOptions,
     CompQuery,
     CompQueryOptions,
-} from '@/types/contract/Composable';
+} from '@/types/interfaces/Composable';
 import type { LoginRequest, RegisterRequest } from '@/types/schema/Auth';
 import type { Profile } from '@/types/schema/Profile';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';

@@ -1,4 +1,4 @@
-import type { LngLat, LngLatBounds } from '@/types/contract/Map';
+import type { LngLat, LngLatBounds } from '@/types/interfaces/Map';
 import type { Pagination } from '@/types/schema/Pagination';
 
 export type ReservableOption = {

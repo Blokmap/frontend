@@ -1,4 +1,5 @@
-import type { Location, OpeningTime } from '@/types/schema/Location';
+import type { Location } from '@/types/schema/Location';
+import type { OpeningTime } from '@/types/schema/OpeningTime';
 import type { Profile } from '@/types/schema/Profile';
 
 export enum ReservationState {
@@ -22,15 +23,3 @@ export type Reservation = {
     createdAt: Date;
     updatedAt: Date;
 };
-
-export interface TimeSlot<T = any> {
-    id: string;
-    day: Date;
-    startTime: string;
-    endTime: string;
-    duration: {
-        hours: number;
-        minutes: number;
-    };
-    metadata?: T;
-}

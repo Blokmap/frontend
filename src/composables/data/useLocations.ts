@@ -12,16 +12,12 @@ import type {
     CompMutationOptions,
     CompQuery,
     CompQueryOptions,
-} from '@/types/contract/Composable';
-import type { LngLat } from '@/types/contract/Map';
+} from '@/types/interfaces/Composable';
+import type { LngLat } from '@/types/interfaces/Map';
 import type { LocationFilter } from '@/types/schema/Filter';
 import type { CreateImageRequest } from '@/types/schema/Image';
-import type {
-    CreateLocationRequest,
-    CreateOpeningTimeRequest,
-    Location,
-    NearestLocation,
-} from '@/types/schema/Location';
+import type { CreateLocationRequest, Location, NearestLocation } from '@/types/schema/Location';
+import type { CreateOpeningTimeRequest } from '@/types/schema/OpeningTime';
 import type { Paginated } from '@/types/schema/Pagination';
 import { client, getRandomDelay } from '@/utils/axios';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';

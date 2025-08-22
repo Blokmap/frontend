@@ -1,4 +1,4 @@
-import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/types/contract/Map';
+import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/types/interfaces/Map';
 import { defaultMapOptions } from '@/utils/map';
 import mapboxgl from 'mapbox-gl';
 import { type Ref, isRef, onMounted, onUnmounted, readonly, ref, watch } from 'vue';

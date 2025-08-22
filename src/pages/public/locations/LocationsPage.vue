@@ -6,7 +6,7 @@ import { useItemAnimation } from '@/composables/anim/useItemAnimation';
 import { useLocationsSearch, useNearestLocation } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useToast } from '@/composables/useToast';
-import type { LngLat, LngLatBounds } from '@/types/contract/Map';
+import type { LngLat, LngLatBounds } from '@/types/interfaces/Map';
 import type { Location } from '@/types/schema/Location';
 import { faFilter, faHelicopter, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

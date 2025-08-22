@@ -1,20 +1,21 @@
 <script setup lang="ts">
-import LocationImagesStep from '@/components/features/location/submit/steps/LocationImagesStep.vue';
-import LocationInformationStep from '@/components/features/location/submit/steps/LocationInformationStep.vue';
-import LocationOpeningsStep from '@/components/features/location/submit/steps/LocationOpeningsStep.vue';
-import LocationSettingsStep from '@/components/features/location/submit/steps/LocationSettingsStep.vue';
+import type { SubStep } from '@/components/features/location/builder/LocationBuilder.types';
+import LocationImagesStep from '@/components/features/location/builder/steps/LocationImagesStep.vue';
+import LocationInformationStep from '@/components/features/location/builder/steps/LocationInformationStep.vue';
+import LocationOpeningsStep from '@/components/features/location/builder/steps/LocationOpeningsStep.vue';
+import LocationSettingsStep from '@/components/features/location/builder/steps/LocationSettingsStep.vue';
 import {
     useCreateLocation,
     useCreateLocationImage,
     useCreateLocationTimeslots,
 } from '@/composables/data/useLocations';
 import { useToast } from '@/composables/useToast';
-import { DEFAULT_LOCATION_FORM } from '@/constants/defaults';
-import type { SubStep } from '@/types/contract/LocationWizard';
+import { DEFAULT_LOCATION_REQ } from '@/constants/defaults';
 import type { CreateImageRequest } from '@/types/schema/Image';
-import type { CreateLocationRequest, CreateOpeningTimeRequest } from '@/types/schema/Location';
-import { syncStorageData } from '@/utils/storage';
-import { faArrowLeft, faArrowRight, faCheck } from '@fortawesome/free-solid-svg-icons';
+import type { CreateLocationRequest } from '@/types/schema/Location';
+import type { CreateOpeningTimeRequest } from '@/types/schema/OpeningTime';
+import { deserializeDates, syncStorageData } from '@/utils/storage';
+import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
 import Button from 'primevue/button';
@@ -34,16 +35,23 @@ const isCreatingLocation = computed(
     () => isCreating.value || isCreatingImages.value || isCreatingOpenings.value,
 );
 
-const locationForm = useLocalStorage<CreateLocationRequest>(
-    'location-form',
-    DEFAULT_LOCATION_FORM,
-    {
-        mergeDefaults: syncStorageData,
-    },
-);
+const locationForm = useLocalStorage<CreateLocationRequest>('location-form', DEFAULT_LOCATION_REQ, {
+    mergeDefaults: syncStorageData,
+});
 
 const openingsForm = useLocalStorage<CreateOpeningTimeRequest[]>('openings-form', [], {
-    // mergeDefaults: syncStorageData,
+    serializer: {
+        read: (value: string) => {
+            try {
+                const parsed = JSON.parse(value);
+                // Convert date strings back to Date objects
+                return deserializeDates(parsed, ['day', 'reservableFrom', 'reservableUntil']);
+            } catch {
+                return [];
+            }
+        },
+        write: (value: CreateOpeningTimeRequest[]) => JSON.stringify(value),
+    },
 });
 
 const imagesForm = ref<CreateImageRequest[]>([]);
@@ -107,14 +115,17 @@ async function submitLocation(): Promise<void> {
     if (!canGoNext.value) return;
 
     try {
-        // Create the location
         const location = await createLocation(locationForm.value);
 
-        // Create the images and opening times in parallel
-        await Promise.all([
-            ...imagesForm.value.map((image) => createImage({ locationId: location.id, image })),
-            createOpenings({ timeslots: openingsForm.value, locationId: location.id }),
-        ]);
+        if (imagesForm.value.length > 0) {
+            await Promise.all(
+                imagesForm.value.map((image) => createImage({ locationId: location.id, image })),
+            );
+        }
+
+        if (openingsForm.value.length > 0) {
+            await createOpenings({ timeslots: openingsForm.value, locationId: location.id });
+        }
 
         toast.add({
             severity: 'success',
@@ -125,11 +136,6 @@ async function submitLocation(): Promise<void> {
         router.push({ name: 'locations' });
     } catch (error) {
         console.error('Error creating location:', error);
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij het aanmaken van de locatie',
-            detail: 'Er is een fout opgetreden bij het aanmaken van de locatie. Probeer het opnieuw.',
-        });
     }
 }
 </script>
@@ -175,11 +181,11 @@ async function submitLocation(): Promise<void> {
 
                 <Button
                     @click="isLastStep ? submitLocation() : goNext()"
-                    :disabled="!canGoNext"
-                    :loading="isCreatingLocation"
+                    :disabled="!canGoNext || isCreatingLocation"
                     size="small">
                     <template v-if="isLastStep">
-                        <FontAwesomeIcon :icon="faCheck" class="mr-2" />
+                        <FontAwesomeIcon :icon="faCheck" class="mr-2" v-if="!isCreatingLocation" />
+                        <FontAwesomeIcon :icon="faSpinner" class="mr-2" spin v-else />
                         Voltooien
                     </template>
                     <template v-else>

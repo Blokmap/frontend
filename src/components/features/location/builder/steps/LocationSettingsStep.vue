@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import LocationSubmitCard from '../LocationSubmitCard.vue';
-import type { SubStep } from '@/types/contract/LocationWizard';
+import LocationBuilderCard from '../LocationBuilderCard.vue';
+import type { SubStep } from '@/components/features/location/builder/LocationBuilder.types';
 import type { CreateLocationRequest } from '@/types/schema/Location';
 import { faCircleQuestion, faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -32,7 +32,7 @@ watchEffect(() => {
 <template>
     <div class="space-y-8">
         <!-- Seat Configuration -->
-        <LocationSubmitCard :icon="faUsers">
+        <LocationBuilderCard :icon="faUsers">
             <template #header>
                 <h3 class="text-xl font-semibold text-gray-900">Zitplaatsen</h3>
                 <p class="text-sm text-gray-600">
@@ -74,8 +74,8 @@ watchEffect(() => {
                     </p>
                 </div>
             </template>
-        </LocationSubmitCard>
-        <LocationSubmitCard :icon="faClock">
+        </LocationBuilderCard>
+        <LocationBuilderCard :icon="faClock">
             <template #header>
                 <h3 class="text-xl font-semibold text-gray-900">Reservaties</h3>
                 <p class="text-sm text-gray-600">
@@ -92,7 +92,7 @@ watchEffect(() => {
                 </div>
                 <template v-if="form.isReservable"> </template>
             </template>
-        </LocationSubmitCard>
+        </LocationBuilderCard>
     </div>
 </template>
 

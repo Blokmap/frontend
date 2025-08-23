@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { RegisterRequest } from '@/types/schema/Auth';
+import type { RegisterRequest } from '@/domain/auth';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';

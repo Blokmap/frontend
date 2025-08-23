@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { SubStep } from '@/components/features/location/builder/LocationBuilder.types';
 import LocationImagesStep from '@/components/features/location/builder/steps/LocationImagesStep.vue';
 import LocationInformationStep from '@/components/features/location/builder/steps/LocationInformationStep.vue';
 import LocationOpeningsStep from '@/components/features/location/builder/steps/LocationOpeningsStep.vue';
@@ -10,10 +9,10 @@ import {
     useCreateLocationTimeslots,
 } from '@/composables/data/useLocations';
 import { useToast } from '@/composables/useToast';
-import { DEFAULT_LOCATION_REQ } from '@/constants/defaults';
-import type { CreateImageRequest } from '@/types/schema/Image';
-import type { CreateLocationRequest } from '@/types/schema/Location';
-import type { CreateOpeningTimeRequest } from '@/types/schema/OpeningTime';
+import type { ImageRequest } from '@/domain/image';
+import { DEFAULT_LOCATION_REQUEST } from '@/domain/location';
+import type { LocationRequest } from '@/domain/location';
+import type { OpeningTimeRequest } from '@/domain/openingTime';
 import { deserializeDates, syncStorageData } from '@/utils/storage';
 import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -23,23 +22,28 @@ import Checkbox from 'primevue/checkbox';
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+export type SubStep = {
+    isCompleted: boolean;
+    label: string;
+};
+
 const router = useRouter();
 const route = useRoute();
 const toast = useToast();
 
-const { mutateAsync: createLocation, isPending: isCreating } = useCreateLocation();
+const { mutateAsync: createLocation, isPending: isCreatingLocation } = useCreateLocation();
 const { mutateAsync: createImage, isPending: isCreatingImages } = useCreateLocationImage();
 const { mutateAsync: createOpenings, isPending: isCreatingOpenings } = useCreateLocationTimeslots();
 
-const isCreatingLocation = computed(
-    () => isCreating.value || isCreatingImages.value || isCreatingOpenings.value,
+const isCreating = computed(
+    () => isCreatingLocation.value || isCreatingImages.value || isCreatingOpenings.value,
 );
 
-const locationForm = useLocalStorage<CreateLocationRequest>('location-form', DEFAULT_LOCATION_REQ, {
+const locationForm = useLocalStorage<LocationRequest>('location-form', DEFAULT_LOCATION_REQUEST, {
     mergeDefaults: syncStorageData,
 });
 
-const openingsForm = useLocalStorage<CreateOpeningTimeRequest[]>('openings-form', [], {
+const openingsForm = useLocalStorage<OpeningTimeRequest[]>('openings-form', [], {
     serializer: {
         read: (value: string) => {
             try {
@@ -50,11 +54,11 @@ const openingsForm = useLocalStorage<CreateOpeningTimeRequest[]>('openings-form'
                 return [];
             }
         },
-        write: (value: CreateOpeningTimeRequest[]) => JSON.stringify(value),
+        write: (value: OpeningTimeRequest[]) => JSON.stringify(value),
     },
 });
 
-const imagesForm = ref<CreateImageRequest[]>([]);
+const imagesForm = ref<ImageRequest[]>([]);
 
 const step = ref<string>(route.query.step?.toString() || 'basics');
 const substeps = ref<SubStep[]>([]);
@@ -181,10 +185,10 @@ async function submitLocation(): Promise<void> {
 
                 <Button
                     @click="isLastStep ? submitLocation() : goNext()"
-                    :disabled="!canGoNext || isCreatingLocation"
+                    :disabled="!canGoNext || isCreating"
                     size="small">
                     <template v-if="isLastStep">
-                        <FontAwesomeIcon :icon="faCheck" class="mr-2" v-if="!isCreatingLocation" />
+                        <FontAwesomeIcon :icon="faCheck" class="mr-2" v-if="!isCreating" />
                         <FontAwesomeIcon :icon="faSpinner" class="mr-2" spin v-else />
                         Voltooien
                     </template>
@@ -209,7 +213,7 @@ async function submitLocation(): Promise<void> {
             </LocationImagesStep>
 
             <LocationSettingsStep
-                v-model="locationForm"
+                v-model:form="locationForm"
                 v-model:substeps="substeps"
                 v-if="step === 'settings'">
             </LocationSettingsStep>

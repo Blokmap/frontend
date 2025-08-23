@@ -1,7 +1,7 @@
 <script lang="ts" setup>
+import { DOCS_URL } from '../../../../constants';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
-import { DOCS_URL } from '@/constants';
 import {
     faBars,
     faCalendarDays,

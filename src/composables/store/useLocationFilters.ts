@@ -1,4 +1,4 @@
-import type { LocationFilter } from '@/types/schema/Filter';
+import type { LocationFilter } from '@/types/Filter';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 

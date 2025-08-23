@@ -1,4 +1,4 @@
-import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/types/interfaces/Map';
+import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/types/Map';
 import { defaultMapOptions } from '@/utils/map';
 import mapboxgl from 'mapbox-gl';
 import { type Ref, isRef, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
@@ -35,6 +35,7 @@ export function useMapBox<T>(
     const isLoaded = ref(false);
     const isMoving = ref(false);
     const isZooming = ref(false);
+    const isDragging = ref(false);
 
     // Handle MaybeRef options - convert to reactive refs or use provided refs
     const center = isRef(options.center) ? options.center : ref<LngLat>(options.center || [0, 0]);
@@ -293,6 +294,8 @@ export function useMapBox<T>(
         zoom,
         bounds: readonly(bounds),
         isLoaded: readonly(isLoaded),
+        isDragging: readonly(isDragging),
+        isZooming: readonly(isZooming),
         isMoving: readonly(isMoving),
     };
 }

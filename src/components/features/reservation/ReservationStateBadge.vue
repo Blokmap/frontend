@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ReservationState } from '@/types/schema/Reservation';
+import { ReservationState } from '@/domain/reservation';
 import { faCheckCircle, faHourglassHalf, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Badge from 'primevue/badge';

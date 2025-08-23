@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useGeoSearch } from '@/composables/data/useGeoCoding';
-import type { LocationFilter } from '@/types/schema/Filter';
+import type { LocationFilter } from '@/types/Filter';
 import {
     faCalendarDays,
     faClose,

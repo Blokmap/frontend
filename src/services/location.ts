@@ -1,10 +1,10 @@
+import type { ImageRequest } from '@/domain/image';
+import type { Location, LocationRequest, NearestLocation } from '@/domain/location';
+import type { OpeningTimeRequest } from '@/domain/openingTime';
 import { endpoints } from '@/endpoints';
-import type { LngLat } from '@/types/interfaces/Map';
-import type { LocationFilter } from '@/types/schema/Filter';
-import type { CreateImageRequest } from '@/types/schema/Image';
-import type { CreateLocationRequest, Location, NearestLocation } from '@/types/schema/Location';
-import type { CreateOpeningTimeRequest } from '@/types/schema/OpeningTime';
-import type { Paginated } from '@/types/schema/Pagination';
+import type { LocationFilter } from '@/types/Filter';
+import type { LngLat } from '@/types/Map';
+import type { Paginated } from '@/types/Pagination';
 import { client } from '@/utils/axios';
 import { formatDate } from '@vueuse/core';
 
@@ -88,7 +88,7 @@ export async function getNearestLocation(center: LngLat): Promise<NearestLocatio
  * @param {LocationRequest} locationData - The location data to create.
  * @returns {Promise<Location>} A promise that resolves to the created location.
  */
-export async function createLocation(locationData: CreateLocationRequest): Promise<Location> {
+export async function createLocation(locationData: LocationRequest): Promise<Location> {
     const response = await client.post(endpoints.locations.create, locationData);
     return response.data;
 }
@@ -97,12 +97,12 @@ export async function createLocation(locationData: CreateLocationRequest): Promi
  * Function to set images for a location.
  *
  * @param {number} locationId - The ID of the location to set images for.
- * @param {CreateImageRequest} image - The images to set for the location.
+ * @param {ImageRequest} image - The images to set for the location.
  * @returns {Promise<Location>} A promise that resolves to the updated location.
  */
 export async function createLocationImage(
     locationId: number,
-    image: CreateImageRequest,
+    image: ImageRequest,
 ): Promise<Location> {
     const formData = new FormData();
 
@@ -123,13 +123,10 @@ export async function createLocationImage(
  * Function to update a location.
  *
  * @param {number} id - The ID of the location to update.
- * @param {CreateLocationRequest} locationData - The updated location data.
+ * @param {LocationRequest} locationData - The updated location data.
  * @returns {Promise<Location>} A promise that resolves to the updated location.
  */
-export async function updateLocation(
-    id: number,
-    locationData: CreateLocationRequest,
-): Promise<Location> {
+export async function updateLocation(id: number, locationData: LocationRequest): Promise<Location> {
     const response = await client.put(
         endpoints.locations.update.replace('{id}', id.toString()),
         locationData,
@@ -151,12 +148,12 @@ export async function deleteLocation(id: number): Promise<void> {
  * Function to create time slots for a location.
  *
  * @param {number} locationId - The ID of the location to create time slots for.
- * @param {CreateOpeningTimeRequest[]} openings - The opening times to create as time slots.
+ * @param {OpeningTimeRequest[]} openings - The opening times to create as time slots.
  * @returns {Promise<Location>} A promise that resolves to the updated location with new time slots.
  */
 export async function createLocationTimeslots(
     locationId: number,
-    openings: CreateOpeningTimeRequest[],
+    openings: OpeningTimeRequest[],
 ): Promise<Location> {
     const formatted = openings.map((opening) => {
         const day = formatDate(opening.day, 'YYYY-MM-DD');

@@ -1,4 +1,4 @@
-import type { Institution } from '@/types/schema/Institution';
+import type { Institution } from '@/domain/institution';
 
 export const mockInstitutions: Institution[] = [
     {

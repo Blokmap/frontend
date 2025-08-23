@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { LngLat, MapAdapter } from '@/types/interfaces/Map';
+import type { LngLat, MapAdapter } from '@/types/Map';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Popover from 'primevue/popover';

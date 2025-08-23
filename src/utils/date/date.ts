@@ -53,12 +53,13 @@ export function endOfMonth(date: Date): Date {
  * @param end - The end date of the range.
  * @returns An array of Date objects representing each day in the range.
  */
-export function daysInRange(start: Date, end: Date): Date[] {
-    const days: Date[] = [];
+export function datesInRange(start: Date, end: Date): Date[] {
+    const days = [];
     const current = new Date(start);
 
     while (current <= end) {
-        days.push(new Date(current));
+        const day = new Date(current);
+        days.push(day);
         current.setDate(current.getDate() + 1);
     }
 

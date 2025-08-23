@@ -1,7 +1,11 @@
-import type { Time } from '@/types/schema/OpeningTime';
+export type Time = `${string}${string}:${string}${string}`;
+
+export type TimeRange = {
+    startTime: Time;
+    endTime: Time;
+};
 
 export type TimeGranularity = 'hours' | 'minutes';
-
 /**
  * Formats a Date object to a time string in HH:MM format.
  *

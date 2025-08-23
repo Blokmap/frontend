@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Location } from '@/types/schema/Location';
+import type { Location } from '@/domain/location';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { PrimeIcons } from '@primevue/core';

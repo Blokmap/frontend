@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
-import type { SubStep } from '@/components/features/location/builder/LocationBuilder.types';
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import AddressMap from '@/components/features/map/AddressMap.vue';
 import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/useToast';
-import { LOCATION_SETTINGS } from '@/constants/settings';
-import type { LngLat } from '@/types/interfaces/Map';
-import type { CreateLocationRequest } from '@/types/schema/Location';
-import { formatLocationAddress } from '@/utils/model/location';
+import { LOCATION_SETTINGS } from '@/domain/location';
+import type { LocationRequest } from '@/domain/location';
+import { formatLocationAddress } from '@/domain/location';
+import type { SubStep } from '@/pages/public/locations/LocationSubmitPage.vue';
+import type { LngLat } from '@/types/Map';
 import { faCheck, faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
@@ -17,7 +17,7 @@ import Textarea from 'primevue/textarea';
 import { computed, nextTick, ref, useTemplateRef, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const form = defineModel<CreateLocationRequest>({ required: true });
+const form = defineModel<LocationRequest>({ required: true });
 const complete = defineModel<boolean>('complete', { default: false });
 const substeps = defineModel<SubStep[]>('substeps', { default: [] });
 

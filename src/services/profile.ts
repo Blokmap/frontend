@@ -1,7 +1,7 @@
+import type { ProfileStats } from '@/domain/profile';
+import type { Reservation } from '@/domain/reservation';
 import { endpoints } from '@/endpoints';
 import { type ReservationIncludes, parseReservation } from '@/services/reservation';
-import type { ProfileStats } from '@/types/schema/Profile';
-import type { Reservation } from '@/types/schema/Reservation';
 import { client } from '@/utils/axios';
 import { formatIncludes } from '@/utils/service';
 import { formatDate } from '@vueuse/core';

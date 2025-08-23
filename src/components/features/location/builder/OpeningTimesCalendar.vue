@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import type { CalendarTimeSlot } from '@/components/shared/calendar/Calendar.types';
+import type { CalendarTimeSlot } from '@/components/shared/calendar/Calendar.vue';
 import Calendar from '@/components/shared/calendar/Calendar.vue';
 import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
 import { useVimControls } from '@/composables/useVimControls';
-import type { CreateOpeningTimeRequest, Time } from '@/types/schema/OpeningTime';
+import type { OpeningTimeRequest, Time } from '@/domain/openingTime';
 import { startOfWeek } from '@/utils/date/date';
 import { timeToDate } from '@/utils/date/time';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
     dateInWeek: Date;
-    openingTimes: CreateOpeningTimeRequest[];
+    openingTimes: OpeningTimeRequest[];
     minDate?: Date;
     maxDate?: Date;
 }>();
@@ -18,9 +18,9 @@ const props = defineProps<{
 const emit = defineEmits<{
     'update:dateInWeek': [value: Date];
     'select:slot': [slot: { day: Date; time: string }];
-    'edit:slot': [index: number, slot: CreateOpeningTimeRequest];
+    'edit:slot': [index: number, slot: OpeningTimeRequest];
     'delete:slot': [index: number];
-    'drag:slot': [index: number, slot: CreateOpeningTimeRequest];
+    'drag:slot': [index: number, slot: OpeningTimeRequest];
 }>();
 
 const weekStart = computed(() => startOfWeek(props.dateInWeek));
@@ -110,7 +110,7 @@ function handleDragSlot(
         : (`${newStartTime}:00` as Time);
     const endTime = newEndTime.includes(':') ? (newEndTime as Time) : (`${newEndTime}:00` as Time);
 
-    const updatedOpeningTime: CreateOpeningTimeRequest = {
+    const updatedOpeningTime: OpeningTimeRequest = {
         ...slot.metadata.openingTime,
         startTime,
         endTime,

@@ -1,20 +1,19 @@
 <script setup lang="ts">
 import LocationBuilderCard from '../LocationBuilderCard.vue';
-import type { SubStep } from '@/components/features/location/builder/LocationBuilder.types';
-import type { CreateLocationRequest } from '@/types/schema/Location';
+import type { LocationRequest } from '@/domain/location';
+import type { SubStep } from '@/pages/public/locations/LocationSubmitPage.vue';
 import { faCircleQuestion, faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
 import { watchEffect } from 'vue';
 
-const form = defineModel<CreateLocationRequest>({ required: true });
+const form = defineModel<LocationRequest>('form', { required: true });
 const substeps = defineModel<SubStep[]>('substeps', { default: [] });
 
 watchEffect(() => {
     const data = form.value;
     const hasSeats = data.seatCount > 0;
-    const hasReservability = typeof data.isReservable === 'boolean';
 
     substeps.value = [
         {
@@ -23,7 +22,7 @@ watchEffect(() => {
         },
         {
             label: 'Reservatie-instellingen',
-            isCompleted: hasReservability,
+            isCompleted: true,
         },
     ];
 });

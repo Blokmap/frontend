@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { SubStep } from '@/components/features/location/builder/LocationBuilder.types';
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
-import { LOCATION_SETTINGS } from '@/constants/settings';
-import type { CreateImageRequest } from '@/types/schema/Image';
+import type { ImageRequest } from '@/domain/image';
+import { LOCATION_SETTINGS } from '@/domain/location';
+import type { SubStep } from '@/pages/public/locations/LocationSubmitPage.vue';
 import {
     faImage,
     faLink,
@@ -18,12 +18,12 @@ import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload';
 import InputText from 'primevue/inputtext';
 import { computed, onMounted, ref, watchEffect } from 'vue';
 
-const images = defineModel<CreateImageRequest[]>({ required: true, default: () => [] });
+const images = defineModel<ImageRequest[]>({ required: true, default: () => [] });
 const substeps = defineModel<SubStep[]>('substeps', { default: [] });
 
 const showAddDialog = ref(false);
 const urlInput = ref('');
-const draggedImage = ref<CreateImageRequest | null>(null);
+const draggedImage = ref<ImageRequest | null>(null);
 const isDragging = ref(false);
 
 const canAddMore = computed(() => images.value.length < LOCATION_SETTINGS.MAX_IMAGES);
@@ -57,11 +57,11 @@ watchEffect(() => {
     ];
 });
 
-function getImageIndex(image: CreateImageRequest): number {
+function getImageIndex(image: ImageRequest): number {
     return sortedImages.value.findIndex((img) => img === image);
 }
 
-function getImageOrder(image: CreateImageRequest): number {
+function getImageOrder(image: ImageRequest): number {
     return image.order;
 }
 
@@ -118,7 +118,7 @@ function handleFileUpload(event: FileUploadSelectEvent): void {
     const maxOrder =
         images.value.length > 0 ? Math.max(...images.value.map((img) => img.order)) : -1;
 
-    const newImages = filesToAdd.map((file: File, index: number): CreateImageRequest => {
+    const newImages = filesToAdd.map((file: File, index: number): ImageRequest => {
         const tempUrl = URL.createObjectURL(file);
         const isPrimary = images.value.length === 0 && index === 0;
         const order = maxOrder + 1 + index;

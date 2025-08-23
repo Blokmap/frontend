@@ -4,9 +4,9 @@ import {
     getProfileStats,
     updateProfileAvatar,
 } from '@/services/profile';
-import type { CompMutation, CompMutationOptions, CompQuery } from '@/types/interfaces/Composable';
-import type { ProfileStats } from '@/types/schema/Profile';
-import type { Reservation } from '@/types/schema/Reservation';
+import type { CompMutation, CompMutationOptions, CompQuery } from '@/types/Composable';
+import type { ProfileStats } from '@/domain/profile';
+import type { Reservation } from '@/domain/reservation';
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
 

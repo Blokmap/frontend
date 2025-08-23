@@ -12,13 +12,13 @@ import type {
     CompMutationOptions,
     CompQuery,
     CompQueryOptions,
-} from '@/types/interfaces/Composable';
-import type { LngLat } from '@/types/interfaces/Map';
-import type { LocationFilter } from '@/types/schema/Filter';
-import type { CreateImageRequest } from '@/types/schema/Image';
-import type { CreateLocationRequest, Location, NearestLocation } from '@/types/schema/Location';
-import type { CreateOpeningTimeRequest } from '@/types/schema/OpeningTime';
-import type { Paginated } from '@/types/schema/Pagination';
+} from '@/types/Composable';
+import type { LngLat } from '@/types/Map';
+import type { LocationFilter } from '@/types/Filter';
+import type { ImageRequest } from '@/domain/image';
+import type { Location, LocationRequest, NearestLocation } from '@/domain/location';
+import type { OpeningTimeRequest } from '@/domain/openingTime';
+import type { Paginated } from '@/types/Pagination';
 import { client, getRandomDelay } from '@/utils/axios';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
@@ -102,7 +102,7 @@ export function useTags(): CompQuery<string[]> {
  */
 export function useCreateLocation(
     options: CompMutationOptions = {},
-): CompMutation<CreateLocationRequest, Location> {
+): CompMutation<LocationRequest, Location> {
     const client = useQueryClient();
 
     const mutation = useMutation({
@@ -115,7 +115,7 @@ export function useCreateLocation(
 
 export type CreateLocationImageParams = {
     locationId: number;
-    image: CreateImageRequest;
+    image: ImageRequest;
 };
 
 export function useCreateLocationImage(
@@ -133,7 +133,7 @@ export function useCreateLocationImage(
 
 export type CreateLocationTimeslotsParams = {
     locationId: number;
-    timeslots: CreateOpeningTimeRequest[];
+    timeslots: OpeningTimeRequest[];
 };
 
 export function useCreateLocationTimeslots(

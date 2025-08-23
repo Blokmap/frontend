@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CreateOpeningTimeRequest } from '@/types/schema/OpeningTime';
+import type { OpeningTimeRequest } from '@/domain/openingTime';
 import { dateToTime, timeToDate } from '@/utils/date/time';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -10,7 +10,7 @@ import InputNumber from 'primevue/inputnumber';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
-    openingTime: CreateOpeningTimeRequest;
+    openingTime: OpeningTimeRequest;
     editingIndex: number | null;
     minDate?: Date;
     maxDate?: Date;
@@ -21,11 +21,11 @@ const visible = defineModel<boolean>('visible', {
 });
 
 const emit = defineEmits<{
-    save: [openingTime: CreateOpeningTimeRequest];
+    save: [openingTime: OpeningTimeRequest];
     delete: [];
 }>();
 
-const localOpeningTime = ref<CreateOpeningTimeRequest>({ ...props.openingTime });
+const localOpeningTime = ref<OpeningTimeRequest>({ ...props.openingTime });
 
 // Computed properties for time-only inputs that preserve the date part
 const startTimeForInput = computed({

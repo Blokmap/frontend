@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Profile } from '@/types/schema/Profile';
+import type { Profile } from '@/domain/profile';
 import { faSignOut, faSpaghettiMonsterFlying } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Avatar from 'primevue/avatar';

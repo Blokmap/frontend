@@ -3,11 +3,11 @@ import ReservationStateLabel from '@/components/features/reservation/Reservation
 import Calendar from '@/components/shared/calendar/Calendar.vue';
 import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
 import { useVimControls } from '@/composables/useVimControls';
-import type { Reservation } from '@/types/schema/Reservation';
-import { ReservationState } from '@/types/schema/Reservation';
+import type { Reservation } from '@/domain/reservation';
+import { ReservationState } from '@/domain/reservation';
 import { endOfWeek, startOfWeek } from '@/utils/date/date';
-import { formatLocationAddress } from '@/utils/model/location';
-import { reservationsToTimeSlots } from '@/utils/model/reservation';
+import { formatLocationAddress } from '@/domain/location';
+import { reservationsToTimeSlots } from '@/domain/reservation';
 import { faCalendarCheck, faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';

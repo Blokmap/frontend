@@ -2,7 +2,7 @@
 import ProfileAvatar from './ProfileAvatar.vue';
 import { useDeleteAvatar, useUpdateAvatar } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/useToast';
-import type { Profile } from '@/types/schema/Profile';
+import type { Profile } from '@/domain/profile';
 import { faClose, faImagePortrait, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useQueryClient } from '@tanstack/vue-query';

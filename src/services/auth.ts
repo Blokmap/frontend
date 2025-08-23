@@ -1,6 +1,6 @@
+import type { LoginRequest, RegisterRequest } from '@/domain/profile';
+import type { Profile } from '@/domain/profile';
 import { endpoints } from '@/endpoints';
-import type { LoginRequest, RegisterRequest } from '@/types/schema/Auth';
-import type { Profile } from '@/types/schema/Profile';
 import { client } from '@/utils/axios';
 
 /**

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { Location } from '@/types/schema/Location';
-import { getLocationPlaceholderImage } from '@/utils/model/location';
+import type { Location } from '@/domain/location';
+import { getLocationPlaceholderImage } from '@/domain/location';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';

@@ -1,5 +1,5 @@
+import type { Reservation } from '@/domain/reservation';
 import { endpoints } from '@/endpoints';
-import type { Reservation } from '@/types/schema/Reservation';
 import { client } from '@/utils/axios';
 import { formatDate } from '@vueuse/core';
 

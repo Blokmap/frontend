@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import type { SubStep } from '@/components/features/location/builder/LocationBuilder.types';
 import OpeningTimeDialog from '@/components/features/location/builder/OpeningTimeDialog.vue';
 import OpeningTimeGroupDialog from '@/components/features/location/builder/OpeningTimeGroupDialog.vue';
 import OpeningTimesCalendar from '@/components/features/location/builder/OpeningTimesCalendar.vue';
-import { DEFAULT_OPENING_TIME_GROUP_REQ, DEFAULT_OPENING_TIME_REQ } from '@/constants/defaults';
-import type { CreateLocationRequest } from '@/types/schema/Location';
+import type { LocationRequest } from '@/domain/location';
 import {
-    type CreateOpeningTimeGroupRequest,
-    type CreateOpeningTimeRequest,
-    type Time,
-} from '@/types/schema/OpeningTime';
+    DEFAULT_OPENING_TIME_GROUP_REQUEST,
+    DEFAULT_OPENING_TIME_REQUEST,
+    type OpeningTimeGroupRequest,
+    type OpeningTimeRequest,
+} from '@/domain/openingTime';
+import type { SubStep } from '@/pages/public/locations/LocationSubmitPage.vue';
 import { addToDate } from '@/utils/date/date';
+import type { Time } from '@/utils/date/time';
 import { addHoursToTime, createTime, parseTimeString, validateTimeRange } from '@/utils/date/time';
 import { faRepeat, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -20,10 +21,10 @@ import { useConfirm } from 'primevue/useconfirm';
 import { ref, watchEffect } from 'vue';
 
 const { form } = defineProps<{
-    form: CreateLocationRequest;
+    form: LocationRequest;
 }>();
 
-const openings = defineModel<CreateOpeningTimeRequest[]>('openings', {
+const openings = defineModel<OpeningTimeRequest[]>('openings', {
     default: [],
     required: true,
 });
@@ -36,12 +37,12 @@ const substeps = defineModel<SubStep[]>('substeps', {
 const confirm = useConfirm();
 
 const currentWeek = ref(new Date());
+const editingIndex = ref<number | null>(null);
 const showAddDialog = ref(false);
 const showOpeningTimeGroupDialog = ref(false);
-const editingIndex = ref<number | null>(null);
 
-const newOpeningTime = ref<CreateOpeningTimeRequest>(DEFAULT_OPENING_TIME_REQ);
-const newOpeningTimeGroup = ref<CreateOpeningTimeGroupRequest>(DEFAULT_OPENING_TIME_GROUP_REQ);
+const newOpeningTime = ref<OpeningTimeRequest>(DEFAULT_OPENING_TIME_REQUEST);
+const newOpeningTimeGroup = ref<OpeningTimeGroupRequest>(DEFAULT_OPENING_TIME_GROUP_REQUEST);
 
 watchEffect(() => {
     const times = openings.value;
@@ -60,18 +61,18 @@ watchEffect(() => {
     ];
 });
 
-function handleSaveOpeningTime(openingTime: CreateOpeningTimeRequest): void {
-    // Validate and correct the time range
+function handleSaveOpeningTime(openingTime: OpeningTimeRequest): void {
     const correctedTimes = validateTimeRange(openingTime.startTime, openingTime.endTime);
     openingTime.startTime = correctedTimes.startTime;
     openingTime.endTime = correctedTimes.endTime;
 
     if (editingIndex.value !== null) {
-        const newTimes = [...openings.value];
-        newTimes[editingIndex.value] = { ...openingTime };
-        openings.value = newTimes;
+        openings.value[editingIndex.value] = { ...openingTime };
+        // const newTimes = [...openings.value];
+        // newTimes[editingIndex.value] = { ...openingTime };
+        // openings.value = newTimes;
     } else {
-        openings.value = [...openings.value, { ...openingTime }];
+        openings.value.push({ ...openingTime });
     }
 
     closeDialog();
@@ -101,7 +102,7 @@ function handleCalendarSlotClick(slot: { day: Date; time: string }): void {
     showAddDialog.value = true;
 }
 
-function handleEditSlot(index: number, slot: CreateOpeningTimeRequest): void {
+function handleEditSlot(index: number, slot: OpeningTimeRequest): void {
     newOpeningTime.value = { ...slot };
     editingIndex.value = index;
     showAddDialog.value = true;
@@ -111,7 +112,7 @@ function handleDeleteSlot(index: number): void {
     removeOpeningTime(index);
 }
 
-function handleDragSlot(index: number, updatedSlot: CreateOpeningTimeRequest): void {
+function handleDragSlot(index: number, updatedSlot: OpeningTimeRequest): void {
     const newTimes = [...openings.value];
     newTimes[index] = updatedSlot;
     openings.value = newTimes;
@@ -120,14 +121,14 @@ function handleDragSlot(index: number, updatedSlot: CreateOpeningTimeRequest): v
 function closeDialog(): void {
     showAddDialog.value = false;
     editingIndex.value = null;
-    newOpeningTime.value = DEFAULT_OPENING_TIME_REQ;
+    newOpeningTime.value = DEFAULT_OPENING_TIME_REQUEST;
 }
 
-function applyOpeningTimeGroup(openingTimeGroup: CreateOpeningTimeGroupRequest): void {
+function applyOpeningTimeGroup(openingTimeGroup: OpeningTimeGroupRequest): void {
     const { type, startDate, endDate, selectedDays, timeSlots } = openingTimeGroup;
     const days = type === 'daily' ? [1, 2, 3, 4, 5] : selectedDays;
 
-    const newTimes: CreateOpeningTimeRequest[] = [];
+    const newTimes: OpeningTimeRequest[] = [];
 
     for (let date = new Date(startDate); date <= endDate; date = addToDate(date, 1, 'day')) {
         const dayOfWeek = date.getDay();

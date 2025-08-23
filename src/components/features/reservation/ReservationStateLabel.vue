@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ReservationState } from '@/types/schema/Reservation';
+import { ReservationState } from '@/domain/reservation';
 import { useI18n } from 'vue-i18n';
 
 defineProps<{

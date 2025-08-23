@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Image } from '@/types/schema/Image';
+import type { Image } from '@/domain/image';
 import { computed } from 'vue';
 
 const props = defineProps<{

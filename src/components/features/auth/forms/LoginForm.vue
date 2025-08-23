@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { LoginRequest } from '@/types/schema/Auth';
+import type { LoginRequest } from '@/domain/auth';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';

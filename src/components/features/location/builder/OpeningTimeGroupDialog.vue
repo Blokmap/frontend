@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CreateOpeningTimeGroupRequest, Time } from '@/types/schema/OpeningTime';
+import type { OpeningTimeGroupRequest, Time } from '@/domain/openingTime';
 import { dateToTime, timeToDate } from '@/utils/date/time';
 import { i18n } from '@/utils/locale';
 import { faCalendarPlus, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -13,7 +13,7 @@ import InputNumber from 'primevue/inputnumber';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
-    openingTimeGroup: CreateOpeningTimeGroupRequest;
+    openingTimeGroup: OpeningTimeGroupRequest;
     defaultSeatCount?: number;
 }>();
 
@@ -22,10 +22,10 @@ const visible = defineModel<boolean>('visible', {
 });
 
 const emit = defineEmits<{
-    apply: [openingTimeGroup: CreateOpeningTimeGroupRequest];
+    apply: [openingTimeGroup: OpeningTimeGroupRequest];
 }>();
 
-const localOpeningTimeGroup = ref<CreateOpeningTimeGroupRequest>({ ...props.openingTimeGroup });
+const localOpeningTimeGroup = ref<OpeningTimeGroupRequest>({ ...props.openingTimeGroup });
 
 // Configuration options
 const openingTimeGroupTypes = ref([

@@ -1,4 +1,4 @@
-import type { MapOptions } from '@/types/interfaces/Map';
+import type { MapOptions } from '@/types/Map';
 
 export const defaultMapOptions: MapOptions = {
     style: 'mapbox://styles/mapbox/outdoors-v11',

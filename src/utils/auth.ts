@@ -1,6 +1,6 @@
 import google from '@/assets/img/idps/google.svg';
 import microsoft from '@/assets/img/idps/microsoft.svg';
-import type { Idp } from '@/types/schema/Profile';
+import type { Idp } from '@/domain/profile';
 
 export const authIdentityProviders: Idp[] = [
     {

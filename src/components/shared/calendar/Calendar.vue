@@ -1,9 +1,21 @@
 <script setup lang="ts">
-import type { CalendarTimeSlot } from '@/components/shared/calendar/Calendar.types';
-import { daysInRange, formatDayName, isToday, startOfWeek } from '@/utils/date/date';
+import { datesInRange, formatDayName, isToday, startOfWeek } from '@/utils/date/date';
+import type { Time } from '@/utils/date/time';
 import { createTime, fromTotalMinutes, parseTimeString, toTotalMinutes } from '@/utils/date/time';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+export type CalendarTimeSlot<T = any> = {
+    id: string;
+    day: Date;
+    startTime: Time;
+    endTime: Time;
+    duration: {
+        hours: number;
+        minutes: number;
+    };
+    metadata?: T;
+};
 
 const props = withDefaults(
     defineProps<{
@@ -50,7 +62,7 @@ const weekDays = computed(() => {
     const start = startOfWeek(props.currentWeek);
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
-    return daysInRange(start, end);
+    return datesInRange(start, end);
 });
 
 const hourlyTimePeriods = computed(() =>

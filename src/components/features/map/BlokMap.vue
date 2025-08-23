@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import Marker from './Marker.vue';
 import { useMapBox } from '@/composables/useMapBox';
-import type { LngLatBounds, MapOptions } from '@/types/interfaces/Map';
-import type { Location } from '@/types/schema/Location';
+import type { LngLatBounds, MapOptions } from '@/types/Map';
+import type { Location } from '@/domain/location';
 import { faBuildingColumns, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';

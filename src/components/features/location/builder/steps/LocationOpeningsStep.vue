@@ -2,12 +2,14 @@
 import OpeningTimeDialog from '@/components/features/location/builder/OpeningTimeDialog.vue';
 import OpeningTimeGroupDialog from '@/components/features/location/builder/OpeningTimeGroupDialog.vue';
 import OpeningTimesCalendar from '@/components/features/location/builder/OpeningTimesCalendar.vue';
+import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
 import type { LocationRequest } from '@/domain/location';
 import {
     DEFAULT_OPENING_TIME_GROUP_REQUEST,
     DEFAULT_OPENING_TIME_REQUEST,
     type OpeningTimeGroupRequest,
     type OpeningTimeRequest,
+    getOpeningsFromGroup,
 } from '@/domain/openingTime';
 import type { SubStep } from '@/pages/public/locations/LocationSubmitPage.vue';
 import { addToDate } from '@/utils/date/date';
@@ -61,18 +63,17 @@ watchEffect(() => {
     ];
 });
 
-function handleSaveOpeningTime(openingTime: OpeningTimeRequest): void {
+function saveOpeningTime(openingTime: OpeningTimeRequest): void {
     const correctedTimes = validateTimeRange(openingTime.startTime, openingTime.endTime);
     openingTime.startTime = correctedTimes.startTime;
     openingTime.endTime = correctedTimes.endTime;
 
     if (editingIndex.value !== null) {
-        openings.value[editingIndex.value] = { ...openingTime };
-        // const newTimes = [...openings.value];
-        // newTimes[editingIndex.value] = { ...openingTime };
-        // openings.value = newTimes;
+        const newTimes = [...openings.value];
+        newTimes[editingIndex.value] = { ...openingTime };
+        openings.value = newTimes;
     } else {
-        openings.value.push({ ...openingTime });
+        openings.value = [...openings.value, { ...openingTime }];
     }
 
     closeDialog();
@@ -84,7 +85,7 @@ function removeOpeningTime(index: number): void {
     openings.value = newTimes;
 }
 
-function handleCalendarSlotClick(slot: { day: Date; time: string }): void {
+function onCalendarSlotClick(slot: { day: Date; time: string }): void {
     const { hours, minutes } = parseTimeString(slot.time);
 
     const startTime = createTime(hours, minutes);
@@ -102,17 +103,14 @@ function handleCalendarSlotClick(slot: { day: Date; time: string }): void {
     showAddDialog.value = true;
 }
 
-function handleEditSlot(index: number, slot: OpeningTimeRequest): void {
+function onEditSlot(index: number, slot: OpeningTimeRequest): void {
     newOpeningTime.value = { ...slot };
     editingIndex.value = index;
     showAddDialog.value = true;
 }
 
-function handleDeleteSlot(index: number): void {
-    removeOpeningTime(index);
-}
-
-function handleDragSlot(index: number, updatedSlot: OpeningTimeRequest): void {
+function onDragSlot(index: number, updatedSlot: OpeningTimeRequest): void {
+    console.log('Dragged slot:', updatedSlot);
     const newTimes = [...openings.value];
     newTimes[index] = updatedSlot;
     openings.value = newTimes;
@@ -124,35 +122,35 @@ function closeDialog(): void {
     newOpeningTime.value = DEFAULT_OPENING_TIME_REQUEST;
 }
 
-function applyOpeningTimeGroup(openingTimeGroup: OpeningTimeGroupRequest): void {
-    const { type, startDate, endDate, selectedDays, timeSlots } = openingTimeGroup;
-    const days = type === 'daily' ? [1, 2, 3, 4, 5] : selectedDays;
+function goToPreviousWeek(): void {
+    const newDate = new Date(currentWeek.value);
+    newDate.setDate(newDate.getDate() - 7);
+    currentWeek.value = newDate;
+}
 
-    const newTimes: OpeningTimeRequest[] = [];
+function goToNextWeek(): void {
+    const newDate = new Date(currentWeek.value);
+    newDate.setDate(newDate.getDate() + 7);
+    currentWeek.value = newDate;
+}
 
-    for (let date = new Date(startDate); date <= endDate; date = addToDate(date, 1, 'day')) {
-        const dayOfWeek = date.getDay();
-        if (!days.includes(dayOfWeek)) continue;
+function goToToday(): void {
+    currentWeek.value = new Date();
+}
 
-        timeSlots.forEach((slot: { startTime: Time; endTime: Time; seatCount: number }) => {
-            const correctedTimes = validateTimeRange(slot.startTime, slot.endTime);
-
-            newTimes.push({
-                startTime: correctedTimes.startTime,
-                endTime: correctedTimes.endTime,
-                day: new Date(date),
-                seatCount: slot.seatCount,
-                reservableFrom: null,
-                reservableUntil: null,
-            });
-        });
+function handleDateSelect(date: any): void {
+    if (date instanceof Date) {
+        currentWeek.value = date;
     }
+}
 
-    openings.value = [...openings.value, ...newTimes];
+function saveOpeningGroup(openingTimeGroup: OpeningTimeGroupRequest): void {
+    const newOpenings = getOpeningsFromGroup(openingTimeGroup);
+    openings.value = [...openings.value, ...newOpenings];
     showOpeningTimeGroupDialog.value = false;
 }
 
-function handleDeleteSlotFromDialog(): void {
+function deleteFromDialog(): void {
     if (editingIndex.value !== null) {
         removeOpeningTime(editingIndex.value);
         closeDialog();
@@ -184,15 +182,26 @@ function confirmClearAll(): void {
     <ConfirmDialog />
 
     <div class="space-y-4 pb-20">
-        <OpeningTimesCalendar
-            v-model:date-in-week="currentWeek"
-            :opening-times="openings"
-            @select:slot="handleCalendarSlotClick"
-            @edit:slot="handleEditSlot"
-            @delete:slot="handleDeleteSlot"
-            @drag:slot="handleDragSlot"
-            class="h-96 overflow-visible">
-        </OpeningTimesCalendar>
+        <div class="flex flex-col space-y-6 overflow-visible">
+            <CalendarControls
+                :current-week="currentWeek"
+                @click:previous-week="goToPreviousWeek"
+                @click:next-week="goToNextWeek"
+                @click:current-week="goToToday"
+                @select:date="handleDateSelect">
+            </CalendarControls>
+
+            <div class="flex-1">
+                <OpeningTimesCalendar
+                    v-model:date-in-week="currentWeek"
+                    :opening-times="openings"
+                    @select:slot="onCalendarSlotClick"
+                    @edit:slot="onEditSlot"
+                    @delete:slot="removeOpeningTime"
+                    @drag:slot="onDragSlot">
+                </OpeningTimesCalendar>
+            </div>
+        </div>
 
         <p class="text-center text-sm text-gray-500">
             Klik op een tijdslot in de kalender om een openingstijd toe te voegen
@@ -228,22 +237,20 @@ function confirmClearAll(): void {
         </div>
     </div>
 
-    <!-- Opening Time Dialog -->
     <OpeningTimeDialog
         v-model:visible="showAddDialog"
         :opening-time="newOpeningTime"
         :editing-index="editingIndex"
-        @save="handleSaveOpeningTime"
-        @delete="handleDeleteSlotFromDialog"
+        @save="saveOpeningTime"
+        @delete="deleteFromDialog"
         @close="closeDialog">
     </OpeningTimeDialog>
 
-    <!-- Opening Time Group Dialog -->
     <OpeningTimeGroupDialog
         v-model:visible="showOpeningTimeGroupDialog"
         :opening-time-group="newOpeningTimeGroup"
         :default-seat-count="form.seatCount"
-        @apply="applyOpeningTimeGroup">
+        @apply="saveOpeningGroup">
     </OpeningTimeGroupDialog>
 </template>
 

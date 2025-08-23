@@ -7,6 +7,17 @@ export type TimeRange = {
 
 export type TimeGranularity = 'hours' | 'minutes';
 /**
+ * Rounds a number to the nearest interval.
+ *
+ * @param value - The value to round.
+ * @param interval - The interval to round to.
+ * @returns The rounded value.
+ */
+export function roundToInterval(value: number, interval: number): number {
+    return Math.round(value / interval) * interval;
+}
+
+/**
  * Formats a Date object to a time string in HH:MM format.
  *
  * @param date - The date to format.

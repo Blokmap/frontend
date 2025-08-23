@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ReservationCalendar from '@/components/features/reservation/ReservationCalendar.vue';
+import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useProfileReservations } from '@/composables/data/useProfile';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -43,6 +44,29 @@ function handleDateInWeekUpdate(newDate: Date): void {
 function goBackToProfile(): void {
     router.push({ name: 'profile' });
 }
+
+// Calendar navigation functions
+function goToPreviousWeek(): void {
+    const newDate = new Date(dateInWeek.value);
+    newDate.setDate(newDate.getDate() - 7);
+    handleDateInWeekUpdate(newDate);
+}
+
+function goToNextWeek(): void {
+    const newDate = new Date(dateInWeek.value);
+    newDate.setDate(newDate.getDate() + 7);
+    handleDateInWeekUpdate(newDate);
+}
+
+function goToToday(): void {
+    handleDateInWeekUpdate(new Date());
+}
+
+function handleDateSelect(date: any): void {
+    if (date instanceof Date) {
+        handleDateInWeekUpdate(date);
+    }
+}
 </script>
 
 <template>
@@ -60,11 +84,23 @@ function goBackToProfile(): void {
             </h1>
         </div>
 
-        <ReservationCalendar
-            v-model:date-in-week="dateInWeek"
-            :reservations="reservations"
-            @update:date-in-week="handleDateInWeekUpdate">
-        </ReservationCalendar>
+        <div class="flex h-full flex-col space-y-6">
+            <CalendarControls
+                :current-week="dateInWeek"
+                @click:previous-week="goToPreviousWeek"
+                @click:next-week="goToNextWeek"
+                @click:current-week="goToToday"
+                @select:date="handleDateSelect">
+            </CalendarControls>
+
+            <div class="flex-1 overflow-hidden">
+                <ReservationCalendar
+                    v-model:date-in-week="dateInWeek"
+                    :reservations="reservations"
+                    @update:date-in-week="handleDateInWeekUpdate">
+                </ReservationCalendar>
+            </div>
+        </div>
     </div>
 </template>
 

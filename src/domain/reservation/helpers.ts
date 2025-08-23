@@ -1,18 +1,7 @@
 import type { Reservation } from './types';
+import type { CalendarTimeSlot } from '@/types/Calendar';
 import { isDateInRange, startOfDay } from '@/utils/date/date';
 import { calculateDuration, dateToTime } from '@/utils/date/time';
-
-export type CalendarTimeSlot<T = any> = {
-    id: string;
-    day: Date;
-    startTime: string;
-    endTime: string;
-    duration: {
-        hours: number;
-        minutes: number;
-    };
-    metadata?: T;
-};
 
 /**
  * Filter reservations by date range

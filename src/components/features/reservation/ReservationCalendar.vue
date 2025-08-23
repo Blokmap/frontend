@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import ReservationStateLabel from '@/components/features/reservation/ReservationStateLabel.vue';
 import Calendar from '@/components/shared/calendar/Calendar.vue';
-import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
-import { useVimControls } from '@/composables/useVimControls';
+import { formatLocationAddress } from '@/domain/location';
 import type { Reservation } from '@/domain/reservation';
 import { ReservationState } from '@/domain/reservation';
-import { endOfWeek, startOfWeek } from '@/utils/date/date';
-import { formatLocationAddress } from '@/domain/location';
 import { reservationsToTimeSlots } from '@/domain/reservation';
+import { endOfWeek, startOfWeek } from '@/utils/date/date';
 import { faCalendarCheck, faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
@@ -17,125 +15,65 @@ const props = defineProps<{
     reservations?: Reservation[];
 }>();
 
-const emit = defineEmits<{
-    'update:dateInWeek': [value: Date];
-}>();
-
 const weekStart = computed(() => startOfWeek(props.dateInWeek));
 const weekEnd = computed(() => endOfWeek(props.dateInWeek));
 
 const reservationTimeSlots = computed(() =>
     reservationsToTimeSlots(props.reservations, weekStart.value, weekEnd.value),
 );
-
-// Vim controls for calendar navigation
-useVimControls({
-    previousWeek: {
-        keys: ['j', 'ArrowLeft'],
-        callback: goToPreviousWeek,
-    },
-    nextWeek: {
-        keys: ['k', 'ArrowRight'],
-        callback: goToNextWeek,
-    },
-    goToToday: {
-        keys: ['t', 'Home'],
-        callback: goToToday,
-    },
-});
-
-function goToPreviousWeek(): void {
-    const newDate = new Date(weekStart.value);
-    newDate.setDate(newDate.getDate() - 7);
-    emit('update:dateInWeek', newDate);
-}
-
-function goToNextWeek(): void {
-    const newDate = new Date(weekStart.value);
-    newDate.setDate(newDate.getDate() + 7);
-    emit('update:dateInWeek', newDate);
-}
-
-function goToToday(): void {
-    emit('update:dateInWeek', new Date());
-}
-
-function handleDateSelect(date: any): void {
-    if (date && date instanceof Date) {
-        emit('update:dateInWeek', date);
-    }
-}
 </script>
 
 <template>
-    <div class="flex h-full flex-col space-y-6">
-        <CalendarControls
-            :current-week="dateInWeek"
-            @click:previous-week="goToPreviousWeek"
-            @click:next-week="goToNextWeek"
-            @click:current-week="goToToday"
-            @select:date="handleDateSelect">
-        </CalendarControls>
+    <Calendar
+        :current-week="dateInWeek"
+        :time-slots="reservationTimeSlots"
+        :enable-dragging="false"
+        :time-interval="15"
+        :min-slot-duration="15"
+        class="h-full">
+        <template #time-slot="{ slot: { metadata, startTime, endTime, duration } }">
+            <div v-if="metadata?.location" class="reservation-card">
+                <!-- Header with status and time -->
+                <div class="mb-3 flex items-center justify-between">
+                    <ReservationStateLabel
+                        :state="metadata.state"
+                        v-if="metadata.state !== ReservationState.Created">
+                    </ReservationStateLabel>
+                    <div class="time-display">
+                        <FontAwesomeIcon :icon="faClock" class="time-icon" />
+                        <span class="time-text">{{ startTime }}-{{ endTime }}</span>
+                    </div>
+                </div>
 
-        <div class="flex-1 overflow-hidden">
-            <Calendar
-                :current-week="dateInWeek"
-                :time-slots="reservationTimeSlots"
-                :on-previous-week="goToPreviousWeek"
-                :on-next-week="goToNextWeek"
-                class="h-full">
-                <template #time-slot="{ slot: { metadata, startTime, endTime, duration } }">
-                    <div v-if="metadata?.location" class="reservation-card">
-                        <!-- Header with status and time -->
-                        <div class="mb-3 flex items-center justify-between">
-                            <ReservationStateLabel
-                                :state="metadata.state"
-                                v-if="metadata.state !== ReservationState.Created">
-                            </ReservationStateLabel>
-                            <div class="time-display">
-                                <FontAwesomeIcon :icon="faClock" class="time-icon" />
-                                <span class="time-text">{{ startTime }}-{{ endTime }}</span>
-                            </div>
+                <!-- Location details -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-semibold text-gray-900">
+                        {{ metadata.location.name }}
+                    </h4>
+
+                    <div class="text-xs">
+                        {{ formatLocationAddress(metadata.location) }}
+                    </div>
+
+                    <!-- Capacity info with vertical layout -->
+                    <div class="space-y-1 text-xs text-gray-800">
+                        <div class="capacity-item">
+                            <FontAwesomeIcon :icon="faUsers" class="capacity-icon" />
+                            <span>
+                                {{ metadata.openingTime?.seatCount ?? metadata.location.seatCount }}
+                                plaatsen
+                            </span>
                         </div>
 
-                        <!-- Location details -->
-                        <div class="space-y-3">
-                            <h4 class="text-sm font-semibold text-gray-900">
-                                {{ metadata.location.name }}
-                            </h4>
-
-                            <div class="text-xs">
-                                {{ formatLocationAddress(metadata.location) }}
-                            </div>
-
-                            <!-- Capacity info with vertical layout -->
-                            <div class="space-y-1 text-xs text-gray-800">
-                                <div class="capacity-item">
-                                    <FontAwesomeIcon :icon="faUsers" class="capacity-icon" />
-                                    <span>
-                                        {{
-                                            metadata.openingTime?.seatCount ??
-                                            metadata.location.seatCount
-                                        }}
-                                        plaatsen
-                                    </span>
-                                </div>
-
-                                <div class="capacity-item">
-                                    <FontAwesomeIcon
-                                        :icon="faCalendarCheck"
-                                        class="capacity-icon" />
-                                    <span>
-                                        {{ duration.hours }}u {{ duration.minutes }}m studeren
-                                    </span>
-                                </div>
-                            </div>
+                        <div class="capacity-item">
+                            <FontAwesomeIcon :icon="faCalendarCheck" class="capacity-icon" />
+                            <span> {{ duration.hours }}u {{ duration.minutes }}m studeren </span>
                         </div>
                     </div>
-                </template>
-            </Calendar>
-        </div>
-    </div>
+                </div>
+            </div>
+        </template>
+    </Calendar>
 </template>
 
 <style scoped>

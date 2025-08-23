@@ -1,6 +1,8 @@
 import type { OpeningTimeGroupRequest, OpeningTimeRequest } from './types';
 import { addToDate } from '@/utils/date/date';
 
+export const WEEKDAY_DAYS = [0, 1, 2, 3, 4];
+
 export const DEFAULT_OPENING_TIME_REQUEST: OpeningTimeRequest = {
     startTime: '08:00',
     endTime: '10:00',

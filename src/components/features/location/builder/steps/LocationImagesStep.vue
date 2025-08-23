@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import type { ImageRequest } from '@/domain/image';
-import { LOCATION_SETTINGS } from '@/domain/location';
-import type { SubStep } from '@/pages/public/locations/LocationSubmitPage.vue';
+import { type BuilderSubstep, LOCATION_SETTINGS } from '@/domain/location';
 import {
     faImage,
     faLink,
@@ -19,7 +18,7 @@ import InputText from 'primevue/inputtext';
 import { computed, onMounted, ref, watchEffect } from 'vue';
 
 const images = defineModel<ImageRequest[]>({ required: true, default: () => [] });
-const substeps = defineModel<SubStep[]>('substeps', { default: [] });
+const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
 
 const showAddDialog = ref(false);
 const urlInput = ref('');

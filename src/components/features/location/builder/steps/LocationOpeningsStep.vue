@@ -3,7 +3,7 @@ import OpeningTimeDialog from '@/components/features/location/builder/OpeningTim
 import OpeningTimeGroupDialog from '@/components/features/location/builder/OpeningTimeGroupDialog.vue';
 import OpeningTimesCalendar from '@/components/features/location/builder/OpeningTimesCalendar.vue';
 import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
-import type { LocationRequest } from '@/domain/location';
+import type { BuilderSubstep, LocationRequest } from '@/domain/location';
 import {
     DEFAULT_OPENING_TIME_GROUP_REQUEST,
     DEFAULT_OPENING_TIME_REQUEST,
@@ -11,10 +11,8 @@ import {
     type OpeningTimeRequest,
     getOpeningsFromGroup,
 } from '@/domain/openingTime';
-import type { SubStep } from '@/pages/public/locations/LocationSubmitPage.vue';
-import { addToDate } from '@/utils/date/date';
-import type { Time } from '@/utils/date/time';
-import { addHoursToTime, createTime, parseTimeString, validateTimeRange } from '@/utils/date/time';
+import type { TimeCell } from '@/types/Calendar';
+import { type Time, addToTime, createTime, validateTimeRange } from '@/utils/date/time';
 import { faRepeat, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
@@ -31,7 +29,7 @@ const openings = defineModel<OpeningTimeRequest[]>('openings', {
     required: true,
 });
 
-const substeps = defineModel<SubStep[]>('substeps', {
+const substeps = defineModel<BuilderSubstep[]>('substeps', {
     default: [],
     required: true,
 });
@@ -85,16 +83,14 @@ function removeOpeningTime(index: number): void {
     openings.value = newTimes;
 }
 
-function onCalendarSlotClick(slot: { day: Date; time: string }): void {
-    const { hours, minutes } = parseTimeString(slot.time);
-
-    const startTime = createTime(hours, minutes);
-    const endTime = addHoursToTime(startTime, 1);
+function onCalendarSlotClick(timeCell: TimeCell): void {
+    const startTime = timeCell.startTime;
+    const endTime = addToTime(startTime, 1, 'hours');
 
     newOpeningTime.value = {
         startTime,
         endTime,
-        day: new Date(slot.day),
+        day: new Date(timeCell.day),
         seatCount: form.seatCount || 1,
         reservableFrom: null,
         reservableUntil: null,

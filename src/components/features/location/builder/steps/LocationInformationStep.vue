@@ -5,9 +5,8 @@ import AddressMap from '@/components/features/map/AddressMap.vue';
 import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/useToast';
 import { LOCATION_SETTINGS } from '@/domain/location';
-import type { LocationRequest } from '@/domain/location';
+import type { BuilderSubstep, LocationRequest } from '@/domain/location';
 import { formatLocationAddress } from '@/domain/location';
-import type { SubStep } from '@/pages/public/locations/LocationSubmitPage.vue';
 import type { LngLat } from '@/types/Map';
 import { faCheck, faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -19,7 +18,7 @@ import { useI18n } from 'vue-i18n';
 
 const form = defineModel<LocationRequest>({ required: true });
 const complete = defineModel<boolean>('complete', { default: false });
-const substeps = defineModel<SubStep[]>('substeps', { default: [] });
+const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
 
 const toast = useToast();
 

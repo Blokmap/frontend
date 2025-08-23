@@ -57,6 +57,13 @@ export type LocationRequest = {
     longitude: number;
 };
 
+export type BuilderStep = string;
+
+export type BuilderSubstep = {
+    isCompleted: boolean;
+    label: string;
+};
+
 export type NearestLocation = {
     id: number;
     latitude: number;

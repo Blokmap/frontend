@@ -1,8 +1,8 @@
 import { WEEKDAY_DAYS } from './constants';
 import type { OpeningTimeGroupRequest, OpeningTimeRequest } from './types';
-import type { CalendarTimeSlot } from '@/types/Calendar';
+import type { TimeSlot } from '@/types/Calendar';
 import { datesInRange } from '@/utils/date/date';
-import { timeToDate, validateTimeRange } from '@/utils/date/time';
+import { minutesToTime, timeToMinutes, validateTimeRange } from '@/utils/date/time';
 
 export function getOpeningsFromGroup(group: OpeningTimeGroupRequest): OpeningTimeRequest[] {
     const dates = datesInRange(group.startDate, group.endDate);
@@ -37,26 +37,17 @@ export function getOpeningsFromGroup(group: OpeningTimeGroupRequest): OpeningTim
  *
  * @param openingTime - The opening time to convert.
  * @param index - The index of the opening time in the array.
- * @returns A CalendarTimeSlot object representing the opening time.
+ * @returns A TimeSlot object representing the opening time.
  */
 export function openingTimeToTimeSlot(
     openingTime: OpeningTimeRequest,
     index: number,
-): CalendarTimeSlot<{ openingTime: OpeningTimeRequest; index: number }> {
-    const startTime = timeToDate(openingTime.startTime);
-    const endTime = timeToDate(openingTime.endTime);
-
+): TimeSlot<{ openingTime: OpeningTimeRequest; index: number }> {
     return {
-        id: `opening-time-${index}-${openingTime.day.getTime()}-${openingTime.startTime}`,
+        id: `opening-time-${index}-${openingTime.day.getTime()}-${timeToMinutes(openingTime.startTime)}`,
         day: new Date(openingTime.day),
         startTime: openingTime.startTime,
         endTime: openingTime.endTime,
-        duration: {
-            hours: Math.floor((endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60)),
-            minutes: Math.floor(
-                ((endTime.getTime() - startTime.getTime()) % (1000 * 60 * 60)) / (1000 * 60),
-            ),
-        },
         metadata: { openingTime, index },
     };
 }
@@ -65,10 +56,10 @@ export function openingTimeToTimeSlot(
  * Convert multiple opening times to time slots
  *
  * @param openingTimes - Array of opening times to convert.
- * @returns Array of CalendarTimeSlot objects representing the opening times.
+ * @returns Array of TimeSlot objects representing the opening times.
  */
 export function openingTimesToTimeSlots(
     openingTimes: OpeningTimeRequest[],
-): CalendarTimeSlot<{ openingTime: OpeningTimeRequest; index: number }>[] {
+): TimeSlot<{ openingTime: OpeningTimeRequest; index: number }>[] {
     return openingTimes.map((ot, index) => openingTimeToTimeSlot(ot, index));
 }

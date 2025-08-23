@@ -148,3 +148,15 @@ export function validateTimeRange(startTime: Time, endTime: Time): TimeRange {
 export function getTimeDuration(startTime: Time, endTime: Time): number {
     return timeToMinutes(endTime) - timeToMinutes(startTime);
 }
+
+/**
+ * Add minutes to a Time object.
+ *
+ * @param time - The Time object to add minutes to.
+ * @param minutes - The number of minutes to add (can be negative).
+ * @returns A new Time object with the added minutes.
+ */
+export function addMinutesToTime(time: Time, minutes: number): Time {
+    const totalMinutes = timeToMinutes(time) + minutes;
+    return minutesToTime(Math.max(0, Math.min(1439, totalMinutes))); // Clamp to valid day range
+}

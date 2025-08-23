@@ -1,12 +1,58 @@
 import type { ImageRequest } from '@/domain/image';
 import type { Location, LocationRequest, NearestLocation } from '@/domain/location';
-import type { OpeningTimeRequest } from '@/domain/openingTime';
+import type { OpeningTime, OpeningTimeRequest } from '@/domain/openingTime';
 import { endpoints } from '@/endpoints';
 import type { LocationFilter } from '@/types/Filter';
 import type { LngLat } from '@/types/Map';
 import type { Paginated } from '@/types/Pagination';
 import { client } from '@/utils/axios';
+import { stringToTime, timeToString } from '@/utils/date/time';
 import { formatDate } from '@vueuse/core';
+
+/**
+ * Parse an opening time object from the API by converting string times to Time objects
+ *
+ * @param openingTimeData - The raw opening time data from the API
+ * @returns The parsed OpeningTime object with proper types
+ */
+export function parseOpeningTime(openingTimeData: any): OpeningTime {
+    return {
+        ...openingTimeData,
+        startTime: stringToTime(openingTimeData.startTime),
+        endTime: stringToTime(openingTimeData.endTime),
+        day: new Date(openingTimeData.day),
+        reservableFrom: openingTimeData.reservableFrom
+            ? new Date(openingTimeData.reservableFrom)
+            : null,
+        reservableUntil: openingTimeData.reservableUntil
+            ? new Date(openingTimeData.reservableUntil)
+            : null,
+        createdAt: new Date(openingTimeData.createdAt),
+        updatedAt: new Date(openingTimeData.updatedAt),
+    };
+}
+
+/**
+ * Parse location data from the API by converting string times to Time objects
+ *
+ * @param locationData - The raw location data from the API
+ * @returns The parsed Location object with proper types
+ */
+function parseLocation(locationData: any): Location {
+    const location = { ...locationData };
+
+    // Convert opening times if they exist
+    if (location.openingTimes) {
+        location.openingTimes = location.openingTimes.map(parseOpeningTime);
+    }
+
+    // Convert dates
+    if (location.approvedAt) location.approvedAt = new Date(location.approvedAt);
+    location.createdAt = new Date(location.createdAt);
+    location.updatedAt = new Date(location.updatedAt);
+
+    return location;
+}
 
 /**
  * Function to search for locations based on filters.
@@ -52,7 +98,10 @@ export async function searchLocations(
 
     const response = await client.get(endpoints.locations.search, { params });
 
-    return response.data;
+    return {
+        ...response.data,
+        data: response.data.data.map(parseLocation),
+    };
 }
 
 /**
@@ -63,7 +112,7 @@ export async function searchLocations(
  */
 export async function getLocationById(id: string): Promise<Location> {
     const response = await client.get(endpoints.locations.read.replace('{id}', id));
-    return response.data;
+    return parseLocation(response.data);
 }
 
 /** Function to get the nearest location based on a center point.
@@ -90,7 +139,7 @@ export async function getNearestLocation(center: LngLat): Promise<NearestLocatio
  */
 export async function createLocation(locationData: LocationRequest): Promise<Location> {
     const response = await client.post(endpoints.locations.create, locationData);
-    return response.data;
+    return parseLocation(response.data);
 }
 
 /**
@@ -116,7 +165,7 @@ export async function createLocationImage(
         formData,
     );
 
-    return response.data;
+    return parseLocation(response.data);
 }
 
 /**
@@ -131,7 +180,7 @@ export async function updateLocation(id: number, locationData: LocationRequest):
         endpoints.locations.update.replace('{id}', id.toString()),
         locationData,
     );
-    return response.data;
+    return parseLocation(response.data);
 }
 
 /**
@@ -157,7 +206,12 @@ export async function createLocationTimeslots(
 ): Promise<Location> {
     const formatted = openings.map((opening) => {
         const day = formatDate(opening.day, 'YYYY-MM-DD');
-        return { ...opening, day };
+        return {
+            ...opening,
+            day,
+            startTime: timeToString(opening.startTime),
+            endTime: timeToString(opening.endTime),
+        };
     });
 
     const response = await client.post(
@@ -165,5 +219,5 @@ export async function createLocationTimeslots(
         formatted,
     );
 
-    return response.data;
+    return parseLocation(response.data);
 }

@@ -11,7 +11,7 @@ import {
 import { useToast } from '@/composables/useToast';
 import type { ImageRequest } from '@/domain/image';
 import { DEFAULT_LOCATION_REQUEST } from '@/domain/location';
-import type { LocationRequest } from '@/domain/location';
+import type { BuilderStep, BuilderSubstep, LocationRequest } from '@/domain/location';
 import type { OpeningTimeRequest } from '@/domain/openingTime';
 import { deserializeDates, syncStorageData } from '@/utils/storage';
 import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -21,11 +21,6 @@ import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-
-export type SubStep = {
-    isCompleted: boolean;
-    label: string;
-};
 
 const router = useRouter();
 const route = useRoute();
@@ -60,8 +55,8 @@ const openingsForm = useLocalStorage<OpeningTimeRequest[]>('openings-form', [], 
 
 const imagesForm = ref<ImageRequest[]>([]);
 
-const step = ref<string>(route.query.step?.toString() || 'basics');
-const substeps = ref<SubStep[]>([]);
+const step = ref<BuilderStep>(route.query.step?.toString() || 'basics');
+const substeps = ref<BuilderSubstep[]>([]);
 
 const steps: { id: string; label: string; desc: string }[] = [
     {

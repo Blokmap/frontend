@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import LocationBuilderCard from '../LocationBuilderCard.vue';
-import type { LocationRequest } from '@/domain/location';
-import type { SubStep } from '@/pages/public/locations/LocationSubmitPage.vue';
+import type { BuilderSubstep, LocationRequest } from '@/domain/location';
 import { faCircleQuestion, faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Checkbox from 'primevue/checkbox';
@@ -9,7 +8,7 @@ import InputNumber from 'primevue/inputnumber';
 import { watchEffect } from 'vue';
 
 const form = defineModel<LocationRequest>('form', { required: true });
-const substeps = defineModel<SubStep[]>('substeps', { default: [] });
+const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
 
 watchEffect(() => {
     const data = form.value;

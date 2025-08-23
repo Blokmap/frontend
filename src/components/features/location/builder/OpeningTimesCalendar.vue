@@ -2,9 +2,10 @@
 import Calendar from '@/components/shared/calendar/Calendar.vue';
 import type { OpeningTimeRequest } from '@/domain/openingTime';
 import { openingTimesToTimeSlots } from '@/domain/openingTime';
-import type { CalendarTimeSlot } from '@/types/Calendar';
+import type { TimeCell, TimeSlot } from '@/types/Calendar';
 import { startOfWeek } from '@/utils/date/date';
 import type { Time } from '@/utils/date/time';
+import { timeToString } from '@/utils/date/time';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -16,32 +17,27 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     'update:dateInWeek': [value: Date];
-    'select:slot': [slot: { day: Date; time: string }];
+    'select:slot': [timeCell: TimeCell];
     'edit:slot': [index: number, slot: OpeningTimeRequest];
     'delete:slot': [index: number];
     'drag:slot': [index: number, slot: OpeningTimeRequest];
 }>();
 
 const weekStart = computed(() => startOfWeek(props.dateInWeek));
-const calendarTimeSlots = computed(() => openingTimesToTimeSlots(props.openingTimes));
+const timeSlots = computed(() => openingTimesToTimeSlots(props.openingTimes));
 
 // Event handlers
-function handleSlotClick(slot: { day: Date; time: string }): void {
-    emit('select:slot', slot);
+function handleSlotClick(timeCell: TimeCell): void {
+    emit('select:slot', timeCell);
 }
 
-function handleEditSlot(slot: CalendarTimeSlot): void {
+function handleEditSlot(slot: TimeSlot): void {
     if (slot.metadata) {
         emit('edit:slot', slot.metadata.index, slot.metadata.openingTime);
     }
 }
 
-function handleDragSlot(
-    slot: CalendarTimeSlot,
-    newStartTime: Time,
-    newEndTime: Time,
-    newDay?: Date,
-): void {
+function handleDragSlot(slot: TimeSlot, newStartTime: Time, newEndTime: Time, newDay?: Date): void {
     if (!slot.metadata) return;
 
     const day = newDay || new Date(slot.metadata.openingTime.day);
@@ -58,19 +54,21 @@ function handleDragSlot(
 <template>
     <Calendar
         :current-week="dateInWeek"
-        :time-slots="calendarTimeSlots"
+        :time-slots="timeSlots"
         :min-date="minDate"
         :max-date="maxDate"
         :enable-dragging="true"
         :time-interval="15"
         :min-slot-duration="15"
-        @click:time-slot="handleSlotClick"
+        @click:cell="handleSlotClick"
         @drag:slot="handleDragSlot"
         class="h-full">
         <template #time-slot="{ slot }">
             <div class="opening-time-card" @click="handleEditSlot(slot)">
                 <div class="time-display">
-                    <span class="time-text">{{ slot.startTime }}-{{ slot.endTime }}</span>
+                    <span class="time-text">
+                        {{ timeToString(slot.startTime) }}-{{ timeToString(slot.endTime) }}
+                    </span>
                 </div>
             </div>
         </template>

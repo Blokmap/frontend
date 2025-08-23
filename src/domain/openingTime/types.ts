@@ -1,22 +1,24 @@
+import type { Profile } from '../profile';
 import type { Time } from '@/utils/date/time';
 
 export type OpeningTime = {
     id: number;
     startTime: Time;
     endTime: Time;
+    day: Date;
     seatCount: number | null;
     reservableFrom: Date | null;
     reservableUntil: Date | null;
-    createdBy?: any | null; // Profile - avoiding circular import
-    updatedBy?: any | null; // Profile - avoiding circular import
+    createdBy?: Profile;
+    updatedBy?: Profile | null;
     createdAt: Date;
     updatedAt: Date;
 };
 
 export type OpeningTimeRequest = {
+    day: Date;
     startTime: Time;
     endTime: Time;
-    day: Date;
     seatCount: number | null;
     reservableFrom: Date | null;
     reservableUntil: Date | null;

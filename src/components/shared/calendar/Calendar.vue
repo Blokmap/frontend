@@ -1,31 +1,26 @@
 <script setup lang="ts" generic="T = any">
-import type { CalendarTimeSlot } from '@/types/Calendar';
+import type { CalendarDragState, TimeCell, TimeSlot } from '@/types/Calendar';
 import { datesInRange, formatDayName, isToday, startOfWeek } from '@/utils/date/date';
 import type { Time } from '@/utils/date/time';
 import {
+    addToTime,
     createTime,
-    fromTotalMinutes,
-    parseTimeString,
+    getTimeDuration,
+    minutesToTime,
     roundToInterval,
-    toTotalMinutes,
+    stringToTime,
+    timeToMinutes,
 } from '@/utils/date/time';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-// Re-export type for consumers
-export type { CalendarTimeSlot } from '@/types/Calendar';
-
-// Constants
 const PIXELS_PER_HOUR = 50;
-const TIME_COLUMN_WIDTH = 80;
-const MIN_MINUTES_IN_DAY = 0;
 const MAX_MINUTES_IN_DAY = 1440;
-const RESIZE_HANDLE_HEIGHT = 10;
 
 const props = withDefaults(
     defineProps<{
         currentWeek: Date;
-        timeSlots?: CalendarTimeSlot<any>[];
+        timeSlots?: TimeSlot<any>[];
         minDate?: Date;
         maxDate?: Date;
         timeInterval?: number;
@@ -34,8 +29,6 @@ const props = withDefaults(
     }>(),
     {
         timeSlots: () => [],
-        minDate: undefined,
-        maxDate: undefined,
         timeInterval: 15,
         minSlotDuration: 15,
         enableDragging: false,
@@ -43,35 +36,18 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-    'click:time-slot': [slot: { day: Date; time: string }];
+    'click:cell': [timeCell: TimeCell];
     'click:day': [day: Date];
-    'drag:slot': [
-        slot: CalendarTimeSlot<any>,
-        newStartTime: Time,
-        newEndTime: Time,
-        newDay: Date | undefined,
-    ];
+    'drag:slot': [slot: TimeSlot<any>, start: Time, end: Time, day?: Date];
 }>();
 
 const { locale } = useI18n();
 
 const updateInterval = ref<number>(0);
 const currentTime = ref(new Date());
-const calendarBodyRef = ref<HTMLElement>();
-
-// Dragging state
-const isDragging = ref(false);
-const dragSlot = ref<CalendarTimeSlot<any> | null>(null);
-const dragStartY = ref(0);
-const dragStartX = ref(0);
-const dragMode = ref<'move' | 'resize'>('move');
-const dragOriginalStart = ref(0);
-const dragOriginalEnd = ref(0);
-const dragOriginalDay = ref<Date | null>(null);
-const dragCurrentDay = ref<Date | null>(null);
-const lastEmittedStart = ref(0);
-const lastEmittedEnd = ref(0);
-const lastEmittedDay = ref<Date | null>(null);
+const calendarBodyRef = useTemplateRef<HTMLElement>('calendarBodyRef');
+const calendarGridRef = useTemplateRef<HTMLElement>('calendarGridRef');
+const dragState = ref<CalendarDragState | null>(null);
 
 const weekDays = computed(() => {
     const start = startOfWeek(props.currentWeek);
@@ -79,10 +55,6 @@ const weekDays = computed(() => {
     end.setDate(start.getDate() + 6);
     return datesInRange(start, end);
 });
-
-const hourlyTimePeriods = computed(() =>
-    Array.from({ length: 24 }, (_, hour) => `${hour.toString().padStart(2, '0')}:00`),
-);
 
 const currentTimePosition = computed(() => {
     const now = currentTime.value;
@@ -96,25 +68,22 @@ function isDayDisabled(day: Date): boolean {
     return false;
 }
 
-function getDayTimeSlots(day: Date): CalendarTimeSlot<any>[] {
+function getDayTimeSlots(day: Date): TimeSlot<any>[] {
     return props.timeSlots.filter((slot) => slot.day.toDateString() === day.toDateString());
 }
 
-function getSlotPosition(slot: CalendarTimeSlot<any>): { top: string; height: string } {
-    const startParsed = parseTimeString(slot.startTime);
-    const endParsed = parseTimeString(slot.endTime);
-    const startMinutes = toTotalMinutes(startParsed.hours, startParsed.minutes);
-    const endMinutes = toTotalMinutes(endParsed.hours, endParsed.minutes);
-    const durationMinutes = endMinutes - startMinutes;
+function getSlotPosition(slot: TimeSlot<any>): { top: string; height: string } {
+    const startTotalMinutes = timeToMinutes(slot.startTime);
+    const endTotalMinutes = timeToMinutes(slot.endTime);
+    const durationMinutes = endTotalMinutes - startTotalMinutes;
     const pixelsPerMinute = PIXELS_PER_HOUR / 60;
 
     return {
-        top: `${startMinutes * pixelsPerMinute}px`,
+        top: `${startTotalMinutes * pixelsPerMinute}px`,
         height: `${Math.max(durationMinutes * pixelsPerMinute, 20)}px`,
     };
 }
 
-// Lifecycle hooks
 onMounted(() => {
     updateInterval.value = setInterval(() => {
         currentTime.value = new Date();
@@ -126,7 +95,6 @@ onUnmounted(() => {
     if (updateInterval.value) clearInterval(updateInterval.value);
 });
 
-// Event handlers
 function scrollToCurrentTime(): void {
     if (!calendarBodyRef.value) return;
     const now = new Date();
@@ -138,148 +106,127 @@ function scrollToCurrentTime(): void {
     });
 }
 
-function handleTimePeriodClick(day: Date, time: string): void {
+function handleDayCellClick(day: Date, hour: number): void {
     if (isDayDisabled(day)) return;
-    emit('click:time-slot', { day, time });
+    const startTime = createTime(hour, 0);
+    const endTime = addToTime(startTime, props.timeInterval, 'minutes');
+    emit('click:cell', {
+        day,
+        startTime,
+        endTime,
+    });
 }
 
 function handleDayClick(day: Date): void {
     emit('click:day', day);
 }
 
-function handleSlotMouseDown(event: MouseEvent, slot: CalendarTimeSlot<any>): void {
+function onMouseDown(event: MouseEvent, slot: TimeSlot<any>, mode: 'move' | 'resize'): void {
     if (!props.enableDragging) return;
 
     event.preventDefault();
     event.stopPropagation();
 
-    isDragging.value = true;
-    dragSlot.value = slot;
-    dragStartY.value = event.clientY;
-    dragStartX.value = event.clientX;
+    dragState.value = {
+        isDragging: true,
+        slot,
+        mode,
+        startPosition: { x: event.clientX, y: event.clientY },
+        originalTimes: {
+            start: slot.startTime,
+            end: slot.endTime,
+            day: new Date(slot.day),
+        },
+        lastEmitted: {
+            start: slot.startTime,
+            end: slot.endTime,
+            day: new Date(slot.day),
+        },
+    };
 
-    const target = event.target as HTMLElement;
-    const rect = target.getBoundingClientRect();
-    const isNearBottom = event.clientY - rect.top > rect.height - RESIZE_HANDLE_HEIGHT;
-    dragMode.value = isNearBottom ? 'resize' : 'move';
-
-    const startParsed = parseTimeString(slot.startTime);
-    const endParsed = parseTimeString(slot.endTime);
-    dragOriginalStart.value = toTotalMinutes(startParsed.hours, startParsed.minutes);
-    dragOriginalEnd.value = toTotalMinutes(endParsed.hours, endParsed.minutes);
-    dragOriginalDay.value = new Date(slot.day);
-    dragCurrentDay.value = new Date(slot.day);
-
-    // Initialize last emitted values
-    lastEmittedStart.value = dragOriginalStart.value;
-    lastEmittedEnd.value = dragOriginalEnd.value;
-    lastEmittedDay.value = dragOriginalDay.value;
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
 }
 
-function handleMouseMove(event: MouseEvent): void {
-    if (!isDragging.value || !dragSlot.value || !calendarBodyRef.value) return;
+function onMouseMove(event: MouseEvent): void {
+    if (!dragState.value?.isDragging || !calendarBodyRef.value) return;
 
-    const deltaY = event.clientY - dragStartY.value;
-    const pixelsPerMinute = PIXELS_PER_HOUR / 60;
-    const deltaMinutes = Math.round(deltaY / pixelsPerMinute);
-    const roundedDeltaMinutes = roundToInterval(deltaMinutes, props.timeInterval);
+    const { slot, mode, startPosition, originalTimes } = dragState.value;
 
-    // Handle cross-day dragging
-    let newDay = dragOriginalDay.value;
-    if (dragMode.value === 'move') {
-        const timePeriodsGrid = calendarBodyRef.value.querySelector('.time-periods-grid');
-        if (timePeriodsGrid) {
-            const gridRect = timePeriodsGrid.getBoundingClientRect();
-            const dayColumnWidth = (gridRect.width - TIME_COLUMN_WIDTH) / 7;
-            const relativeX = event.clientX - gridRect.left - TIME_COLUMN_WIDTH;
-            const dayIndex = Math.floor(relativeX / dayColumnWidth);
+    const deltaY = event.clientY - startPosition.y;
+    const deltaMinutes = roundToInterval(
+        Math.round((deltaY / PIXELS_PER_HOUR) * 60),
+        props.timeInterval,
+    );
 
-            if (dayIndex >= 0 && dayIndex < weekDays.value.length) {
-                newDay = weekDays.value[dayIndex];
-                dragCurrentDay.value = newDay;
+    let newStart = originalTimes.start;
+    let newEnd = originalTimes.end;
+    let newDay = originalTimes.day;
+
+    if (mode === 'move') {
+        // Handle cross-day dragging by finding which day column the mouse is over
+        if (calendarGridRef.value) {
+            const dayColumns = calendarGridRef.value.querySelectorAll('.day-column');
+
+            for (let i = 0; i < dayColumns.length; i++) {
+                const dayColumn = dayColumns[i];
+                const rect = dayColumn.getBoundingClientRect();
+                if (event.clientX >= rect.left && event.clientX <= rect.right) {
+                    newDay = weekDays.value[i];
+                    break;
+                }
             }
         }
-    }
 
-    // Calculate new times
-    let newStartMinutes = dragOriginalStart.value;
-    let newEndMinutes = dragOriginalEnd.value;
+        // Calculate new times using Time utilities
+        newStart = addToTime(originalTimes.start, deltaMinutes, 'minutes');
+        const originalDuration = getTimeDuration(originalTimes.start, originalTimes.end);
+        newEnd = addToTime(newStart, originalDuration, 'minutes');
 
-    if (dragMode.value === 'move') {
-        newStartMinutes = dragOriginalStart.value + roundedDeltaMinutes;
-        newEndMinutes = dragOriginalEnd.value + roundedDeltaMinutes;
-    } else {
-        newEndMinutes = dragOriginalEnd.value + roundedDeltaMinutes;
-        if (newEndMinutes <= newStartMinutes) {
-            newEndMinutes = newStartMinutes + props.minSlotDuration;
+        // Ensure the slot doesn't go beyond day boundaries
+        if (timeToMinutes(newEnd) > MAX_MINUTES_IN_DAY) {
+            const overflow = timeToMinutes(newEnd) - MAX_MINUTES_IN_DAY;
+            newStart = addToTime(newStart, -overflow, 'minutes');
+            newEnd = addToTime(newEnd, -overflow, 'minutes');
+        }
+
+        // Ensure the slot doesn't go before start of day
+        if (timeToMinutes(newStart) < 0) {
+            const underflow = -timeToMinutes(newStart);
+            newStart = addToTime(newStart, underflow, 'minutes');
+            newEnd = addToTime(newEnd, underflow, 'minutes');
+        }
+    } else if (mode === 'resize') {
+        // Only change the end time for resize
+        newEnd = addToTime(originalTimes.end, deltaMinutes, 'minutes');
+
+        // Ensure minimum duration
+        const minEndTime = addToTime(newStart, props.minSlotDuration, 'minutes');
+        if (timeToMinutes(newEnd) < timeToMinutes(minEndTime)) {
+            newEnd = minEndTime;
+        }
+
+        // Ensure doesn't exceed day boundary
+        if (timeToMinutes(newEnd) > MAX_MINUTES_IN_DAY) {
+            newEnd = minutesToTime(MAX_MINUTES_IN_DAY);
         }
     }
 
-    // Constrain to valid bounds
-    const maxStartMinutes = MAX_MINUTES_IN_DAY - props.minSlotDuration;
-    newStartMinutes = Math.max(MIN_MINUTES_IN_DAY, Math.min(maxStartMinutes, newStartMinutes));
-    newEndMinutes = Math.max(props.minSlotDuration, Math.min(MAX_MINUTES_IN_DAY, newEndMinutes));
+    if (slot) {
+        slot.startTime = newStart;
+        slot.endTime = newEnd;
+        slot.day = newDay;
 
-    if (newEndMinutes <= newStartMinutes) {
-        if (dragMode.value === 'move') {
-            newEndMinutes = newStartMinutes + (dragOriginalEnd.value - dragOriginalStart.value);
-        } else {
-            newEndMinutes = newStartMinutes + props.minSlotDuration;
-        }
-    }
-
-    // Update slot for real-time visual feedback
-    const startTime = fromTotalMinutes(newStartMinutes);
-    const endTime = fromTotalMinutes(newEndMinutes);
-
-    dragSlot.value.startTime = createTime(startTime.hours, startTime.minutes);
-    dragSlot.value.endTime = createTime(endTime.hours, endTime.minutes);
-    if (newDay) {
-        dragSlot.value.day = newDay;
-    }
-
-    // Only emit if position has actually changed (snapped to new position)
-    const dayChanged = newDay && newDay.toDateString() !== dragOriginalDay.value?.toDateString();
-    const currentDay = dayChanged ? newDay : dragOriginalDay.value;
-
-    const hasPositionChanged =
-        newStartMinutes !== lastEmittedStart.value ||
-        newEndMinutes !== lastEmittedEnd.value ||
-        currentDay?.toDateString() !== lastEmittedDay.value?.toDateString();
-
-    if (hasPositionChanged) {
-        lastEmittedStart.value = newStartMinutes;
-        lastEmittedEnd.value = newEndMinutes;
-        lastEmittedDay.value = currentDay;
-
-        const startTimeString = createTime(startTime.hours, startTime.minutes);
-        const endTimeString = createTime(endTime.hours, endTime.minutes);
-
-        emit(
-            'drag:slot',
-            dragSlot.value,
-            startTimeString,
-            endTimeString,
-            dayChanged ? newDay || undefined : undefined,
-        );
+        const dayChanged = newDay.toDateString() !== originalTimes.day.toDateString();
+        emit('drag:slot', slot, slot.startTime, slot.endTime, dayChanged ? newDay : undefined);
     }
 }
 
-function handleMouseUp(): void {
-    if (!isDragging.value || !dragSlot.value) return;
-
-    // Cleanup
-    isDragging.value = false;
-    dragSlot.value = null;
-    dragMode.value = 'move';
-    dragOriginalDay.value = null;
-    dragCurrentDay.value = null;
-
-    document.removeEventListener('mousemove', handleMouseMove);
-    document.removeEventListener('mouseup', handleMouseUp);
+function onMouseUp(): void {
+    if (!dragState.value?.isDragging) return;
+    dragState.value = null;
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
 }
 </script>
 
@@ -298,66 +245,79 @@ function handleMouseUp(): void {
                     :key="index"
                     :class="{ today: isToday(day) }"
                     @click="handleDayClick(day)">
-                    <div class="day-header-name">{{ formatDayName(day, 'short', locale) }}</div>
-                    <div class="day-header-number" :class="{ 'today-indicator': isToday(day) }">
+                    <div class="text-sm font-medium md:text-xs">
+                        {{ formatDayName(day, 'short', locale) }}
+                    </div>
+                    <div
+                        class="mt-1 text-lg font-semibold md:text-base"
+                        :class="{ 'today-indicator': isToday(day) }">
                         {{ day.getDate() }}
                     </div>
                 </div>
             </div>
 
             <!-- Calendar body -->
-            <div ref="calendarBodyRef" class="calendar-body">
-                <!-- Time periods grid -->
-                <div class="time-periods-grid">
+            <div ref="calendarBodyRef" class="relative">
+                <!-- Calendar grid -->
+                <div ref="calendarGridRef" class="calendar-grid">
                     <!-- Time column -->
                     <div class="time-column">
-                        <div v-for="time in hourlyTimePeriods" :key="time" class="time-period">
-                            {{ time }}
+                        <div
+                            v-for="hour in 24"
+                            :key="hour"
+                            class="time-cell"
+                            :style="{ height: PIXELS_PER_HOUR + 'px' }">
+                            {{ (hour - 1).toString().padStart(2, '0') }}:00
                         </div>
                     </div>
 
                     <!-- Day columns -->
                     <div v-for="(day, dayIndex) in weekDays" :key="dayIndex" class="day-column">
-                        <!-- Time period grid for each day -->
+                        <!-- Day cells grid for each day -->
                         <div
-                            v-for="time in hourlyTimePeriods"
-                            :key="time"
-                            class="time-period-cell"
+                            v-for="hour in 24"
+                            :key="hour"
+                            class="day-cell"
                             :class="{ disabled: isDayDisabled(day) }"
-                            @click="handleTimePeriodClick(day, time)"></div>
+                            :style="{ height: PIXELS_PER_HOUR + 'px' }"
+                            @click="handleDayCellClick(day, hour - 1)"></div>
 
                         <!-- Custom time slots positioned absolutely within the day -->
                         <template v-for="slot in getDayTimeSlots(day)" :key="slot.id">
                             <div
                                 class="custom-time-slot"
                                 :class="{
-                                    dragging: isDragging && dragSlot?.id === slot.id,
+                                    dragging:
+                                        dragState?.isDragging && dragState?.slot?.id === slot.id,
                                     'resize-mode':
-                                        isDragging &&
-                                        dragSlot?.id === slot.id &&
-                                        dragMode === 'resize',
+                                        dragState?.isDragging &&
+                                        dragState?.slot?.id === slot.id &&
+                                        dragState?.mode === 'resize',
                                     draggable: props.enableDragging,
                                 }"
                                 :style="getSlotPosition(slot)"
-                                @mousedown="
-                                    props.enableDragging
-                                        ? handleSlotMouseDown($event, slot)
-                                        : undefined
-                                ">
+                                @mousedown="onMouseDown($event, slot, 'move')">
                                 <slot name="time-slot" :slot="slot"> </slot>
+
                                 <!-- Resize handle - only show if dragging is enabled -->
-                                <div v-if="props.enableDragging" class="resize-handle"></div>
+                                <div
+                                    v-if="props.enableDragging"
+                                    class="resize-handle"
+                                    @mousedown="onMouseDown($event, slot, 'resize')">
+                                    <div
+                                        class="bg-primary-500 h-1 w-8 rounded-full transition-all duration-200"></div>
+                                </div>
                             </div>
                         </template>
 
                         <!-- Current time indicator for today -->
                         <div
                             v-if="isToday(day)"
-                            class="current-time-indicator"
+                            class="pointer-events-none absolute right-0 left-0 z-20"
                             :style="{ top: `${currentTimePosition}%` }">
-                            <div class="time-line">
-                                <div class="time-dot"></div>
-                                <div class="time-line-bar"></div>
+                            <div class="flex items-center">
+                                <div class="-ml-1 h-2 w-2 rounded-full bg-red-500"></div>
+                                <div class="h-0.5 flex-1 bg-red-500"></div>
                             </div>
                         </div>
                     </div>
@@ -424,47 +384,26 @@ function handleMouseUp(): void {
     }
 }
 
-.day-header-name {
-    @apply text-sm font-medium;
+.today-indicator {
+    @apply mx-auto flex;
+    @apply h-8 w-8;
+    @apply items-center justify-center;
+    @apply bg-secondary-500 rounded-full text-white;
 
     @media (max-width: 768px) {
-        @apply text-xs;
+        @apply h-6 w-6;
+        @apply text-sm;
     }
 }
 
-.day-header-number {
-    @apply mt-1;
-    @apply text-lg font-semibold;
+.calendar-grid {
+    @apply relative grid;
+    grid-template-columns: 80px repeat(7, minmax(120px, 1fr));
+    min-width: 920px;
 
     @media (max-width: 768px) {
-        @apply text-base;
-    }
-
-    &.today-indicator {
-        @apply mx-auto flex;
-        @apply h-8 w-8;
-        @apply items-center justify-center;
-        @apply bg-secondary-500 rounded-full text-white;
-
-        @media (max-width: 768px) {
-            @apply h-6 w-6;
-            @apply text-sm;
-        }
-    }
-}
-
-.calendar-body {
-    @apply relative;
-
-    .time-periods-grid {
-        @apply relative grid;
-        grid-template-columns: 80px repeat(7, minmax(120px, 1fr));
-        min-width: 920px;
-
-        @media (max-width: 768px) {
-            grid-template-columns: 60px repeat(7, minmax(100px, 1fr));
-            min-width: 760px;
-        }
+        grid-template-columns: 60px repeat(7, minmax(100px, 1fr));
+        min-width: 760px;
     }
 }
 
@@ -477,11 +416,10 @@ function handleMouseUp(): void {
         min-width: 60px;
     }
 
-    .time-period {
+    .time-cell {
         @apply border-b border-gray-100;
         @apply p-2 pr-3;
         @apply text-right text-sm text-gray-600;
-        @apply h-[50px];
 
         @media (max-width: 768px) {
             @apply p-1 pr-2;
@@ -500,23 +438,13 @@ function handleMouseUp(): void {
         min-width: 100px;
     }
 
-    .time-period-cell {
+    .day-cell {
         @apply relative cursor-pointer;
         @apply border-b border-gray-100;
         @apply hover:bg-primary-50 transition-colors;
-        height: 50px;
-
-        @media (max-width: 768px) {
-            height: 40px;
-        }
-
-        &:hover::before {
-            @apply pointer-events-none absolute inset-0;
-        }
 
         &.disabled {
             @apply cursor-not-allowed bg-gray-200 opacity-40;
-            @apply relative;
 
             &:hover {
                 @apply bg-gray-200;
@@ -533,10 +461,13 @@ function handleMouseUp(): void {
 
     &.draggable {
         @apply cursor-move;
+
+        &:hover .resize-handle {
+            @apply opacity-100;
+        }
     }
 
     &.dragging {
-        @apply z-30;
         @apply transition-none;
     }
 
@@ -544,54 +475,25 @@ function handleMouseUp(): void {
         @apply cursor-ns-resize;
 
         .resize-handle {
-            @apply bg-primary-400 opacity-100;
+            @apply opacity-100;
+
+            > div {
+                @apply scale-110;
+            }
         }
     }
 
-    &.draggable:hover .resize-handle {
-        @apply opacity-100;
-    }
-}
-
-.resize-handle {
-    @apply absolute right-0 bottom-0 left-0;
-    @apply h-2;
-    @apply cursor-ns-resize;
-    @apply bg-transparent;
-    @apply opacity-0;
-    @apply transition-all duration-200;
-    @apply hover:bg-primary-300;
-
-    &::after {
-        content: '';
-        @apply absolute bottom-0 left-1/2 -translate-x-1/2 transform;
-        @apply h-1 w-8;
-        @apply bg-primary-600;
-        @apply rounded-full;
+    .resize-handle {
+        @apply absolute right-0 bottom-0 left-0;
+        @apply h-4;
+        @apply cursor-ns-resize;
+        @apply bg-transparent;
         @apply opacity-0;
-        @apply transition-opacity duration-200;
-    }
+        @apply transition-all duration-200;
+        @apply flex items-center justify-center;
 
-    &:hover::after {
-        @apply opacity-100;
-    }
-}
-
-.current-time-indicator {
-    @apply pointer-events-none absolute right-0 left-0 z-20;
-
-    .time-line {
-        @apply flex items-center;
-
-        .time-dot {
-            @apply -ml-1;
-            @apply h-2 w-2;
-            @apply rounded-full bg-red-500;
-        }
-
-        .time-line-bar {
-            @apply flex-1;
-            @apply h-0.5 bg-red-500;
+        &:hover > div {
+            @apply bg-primary-600 scale-110;
         }
     }
 }

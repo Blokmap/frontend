@@ -1,11 +1,12 @@
 import type { OpeningTimeGroupRequest, OpeningTimeRequest } from './types';
 import { addToDate } from '@/utils/date/date';
+import { createTime } from '@/utils/date/time';
 
 export const WEEKDAY_DAYS = [0, 1, 2, 3, 4];
 
 export const DEFAULT_OPENING_TIME_REQUEST: OpeningTimeRequest = {
-    startTime: '08:00',
-    endTime: '10:00',
+    startTime: createTime(8, 0),
+    endTime: createTime(10, 0),
     day: new Date(),
     seatCount: 10,
     reservableFrom: null,
@@ -18,7 +19,7 @@ export const DEFAULT_OPENING_TIME_GROUP_REQUEST: OpeningTimeGroupRequest = {
     endDate: addToDate(new Date(), 1, 'month'),
     selectedDays: [1, 2, 3, 4, 5],
     timeSlots: [
-        { startTime: '08:00', endTime: '12:00', seatCount: 20 },
-        { startTime: '13:00', endTime: '17:00', seatCount: 20 },
+        { startTime: createTime(8, 0), endTime: createTime(12, 0), seatCount: 20 },
+        { startTime: createTime(13, 0), endTime: createTime(17, 0), seatCount: 20 },
     ],
 };

@@ -1,25 +1,42 @@
 import type { Reservation } from '@/domain/reservation';
 import { endpoints } from '@/endpoints';
 import { client } from '@/utils/axios';
+import { stringToTime, timeToString } from '@/utils/date/time';
 import { formatDate } from '@vueuse/core';
 
 export type ReservationIncludes = 'profile' | 'location' | 'openingTime' | 'confirmedBy';
 
 /**
  * Function to parse a reservation object. Used to ensure that API responses
- * are correctly formatted with Date objects.
+ * are correctly formatted with Date objects and Time objects.
  *
- * @param {Reservation} reservation - The reservation object to parse.
- * @returns {Reservation} The parsed reservation object with Date fields converted.
+ * @param {any} reservationData - The reservation data from the API.
+ * @returns {Reservation} The parsed reservation object with proper types.
  */
-export function parseReservation(reservation: Reservation): Reservation {
+export function parseReservation(reservationData: any): Reservation {
+    return {
+        ...reservationData,
+        startTime: stringToTime(reservationData.startTime),
+        endTime: stringToTime(reservationData.endTime),
+        day: new Date(reservationData.day),
+        confirmedAt: reservationData.confirmedAt ? new Date(reservationData.confirmedAt) : null,
+        createdAt: new Date(reservationData.createdAt),
+        updatedAt: new Date(reservationData.updatedAt),
+    };
+}
+
+/**
+ * Function to serialize a reservation object for API requests.
+ *
+ * @param {Reservation} reservation - The reservation object to serialize.
+ * @returns {any} The serialized reservation data for the API.
+ */
+export function serializeReservation(reservation: Reservation): any {
     return {
         ...reservation,
-        startTime: new Date(reservation.startTime),
-        endTime: new Date(reservation.endTime),
-        confirmedAt: reservation.confirmedAt ? new Date(reservation.confirmedAt) : null,
-        createdAt: new Date(reservation.createdAt),
-        updatedAt: new Date(reservation.updatedAt),
+        startTime: timeToString(reservation.startTime),
+        endTime: timeToString(reservation.endTime),
+        day: formatDate(reservation.day, 'YYYY-MM-DD'),
     };
 }
 

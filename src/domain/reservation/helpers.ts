@@ -1,7 +1,7 @@
 import type { Reservation } from './types';
-import type { CalendarTimeSlot } from '@/types/Calendar';
+import type { TimeSlot } from '@/types/Calendar';
 import { isDateInRange, startOfDay } from '@/utils/date/date';
-import { calculateDuration, dateToTime } from '@/utils/date/time';
+import { minutesToTime, timeToMinutes } from '@/utils/date/time';
 
 /**
  * Filter reservations by date range
@@ -17,7 +17,7 @@ export function filterReservationsByDateRange(
     endDate: Date,
 ): Reservation[] {
     return reservations.filter((reservation) => {
-        const reservationDate = new Date(reservation.startTime);
+        const reservationDate = reservation.day;
         return isDateInRange(reservationDate, startDate, endDate);
     });
 }
@@ -28,22 +28,12 @@ export function filterReservationsByDateRange(
  * @param reservation - The reservation to convert.
  * @returns A TimeSlot object representing the reservation.
  */
-export function reservationToTimeSlot(reservation: Reservation): CalendarTimeSlot<Reservation> {
-    const startTime = new Date(reservation.startTime);
-    const endTime = new Date(reservation.endTime);
-
-    const startTimeString = dateToTime(startTime);
-    const endTimeString = dateToTime(endTime);
-
-    // Calculate duration using time utility
-    const duration = calculateDuration(startTime, endTime);
-
+export function reservationToTimeSlot(reservation: Reservation): TimeSlot<Reservation> {
     return {
         id: `reservation-${reservation.id}`,
-        day: startOfDay(startTime),
-        startTime: startTimeString,
-        endTime: endTimeString,
-        duration,
+        day: startOfDay(reservation.day),
+        startTime: reservation.startTime,
+        endTime: reservation.endTime,
         metadata: reservation,
     };
 }
@@ -60,7 +50,7 @@ export function reservationsToTimeSlots(
     reservations?: Reservation[],
     startDate?: Date,
     endDate?: Date,
-): CalendarTimeSlot<Reservation>[] {
+): TimeSlot<Reservation>[] {
     if (!reservations) return [];
 
     let filteredReservations = reservations;

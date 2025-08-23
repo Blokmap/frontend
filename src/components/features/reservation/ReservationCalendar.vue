@@ -31,7 +31,7 @@ const reservationTimeSlots = computed(() =>
         :time-interval="15"
         :min-slot-duration="15"
         class="h-full">
-        <template #time-slot="{ slot: { metadata, startTime, endTime, duration } }">
+        <template #time-slot="{ slot: { metadata, startTime, endTime } }">
             <div v-if="metadata?.location" class="reservation-card">
                 <!-- Header with status and time -->
                 <div class="mb-3 flex items-center justify-between">
@@ -63,11 +63,6 @@ const reservationTimeSlots = computed(() =>
                                 {{ metadata.openingTime?.seatCount ?? metadata.location.seatCount }}
                                 plaatsen
                             </span>
-                        </div>
-
-                        <div class="capacity-item">
-                            <FontAwesomeIcon :icon="faCalendarCheck" class="capacity-icon" />
-                            <span> {{ duration.hours }}u {{ duration.minutes }}m studeren </span>
                         </div>
                     </div>
                 </div>

@@ -40,6 +40,23 @@ export function setupAxiosInterceptors(router: Router, toast: any): void {
             });
         }
 
+        if (response.status === HttpStatusCode.InternalServerError) {
+            console.error('Server error:', response);
+            toast.add({
+                severity: 'error',
+                summary: 'Serverfout',
+                detail: 'Er is een fout opgetreden op de server. Probeer het later opnieuw.',
+            });
+        }
+
+        if (response.status === HttpStatusCode.BadRequest) {
+            toast.add({
+                severity: 'error',
+                summary: 'Fout bij verwerken verzoek',
+                detail: 'Er is een fout opgetreden bij het verwerken van je verzoek.',
+            });
+        }
+
         return response;
     });
 

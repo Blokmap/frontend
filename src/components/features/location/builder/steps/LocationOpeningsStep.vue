@@ -10,7 +10,7 @@ import {
     type OpeningTimeGroupRequest,
     type OpeningTimeRequest,
     getOpeningsFromGroup,
-} from '@/domain/openingTime';
+} from '@/domain/openings';
 import type { TimeCell } from '@/types/Calendar';
 import { type Time, addToTime, createTime, validateTimeRange } from '@/utils/date/time';
 import { faRepeat, faTrash } from '@fortawesome/free-solid-svg-icons';

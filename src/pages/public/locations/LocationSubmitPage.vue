@@ -8,15 +8,16 @@ import {
     useCreateLocationImage,
     useCreateLocationTimeslots,
 } from '@/composables/data/useLocations';
+import { useVersionedLocalStorage } from '@/composables/store/useVersionedLocalStorage';
 import { useToast } from '@/composables/useToast';
 import type { ImageRequest } from '@/domain/image';
 import { DEFAULT_LOCATION_REQUEST } from '@/domain/location';
-import type { BuilderStep, BuilderSubstep, LocationRequest } from '@/domain/location';
-import type { OpeningTimeRequest } from '@/domain/openingTime';
-import { deserializeDates, syncStorageData } from '@/utils/storage';
+import type { BuilderStep, BuilderSubstep, Location, LocationRequest } from '@/domain/location';
+import type { OpeningTimeRequest } from '@/domain/openings';
+import { deleteLocation, deleteLocationImages, deleteLocationOpenings } from '@/services/location';
 import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useLocalStorage } from '@vueuse/core';
+import { AxiosError, isAxiosError } from 'axios';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import { computed, ref, watch } from 'vue';
@@ -34,23 +35,13 @@ const isCreating = computed(
     () => isCreatingLocation.value || isCreatingImages.value || isCreatingOpenings.value,
 );
 
-const locationForm = useLocalStorage<LocationRequest>('location-form', DEFAULT_LOCATION_REQUEST, {
-    mergeDefaults: syncStorageData,
+const locationForm = useVersionedLocalStorage<LocationRequest>('location-form', {
+    defaults: DEFAULT_LOCATION_REQUEST,
 });
 
-const openingsForm = useLocalStorage<OpeningTimeRequest[]>('openings-form', [], {
-    serializer: {
-        read: (value: string) => {
-            try {
-                const parsed = JSON.parse(value);
-                // Convert date strings back to Date objects
-                return deserializeDates(parsed, ['day', 'reservableFrom', 'reservableUntil']);
-            } catch {
-                return [];
-            }
-        },
-        write: (value: OpeningTimeRequest[]) => JSON.stringify(value),
-    },
+const openingsForm = useVersionedLocalStorage<OpeningTimeRequest[]>('openings-form', {
+    defaults: [],
+    arrayItemDateFields: ['day', 'reservableFrom', 'reservableUntil'],
 });
 
 const imagesForm = ref<ImageRequest[]>([]);
@@ -113,17 +104,26 @@ function goPrevious(): void {
 async function submitLocation(): Promise<void> {
     if (!canGoNext.value) return;
 
+    let locationId = null;
+    let createdLocation = false;
+    let createdImages = false;
+    let createdOpenings = false;
+
     try {
         const location = await createLocation(locationForm.value);
+        locationId = location.id;
+        createdLocation = true;
 
         if (imagesForm.value.length > 0) {
             await Promise.all(
                 imagesForm.value.map((image) => createImage({ locationId: location.id, image })),
             );
+            createdImages = true;
         }
 
         if (openingsForm.value.length > 0) {
             await createOpenings({ timeslots: openingsForm.value, locationId: location.id });
+            createdOpenings = true;
         }
 
         toast.add({
@@ -135,6 +135,18 @@ async function submitLocation(): Promise<void> {
         router.push({ name: 'locations' });
     } catch (error) {
         console.error('Error creating location:', error);
+
+        if (createdOpenings && locationId) {
+            await deleteLocationOpenings(locationId);
+        }
+
+        if (createdImages && locationId) {
+            await deleteLocationImages(locationId);
+        }
+
+        if (createdLocation && locationId) {
+            await deleteLocation(locationId);
+        }
     }
 }
 </script>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { OpeningTimeGroupRequest, Time } from '@/domain/openingTime';
+import type { OpeningTimeGroupRequest, Time } from '@/domain/openings';
 import { dateToTime, timeToDate } from '@/utils/date/time';
 import { i18n } from '@/utils/locale';
 import { faCalendarPlus, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';

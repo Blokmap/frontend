@@ -1,6 +1,6 @@
 import type { ImageRequest } from '@/domain/image';
 import type { Location, LocationRequest, NearestLocation } from '@/domain/location';
-import type { OpeningTime, OpeningTimeRequest } from '@/domain/openingTime';
+import type { OpeningTime, OpeningTimeRequest } from '@/domain/openings';
 import { endpoints } from '@/endpoints';
 import type { LocationFilter } from '@/types/Filter';
 import type { LngLat } from '@/types/Map';
@@ -161,7 +161,7 @@ export async function createLocationImage(
     }
 
     const response = await client.post(
-        endpoints.locations.images.create.replace('{id}', locationId.toString()),
+        endpoints.locations.images.createOne.replace('{id}', locationId.toString()),
         formData,
     );
 
@@ -200,7 +200,7 @@ export async function deleteLocation(id: number): Promise<void> {
  * @param {OpeningTimeRequest[]} openings - The opening times to create as time slots.
  * @returns {Promise<Location>} A promise that resolves to the updated location with new time slots.
  */
-export async function createLocationTimeslots(
+export async function createLocationOpenings(
     locationId: number,
     openings: OpeningTimeRequest[],
 ): Promise<Location> {
@@ -215,9 +215,33 @@ export async function createLocationTimeslots(
     });
 
     const response = await client.post(
-        endpoints.locations.openingTimes.create.replace('{id}', locationId.toString()),
+        endpoints.locations.openingTimes.createMany.replace('{id}', locationId.toString()),
         formatted,
     );
 
     return parseLocation(response.data);
+}
+
+/**
+ * Function to delete all opening times for a location.
+ *
+ * @param {number} locationId - The ID of the location to delete opening times for.
+ * @returns {Promise<void>} A promise that resolves when the deletion is complete.
+ */
+export async function deleteLocationOpenings(locationId: number): Promise<void> {
+    await client.delete(
+        endpoints.locations.openingTimes.deleteAll.replace('{id}', locationId.toString()),
+    );
+}
+
+/**
+ * Function to delete all images for a location.
+ *
+ * @param {number} locationId - The ID of the location to delete images for.
+ * @returns {Promise<void>} A promise that resolves when the deletion is complete.
+ */
+export async function deleteLocationImages(locationId: number): Promise<void> {
+    await client.delete(
+        endpoints.locations.images.deleteAll.replace('{id}', locationId.toString()),
+    );
 }

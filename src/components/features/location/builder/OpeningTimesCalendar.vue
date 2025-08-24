@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Calendar from '@/components/shared/calendar/Calendar.vue';
-import type { OpeningTimeRequest } from '@/domain/openingTime';
-import { openingTimesToTimeSlots } from '@/domain/openingTime';
+import type { OpeningTimeRequest } from '@/domain/openings';
+import { openingTimesToTimeSlots } from '@/domain/openings';
 import type { TimeCell, TimeSlot } from '@/types/Calendar';
 import { startOfWeek } from '@/utils/date/date';
 import type { Time } from '@/utils/date/time';

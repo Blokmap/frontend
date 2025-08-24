@@ -1,8 +1,11 @@
+import type { ImageRequest } from '@/domain/image';
+import type { Location, LocationRequest, NearestLocation } from '@/domain/location';
+import type { OpeningTimeRequest } from '@/domain/openings';
 import { endpoints } from '@/endpoints';
 import {
     createLocation,
     createLocationImage,
-    createLocationTimeslots,
+    createLocationOpenings,
     getLocationById,
     getNearestLocation,
     searchLocations,
@@ -13,11 +16,8 @@ import type {
     CompQuery,
     CompQueryOptions,
 } from '@/types/Composable';
-import type { LngLat } from '@/types/Map';
 import type { LocationFilter } from '@/types/Filter';
-import type { ImageRequest } from '@/domain/image';
-import type { Location, LocationRequest, NearestLocation } from '@/domain/location';
-import type { OpeningTimeRequest } from '@/domain/openingTime';
+import type { LngLat } from '@/types/Map';
 import type { Paginated } from '@/types/Pagination';
 import { client, getRandomDelay } from '@/utils/axios';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
@@ -142,7 +142,7 @@ export function useCreateLocationTimeslots(
     const mutation = useMutation({
         ...options,
         mutationFn: ({ locationId, timeslots }: CreateLocationTimeslotsParams) => {
-            return createLocationTimeslots(locationId, timeslots);
+            return createLocationOpenings(locationId, timeslots);
         },
     });
 

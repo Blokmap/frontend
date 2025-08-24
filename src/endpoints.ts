@@ -61,14 +61,16 @@ export const endpoints = {
         permissions: '/locations/permissions',
         nearest: '/locations/nearest',
         openingTimes: {
-            create: '/locations/{id}/opening-times',
-            update: '/locations/{id}/opening-times/{openingTimeId}',
-            delete: '/locations/{id}/opening-times/{openingTimeId}',
-            list: '/locations/{id}/opening-times',
+            createMany: '/locations/{id}/opening-times',
+            updateOne: '/locations/{id}/opening-times/{openingTimeId}',
+            deleteOne: '/locations/{id}/opening-times/{openingTimeId}',
+            deleteAll: '/locations/{id}/opening-times',
+            listAll: '/locations/{id}/opening-times',
             reservations: {
-                create: '/locations/{id}/opening-times/{openingTimeId}/reservations',
-                delete: '/locations/{id}/opening-times/{openingTimeId}/reservations/{reservationId}',
-                list: '/locations/{id}/opening-times/{openingTimeId}/reservations',
+                createMany: '/locations/{id}/opening-times/{openingTimeId}/reservations',
+                deleteOne:
+                    '/locations/{id}/opening-times/{openingTimeId}/reservations/{reservationId}',
+                listAll: '/locations/{id}/opening-times/{openingTimeId}/reservations',
             },
         },
         members: {
@@ -93,8 +95,9 @@ export const endpoints = {
             update: '/locations/{id}/tags',
         },
         images: {
-            create: '/locations/{id}/images',
-            delete: '/locations/{id}/images/{imageId}',
+            createOne: '/locations/{id}/images',
+            deleteOne: '/locations/{id}/images/{imageId}',
+            deleteAll: '/locations/{id}/images',
         },
     },
     tags: {

@@ -4,14 +4,9 @@
     "version": "0.2.0",
     "type": "module",
     "scripts": {
-        "dev": "vite",
-        "host": "vite --host",
         "build": "tsc -b && vite build",
-		"build-staging": "tsc -b && vite build --mode staging",
-        "build-production": "tsc -b && vite build --mode production",
         "lint": "tsc -b --noEmit",
         "format": "prettier --write src test",
-        "preview": "vite preview",
         "test:unit": "vitest run",
         "test:e2e": "cypress run"
     },

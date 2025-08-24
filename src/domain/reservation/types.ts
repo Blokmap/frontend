@@ -1,5 +1,5 @@
 import type { Location } from '@/domain/location';
-import type { OpeningTime } from '@/domain/openingTime';
+import type { OpeningTime } from '@/domain/openings';
 import type { Profile } from '@/domain/profile';
 import type { Time } from '@/utils/date/time';
 

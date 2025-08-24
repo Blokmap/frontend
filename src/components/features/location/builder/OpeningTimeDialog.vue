@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { OpeningTimeRequest } from '@/domain/openingTime';
+import type { OpeningTimeRequest } from '@/domain/openings';
 import { dateToTime, timeToDate } from '@/utils/date/time';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

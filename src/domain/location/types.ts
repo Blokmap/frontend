@@ -1,5 +1,5 @@
 import type { Image } from '@/domain/image';
-import type { OpeningTime } from '@/domain/openingTime';
+import type { OpeningTime } from '@/domain/openings';
 import type { Profile } from '@/domain/profile';
 import type { CreateTranslationRequest, Translation } from '@/domain/translation';
 
@@ -16,7 +16,6 @@ export type Location = {
     excerpt: Translation;
     description: Translation;
     seatCount: number;
-    reservationBlockSize: number;
     minReservationLength: number | null;
     maxReservationLength: number | null;
     isReservable: boolean;

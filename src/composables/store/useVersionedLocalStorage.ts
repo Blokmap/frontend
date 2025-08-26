@@ -8,11 +8,9 @@ interface VersionedStorageData<T> {
 interface UseVersionedLocalStorageOptions<T> {
     version?: string;
     defaults: T;
-    dateFields?: (keyof T)[];
-    arrayItemDateFields?: string[];
 }
 
-function generateVersion(defaults: any): string {
+function generateVersion(defaults: unknown): string {
     const str = JSON.stringify(defaults);
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -23,97 +21,79 @@ function generateVersion(defaults: any): string {
     return Math.abs(hash).toString(36);
 }
 
-function syncStorageData<T extends Record<string, unknown>>(value: T, defaults: T): T {
-    for (const key in value) {
-        if (!(key in defaults)) {
-            delete value[key];
-        }
-    }
-    return { ...defaults, ...value };
-}
-
-function processDateFields<T>(
-    data: T,
-    dateFields: (keyof T)[] = [],
-    arrayItemDateFields: string[] = [],
-    serialize = false,
-): T {
-    const converted = { ...data };
-
-    dateFields.forEach((field) => {
-        const value = converted[field];
-        if (!value) return;
-
-        if (serialize && value instanceof Date) {
-            converted[field] = value.toISOString() as any;
-        } else if (!serialize && typeof value === 'string') {
-            try {
-                converted[field] = new Date(value) as any;
-            } catch {}
-        }
-    });
-
-    if (arrayItemDateFields.length && Array.isArray(converted)) {
-        (converted as any[]).forEach((item) => {
-            if (item && typeof item === 'object') {
-                arrayItemDateFields.forEach((field) => {
-                    const value = item[field];
-                    if (!value) return;
-
-                    if (serialize && value instanceof Date) {
-                        item[field] = value.toISOString();
-                    } else if (!serialize && typeof value === 'string') {
-                        try {
-                            item[field] = new Date(value);
-                        } catch {}
-                    }
-                });
+function convertDatesInValue(value: any, templateValue: any, deserialize: boolean): any {
+    if (deserialize) {
+        // Try to parse any string as a date
+        if (typeof value === 'string') {
+            const date = new Date(value);
+            if (!isNaN(date.getTime())) {
+                return date;
             }
-        });
+        }
+    } else {
+        // When serializing, convert Date objects to ISO strings
+        if (value instanceof Date) {
+            return value.toISOString();
+        }
     }
 
-    return converted;
+    // Handle arrays
+    if (Array.isArray(value)) {
+        return value.map((item) => convertDatesInValue(item, null, deserialize));
+    }
+
+    // Handle objects
+    if (value && typeof value === 'object' && value.constructor === Object) {
+        const result: any = {};
+        for (const key in value) {
+            if (value.hasOwnProperty(key)) {
+                result[key] = convertDatesInValue(value[key], null, deserialize);
+            }
+        }
+        return result;
+    }
+
+    return value;
 }
 
-export function useVersionedLocalStorage<T extends Record<string, any>>(
+export function useVersionedLocalStorage<T>(
     key: string,
     options: UseVersionedLocalStorageOptions<T>,
 ) {
-    const { defaults, dateFields = [], arrayItemDateFields = [] } = options;
+    const { defaults } = options;
     const version = options.version || generateVersion(defaults);
 
     const serializer = {
         read: (value: string): T => {
+            if (!value) {
+                return JSON.parse(JSON.stringify(defaults)) as T;
+            }
+
             try {
-                if (!value) return { ...defaults };
-
                 const parsed: VersionedStorageData<T> = JSON.parse(value);
+
                 if (parsed.version !== version) {
-                    return { ...defaults };
+                    return JSON.parse(JSON.stringify(defaults)) as T;
                 }
 
-                let data = parsed.data;
-                if (dateFields.length || arrayItemDateFields.length) {
-                    data = processDateFields(data, dateFields, arrayItemDateFields, false);
-                }
-
-                return syncStorageData(data, defaults);
+                return convertDatesInValue(parsed.data, null, true) as T;
             } catch {
-                return { ...defaults };
+                return JSON.parse(JSON.stringify(defaults)) as T;
             }
         },
+
         write: (value: T): string => {
             try {
-                let data = value;
-                if (dateFields.length || arrayItemDateFields.length) {
-                    data = processDateFields(data, dateFields, arrayItemDateFields, true);
-                }
-                return JSON.stringify({ version, data });
+                const serialized = convertDatesInValue(value, null, false);
+                return JSON.stringify({ version, data: serialized });
             } catch {
                 return JSON.stringify({ version, data: defaults });
             }
         },
     };
 
-    return useLocalStorage(key, { ...defaults }, { serializer, writeDefaults: true });
+    return useLocalStorage(key, JSON.parse(JSON.stringify(defaults)) as T, {
+        serializer,
+        writeDefaults: true,
+    });
 }

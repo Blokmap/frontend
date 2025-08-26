@@ -15,25 +15,36 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: '',
                         name: 'profile',
-                        component: () => import('@/pages/public/profile/ProfilePage.vue'),
+                        component: () => import('@/pages/profile/ProfilePage.vue'),
                     },
                     {
                         path: 'reservations/:inWeekOf?',
                         name: 'profile.reservations',
-                        component: () => import('@/pages/public/profile/ReservationsPage.vue'),
+                        component: () => import('@/pages/profile/ReservationsPage.vue'),
                     },
                 ],
             },
             {
                 path: 'locations',
-                name: 'locations',
-                meta: { keepAlive: true },
-                component: () => import('@/pages/public/locations/LocationsPage.vue'),
+                children: [
+                    {
+                        path: '',
+                        name: 'locations',
+                        meta: { keepAlive: true },
+                        component: () => import('@/pages/locations/LocationsPage.vue'),
+                    },
+                    {
+                        path: ':locationId',
+                        name: 'locations.detail',
+                        props: true,
+                        component: () => import('@/pages/locations/LocationDetailPage.vue'),
+                    },
+                ],
             },
             {
                 path: 'locations/submit',
                 name: 'locations.submit',
-                component: () => import('@/pages/public/locations/LocationSubmitPage.vue'),
+                component: () => import('@/pages/locations/LocationSubmitPage.vue'),
             },
         ],
     },
@@ -70,21 +81,11 @@ const routes: RouteRecordRaw[] = [
             },
         ],
     },
-    {
-        path: '/dashboard',
-        component: DashboardLayout,
-        children: [
-            {
-                path: '',
-                name: 'dashboard',
-                component: () => import('@/pages/dashboard/DashboardPage.vue'),
-            },
-        ],
-    },
 ];
 
 const router = createRouter({
     history: createWebHistory(),
+    scrollBehavior: () => ({ left: 0, top: 0, behavior: 'smooth' }),
     routes,
 });
 

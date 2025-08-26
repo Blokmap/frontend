@@ -1,3 +1,4 @@
+import type { LocationIncludes } from '@/composables/data/useLocations';
 import type { ImageRequest } from '@/domain/image';
 import type { Location, LocationRequest, NearestLocation } from '@/domain/location';
 import type { OpeningTime, OpeningTimeRequest } from '@/domain/openings';
@@ -7,6 +8,7 @@ import type { LngLat } from '@/types/Map';
 import type { Paginated } from '@/types/Pagination';
 import { client } from '@/utils/axios';
 import { stringToTime, timeToString } from '@/utils/date/time';
+import { formatIncludes } from '@/utils/service';
 import { formatDate } from '@vueuse/core';
 
 /**
@@ -110,8 +112,13 @@ export async function searchLocations(
  * @param {string} id - The ID of the location to fetch.
  * @returns {Promise<Location>} A promise that resolves to the location data.
  */
-export async function getLocationById(id: string): Promise<Location> {
-    const response = await client.get(endpoints.locations.read.replace('{id}', id));
+export async function getLocationById(id: number, includes: LocationIncludes[]): Promise<Location> {
+    const params = formatIncludes(includes);
+
+    const response = await client.get(endpoints.locations.read.replace('{id}', id.toString()), {
+        params,
+    });
+
     return parseLocation(response.data);
 }
 

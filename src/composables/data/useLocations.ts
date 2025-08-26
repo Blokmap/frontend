@@ -10,6 +10,7 @@ import {
     getNearestLocation,
     searchLocations,
 } from '@/services/location';
+import type { ReservationIncludes } from '@/services/reservation';
 import type {
     CompMutation,
     CompMutationOptions,
@@ -23,6 +24,8 @@ import { client, getRandomDelay } from '@/utils/axios';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+export type LocationIncludes = 'images';
 
 /**
  * Composable to search for locations based on filters.
@@ -57,10 +60,15 @@ export function useLocationsSearch(
  * @param id - The ID of the location to fetch.
  * @returns An object containing the location and its state.
  */
-export function useLocation(id: MaybeRef<string>): CompQuery<Location> {
+export function useLocation(
+    id: MaybeRef<number>,
+    options: CompQueryOptions = {},
+    includes: LocationIncludes[] = ['images'],
+): CompQuery<Location> {
     const query = useQuery({
+        ...options,
         queryKey: ['location', id],
-        queryFn: () => getLocationById(toValue(id)),
+        queryFn: () => getLocationById(toValue(id), includes),
     });
 
     return query;
@@ -75,23 +83,6 @@ export function useNearestLocation(
     });
 
     return mutation;
-}
-
-/**
- * Composable to fetch tags for locations.
- *
- * @returns An object containing the tags and their state.
- */
-export function useTags(): CompQuery<string[]> {
-    const query = useQuery({
-        queryKey: ['tags'],
-        queryFn: async () => {
-            const response = await client.get(endpoints.tags.list);
-            return response.data;
-        },
-    });
-
-    return query;
 }
 
 /**

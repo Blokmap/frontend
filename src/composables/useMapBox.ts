@@ -265,7 +265,7 @@ export function useMapBox<T>(
      * @param lngLat - The longitude and latitude to fly to.
      * @returns A promise that resolves when the animation completes.
      */
-    function flyTo(lngLat: LngLat): Promise<void> {
+    function flyTo(lngLat: LngLat, zoom: number = 16): Promise<void> {
         return new Promise((resolve, reject) => {
             if (!map.value) {
                 const error = new Error('Map is not initialized, cannot fly to location');
@@ -277,7 +277,7 @@ export function useMapBox<T>(
 
             map.value.flyTo({
                 center: lngLat,
-                zoom: 12,
+                zoom,
                 duration: 1000,
                 essential: true,
             });

@@ -23,7 +23,7 @@ export interface MapAdapter<T = number> {
     addMarker(marker: Marker<T>): void;
     removeMarker(id: T): void;
     flyToBounds(bounds: LngLatBounds): Promise<void>;
-    flyTo(lngLat: LngLat): Promise<void>;
+    flyTo(lngLat: LngLat, zoom?: number): Promise<void>;
     center: Ref<LngLat>;
     zoom: Ref<number>;
     bounds: DeepReadonly<Ref<LngLatBounds>>;

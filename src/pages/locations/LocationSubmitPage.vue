@@ -17,7 +17,6 @@ import type { OpeningTimeRequest } from '@/domain/openings';
 import { deleteLocation, deleteLocationImages, deleteLocationOpenings } from '@/services/location';
 import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { AxiosError, isAxiosError } from 'axios';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import { computed, ref, watch } from 'vue';
@@ -41,7 +40,6 @@ const locationForm = useVersionedLocalStorage<LocationRequest>('location-form', 
 
 const openingsForm = useVersionedLocalStorage<OpeningTimeRequest[]>('openings-form', {
     defaults: [],
-    arrayItemDateFields: ['day', 'reservableFrom', 'reservableUntil'],
 });
 
 const imagesForm = ref<ImageRequest[]>([]);
@@ -153,7 +151,7 @@ async function submitLocation(): Promise<void> {
 
 <template>
     <div class="mx-auto flex w-full max-w-[2048px] gap-6">
-        <div class="sticky top-6 h-fit w-full space-y-6 rounded-md md:w-2/7">
+        <div class="sticky top-6 h-fit w-full space-y-6 rounded-md md:w-1/3">
             <div class="space-y-4">
                 <h1 class="text-2xl font-bold">
                     {{ steps[stepIndex].label }}
@@ -206,7 +204,7 @@ async function submitLocation(): Promise<void> {
                 </Button>
             </div>
         </div>
-        <div class="w-full md:w-5/7">
+        <div class="w-full md:w-2/3">
             <LocationInformationStep
                 v-model="locationForm"
                 v-model:substeps="substeps"

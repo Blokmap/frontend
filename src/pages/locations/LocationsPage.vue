@@ -153,13 +153,17 @@ const handlePageChange = (event: { page: number }): void => {
                     <LocationCardSkeleton v-for="n in previousLocationCount" :key="n" />
                 </template>
                 <template v-else-if="locations?.data?.length">
-                    <div v-for="(location, i) in locations.data" :key="i" :ref="locationRefs.set">
+                    <RouterLink
+                        v-for="location in locations.data"
+                        :key="location.id"
+                        :ref="locationRefs.set"
+                        :to="{ name: 'locations.detail', params: { locationId: location.id } }">
                         <LocationCard
                             :location="location"
                             @mouseenter="hoveredLocation = location"
                             @mouseleave="hoveredLocation = null">
                         </LocationCard>
-                    </div>
+                    </RouterLink>
                 </template>
             </div>
             <template v-if="locations?.data?.length">

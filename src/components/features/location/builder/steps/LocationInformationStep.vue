@@ -299,6 +299,7 @@ async function handleConfirmAddress(): Promise<void> {
 @reference '@/assets/styles/main.css';
 
 .address-confirmation {
-    @apply flex items-center justify-between rounded-lg border-2 border-slate-200 bg-gray-50 p-4;
+    @apply flex items-center justify-between rounded-lg p-4;
+    @apply border-2 border-slate-200 bg-white;
 }
 </style>

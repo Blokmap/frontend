@@ -1,3 +1,5 @@
+import type { ProfileStats } from '@/domain/profile';
+import type { Reservation } from '@/domain/reservation';
 import {
     deleteProfileAvatar,
     getProfileReservations,
@@ -5,16 +7,15 @@ import {
     updateProfileAvatar,
 } from '@/services/profile';
 import type { CompMutation, CompMutationOptions, CompQuery } from '@/types/Composable';
-import type { ProfileStats } from '@/domain/profile';
-import type { Reservation } from '@/domain/reservation';
 import { useMutation, useQuery } from '@tanstack/vue-query';
+import type { AxiosError } from 'axios';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
 
 export function useProfileStats(
     profileId: MaybeRefOrGetter<number | null>,
 ): CompQuery<ProfileStats> {
     const enabled = computed(() => toValue(profileId) !== null);
-    const query = useQuery<ProfileStats>({
+    const query = useQuery<ProfileStats, AxiosError>({
         queryKey: ['profile', 'stats', profileId],
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
@@ -32,7 +33,7 @@ export function useProfileReservations(
 ): CompQuery<Reservation[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 
-    const query = useQuery({
+    const query = useQuery<Reservation[], AxiosError>({
         queryKey: ['profile', 'reservations', profileId, inWeekOf],
         enabled,
         queryFn: () => {

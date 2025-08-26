@@ -5,6 +5,7 @@ import type { LngLat } from '@/types/Map';
 import { mapBoxClient } from '@/utils/axios';
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import { useDebounce } from '@vueuse/core';
+import type { AxiosError } from 'axios';
 import { type Ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -39,7 +40,7 @@ export function useGeoSearch(
     const debouncedSearch = useDebounce(search, 250);
     const isEnabled = computed(() => debouncedSearch.value.length > 0);
 
-    const query = useQuery({
+    const query = useQuery<GeoJSON.GeoJsonProperties[], AxiosError>({
         queryKey: ['geosearch', debouncedSearch],
         retry: false,
         enabled: isEnabled,

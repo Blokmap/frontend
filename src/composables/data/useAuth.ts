@@ -1,6 +1,5 @@
 import { useToast } from '@/composables/useToast';
-import type { LoginRequest, RegisterRequest } from '@/domain/profile';
-import type { Profile } from '@/domain/profile';
+import type { LoginRequest, Profile, RegisterRequest } from '@/domain/profile';
 import { getAuthProfile, login, logout, register } from '@/services/auth';
 import type {
     CompMutation,
@@ -9,6 +8,7 @@ import type {
     CompQueryOptions,
 } from '@/types/Composable';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import type { AxiosError } from 'axios';
 import { type Ref, computed } from 'vue';
 
 /**
@@ -19,7 +19,7 @@ import { type Ref, computed } from 'vue';
 export function useAuthProfile(
     options: CompQueryOptions = {},
 ): CompQuery<Profile | null> & { profileId: Ref<number | null> } {
-    const query = useQuery<Profile | null>({
+    const query = useQuery<Profile | null, AxiosError>({
         ...options,
         queryKey: ['profile'],
         throwOnError: false,

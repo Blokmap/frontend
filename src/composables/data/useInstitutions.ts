@@ -3,6 +3,7 @@ import { endpoints } from '@/endpoints';
 import type { CompQuery } from '@/types/Composable';
 import { client } from '@/utils/axios';
 import { useQuery } from '@tanstack/vue-query';
+import type { AxiosError } from 'axios';
 
 /**
  * Composable to fetch a list of institutions.
@@ -10,7 +11,7 @@ import { useQuery } from '@tanstack/vue-query';
  * @returns An object containing the institutions and their state.
  */
 export function useInstitutions(): CompQuery<Institution[]> {
-    const institutions = useQuery<unknown, Error, Institution[]>({
+    const institutions = useQuery<Institution[], AxiosError>({
         queryKey: ['institutions'],
         queryFn: async () => {
             const response = await client.get<Institution[]>(endpoints.institutions.list);

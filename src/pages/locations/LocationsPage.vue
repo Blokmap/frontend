@@ -85,7 +85,7 @@ const handlePageChange = (event: { page: number }): void => {
 
 <template>
     <div class="flex w-full flex-col-reverse items-stretch gap-6 md:flex-row">
-        <div class="flex w-full flex-col md:w-4/7">
+        <div class="flex w-full flex-col md:w-11/20">
             <div class="mb-8">
                 <template v-if="isLoading">
                     <div class="mt-2">
@@ -148,7 +148,7 @@ const handlePageChange = (event: { page: number }): void => {
                 </template>
             </div>
 
-            <div class="grid flex-grow grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3">
+            <div class="grid flex-grow grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3">
                 <template v-if="isLoading">
                     <LocationCardSkeleton v-for="n in previousLocationCount" :key="n" />
                 </template>
@@ -177,7 +177,7 @@ const handlePageChange = (event: { page: number }): void => {
                 </div>
             </template>
         </div>
-        <div class="flex md:w-3/7">
+        <div class="flex md:w-9/20">
             <div class="sticky top-4 w-full" :style="{ height: 'calc(100vh - 2rem)' }">
                 <BlokMap
                     ref="map"

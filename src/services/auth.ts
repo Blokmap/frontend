@@ -1,3 +1,4 @@
+import { parseProfile } from './profile';
 import type { LoginRequest, RegisterRequest } from '@/domain/profile';
 import type { Profile } from '@/domain/profile';
 import { endpoints } from '@/endpoints';
@@ -9,12 +10,8 @@ import { client } from '@/utils/axios';
  * @returns The authenticated user's profile or null if not authenticated.
  */
 export async function getAuthProfile(): Promise<Profile | null> {
-    try {
-        const { data } = await client.get(endpoints.auth.current);
-        return data;
-    } catch {
-        return null;
-    }
+    const response = await client.get(endpoints.auth.current);
+    return parseProfile(response.data);
 }
 
 /**

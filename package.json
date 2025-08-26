@@ -6,6 +6,7 @@
     "scripts": {
         "build": "tsc -b && vite build",
         "lint": "tsc -b --noEmit",
+        "dev": "vite",
         "format": "prettier --write src test",
         "test:unit": "vitest run",
         "test:e2e": "cypress run"

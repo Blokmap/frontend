@@ -37,7 +37,7 @@ const routes: RouteRecordRaw[] = [
                         path: ':locationId',
                         name: 'locations.detail',
                         props: true,
-                        component: () => import('@/pages/locations/LocationDetailPage.vue'),
+                        component: () => import('@/pages/locations/LocationPage.vue'),
                     },
                 ],
             },

@@ -1,17 +1,23 @@
 <script lang="ts" setup>
 import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import type { Image } from '@/domain/image';
-import { computed } from 'vue';
+import { LOCATION_SETTINGS } from '@/domain/location';
+import { faChevronLeft, faChevronRight, faShare } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import Button from 'primevue/button';
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 const props = defineProps<{
     images?: Image[];
 }>();
 
-const paddedImages = computed(() => {
-    const images = [...(props.images ?? [])]; // Create a copy to avoid mutating props
+const isFullscreen = ref(false);
+const selectedImageIndex = ref(0);
 
-    // Add placeholders to fill up to 5 images
-    while (images.length < 5) {
+const paddedImages = computed(() => {
+    const images = [...(props.images ?? [])];
+
+    while (images.length < LOCATION_SETTINGS.MIN_IMAGES) {
         images.push({ url: placeholder });
     }
 
@@ -23,19 +29,147 @@ const primaryImage = computed(() => {
 });
 
 const secondaryImages = computed(() => {
-    return paddedImages.value.filter((img) => img !== primaryImage.value).slice(0, 4);
+    return paddedImages.value
+        .filter((img) => img !== primaryImage.value)
+        .slice(0, 4)
+        .sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
+});
+
+const actualImages = computed(() => {
+    return (props.images ?? []).filter((img) => img.url !== placeholder);
+});
+
+async function openFullScreen(index?: number): Promise<void> {
+    isFullscreen.value = true;
+
+    if (!index) return;
+
+    selectedImageIndex.value = index;
+
+    nextTick(() => {
+        const element = document.getElementById(`gallery-image-${selectedImageIndex.value}`);
+
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+}
+
+function closeFullscreen(): void {
+    isFullscreen.value = false;
+}
+
+function handleKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && isFullscreen.value) {
+        closeFullscreen();
+    }
+}
+
+onMounted(() => {
+    document.addEventListener('keydown', handleKeydown);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('keydown', handleKeydown);
 });
 </script>
 
 <template>
-    <div class="grid h-64 w-full grid-cols-4 grid-rows-2 gap-2 overflow-hidden rounded-xl">
+    <div class="grid h-full w-full grid-cols-4 grid-rows-2 gap-2 overflow-hidden rounded-xl">
         <!-- First image spans 2x2 -->
-        <div class="col-span-2 row-span-2">
-            <img :src="primaryImage.url" alt="Main image" class="h-full w-full object-cover" />
+        <div class="gallery-image-container col-span-2 row-span-2">
+            <img
+                :src="primaryImage.url"
+                alt="Main image"
+                class="gallery-image"
+                @click="openFullScreen(0)" />
         </div>
         <!-- Other images span 1x1 each -->
-        <div v-for="(img, idx) in secondaryImages" :key="idx" class="h-full w-full">
-            <img :src="img.url" alt="Gallery image" class="h-full w-full object-cover" />
-        </div>
+        <template v-for="(img, idx) in secondaryImages" :key="idx">
+            <div class="gallery-image-container h-full w-full" @click="openFullScreen(idx + 1)">
+                <img :src="img.url" alt="Gallery image" class="gallery-image rounded-md" />
+            </div>
+        </template>
     </div>
+    <Transition name="scale">
+        <div class="gallery-fullscreen" v-if="isFullscreen">
+            <!-- Header with close and share buttons -->
+            <div class="flex items-center justify-between p-4">
+                <Button severity="contrast" @click="closeFullscreen" rounded text>
+                    <template #icon>
+                        <FontAwesomeIcon :icon="faChevronLeft" />
+                    </template>
+                </Button>
+                <Button severity="contrast" text class="underline"> Delen </Button>
+            </div>
+
+            <!-- Scrollable image grid -->
+            <div class="gallery-grid-container">
+                <div class="gallery-grid">
+                    <div
+                        v-for="(image, index) in actualImages"
+                        :key="index"
+                        :id="`gallery-image-${index}`"
+                        class="gallery-grid-item">
+                        <img
+                            :src="image.url"
+                            :alt="`Gallery image ${index + 1}`"
+                            class="gallery-grid-image" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Transition>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.gallery-image-container {
+    @apply relative cursor-pointer overflow-hidden;
+
+    &:hover .gallery-image {
+        @apply scale-110 brightness-75;
+    }
+
+    .gallery-image {
+        @apply h-full w-full object-cover transition-all duration-300;
+    }
+}
+
+.gallery-fullscreen {
+    @apply fixed top-0 left-0 z-50 flex h-full w-full flex-col bg-white;
+}
+
+.gallery-grid-container {
+    @apply flex-1 overflow-y-auto p-4;
+}
+
+.gallery-grid {
+    @apply grid auto-rows-max justify-items-center gap-6;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+}
+
+.gallery-grid-item {
+    @apply w-full max-w-2xl overflow-hidden rounded-lg bg-gray-100;
+}
+
+.gallery-grid-image {
+    @apply h-auto w-full object-cover transition-transform duration-200 hover:scale-105;
+}
+
+.scale-enter-active,
+.scale-leave-active {
+    transition: all 0.3s ease;
+}
+
+.scale-enter-from {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.scale-leave-to {
+    opacity: 0;
+    transform: scale(0.95);
+}
+</style>

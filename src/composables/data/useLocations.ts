@@ -25,7 +25,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-export type LocationIncludes = 'images';
+export type LocationIncludes = 'images' | 'created_by';
 
 /**
  * Composable to search for locations based on filters.
@@ -62,13 +62,12 @@ export function useLocationsSearch(
  */
 export function useLocation(
     id: MaybeRef<number>,
-    options: CompQueryOptions = {},
-    includes: LocationIncludes[] = ['images'],
+    options: CompQueryOptions<LocationIncludes> = {},
 ): CompQuery<Location> {
     const query = useQuery({
         ...options,
         queryKey: ['location', id],
-        queryFn: () => getLocationById(toValue(id), includes),
+        queryFn: () => getLocationById(toValue(id), options.includes ?? []),
     });
 
     return query;

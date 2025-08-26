@@ -8,6 +8,7 @@ interface VersionedStorageData<T> {
 interface UseVersionedLocalStorageOptions<T> {
     version?: string;
     defaults: T;
+    dateFields?: string[]; // Field names that should be treated as dates
 }
 
 function generateVersion(defaults: unknown): string {
@@ -21,46 +22,35 @@ function generateVersion(defaults: unknown): string {
     return Math.abs(hash).toString(36);
 }
 
-function convertDatesInValue(value: any, templateValue: any, deserialize: boolean): any {
-    if (deserialize) {
-        // Try to parse any string as a date
-        if (typeof value === 'string') {
-            const date = new Date(value);
-            if (!isNaN(date.getTime())) {
-                return date;
-            }
-        }
-    } else {
-        // When serializing, convert Date objects to ISO strings
-        if (value instanceof Date) {
-            return value.toISOString();
-        }
+function convertDates(value: any, dateFields: string[], deserialize: boolean): any {
+    if (!dateFields?.length || !value || typeof value !== 'object') {
+        return value;
     }
 
-    // Handle arrays
     if (Array.isArray(value)) {
-        return value.map((item) => convertDatesInValue(item, null, deserialize));
+        return value.map((item) => convertDates(item, dateFields, deserialize));
     }
 
-    // Handle objects
-    if (value && typeof value === 'object' && value.constructor === Object) {
-        const result: any = {};
-        for (const key in value) {
-            if (value.hasOwnProperty(key)) {
-                result[key] = convertDatesInValue(value[key], null, deserialize);
+    const result = { ...value };
+
+    for (const field of dateFields) {
+        if (field in result) {
+            if (deserialize && typeof result[field] === 'string') {
+                result[field] = new Date(result[field]);
+            } else if (!deserialize && result[field] instanceof Date) {
+                result[field] = result[field].toISOString();
             }
         }
-        return result;
     }
 
-    return value;
+    return result;
 }
 
 export function useVersionedLocalStorage<T>(
     key: string,
     options: UseVersionedLocalStorageOptions<T>,
 ) {
-    const { defaults } = options;
+    const { defaults, dateFields = [] } = options;
     const version = options.version || generateVersion(defaults);
 
     const serializer = {
@@ -76,7 +66,7 @@ export function useVersionedLocalStorage<T>(
                     return JSON.parse(JSON.stringify(defaults)) as T;
                 }
 
-                return convertDatesInValue(parsed.data, null, true) as T;
+                return convertDates(parsed.data, dateFields, true) as T;
             } catch {
                 return JSON.parse(JSON.stringify(defaults)) as T;
             }
@@ -84,7 +74,7 @@ export function useVersionedLocalStorage<T>(
 
         write: (value: T): string => {
             try {
-                const serialized = convertDatesInValue(value, null, false);
+                const serialized = convertDates(value, dateFields, false);
                 return JSON.stringify({ version, data: serialized });
             } catch {
                 return JSON.stringify({ version, data: defaults });

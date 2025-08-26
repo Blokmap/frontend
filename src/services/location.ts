@@ -6,7 +6,8 @@ import { endpoints } from '@/endpoints';
 import type { LocationFilter } from '@/types/Filter';
 import type { LngLat } from '@/types/Map';
 import type { Paginated } from '@/types/Pagination';
-import { client } from '@/utils/axios';
+import { client, getRandomDelay } from '@/utils/axios';
+import { dateToString, stringToDate } from '@/utils/date/date';
 import { stringToTime, timeToString } from '@/utils/date/time';
 import { formatIncludes } from '@/utils/service';
 import { formatDate } from '@vueuse/core';
@@ -22,15 +23,11 @@ export function parseOpeningTime(openingTimeData: any): OpeningTime {
         ...openingTimeData,
         startTime: stringToTime(openingTimeData.startTime),
         endTime: stringToTime(openingTimeData.endTime),
-        day: new Date(openingTimeData.day),
-        reservableFrom: openingTimeData.reservableFrom
-            ? new Date(openingTimeData.reservableFrom)
-            : null,
-        reservableUntil: openingTimeData.reservableUntil
-            ? new Date(openingTimeData.reservableUntil)
-            : null,
-        createdAt: new Date(openingTimeData.createdAt),
-        updatedAt: new Date(openingTimeData.updatedAt),
+        day: stringToDate(openingTimeData.day),
+        reservableFrom: stringToDate(openingTimeData.reservableFrom),
+        reservableUntil: stringToDate(openingTimeData.reservableUntil),
+        createdAt: stringToDate(openingTimeData.createdAt),
+        updatedAt: stringToDate(openingTimeData.updatedAt),
     };
 }
 
@@ -43,15 +40,18 @@ export function parseOpeningTime(openingTimeData: any): OpeningTime {
 function parseLocation(locationData: any): Location {
     const location = { ...locationData };
 
+    location.createdAt = stringToDate(location.createdAt);
+    location.updatedAt = stringToDate(location.updatedAt);
+
     // Convert opening times if they exist
     if (location.openingTimes) {
         location.openingTimes = location.openingTimes.map(parseOpeningTime);
     }
 
-    // Convert dates
-    if (location.approvedAt) location.approvedAt = new Date(location.approvedAt);
-    location.createdAt = new Date(location.createdAt);
-    location.updatedAt = new Date(location.updatedAt);
+    // Convert dates if they exist
+    if (location.approvedAt) {
+        location.approvedAt = stringToDate(location.approvedAt);
+    }
 
     return location;
 }
@@ -81,7 +81,7 @@ export async function searchLocations(
     const page = filters?.page;
     const perPage = filters?.perPage;
     const language = locale;
-    const openOnDay = filters?.openOn ? formatDate(filters.openOn, 'YYYY-MM-DD') : undefined;
+    const openOnDay = dateToString(filters?.openOn);
 
     const params = {
         northEastLng,
@@ -164,7 +164,7 @@ export async function createLocationImage(
 
     if (image.file) {
         formData.append('image', image.file);
-        formData.append('index', image.order.toString());
+        formData.append('index', image.index.toString());
     }
 
     const response = await client.post(

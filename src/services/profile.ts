@@ -1,10 +1,24 @@
-import type { ProfileStats } from '@/domain/profile';
+import type { Profile, ProfileStats } from '@/domain/profile';
 import type { Reservation } from '@/domain/reservation';
 import { endpoints } from '@/endpoints';
 import { type ReservationIncludes, parseReservation } from '@/services/reservation';
 import { client } from '@/utils/axios';
+import { stringToDate } from '@/utils/date/date';
 import { formatIncludes } from '@/utils/service';
 import { formatDate } from '@vueuse/core';
+
+/**
+ * Parse a profile object from the API by converting string dates to Date objects
+ *
+ * @param profileData - The raw profile data from the API
+ * @returns The parsed profile object
+ */
+export function parseProfile(profileData: any): Profile {
+    return {
+        ...profileData,
+        createdAt: stringToDate(profileData.createdAt),
+    };
+}
 
 /**
  * Fetches the profile statistics for a given profile ID.

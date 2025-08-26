@@ -121,7 +121,7 @@ export function useMapBox<T>(
 
                 newMap.flyTo({
                     center: [longitude, latitude],
-                    zoom: 12,
+                    zoom: 17,
                     duration: 1500,
                     essential: true,
                 });

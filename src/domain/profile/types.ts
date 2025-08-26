@@ -11,6 +11,7 @@ export type Profile = {
     email: string;
     institution?: Institution | null;
     authorities?: Authority[];
+    createdAt: Date;
 };
 
 export type ProfileStats = {

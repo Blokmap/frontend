@@ -8,6 +8,7 @@ import { LOCATION_SETTINGS } from '@/domain/location';
 import type { BuilderSubstep, LocationRequest } from '@/domain/location';
 import { formatLocationAddress } from '@/domain/location';
 import type { LngLat } from '@/types/Map';
+import { defaultMapOptions } from '@/utils/map';
 import { faCheck, faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
@@ -27,12 +28,14 @@ const { mutateAsync: geocodeAddress, isPending: isLoading } = useForwardGeoSearc
 
 const mapContainer = useTemplateRef('map-container');
 const currentLanguage = ref(locale.value);
-
-const mapZoom = ref<number>(18);
+const mapZoom = ref<number>(14);
 
 const mapCenter = computed<LngLat>({
     get() {
-        return [form.value.longitude, form.value.latitude];
+        if (form.value.longitude && form.value.latitude) {
+            return [form.value.longitude, form.value.latitude];
+        }
+        return defaultMapOptions.center;
     },
     set([lng, lat]: LngLat) {
         form.value.longitude = lng;
@@ -58,7 +61,6 @@ watchEffect(() => {
         ex.nl &&
         desc.nl &&
         data.street &&
-        data.number &&
         data.zip &&
         data.city &&
         hasCoordinates.value
@@ -77,12 +79,7 @@ watchEffect(() => {
         },
         {
             label: 'Locatie op kaart',
-            isCompleted:
-                !!data.street &&
-                !!data.number &&
-                !!data.zip &&
-                !!data.city &&
-                !!hasCoordinates.value,
+            isCompleted: !!data.street && !!data.zip && !!data.city && !!hasCoordinates.value,
         },
     ];
 });
@@ -138,11 +135,8 @@ async function handleConfirmAddress(): Promise<void> {
                     <label for="name" class="mb-2 block text-sm font-medium text-gray-700">
                         Locatie naam *
                     </label>
-                    <InputText
-                        id="name"
-                        v-model="form.name"
-                        class="w-full"
-                        placeholder="Bijv. Brugs Beertje, Café Central..." />
+                    <InputText id="name" v-model="form.name" class="w-full" placeholder="De Krook">
+                    </InputText>
                     <small class="mt-1 block text-gray-500">
                         Kies een herkenbare naam voor de locatie
                     </small>
@@ -153,22 +147,26 @@ async function handleConfirmAddress(): Promise<void> {
                     <label
                         :for="`excerpt-${currentLanguage}`"
                         class="mb-2 block text-sm font-medium text-gray-700">
-                        Korte beschrijving ({{ currentLanguage }})
+                        Korte omschrijving ({{ currentLanguage }})
                     </label>
-                    <Textarea
-                        rows="3"
+                    <InputText
                         class="w-full"
-                        placeholder="Bijv. Gezellig café met lokale bieren"
+                        placeholder="Stadsbibliotheek met zicht op het water"
                         :id="`excerpt-${currentLanguage}`"
                         :maxlength="LOCATION_SETTINGS.MAX_EXCERPT_LENGTH"
                         v-model="form.excerpt![currentLanguage]">
-                    </Textarea>
-                    <small class="mt-1 block text-gray-500">
-                        {{ (form.excerpt?.[currentLanguage] || '').length }}/{{
-                            LOCATION_SETTINGS.MAX_EXCERPT_LENGTH
-                        }}
-                        karakters
-                    </small>
+                    </InputText>
+                    <div class="mt-1 flex justify-between">
+                        <small class="text-gray-500">
+                            Omschrijf de locatie in maximaal 6 beschrijvende woorden
+                        </small>
+                        <small class="text-gray-500">
+                            {{ (form.excerpt?.[currentLanguage] || '').length }}/{{
+                                LOCATION_SETTINGS.MAX_EXCERPT_LENGTH
+                            }}
+                            karakters
+                        </small>
+                    </div>
                 </div>
 
                 <!-- Detailed Description -->
@@ -188,7 +186,7 @@ async function handleConfirmAddress(): Promise<void> {
                             class="w-full"
                             :maxlength="LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH"
                             rows="5"
-                            placeholder="Bijv. Gezellige café met lokale bieren">
+                            placeholder="De Krook is de stadsbibliotheek van Gent, de ideale plek om rustig te studeren tussen andere studenten, met zicht op de Leie.">
                         </Textarea>
                         <small class="mt-1 block text-gray-500">
                             {{ (form.description?.[currentLanguage] || '').length }}/{{
@@ -204,92 +202,83 @@ async function handleConfirmAddress(): Promise<void> {
         <LocationBuilderCard :icon="faHome">
             <template #header>
                 <h3 class="text-xl font-semibold text-gray-900">Adres informatie</h3>
-                <p class="text-sm text-gray-600">Voer het adres van uw locatie in</p>
+                <p class="text-sm text-gray-600">Voer het adres van uw locatie in op de kaart</p>
             </template>
             <template #default>
-                <!-- Manual Address Entry -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="street" class="mb-2 block text-sm font-medium text-gray-700">
-                            Straatnaam *
-                        </label>
-                        <InputText
-                            id="street"
-                            v-model="form.street"
-                            class="w-full"
-                            placeholder="Bijv. Nieuwstraat">
-                        </InputText>
-                    </div>
+                <!-- Map with overlay address input -->
+                <div class="relative">
+                    <AddressMap
+                        class="aspect-video h-full w-full rounded-lg"
+                        ref="map-container"
+                        v-model:center="mapCenter"
+                        v-model:zoom="mapZoom">
+                    </AddressMap>
 
-                    <div>
-                        <label for="number" class="mb-2 block text-sm font-medium text-gray-700">
-                            Huisnummer *
-                        </label>
-                        <InputText
-                            id="number"
-                            v-model="form.number"
-                            class="w-full"
-                            placeholder="Bijv. 46">
-                        </InputText>
-                    </div>
+                    <!-- Address Input Overlay -->
+                    <div class="absolute top-3 left-3 z-10 w-64">
+                        <div class="rounded-lg bg-white p-3 shadow-xs">
+                            <h4 class="mb-3 text-sm font-medium text-gray-900">Adres</h4>
 
-                    <div>
-                        <label for="zip" class="mb-2 block text-sm font-medium text-gray-700">
-                            Postcode *
-                        </label>
-                        <InputText
-                            id="zip"
-                            v-model="form.zip"
-                            class="w-full"
-                            placeholder="Bijv. 8610">
-                        </InputText>
-                    </div>
+                            <!-- Compact address input -->
+                            <div class="mb-3 space-y-2">
+                                <div class="flex overflow-hidden rounded-md bg-gray-50">
+                                    <InputText
+                                        v-model="form.street"
+                                        placeholder="Straat"
+                                        class="address-input"
+                                        @keyup.enter="handleConfirmAddress">
+                                    </InputText>
+                                    <InputText
+                                        v-model="form.number"
+                                        placeholder="Nr"
+                                        class="address-input"
+                                        @keyup.enter="handleConfirmAddress">
+                                    </InputText>
+                                </div>
 
-                    <div>
-                        <label for="city" class="mb-2 block text-sm font-medium text-gray-700">
-                            Stad *
-                        </label>
-                        <InputText
-                            id="city"
-                            v-model="form.city"
-                            class="w-full"
-                            placeholder="Bijv. Kortemark">
-                        </InputText>
-                    </div>
-                </div>
+                                <div class="flex overflow-hidden rounded-md bg-gray-50">
+                                    <InputText
+                                        v-model="form.zip"
+                                        placeholder="Postcode"
+                                        class="address-input"
+                                        @keyup.enter="handleConfirmAddress">
+                                    </InputText>
+                                    <InputText
+                                        v-model="form.city"
+                                        placeholder="Stad"
+                                        class="address-input"
+                                        @keyup.enter="handleConfirmAddress">
+                                    </InputText>
+                                </div>
+                            </div>
 
-                <!-- Address Confirmation Button -->
-                <div class="address-confirmation">
-                    <div>
-                        <h4 class="font-medium text-gray-900">Bevestig locatie op kaart</h4>
-                        <p class="text-sm text-gray-600">
-                            Controleer en bevestig de exacte locatie op de kaart
-                        </p>
-                        <div v-if="hasCoordinates" class="text-primary-600 mt-1 text-xs">
-                            <FontAwesomeIcon :icon="faCheck" />
-                            Bevestigd:
-                            {{ form.latitude?.toFixed(6) }},
-                            {{ form.longitude?.toFixed(6) }}
+                            <!-- Coordinates display -->
+                            <div v-if="hasCoordinates" class="mb-3">
+                                <div class="flex items-center">
+                                    <FontAwesomeIcon
+                                        :icon="faCheck"
+                                        class="mr-2 text-xs text-green-600">
+                                    </FontAwesomeIcon>
+                                    <span class="font-mono text-xs text-gray-600">
+                                        {{ form.latitude?.toFixed(4) }}°,
+                                        {{ form.longitude?.toFixed(4) }}°
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Action button -->
+                            <Button
+                                @click="handleConfirmAddress"
+                                :disabled="!canConfirmAddress"
+                                :loading="isLoading"
+                                class="w-full"
+                                size="small">
+                                <FontAwesomeIcon :icon="faMapMarkerAlt" class="mr-1" />
+                                <span>Zoek locatie</span>
+                            </Button>
                         </div>
                     </div>
-                    <Button
-                        @click="handleConfirmAddress"
-                        :disabled="!canConfirmAddress"
-                        :loading="isLoading"
-                        :outlined="!hasCoordinates">
-                        <FontAwesomeIcon :icon="faMapMarkerAlt" class="mr-2" />
-                        <span v-if="!hasCoordinates">Bevestig op kaart</span>
-                        <span v-else>Coordinaten Resetten</span>
-                    </Button>
                 </div>
-
-                <AddressMap
-                    class="aspect-video h-full w-full"
-                    ref="map-container"
-                    v-model:center="mapCenter"
-                    v-model:zoom="mapZoom"
-                    v-if="hasCoordinates">
-                </AddressMap>
             </template>
         </LocationBuilderCard>
     </div>
@@ -298,8 +287,15 @@ async function handleConfirmAddress(): Promise<void> {
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.address-confirmation {
-    @apply flex items-center justify-between rounded-lg p-4;
-    @apply border-2 border-slate-200 bg-white;
+.address-input {
+    @apply w-full border-0 bg-transparent px-3 py-2 text-sm shadow-none;
+
+    &:first-child {
+        @apply rounded-r-none border-r border-gray-200;
+    }
+
+    &:last-child {
+        @apply rounded-l-none;
+    }
 }
 </style>

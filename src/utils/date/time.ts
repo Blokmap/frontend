@@ -11,23 +11,13 @@ export type TimeRange = {
 export type TimeGranularity = 'hours' | 'minutes';
 
 /**
- * Rounds a number to the nearest interval.
- *
- * @param value - The value to round.
- * @param interval - The interval to round to.
- * @returns The rounded value.
- */
-export function roundToInterval(value: number, interval: number): number {
-    return Math.round(value / interval) * interval;
-}
-
-/**
  * Converts a Time object to a string in HH:MM format.
  *
  * @param time - The Time object to convert.
  * @returns A string in HH:MM format.
  */
-export function timeToString(time: Time): string {
+export function timeToString(time?: Time | null): string | undefined | null {
+    if (!time) return time;
     return `${time.hours.toString().padStart(2, '0')}:${time.minutes.toString().padStart(2, '0')}`;
 }
 
@@ -37,9 +27,22 @@ export function timeToString(time: Time): string {
  * @param timeString - The time string in HH:MM format.
  * @returns A Time object.
  */
-export function stringToTime(timeString: string): Time {
+export function stringToTime(timeString?: string): Time | null | undefined {
+    if (timeString === undefined) return undefined;
+    if (timeString === null) return null;
     const [hours, minutes] = timeString.split(':').map(Number);
     return { hours, minutes };
+}
+
+/**
+ * Rounds a number to the nearest interval.
+ *
+ * @param value - The value to round.
+ * @param interval - The interval to round to.
+ * @returns The rounded value.
+ */
+export function roundToInterval(value: number, interval: number): number {
+    return Math.round(value / interval) * interval;
 }
 
 /**

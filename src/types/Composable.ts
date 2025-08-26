@@ -6,8 +6,10 @@ import type {
 } from '@tanstack/vue-query';
 import type { AxiosError } from 'axios';
 
-export type CompQueryOptions = Partial<UseQueryOptions<any, any, any, any, any>>;
 export type CompMutationOptions = Partial<MutationOptions<any, any, any, any>>;
+export type CompQueryOptions<I = string> = Partial<UseQueryOptions<any, any, any, any, any>> & {
+    includes?: I[];
+};
 
 export type CompQuery<T = unknown> = UseQueryReturnType<T, AxiosError>;
 export type CompMutation<T = any, V = any> = UseMutationReturnType<

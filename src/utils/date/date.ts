@@ -1,6 +1,23 @@
 export type DateGranularity = 'day' | 'week' | 'month';
 
 /**
+ * Converts a string representation of a date to a Date object.
+ *
+ * @param dateString - The date to convert.
+ * @returns The Date object representation of the date.
+ */
+export function stringToDate(dateString?: string | null): Date | undefined | null {
+    if (dateString === null) return null;
+    if (dateString === undefined) return undefined;
+    return new Date(dateString);
+}
+
+export function dateToString(date?: Date | null): string | undefined | null {
+    if (!date) return date;
+    return date.toISOString();
+}
+
+/**
  * Calculates the start of the week for a given date.
  * Week starts on Monday and ends on Sunday.
  *

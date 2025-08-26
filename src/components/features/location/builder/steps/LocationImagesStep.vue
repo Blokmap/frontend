@@ -26,12 +26,14 @@ const draggedImage = ref<ImageRequest | null>(null);
 const isDragging = ref(false);
 
 const canAddMore = computed(() => images.value.length < LOCATION_SETTINGS.MAX_IMAGES);
-const primaryImage = computed(() => images.value.find((img) => img.isPrimary));
-const secondaryImages = computed(() =>
-    images.value.filter((img) => !img.isPrimary).sort((a, b) => a.order - b.order),
+
+const primaryImage = computed(() => images.value.find((img) => img.index === 0));
+
+const sortedImages = computed(() =>
+    [...images.value].sort((a, b) => (a.index ?? 0) - (b.index ?? 0)),
 );
-const sortedImages = computed(() => [...images.value].sort((a, b) => a.order - b.order));
-const primaryImageIndex = computed(() => sortedImages.value.findIndex((img) => img.isPrimary));
+
+const secondaryImages = computed(() => sortedImages.value.filter((img) => img.index !== 0));
 
 onMounted(() => {
     if (images.value.length === 0) {
@@ -40,97 +42,68 @@ onMounted(() => {
 });
 
 watchEffect(() => {
-    const data = images.value;
-    const hasPrimaryImage = data.some((img) => img.isPrimary);
-    const hasImages = data.length > 0;
-
     substeps.value = [
         {
             label: 'Afbeeldingen toevoegen',
-            isCompleted: hasImages,
+            isCompleted: images.value.length > 0,
         },
         {
             label: 'Hoofdafbeelding instellen',
-            isCompleted: hasPrimaryImage,
+            isCompleted: images.value.length > 0,
         },
     ];
 });
 
-function getImageIndex(image: ImageRequest): number {
-    return sortedImages.value.findIndex((img) => img === image);
-}
-
-function getImageOrder(image: ImageRequest): number {
-    return image.order;
-}
-
 function addImageFromUrl(): void {
     if (!urlInput.value || !canAddMore.value) return;
 
-    const maxOrder =
-        images.value.length > 0 ? Math.max(...images.value.map((img) => img.order)) : -1;
+    images.value.push({
+        imageUrl: urlInput.value,
+        tempUrl: urlInput.value,
+        isPrimary: images.value.length === 0,
+        index: images.value.length,
+    });
 
-    images.value = [
-        ...images.value,
-        {
-            imageUrl: urlInput.value,
-            tempUrl: urlInput.value,
-            isPrimary: images.value.length === 0,
-            order: maxOrder + 1,
-        },
-    ];
-
+    urlInput.value = '';
     showAddDialog.value = false;
 }
 
-function removeImage(index: number): void {
-    const imageToRemove = sortedImages.value[index];
-    if (!imageToRemove) return;
+function removeImage(imageIndex: number): void {
+    images.value = images.value.filter((img) => img.index !== imageIndex);
 
-    const newImages = images.value.filter((img) => img !== imageToRemove);
-
-    if (imageToRemove.isPrimary && newImages.length > 0) {
-        // Find the image with the lowest order to make primary
-        const newPrimary = newImages.reduce((min, img) => (img.order < min.order ? img : min));
-        newPrimary.isPrimary = true;
-    }
-
-    images.value = newImages;
+    sortedImages.value.forEach((img, i) => {
+        img.index = i;
+        img.isPrimary = i === 0;
+    });
 }
 
-function setPrimary(index: number): void {
-    const targetImage = sortedImages.value[index];
-    if (!targetImage) return;
-
-    for (const img of images.value) {
-        img.isPrimary = img === targetImage;
-    }
+function setPrimary(imageIndex: number): void {
+    images.value.forEach((img) => {
+        if (img.index === imageIndex) {
+            img.index = 0;
+            img.isPrimary = true;
+        } else if ((img.index ?? 0) < imageIndex) {
+            img.index = (img.index ?? 0) + 1;
+            img.isPrimary = false;
+        }
+    });
 }
 
 function handleFileUpload(event: FileUploadSelectEvent): void {
-    const files = event.files;
-    if (!files || files.length === 0) return;
+    if (!event.files?.length) return;
 
-    const remainingSlots = LOCATION_SETTINGS.MAX_IMAGES - images.value.length;
-    const filesToAdd = files.slice(0, remainingSlots);
+    const startIndex = images.value.length;
 
-    const maxOrder =
-        images.value.length > 0 ? Math.max(...images.value.map((img) => img.order)) : -1;
-
-    const newImages = filesToAdd.map((file: File, index: number): ImageRequest => {
-        const tempUrl = URL.createObjectURL(file);
-        const isPrimary = images.value.length === 0 && index === 0;
-        const order = maxOrder + 1 + index;
-
-        return {
-            tempUrl,
+    const newImages = event.files
+        .slice(0, LOCATION_SETTINGS.MAX_IMAGES - startIndex)
+        .map((file: File, i: number) => ({
+            tempUrl: URL.createObjectURL(file),
             file,
-            isPrimary,
-            order,
-        };
-    });
+            isPrimary: startIndex + i === 0,
+            index: startIndex + i,
+        }));
 
-    images.value = [...images.value, ...newImages];
+    images.value.push(...newImages);
     showAddDialog.value = false;
 }
 
@@ -139,15 +112,15 @@ function openAddDialog(): void {
     urlInput.value = '';
 }
 
-function onDragStart(event: DragEvent, index: number): void {
-    const image = sortedImages.value[index];
+function onDragStart(event: DragEvent, imageIndex: number): void {
+    const image = images.value.find((img) => img.index === imageIndex);
     if (!image) return;
 
     draggedImage.value = image;
     isDragging.value = true;
     if (event.dataTransfer) {
         event.dataTransfer.effectAllowed = 'move';
-        event.dataTransfer.setData('text/plain', ''); // For iOS compatibility
+        event.dataTransfer.setData('text/plain', '');
     }
 }
 
@@ -158,22 +131,25 @@ function onDragOver(event: DragEvent): void {
     }
 }
 
-function onDrop(event: DragEvent, targetIndex: number): void {
+function onDrop(event: DragEvent, targetImageIndex: number): void {
     event.preventDefault();
 
     if (!draggedImage.value) return;
 
-    const targetImage = sortedImages.value[targetIndex];
-    if (!targetImage || draggedImage.value === targetImage) {
-        return;
-    }
+    const targetImage = images.value.find((img) => img.index === targetImageIndex);
+    if (!targetImage || draggedImage.value === targetImage) return;
 
-    const draggedOrder = draggedImage.value.order;
-    const targetOrder = targetImage.order;
+    const draggedIndex = draggedImage.value.index ?? 0;
+    const targetIdx = targetImage.index ?? 0;
 
-    // Swap the order values
-    draggedImage.value.order = targetOrder;
-    targetImage.order = draggedOrder;
+    // Swap the indices
+    draggedImage.value.index = targetIdx;
+    targetImage.index = draggedIndex;
+
+    // Update isPrimary flags based on new indices
+    images.value.forEach((img) => {
+        img.isPrimary = img.index === 0;
+    });
 
     // Force reactivity update
     images.value = [...images.value];
@@ -184,8 +160,8 @@ function onDragEnd(): void {
     isDragging.value = false;
 }
 
-function onTouchStart(event: TouchEvent, index: number): void {
-    const image = sortedImages.value[index];
+function onTouchStart(event: TouchEvent, imageIndex: number): void {
+    const image = images.value.find((img) => img.index === imageIndex);
     if (!image) return;
 
     draggedImage.value = image;
@@ -216,11 +192,11 @@ function onTouchEnd(): void {
                         class="primary-image group"
                         :class="{ dragging: isDragging && draggedImage === primaryImage }"
                         draggable="true"
-                        @dragstart="onDragStart($event, primaryImageIndex)"
+                        @dragstart="onDragStart($event, 0)"
                         @dragover="onDragOver"
-                        @drop="onDrop($event, primaryImageIndex)"
+                        @drop="onDrop($event, 0)"
                         @dragend="onDragEnd"
-                        @touchstart="onTouchStart($event, primaryImageIndex)"
+                        @touchstart="onTouchStart($event, 0)"
                         @touchend="onTouchEnd">
                         <img
                             :src="primaryImage.tempUrl"
@@ -237,7 +213,7 @@ function onTouchEnd(): void {
                         <div class="image-actions">
                             <div class="image-actions__buttons">
                                 <Button
-                                    @click.stop="removeImage(primaryImageIndex)"
+                                    @click.stop="removeImage(0)"
                                     size="small"
                                     severity="danger"
                                     class="action-button action-button--danger"
@@ -260,11 +236,11 @@ function onTouchEnd(): void {
                                 dragging: isDragging && draggedImage === image,
                             }"
                             draggable="true"
-                            @dragstart="onDragStart($event, getImageIndex(image))"
+                            @dragstart="onDragStart($event, image.index ?? 0)"
                             @dragover="onDragOver"
-                            @drop="onDrop($event, getImageIndex(image))"
+                            @drop="onDrop($event, image.index ?? 0)"
                             @dragend="onDragEnd"
-                            @touchstart="onTouchStart($event, getImageIndex(image))"
+                            @touchstart="onTouchStart($event, image.index ?? 0)"
                             @touchend="onTouchEnd">
                             <img
                                 :src="image.tempUrl"
@@ -275,7 +251,7 @@ function onTouchEnd(): void {
                             <div class="image-actions">
                                 <div class="image-actions__buttons">
                                     <Button
-                                        @click.stop="setPrimary(getImageIndex(image))"
+                                        @click.stop="setPrimary(image.index ?? 0)"
                                         size="small"
                                         severity="secondary"
                                         class="action-button action-button--secondary"
@@ -283,7 +259,7 @@ function onTouchEnd(): void {
                                         <FontAwesomeIcon :icon="faStar" />
                                     </Button>
                                     <Button
-                                        @click.stop="removeImage(getImageIndex(image))"
+                                        @click.stop="removeImage(image.index ?? 0)"
                                         size="small"
                                         severity="danger"
                                         class="action-button action-button--danger"

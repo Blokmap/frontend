@@ -14,36 +14,23 @@ const mapCenter = computed((): LngLat => [props.location.longitude, props.locati
 
 useMapBox(useTemplateRef('mapContainer'), {
     center: mapCenter.value,
-    zoom: 16,
+    zoom: 17,
     geoLocationControl: false,
+    interactive: false,
 });
 </script>
 
 <template>
     <div ref="mapContainer" class="static-map map h-full w-full">
-        <!-- Static marker pin -->
-        <div class="marker-pin">
-            <FontAwesomeIcon :icon="faLocationDot" class="text-3xl text-red-600 drop-shadow-lg" />
-        </div>
-        <!-- Overlay to disable interactions -->
-        <div class="interaction-overlay"></div>
+        <FontAwesomeIcon class="crosshair" :icon="faLocationDot" />
     </div>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.static-map {
-    pointer-events: none;
-}
-
-.marker-pin {
-    @apply absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 transform;
-    @apply pointer-events-none;
-}
-
-.interaction-overlay {
-    @apply absolute inset-0 z-10;
-    @apply pointer-events-none;
+.crosshair {
+    @apply absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transform;
+    @apply pointer-events-none text-4xl;
 }
 </style>

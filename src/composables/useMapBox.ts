@@ -63,6 +63,7 @@ export function useMapBox<T>(
             center: center.value,
             maxBounds: maxBounds.value,
             zoom: zoom.value,
+            interactive: options.interactive,
         });
 
         // Listeners //

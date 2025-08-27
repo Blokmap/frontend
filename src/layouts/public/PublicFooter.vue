@@ -137,12 +137,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
         .footer-social-link {
             @apply flex h-8 w-8 items-center justify-center rounded-full;
-            @apply bg-surface-100 border-surface-200 text-surface-600 border;
-            @apply transition-all duration-200;
-
-            &:hover {
-                @apply bg-primary-500 border-primary-500 text-white;
-            }
+            @apply bg-primary-100 text-primary-600;
         }
     }
 

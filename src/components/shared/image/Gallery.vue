@@ -150,7 +150,7 @@ onUnmounted(() => {
     @apply fixed top-0 left-0 z-50 flex h-full w-full flex-col bg-white;
 
     .gallery-grid-container {
-        @apply flex flex-1 justify-center overflow-y-auto p-4;
+        @apply flex flex-1 justify-center overflow-y-auto p-4 pb-[88px];
     }
 
     .gallery-grid {
@@ -169,7 +169,7 @@ onUnmounted(() => {
         }
 
         .gallery-grid-image {
-            @apply h-auto w-full cursor-pointer object-cover;
+            @apply h-full w-full cursor-pointer object-cover;
         }
     }
 }

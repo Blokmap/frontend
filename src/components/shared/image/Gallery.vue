@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
+import { useItemAnimation } from '@/composables/anim/useItemAnimation';
 import type { Image } from '@/domain/image';
 import { LOCATION_SETTINGS } from '@/domain/location';
 import { faChevronLeft, faChevronRight, faShare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useTemplateRefsList } from '@vueuse/core';
 import Button from 'primevue/button';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
@@ -13,6 +15,9 @@ const props = defineProps<{
 
 const isFullscreen = ref(false);
 const selectedImageIndex = ref(0);
+
+const imageRefs = useTemplateRefsList();
+useItemAnimation(imageRefs);
 
 const paddedImages = computed(() => {
     const images = [...(props.images ?? [])];
@@ -77,7 +82,7 @@ onUnmounted(() => {
 <template>
     <div class="grid h-full w-full grid-cols-4 grid-rows-2 gap-2 overflow-hidden rounded-xl">
         <!-- First image spans 2x2 -->
-        <div class="gallery-image-container col-span-2 row-span-2">
+        <div class="gallery-image-container col-span-2 row-span-2" :ref="imageRefs.set">
             <img
                 :src="primaryImage.url"
                 alt="Main image"
@@ -86,7 +91,10 @@ onUnmounted(() => {
         </div>
         <!-- Other images span 1x1 each -->
         <template v-for="(img, idx) in secondaryImages" :key="idx">
-            <div class="gallery-image-container h-full w-full" @click="openFullScreen(idx + 1)">
+            <div
+                class="gallery-image-container h-full w-full"
+                @click="openFullScreen(idx + 1)"
+                :ref="imageRefs.set">
                 <img :src="img.url" alt="Gallery image" class="gallery-image rounded-md" />
             </div>
         </template>
@@ -139,23 +147,30 @@ onUnmounted(() => {
 
 .gallery-fullscreen {
     @apply fixed top-0 left-0 z-50 flex h-full w-full flex-col bg-white;
-}
 
-.gallery-grid-container {
-    @apply flex-1 overflow-y-auto p-4;
-}
+    .gallery-grid-container {
+        @apply flex flex-1 justify-center overflow-y-auto p-4;
+    }
 
-.gallery-grid {
-    @apply grid auto-rows-max justify-items-center gap-6;
-    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-}
+    .gallery-grid {
+        @apply grid w-full max-w-2xl grid-cols-2 gap-2;
 
-.gallery-grid-item {
-    @apply w-full max-w-2xl overflow-hidden rounded-lg bg-gray-100;
-}
+        .gallery-grid-item {
+            @apply overflow-hidden rounded-lg;
 
-.gallery-grid-image {
-    @apply h-auto w-full object-cover transition-transform duration-200 hover:scale-105;
+            &:nth-child(3n + 1) {
+                @apply col-span-2;
+            }
+
+            &:last-child:nth-child(3n + 2) {
+                @apply col-span-2;
+            }
+        }
+
+        .gallery-grid-image {
+            @apply h-auto w-full cursor-pointer object-cover;
+        }
+    }
 }
 
 .scale-enter-active,

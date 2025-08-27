@@ -1,10 +1,5 @@
 import type { Pagination } from './Pagination';
-import type { LngLat, LngLatBounds } from '@/types/Map';
-
-export type ReservableOption = {
-    value: boolean | null | undefined;
-    label: string;
-};
+import type { LngLat, LngLatBounds } from '@/domain/map';
 
 export type LocationFilter = Pagination & {
     isReservable: boolean | null;

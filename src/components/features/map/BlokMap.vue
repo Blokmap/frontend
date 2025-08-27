@@ -2,7 +2,7 @@
 import Marker from './Marker.vue';
 import { useMapBox } from '@/composables/useMapBox';
 import type { Location } from '@/domain/location';
-import type { LngLatBounds, MapOptions } from '@/types/Map';
+import type { LngLatBounds, MapOptions } from '@/domain/map';
 import { faBuildingColumns, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';

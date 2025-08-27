@@ -1,4 +1,4 @@
-import type { MapOptions } from '@/types/Map';
+import type { MapOptions } from './types';
 
 export const defaultMapOptions = {
     style: 'mapbox://styles/mapbox/outdoors-v11',
@@ -10,4 +10,5 @@ export const defaultMapOptions = {
     ],
     autoGeolocation: false,
     geoLocationControl: true,
+    interactive: true,
 } satisfies MapOptions;

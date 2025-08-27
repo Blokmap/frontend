@@ -16,6 +16,7 @@ export interface MapOptions {
     zoom?: MaybeRef<number>;
     autoGeolocation?: boolean;
     geoLocationControl?: boolean;
+    interactive?: boolean;
 }
 
 export interface MapAdapter<T = number> {

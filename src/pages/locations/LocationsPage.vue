@@ -7,7 +7,7 @@ import { useLocationsSearch, useNearestLocation } from '@/composables/data/useLo
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useToast } from '@/composables/useToast';
 import type { Location } from '@/domain/location';
-import type { LngLat, LngLatBounds } from '@/types/Map';
+import type { LngLat, LngLatBounds } from '@/domain/map';
 import { faFilter, faHelicopter, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn, useTemplateRefsList } from '@vueuse/core';

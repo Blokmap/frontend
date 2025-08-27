@@ -2,6 +2,7 @@
 import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import AddressMap from '@/components/features/map/AddressMap.vue';
+import Callout from '@/components/shared/Callout.vue';
 import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/useToast';
 import { LOCATION_SETTINGS } from '@/domain/location';
@@ -9,10 +10,11 @@ import type { BuilderSubstep, LocationRequest } from '@/domain/location';
 import { formatLocationAddress } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 import { defaultMapOptions } from '@/domain/map';
-import { faCheck, faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faHome, faInfoCircle, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import Message from 'primevue/message';
 import Textarea from 'primevue/textarea';
 import { computed, nextTick, ref, useTemplateRef, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -28,7 +30,7 @@ const { mutateAsync: geocodeAddress, isPending: isLoading } = useForwardGeoSearc
 
 const mapContainer = useTemplateRef('map-container');
 const currentLanguage = ref(locale.value);
-const mapZoom = ref<number>(14);
+const mapZoom = ref<number>(18);
 
 const mapCenter = computed<LngLat>({
     get() {
@@ -205,6 +207,12 @@ async function handleConfirmAddress(): Promise<void> {
                 <p class="text-sm text-gray-600">Voer het adres van uw locatie in op de kaart</p>
             </template>
             <template #default>
+                <!-- Info callout -->
+                <Callout>
+                    Sleep de kaart om de locatie marker precies te positioneren. De marker toont de
+                    exacte locatie die zal worden opgeslagen.
+                </Callout>
+
                 <!-- Map with overlay address input -->
                 <div class="relative">
                     <AddressMap

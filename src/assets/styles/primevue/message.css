@@ -1,49 +1,45 @@
 .p-message {
-    @apply rounded-md outline-2;
+    @apply rounded-lg text-sm outline-0;
 }
 
 .p-message-content {
-    @apply flex h-full items-center gap-2 px-3 py-2;
+    @apply flex h-full items-center gap-4 p-4;
 }
 
 .p-message-icon {
-    @apply flex-shrink-0;
+    @apply flex-shrink-0 text-2xl;
 }
 
 .p-message-close-button {
-    @apply relative ms-auto flex h-7 w-7 flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border-none bg-transparent p-0 text-inherit transition-colors duration-200 select-none focus-visible:outline-1 focus-visible:outline-offset-2;
+    @apply relative ms-auto flex h-7 w-7 flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border-none bg-transparent p-0 text-inherit transition-colors duration-200 select-none;
 }
 
 .p-message-info {
-    @apply text-color bg-slate-100 shadow-[0px_4px_8px_0px_theme(colors.blue.500/0.04)] outline-2 outline-slate-200 dark:bg-blue-500/15 dark:text-blue-500 dark:outline-blue-700/35;
+    @apply bg-glacier-50 text-glacier-600;
 }
 
 .p-message-info .p-message-close-button {
-    @apply hover:bg-blue-100 focus-visible:outline-blue-600 dark:hover:bg-white/5 dark:focus-visible:outline-blue-500;
+    @apply hover:bg-secondary-100;
 }
 
 .p-message-info.p-message-outlined {
-    @apply text-blue-500 outline-blue-500 dark:text-blue-600 dark:outline-blue-600;
-}
-
-.p-message-info.p-message-simple {
-    @apply text-blue-500 dark:text-blue-600;
+    @apply outline-secondary-500 outline-1;
 }
 
 .p-message-success {
-    @apply bg-green-50/95 text-green-600 shadow-[0px_4px_8px_0px_theme(colors.green.500/0.04)] outline-green-200 dark:bg-green-500/15 dark:text-green-500 dark:outline-green-700/35;
+    @apply bg-primary-50 text-primary-600;
 }
 
 .p-message-success .p-message-close-button {
-    @apply hover:bg-green-100 focus-visible:outline-green-600 dark:hover:bg-white/5 dark:focus-visible:outline-green-500;
+    @apply hover:bg-timber-green-100 focus-visible:outline-timber-green-600 dark:focus-visible:outline-timber-green-500 dark:hover:bg-white/5;
 }
 
 .p-message-success.p-message-outlined {
-    @apply text-green-500 outline-green-500 dark:text-green-600 dark:outline-green-600;
+    @apply text-timber-green-500 outline-timber-green-500 dark:text-timber-green-600 dark:outline-timber-green-600;
 }
 
 .p-message-success.p-message-simple {
-    @apply text-green-500 dark:text-green-600;
+    @apply text-timber-green-500 dark:text-timber-green-600;
 }
 
 .p-message-warn {
@@ -175,7 +171,7 @@
 }
 
 .p-message-outlined {
-    @apply bg-transparent outline outline-1;
+    @apply bg-transparent;
 }
 
 .p-message-simple {

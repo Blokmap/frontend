@@ -105,6 +105,20 @@ export function useMapBox<T>(
 
         newMap.once('load', () => {
             isLoaded.value = true;
+
+            const mapBounds = newMap.getBounds();
+            const mapCenter = newMap.getCenter();
+
+            if (mapCenter) {
+                center.value = [mapCenter.lng, mapCenter.lat];
+            }
+
+            if (mapBounds) {
+                bounds.value = [
+                    [mapBounds.getSouthWest().lng, mapBounds.getSouthWest().lat],
+                    [mapBounds.getNorthEast().lng, mapBounds.getNorthEast().lat],
+                ];
+            }
         });
 
         // Geolocation configuration //

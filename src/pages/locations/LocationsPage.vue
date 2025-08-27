@@ -42,6 +42,7 @@ const { mutate: flyToNearestLocation, isPending: isFlyingToNearestLocation } = u
 
 const mapRef = useTemplateRef('map');
 const locationRefs = useTemplateRefsList();
+useItemAnimation(locationRefs);
 
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
@@ -70,8 +71,6 @@ watch(
     },
     { deep: true, immediate: true },
 );
-
-useItemAnimation(locationRefs);
 
 const handleBoundsChange = useDebounceFn((bounds: LngLatBounds | null) => {
     filterStore.updateFilters({ bounds, page: 1 });
@@ -148,22 +147,24 @@ const handlePageChange = (event: { page: number }): void => {
                 </template>
             </div>
 
-            <div class="grid flex-grow grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3">
+            <div class="grid flex-grow grid-cols-2 gap-4 md:grid-cols-3">
                 <template v-if="isLoading">
                     <LocationCardSkeleton v-for="n in previousLocationCount" :key="n" />
                 </template>
                 <template v-else-if="locations?.data?.length">
-                    <RouterLink
+                    <div
                         v-for="location in locations.data"
                         :key="location.id"
-                        :ref="locationRefs.set"
-                        :to="{ name: 'locations.detail', params: { locationId: location.id } }">
-                        <LocationCard
-                            :location="location"
-                            @mouseenter="hoveredLocation = location"
-                            @mouseleave="hoveredLocation = null">
-                        </LocationCard>
-                    </RouterLink>
+                        :ref="locationRefs.set">
+                        <RouterLink
+                            :to="{ name: 'locations.detail', params: { locationId: location.id } }">
+                            <LocationCard
+                                :location="location"
+                                @mouseenter="hoveredLocation = location"
+                                @mouseleave="hoveredLocation = null">
+                            </LocationCard>
+                        </RouterLink>
+                    </div>
                 </template>
             </div>
             <template v-if="locations?.data?.length">

@@ -252,20 +252,6 @@ async function handleConfirmAddress(): Promise<void> {
                                 </div>
                             </div>
 
-                            <!-- Coordinates display -->
-                            <div v-if="hasCoordinates" class="mb-3">
-                                <div class="flex items-center">
-                                    <FontAwesomeIcon
-                                        :icon="faCheck"
-                                        class="mr-2 text-xs text-green-600">
-                                    </FontAwesomeIcon>
-                                    <span class="font-mono text-xs text-gray-600">
-                                        {{ form.latitude?.toFixed(4) }}°,
-                                        {{ form.longitude?.toFixed(4) }}°
-                                    </span>
-                                </div>
-                            </div>
-
                             <!-- Action button -->
                             <Button
                                 @click="handleConfirmAddress"
@@ -274,7 +260,7 @@ async function handleConfirmAddress(): Promise<void> {
                                 class="w-full"
                                 size="small">
                                 <FontAwesomeIcon :icon="faMapMarkerAlt" class="mr-1" />
-                                <span>Zoek locatie</span>
+                                <span>Vlieg naar coordinaten</span>
                             </Button>
                         </div>
                     </div>

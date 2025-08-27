@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import OpeningsTable from '../location/openings/OpeningsTable.vue';
 import Marker from './Marker.vue';
 import { useMapBox } from '@/composables/useMapBox';
 import type { Location } from '@/domain/location';
@@ -69,15 +70,15 @@ defineExpose({ map });
                 @mouseleave="handleMarkerMouseLeave"
                 @click="handleMarkerClick(location.id)">
                 <template #popover>
-                    <div class="flex items-center gap-1">
-                        <FontAwesomeIcon :icon="faBuildingColumns" />
-                        <p class="font-bold">
+                    <div class="space-y-3">
+                        <p class="text-lg font-bold">
                             {{ location.name }}
                         </p>
-                    </div>
-                    <div class="my-2">
-                        <p>{{ location.street }} {{ location.number }}</p>
-                        <p>{{ location.zip }} {{ location.city }}</p>
+                        <p class="mb-6">
+                            {{ location.street }} {{ location.number }} • {{ location.zip }}
+                            {{ location.city }}
+                        </p>
+                        <OpeningsTable :opening-times="location.openingTimes" compact />
                     </div>
                 </template>
             </Marker>

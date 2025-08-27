@@ -16,9 +16,12 @@ import Button from 'primevue/button';
 import Paginator from 'primevue/paginator';
 import Skeleton from 'primevue/skeleton';
 import { computed, ref, useTemplateRef, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 const filterStore = useLocationFilters();
 const toast = useToast();
+const router = useRouter();
+
 const { filters, geoLocation, geoLocationActionTrigger } = storeToRefs(filterStore);
 
 const {
@@ -80,6 +83,10 @@ const handlePageChange = (event: { page: number }): void => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     filterStore.updateFilters({ page: event.page + 1 });
 };
+
+function handleMarkerClick(id: number): void {
+    router.push({ name: 'locations.detail', params: { locationId: id } });
+}
 </script>
 
 <template>
@@ -185,6 +192,7 @@ const handlePageChange = (event: { page: number }): void => {
                     :locations="locations?.data"
                     :is-loading="isLoading"
                     @update:bounds="handleBoundsChange"
+                    @click:marker="handleMarkerClick"
                     v-model:hovered-location="hoveredLocation">
                 </BlokMap>
             </div>

@@ -151,3 +151,17 @@ export function validateTimeRange(startTime: Time, endTime: Time): TimeRange {
 export function getTimeDuration(startTime: Time, endTime: Time): number {
     return timeToMinutes(endTime) - timeToMinutes(startTime);
 }
+
+/**
+ * Converts a Time object to a compact string format (e.g., "8u", "13u30").
+ *
+ * @param time - The Time object to convert.
+ * @returns A string in compact format (e.g., "8u" for 8:00, "13u30" for 13:30).
+ */
+export function timeToCompactString(time?: Time | null): string | undefined | null {
+    if (!time) return time;
+    if (time.minutes === 0) {
+        return `${time.hours}u`;
+    }
+    return `${time.hours}u${time.minutes.toString().padStart(2, '0')}`;
+}

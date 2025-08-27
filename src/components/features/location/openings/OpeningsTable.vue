@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import type { OpeningTime } from '@/domain/openings';
-import { endOfWeek, formatDayName, startOfWeek } from '@/utils/date/date';
-import { timeToString } from '@/utils/date/time';
+import {
+    formatOpeningTimeRange,
+    getOpeningTimesForDay,
+    groupOpeningTimesByDay,
+} from '@/domain/openings/helpers';
+import { endOfWeek, formatDayName, isToday, startOfWeek } from '@/utils/date/date';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Badge from 'primevue/badge';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     openingTimes?: OpeningTime[];
+    compact?: boolean;
 }>();
 
 const { locale } = useI18n();
@@ -35,43 +39,17 @@ const weekDays = computed(() => {
 // Group opening times by day of the week
 const openingTimesByDay = computed(() => {
     if (!props.openingTimes) return new Map();
-
-    const grouped = new Map<string, OpeningTime[]>();
-
-    props.openingTimes.forEach((opening) => {
-        const dayKey = opening.day.toDateString();
-        if (!grouped.has(dayKey)) {
-            grouped.set(dayKey, []);
-        }
-        grouped.get(dayKey)!.push(opening);
-    });
-
-    // Sort times for each day
-    grouped.forEach((times) => {
-        times.sort((a, b) => {
-            const aMinutes = a.startTime.hours * 60 + a.startTime.minutes;
-            const bMinutes = b.startTime.hours * 60 + b.startTime.minutes;
-            return aMinutes - bMinutes;
-        });
-    });
-
-    return grouped;
+    return groupOpeningTimesByDay(props.openingTimes);
 });
 
-// Get opening times for a specific day
-function getOpeningTimesForDay(day: Date): OpeningTime[] {
-    return openingTimesByDay.value.get(day.toDateString()) || [];
+// Get opening times for a specific day (wrapper for template usage)
+function getOpeningTimesForDayWrapper(day: Date): OpeningTime[] {
+    return getOpeningTimesForDay(openingTimesByDay.value, day);
 }
 
-// Check if a day is today
-function isToday(day: Date): boolean {
-    const today = new Date();
-    return day.toDateString() === today.toDateString();
-}
-
-// Format time range
+// Format time range (wrapper for template usage)
 function formatTimeRange(opening: OpeningTime): string {
-    return `${timeToString(opening.startTime)} - ${timeToString(opening.endTime)}`;
+    return formatOpeningTimeRange(opening, props.compact);
 }
 </script>
 
@@ -79,9 +57,13 @@ function formatTimeRange(opening: OpeningTime): string {
     <div class="opening-hours-timetable">
         <!-- Timetable -->
         <div v-if="!openingTimes || openingTimes.length === 0" class="no-hours">
-            <div class="flex flex-col items-center justify-center py-8 text-gray-500">
-                <FontAwesomeIcon :icon="faClock" class="mb-3 text-3xl" />
-                <p class="text-sm">Geen openingstijden beschikbaar</p>
+            <div
+                class="flex flex-col items-center justify-center text-gray-500"
+                :class="compact ? 'py-3' : 'py-8'">
+                <FontAwesomeIcon
+                    :icon="faClock"
+                    :class="compact ? 'mb-1 text-lg' : 'mb-3 text-3xl'" />
+                <p :class="compact ? 'text-xs' : 'text-sm'">Geen openingstijden beschikbaar</p>
             </div>
         </div>
 
@@ -90,11 +72,13 @@ function formatTimeRange(opening: OpeningTime): string {
                 <thead class="bg-gray-50">
                     <tr>
                         <th
-                            class="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
+                            :class="compact ? 'px-3 py-1 text-xs' : 'px-4 py-3 text-xs'"
+                            class="text-left font-medium tracking-wider text-gray-500 uppercase">
                             Dag
                         </th>
                         <th
-                            class="px-4 py-3 text-right text-xs font-medium tracking-wider text-gray-500 uppercase">
+                            :class="compact ? 'px-3 py-1 text-xs' : 'px-4 py-3 text-xs'"
+                            class="text-right font-medium tracking-wider text-gray-500 uppercase">
                             Tijden
                         </th>
                     </tr>
@@ -104,19 +88,22 @@ function formatTimeRange(opening: OpeningTime): string {
                         v-for="day in weekDays"
                         :key="day.toDateString()"
                         :class="{ 'bg-primary-50': isToday(day) }">
-                        <td class="px-4 py-3">
+                        <td :class="compact ? 'px-3 py-1' : 'px-4 py-3'">
                             <span
-                                class="text-sm font-medium"
-                                :class="isToday(day) ? 'text-primary-500' : 'text-gray-900'">
-                                {{ formatDayName(day, 'long', locale) }}
+                                :class="[
+                                    compact ? 'text-xs' : 'text-sm',
+                                    'font-medium',
+                                    isToday(day) ? 'text-primary-500' : 'text-gray-900',
+                                ]">
+                                {{ formatDayName(day, compact ? 'short' : 'long', locale) }}
                             </span>
                         </td>
 
-                        <td class="px-4 py-3 text-right">
-                            <template v-if="getOpeningTimesForDay(day).length > 0">
+                        <td :class="compact ? 'px-3 py-1' : 'px-4 py-3'" class="text-right">
+                            <template v-if="getOpeningTimesForDayWrapper(day).length > 0">
                                 <div class="flex">
                                     <template
-                                        v-for="opening in getOpeningTimesForDay(day)"
+                                        v-for="opening in getOpeningTimesForDayWrapper(day)"
                                         :key="opening.id">
                                         <div class="ml-auto text-xs">
                                             {{ formatTimeRange(opening) }}
@@ -124,7 +111,12 @@ function formatTimeRange(opening: OpeningTime): string {
                                     </template>
                                 </div>
                             </template>
-                            <span v-else class="text-sm text-gray-400 italic"> Gesloten </span>
+                            <span
+                                v-else
+                                :class="compact ? 'text-xs' : 'text-sm'"
+                                class="text-gray-400 italic">
+                                Gesloten
+                            </span>
                         </td>
                     </tr>
                 </tbody>

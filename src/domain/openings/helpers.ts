@@ -1,8 +1,10 @@
 import { WEEKDAY_DAYS } from './constants';
 import type { OpeningTimeGroupRequest, OpeningTimeRequest } from './types';
+import type { OpeningTime } from './types';
 import type { TimeSlot } from '@/domain/openings';
 import { datesInRange } from '@/utils/date/date';
 import { minutesToTime, timeToMinutes, validateTimeRange } from '@/utils/date/time';
+import { timeToCompactString, timeToString } from '@/utils/date/time';
 
 export function getOpeningsFromGroup(group: OpeningTimeGroupRequest): OpeningTimeRequest[] {
     const dates = datesInRange(group.startDate, group.endDate);
@@ -62,4 +64,61 @@ export function openingTimesToTimeSlots(
     openingTimes: OpeningTimeRequest[],
 ): TimeSlot<{ openingTime: OpeningTimeRequest; index: number }>[] {
     return openingTimes.map((ot, index) => openingTimeToTimeSlot(ot, index));
+}
+
+/**
+ * Groups opening times by day of the week.
+ *
+ * @param openingTimes - Array of opening times to group.
+ * @returns Map with day key (toDateString) and array of opening times for that day.
+ */
+export function groupOpeningTimesByDay(openingTimes: OpeningTime[]): Map<string, OpeningTime[]> {
+    const grouped = new Map<string, OpeningTime[]>();
+
+    openingTimes.forEach((opening) => {
+        const dayKey = opening.day.toDateString();
+        if (!grouped.has(dayKey)) {
+            grouped.set(dayKey, []);
+        }
+        grouped.get(dayKey)!.push(opening);
+    });
+
+    // Sort times for each day
+    grouped.forEach((times) => {
+        times.sort((a, b) => {
+            const aMinutes = a.startTime.hours * 60 + a.startTime.minutes;
+            const bMinutes = b.startTime.hours * 60 + b.startTime.minutes;
+            return aMinutes - bMinutes;
+        });
+    });
+
+    return grouped;
+}
+
+/**
+ * Formats an opening time range string.
+ *
+ * @param opening - The opening time object.
+ * @param compact - Whether to use compact format (e.g., "8u-17u" vs "08:00 - 17:00").
+ * @returns Formatted time range string.
+ */
+export function formatOpeningTimeRange(opening: OpeningTime, compact = false): string {
+    if (compact) {
+        return `${timeToCompactString(opening.startTime)}-${timeToCompactString(opening.endTime)}`;
+    }
+    return `${timeToString(opening.startTime)} - ${timeToString(opening.endTime)}`;
+}
+
+/**
+ * Gets opening times for a specific day from grouped opening times.
+ *
+ * @param groupedTimes - Map of grouped opening times by day.
+ * @param day - The day to get opening times for.
+ * @returns Array of opening times for the specified day.
+ */
+export function getOpeningTimesForDay(
+    groupedTimes: Map<string, OpeningTime[]>,
+    day: Date,
+): OpeningTime[] {
+    return groupedTimes.get(day.toDateString()) || [];
 }

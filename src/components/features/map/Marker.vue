@@ -3,7 +3,7 @@ import type { LngLat, MapAdapter } from '@/domain/map';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Popover from 'primevue/popover';
-import { onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
+import { onDeactivated, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
 const props = defineProps<{
     id?: number;
@@ -50,6 +50,13 @@ onMounted(() => {
     });
 });
 
+onDeactivated(() => {
+    if (isShowingPopover.value) {
+        isShowingPopover.value = false;
+        popoverRef?.value?.hide();
+    }
+});
+
 onUnmounted(() => {
     if (!markerRef.value) return;
     if (!props.id || !props.position) return;
@@ -91,7 +98,7 @@ function updatePopoverPosition() {
         </div>
 
         <!-- Popover with slot for custom content -->
-        <Popover ref="popover">
+        <Popover ref="popover" class="min-w-[300px]">
             <slot name="popover"></slot>
         </Popover>
     </Teleport>

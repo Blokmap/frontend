@@ -85,11 +85,7 @@ const {
 
                     <!-- Map -->
                     <div class="h-[350px]">
-                        <LocationMap
-                            v-if="location"
-                            class="rounded-lg border-2 border-slate-200"
-                            :location="location">
-                        </LocationMap>
+                        <LocationMap v-if="location" :location="location"> </LocationMap>
                         <LocationMapSkeleton v-else-if="isLoading" />
                     </div>
                 </div>

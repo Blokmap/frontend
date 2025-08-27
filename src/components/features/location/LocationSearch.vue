@@ -234,7 +234,7 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
 
 .search {
     @apply relative z-20 flex w-full max-w-[500px] min-w-[475] origin-top cursor-pointer flex-row items-center gap-3;
-    @apply rounded-full border-2 border-slate-200 bg-white text-center text-sm transition-all duration-300;
+    @apply rounded-full bg-white text-center text-sm shadow-sm transition-all duration-300;
     @apply ps-5;
 
     .search--filter {

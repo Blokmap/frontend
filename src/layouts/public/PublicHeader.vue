@@ -62,53 +62,46 @@ function handleLocaleChange(newLocale: string): void {
 </script>
 
 <template>
-    <header class="header">
-        <div class="header--wrapper">
-            <div class="header--logo">
-                <RouterLink :to="{ name: 'locations' }">
-                    <Logo />
-                </RouterLink>
-            </div>
-
-            <LocationSearch
-                v-model:is-expanded-search="isExpandedSearch"
-                v-model:geo-location="geoLocation"
-                v-model:filters="filters"
-                :is-searching="isFetching"
-                @search="handleSearch">
-            </LocationSearch>
-
-            <div class="header--actions">
-                <RouterLink
-                    :to="{ name: 'locations.submit' }"
-                    v-if="route.name !== 'locations.submit'">
-                    <Button class="h-full rounded-full px-4 text-[16px]" size="small" outlined>
-                        Blokspot Toevoegen
-                    </Button>
-                </RouterLink>
-                <MenuButton />
-                <LanguageSelector :model-value="locale" @update:model-value="handleLocaleChange" />
-            </div>
+    <div class="header-content">
+        <div class="logo">
+            <RouterLink :to="{ name: 'locations' }">
+                <Logo />
+            </RouterLink>
         </div>
-    </header>
+
+        <LocationSearch
+            v-model:is-expanded-search="isExpandedSearch"
+            v-model:geo-location="geoLocation"
+            v-model:filters="filters"
+            :is-searching="isFetching"
+            @search="handleSearch">
+        </LocationSearch>
+
+        <div class="actions">
+            <RouterLink :to="{ name: 'locations.submit' }" v-if="route.name !== 'locations.submit'">
+                <Button class="h-full rounded-full px-4 text-[16px]" size="small" outlined>
+                    Blokspot Toevoegen
+                </Button>
+            </RouterLink>
+            <MenuButton />
+            <LanguageSelector :model-value="locale" @update:model-value="handleLocaleChange" />
+        </div>
+    </div>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.header {
-    @apply dark:border-surface-800 relative z-10 flex rounded-xl;
+.header-content {
+    @apply relative z-10 flex rounded-xl;
+    @apply mx-auto w-full items-center justify-center;
+}
 
-    .header--wrapper {
-        @apply relative mx-auto flex w-full items-center justify-center;
-    }
+.logo {
+    @apply top-[50%] left-0 translate-y-[-50%] sm:absolute;
+}
 
-    .header--logo {
-        @apply top-[50%] left-0 translate-y-[-50%] sm:absolute;
-    }
-
-    .header--actions {
-        @apply hidden transform items-center gap-3 sm:absolute sm:top-0 sm:right-0 sm:flex sm:h-full;
-    }
+.actions {
+    @apply hidden transform items-center gap-3 sm:absolute sm:top-0 sm:right-0 sm:flex sm:h-full;
 }
 </style>

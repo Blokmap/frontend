@@ -85,7 +85,7 @@ function formatTimeRange(opening: OpeningTime): string {
             </div>
         </div>
 
-        <div v-else class="overflow-hidden rounded-lg border-2 border-slate-200">
+        <div v-else class="overflow-hidden rounded-lg shadow-sm">
             <table class="w-full">
                 <thead class="bg-gray-50">
                     <tr>

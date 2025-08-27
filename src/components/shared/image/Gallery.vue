@@ -142,6 +142,7 @@ onUnmounted(() => {
 
     .gallery-image {
         @apply h-full w-full object-cover transition-all duration-300;
+        @apply shadow-md;
     }
 }
 

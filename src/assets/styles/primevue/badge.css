@@ -2,7 +2,7 @@
     @apply bg-primary text-primary-contrast;
     @apply inline-flex items-center justify-center;
     @apply h-6 min-w-6 px-2 py-0;
-    @apply rounded-full text-xs font-medium;
+    @apply rounded-full text-xs font-medium shadow-xs;
 }
 
 .p-badge-dot {

@@ -66,7 +66,7 @@
     --color-secondary-900: var(--color-glacier-900);
     --color-secondary-950: var(--color-glacier-950);
 
-    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.2);
+    --shadow-sm: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
     --shadow-default: 0 4px 12px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.12);
     --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.15);
@@ -76,6 +76,10 @@
 
 body {
     @apply bg-slate-900 text-base text-slate-800;
+
+    #app {
+        @apply h-full min-h-[100vh];
+    }
 
     &.dark {
         @apply bg-surface-900 text-surface-0;

@@ -108,11 +108,6 @@ export function useMapBox<T>(
             isLoaded.value = true;
 
             const mapBounds = newMap.getBounds();
-            const mapCenter = newMap.getCenter();
-
-            if (mapCenter) {
-                center.value = [mapCenter.lng, mapCenter.lat];
-            }
 
             if (mapBounds) {
                 bounds.value = [

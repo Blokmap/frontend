@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import SubmitLocationCTA from '@/components/features/layout/SubmitLocationCTA.vue';
-import ManageProfileAvatarDialog from '@/components/features/profile/avatar/ManageProfileAvatarDialog.vue';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
+import ProfileAvatarDialog from '@/components/features/profile/avatar/ProfileAvatarDialog.vue';
 import StatsCard from '@/components/features/profile/stats/StatsCard.vue';
 import StatsCardSkeleton from '@/components/features/profile/stats/StatsCardSkeleton.vue';
 import ReservationItem from '@/components/features/reservation/ReservationItem.vue';
@@ -69,10 +68,10 @@ function openReservationsModal(): void {
                                 @click:edit="showAvatarDialog = true"
                                 editable>
                             </ProfileAvatar>
-                            <ManageProfileAvatarDialog
+                            <ProfileAvatarDialog
                                 v-model:visible="showAvatarDialog"
                                 :profile="profile">
-                            </ManageProfileAvatarDialog>
+                            </ProfileAvatarDialog>
                         </template>
                     </div>
 
@@ -223,8 +222,6 @@ function openReservationsModal(): void {
                 </template>
             </Card>
         </div>
-
-        <SubmitLocationCTA />
     </div>
 </template>
 

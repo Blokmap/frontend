@@ -57,10 +57,8 @@ function onFileChange(e: Event): void {
     const file = target.files?.[0];
 
     if (file) {
-        const reader = new FileReader();
-        reader.onload = () => (selectedImage.value = reader.result?.toString());
-        reader.readAsDataURL(file);
         selectedFile.value = file;
+        selectedImage.value = URL.createObjectURL(file);
     }
 }
 </script>

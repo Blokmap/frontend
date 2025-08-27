@@ -31,3 +31,17 @@ export type OpeningTimeGroupRequest = {
     selectedDays: number[];
     timeSlots: { startTime: Time; endTime: Time; seatCount: number }[];
 };
+
+export type TimeCell = {
+    day: Date;
+    startTime: Time;
+    endTime: Time;
+};
+
+export type TimeSlot<T = any> = {
+    id?: string;
+    day: Date;
+    startTime: Time;
+    endTime: Time;
+    metadata?: T;
+};

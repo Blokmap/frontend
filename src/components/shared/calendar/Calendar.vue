@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T = any">
-import type { CalendarDragState, TimeCell, TimeSlot } from '@/types/Calendar';
+import type { TimeCell, TimeSlot } from '@/domain/openings';
 import { datesInRange, formatDayName, isToday, startOfWeek } from '@/utils/date/date';
 import type { Time } from '@/utils/date/time';
 import {
@@ -16,6 +16,15 @@ import { useI18n } from 'vue-i18n';
 
 const PIXELS_PER_HOUR = 50;
 const MAX_MINUTES_IN_DAY = 1440;
+
+type CalendarDragState = {
+    isDragging: boolean;
+    slot: TimeSlot<any> | null;
+    mode: 'move' | 'resize';
+    startPosition: { x: number; y: number };
+    originalTimes: { start: Time; end: Time; day: Date };
+    lastEmitted: { start: Time; end: Time; day: Date | null };
+};
 
 const props = withDefaults(
     defineProps<{

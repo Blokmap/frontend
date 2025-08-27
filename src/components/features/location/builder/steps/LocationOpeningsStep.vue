@@ -11,7 +11,7 @@ import {
     type OpeningTimeRequest,
     getOpeningsFromGroup,
 } from '@/domain/openings';
-import type { TimeCell } from '@/types/Calendar';
+import type { TimeCell } from '@/domain/openings';
 import { type Time, addToTime, createTime, validateTimeRange } from '@/utils/date/time';
 import { faRepeat, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

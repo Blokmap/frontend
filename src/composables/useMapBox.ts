@@ -1,7 +1,7 @@
 import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/domain/map';
 import { defaultMapOptions } from '@/domain/map';
 import mapboxgl from 'mapbox-gl';
-import { type Ref, isRef, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
+import { type Ref, isRef, onActivated, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
@@ -147,6 +147,17 @@ export function useMapBox<T>(
         }
 
         map.value = newMap;
+    });
+
+    // Handle KeepAlive activation - auto resize map
+    onActivated(() => {
+        if (map.value) {
+            try {
+                map.value?.resize();
+            } catch (error) {
+                console.warn('Map resize on activation failed:', error);
+            }
+        }
     });
 
     onUnmounted(() => {

@@ -15,8 +15,11 @@ import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Paginator from 'primevue/paginator';
 import Skeleton from 'primevue/skeleton';
-import { computed, ref, useTemplateRef, watch } from 'vue';
+import { computed, onActivated, onDeactivated, ref, useTemplateRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
+
+// Needed for KeepAlive
+defineOptions({ name: 'LocationsPage' });
 
 const filterStore = useLocationFilters();
 const toast = useToast();

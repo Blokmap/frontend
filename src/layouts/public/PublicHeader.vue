@@ -5,6 +5,8 @@ import LocationSearch from '@/components/features/location/LocationSearch.vue';
 import Logo from '@/components/shared/Logo.vue';
 import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
@@ -79,8 +81,10 @@ function handleLocaleChange(newLocale: string): void {
 
         <div class="actions">
             <RouterLink :to="{ name: 'locations.submit' }" v-if="route.name !== 'locations.submit'">
-                <Button class="h-full rounded-full px-4 text-[16px]" size="small" outlined>
-                    Blokspot Toevoegen
+                <Button class="text-[16px]" size="small" rounded>
+                    <template #icon>
+                        <FontAwesomeIcon :icon="faPlus" />
+                    </template>
                 </Button>
             </RouterLink>
             <MenuButton />

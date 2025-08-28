@@ -10,7 +10,7 @@ import Button from 'primevue/button';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 const props = defineProps<{
-    images?: Image[];
+    images: Image[];
 }>();
 
 const isFullscreen = ref(false);
@@ -20,29 +20,17 @@ const imageRefs = useTemplateRefsList();
 
 useItemAnimation(imageRefs, { duration: 0.5 });
 
-const paddedImages = computed(() => {
-    const images = [...(props.images ?? [])];
-
-    while (images.length < LOCATION_SETTINGS.MIN_IMAGES) {
-        images.push({ url: placeholder });
-    }
-
-    return images;
+const secondaryImages = computed(() => {
+    return props.images.filter((img) => img.index !== 0);
 });
 
 const primaryImage = computed(() => {
-    return paddedImages.value.find((img) => img.index === 0) ?? paddedImages.value[0];
-});
-
-const secondaryImages = computed(() => {
-    return paddedImages.value
-        .filter((img) => img !== primaryImage.value)
-        .slice(0, 4)
-        .sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
-});
-
-const actualImages = computed(() => {
-    return (props.images ?? []).filter((img) => img.url !== placeholder);
+    return (
+        props.images.find((img) => img.index === 0) ?? {
+            url: placeholder,
+            index: 0,
+        }
+    );
 });
 
 async function openFullScreen(index?: number): Promise<void> {
@@ -81,7 +69,44 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="grid h-full w-full grid-cols-4 grid-rows-2 gap-2 overflow-hidden rounded-xl">
+    <!-- No images - show placeholder -->
+    <div
+        v-if="!images?.length"
+        class="flex h-full w-full items-center justify-center rounded-xl bg-gray-100">
+        <img :src="placeholder" alt="No images" class="h-24 w-24 opacity-50" />
+    </div>
+
+    <!-- Single image layout -->
+    <div
+        v-else-if="images.length === 1"
+        class="grid h-full w-full grid-cols-1 grid-rows-1 gap-2 overflow-hidden rounded-xl">
+        <div class="gallery-image-container" :ref="imageRefs.set">
+            <img
+                :src="primaryImage.url"
+                alt="Single image"
+                class="gallery-image"
+                @click="openFullScreen(0)" />
+        </div>
+    </div>
+
+    <!-- Two images layout -->
+    <div
+        v-else-if="images.length === 2"
+        class="grid h-full w-full grid-cols-2 grid-rows-1 gap-2 overflow-hidden rounded-xl">
+        <div
+            v-for="(img, idx) in images"
+            :key="idx"
+            class="gallery-image-container"
+            :ref="imageRefs.set"
+            @click="openFullScreen(idx)">
+            <img :src="img.url" :alt="`Image ${idx + 1}`" class="gallery-image" />
+        </div>
+    </div>
+
+    <!-- Three images layout -->
+    <div
+        v-else-if="images.length === 3"
+        class="grid h-full w-full grid-cols-4 grid-rows-2 gap-2 overflow-hidden rounded-xl">
         <!-- First image spans 2x2 -->
         <div class="gallery-image-container col-span-2 row-span-2" :ref="imageRefs.set">
             <img
@@ -90,15 +115,36 @@ onUnmounted(() => {
                 class="gallery-image"
                 @click="openFullScreen(0)" />
         </div>
-        <!-- Other images span 1x1 each -->
-        <template v-for="(img, idx) in secondaryImages" :key="idx">
-            <div
-                class="gallery-image-container h-full w-full"
-                @click="openFullScreen(idx + 1)"
-                :ref="imageRefs.set">
-                <img :src="img.url" alt="Gallery image" class="gallery-image rounded-md" />
-            </div>
-        </template>
+        <!-- Other images span 2x1 each -->
+        <div
+            v-for="(img, idx) in secondaryImages"
+            :key="idx + 1"
+            class="gallery-image-container col-span-2"
+            :ref="imageRefs.set"
+            @click="openFullScreen(idx + 1)">
+            <img :src="img.url" :alt="`Image ${idx + 2}`" class="gallery-image" />
+        </div>
+    </div>
+
+    <!-- Four or more images layout -->
+    <div v-else class="grid h-full w-full grid-cols-4 grid-rows-2 gap-2 overflow-hidden rounded-xl">
+        <!-- First image spans 2x2 -->
+        <div class="gallery-image-container col-span-2 row-span-2" :ref="imageRefs.set">
+            <img
+                :src="primaryImage.url"
+                alt="Main image"
+                class="gallery-image"
+                @click="openFullScreen(0)" />
+        </div>
+        <!-- Other images span 1x1 each (max 4) -->
+        <div
+            v-for="(img, idx) in secondaryImages.slice(0, 4)"
+            :key="idx + 1"
+            class="gallery-image-container"
+            :ref="imageRefs.set"
+            @click="openFullScreen(idx + 1)">
+            <img :src="img.url" :alt="`Image ${idx + 2}`" class="gallery-image" />
+        </div>
     </div>
     <Transition name="scale">
         <div class="gallery-fullscreen" v-if="isFullscreen">
@@ -116,7 +162,7 @@ onUnmounted(() => {
             <div class="gallery-grid-container">
                 <div class="gallery-grid">
                     <div
-                        v-for="(image, index) in actualImages"
+                        v-for="(image, index) in images"
                         :key="index"
                         :id="`gallery-image-${index}`"
                         class="gallery-grid-item">

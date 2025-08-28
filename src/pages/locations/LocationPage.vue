@@ -43,7 +43,7 @@ const {
 
                 <!-- Gallery -->
                 <div class="h-[425px]">
-                    <Gallery v-if="location" :images="location.images" />
+                    <Gallery v-if="location?.images" :images="location.images" />
                     <GallerySkeleton v-else-if="isLoading" />
                 </div>
 

@@ -21,7 +21,7 @@ export function useAuthProfile(
 ): CompQuery<Profile | null> & { profileId: Ref<number | null> } {
     const query = useQuery<Profile | null, AxiosError>({
         ...options,
-        queryKey: ['profile'],
+        queryKey: ['profile', 'details'],
         throwOnError: false,
         refetchInterval: 60000,
         retry: false,

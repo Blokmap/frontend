@@ -5,7 +5,7 @@ import type { Institution } from '@/domain/institution';
 export type Profile = {
     id: number;
     avatarUrl: Image | null;
-    username: string | null;
+    username: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -25,6 +25,12 @@ export type Idp = {
     id: string;
     name: string;
     logo?: string | null;
+};
+
+export type ProfileRequest = {
+    firstName?: string;
+    lastName?: string;
+    username?: string;
 };
 
 export type LoginRequest = {

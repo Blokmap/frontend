@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import ProfileAvatarDialog from '@/components/features/profile/avatar/ProfileAvatarDialog.vue';
+import ProfileEditDialog from '@/components/features/profile/edit/ProfileEditDialog.vue';
 import StatsCard from '@/components/features/profile/stats/StatsCard.vue';
 import StatsCardSkeleton from '@/components/features/profile/stats/StatsCardSkeleton.vue';
 import ReservationItem from '@/components/features/reservation/ReservationItem.vue';
@@ -44,6 +45,7 @@ const {
 } = useProfileStats(profileId);
 
 const showAvatarDialog = ref(false);
+const showEditDialog = ref(false);
 
 function openReservationsModal(): void {
     router.push({ name: 'profile.reservations' });
@@ -57,23 +59,20 @@ function openReservationsModal(): void {
             <template #content>
                 <div class="flex flex-col items-center gap-6 md:flex-row">
                     <!-- Avatar Section -->
-                    <div class="flex flex-col items-center gap-4">
-                        <template v-if="profileIsLoading || !profile">
-                            <Skeleton shape="circle" size="96px" />
-                        </template>
-                        <template v-else>
-                            <ProfileAvatar
-                                avatar-class="avatar-placeholder"
-                                :profile="profile"
-                                @click:edit="showAvatarDialog = true"
-                                editable>
-                            </ProfileAvatar>
-                            <ProfileAvatarDialog
-                                v-model:visible="showAvatarDialog"
-                                :profile="profile">
-                            </ProfileAvatarDialog>
-                        </template>
-                    </div>
+                    <template v-if="profileIsLoading || !profile">
+                        <Skeleton shape="circle" size="96px" />
+                    </template>
+                    <template v-else>
+                        <ProfileAvatar
+                            avatar-class="avatar-placeholder"
+                            :profile="profile"
+                            @click:edit="showAvatarDialog = true"
+                            editable>
+                        </ProfileAvatar>
+                        <ProfileAvatarDialog
+                            v-model:visible="showAvatarDialog"
+                            :profile="profile" />
+                    </template>
 
                     <!-- Profile Info -->
                     <div class="flex-1 space-y-3">
@@ -113,6 +112,18 @@ function openReservationsModal(): void {
                                 </Chip>
                             </div>
                         </template>
+                    </div>
+
+                    <!-- Edit Profile Button -->
+                    <div class="flex justify-end self-start" v-if="!profileIsLoading && profile">
+                        <Button
+                            @click="showEditDialog = true"
+                            size="small"
+                            severity="secondary"
+                            text>
+                            Profiel Bewerken
+                        </Button>
+                        <ProfileEditDialog v-model:visible="showEditDialog" :profile="profile" />
                     </div>
                 </div>
             </template>
@@ -214,7 +225,7 @@ function openReservationsModal(): void {
                             <div class="py-6 text-center text-gray-500">
                                 <FontAwesomeIcon :icon="faAward" class="mb-3 text-3xl" />
                                 <p class="text-sm">
-                                    Maak meer reservatie om prestaties te ontgrendelen!
+                                    Maak meer reservaties om prestaties te ontgrendelen!
                                 </p>
                             </div>
                         </template>

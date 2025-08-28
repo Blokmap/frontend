@@ -1,13 +1,14 @@
-import type { ProfileStats } from '@/domain/profile';
+import type { Profile, ProfileStats } from '@/domain/profile';
 import type { Reservation } from '@/domain/reservation';
 import {
     deleteProfileAvatar,
     getProfileReservations,
     getProfileStats,
+    updateProfile,
     updateProfileAvatar,
 } from '@/services/profile';
 import type { CompMutation, CompMutationOptions, CompQuery } from '@/types/Composable';
-import { useMutation, useQuery } from '@tanstack/vue-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import type { AxiosError } from 'axios';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
 
@@ -58,6 +59,28 @@ export function useUpdateAvatar(
         ...options,
         mutationFn: async ({ profileId, file }: UpdateAvatarParams) => {
             await updateProfileAvatar(profileId, file);
+        },
+    });
+
+    return mutation;
+}
+
+export type UpdateProfileParams = {
+    profileId: number;
+    profileData: Partial<Profile>;
+};
+
+export function useUpdateProfile(
+    options: CompMutationOptions = {},
+): CompMutation<UpdateProfileParams> {
+    const client = useQueryClient();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: async ({ profileId, profileData }: UpdateProfileParams) => {
+            const profile = await updateProfile(profileId, profileData);
+            client.invalidateQueries({ queryKey: ['profile', 'details'] });
+            return profile;
         },
     });
 

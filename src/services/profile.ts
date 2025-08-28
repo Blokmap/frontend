@@ -80,6 +80,22 @@ export async function updateProfileAvatar(profileId: number, file: File): Promis
 }
 
 /**
+ * Updates the profile details for a given profile ID.
+ *
+ * @param profileId - The ID of the profile to update.
+ * @param profileData - The profile data to update.
+ * @returns A promise that resolves to the updated profile.
+ */
+export async function updateProfile(
+    profileId: number,
+    profileData: Partial<Profile>,
+): Promise<Profile> {
+    const url = endpoints.profiles.update.replace('{id}', String(profileId));
+    const response = await client.patch<any>(url, profileData);
+    return parseProfile(response.data);
+}
+
+/**
  * Deletes the profile avatar for a given profile ID.
  *
  * @param profileId - The ID of the profile to delete the avatar for.

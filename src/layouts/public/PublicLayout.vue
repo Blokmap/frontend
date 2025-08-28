@@ -6,14 +6,14 @@ import PublicHeader from './PublicHeader.vue';
 <template>
     <div class="wrapper">
         <header class="header">
-            <div class="container">
+            <div class="content">
                 <PublicHeader />
             </div>
         </header>
 
         <hr class="divider" />
 
-        <main class="container flex-1">
+        <main class="content flex-1">
             <RouterView v-slot="{ Component }">
                 <KeepAlive :include="['LocationsPage']">
                     <component :is="Component" />
@@ -22,7 +22,7 @@ import PublicHeader from './PublicHeader.vue';
         </main>
 
         <footer class="footer">
-            <div class="container">
+            <div class="content">
                 <PublicFooter />
             </div>
         </footer>
@@ -37,8 +37,8 @@ import PublicHeader from './PublicHeader.vue';
     @apply flex flex-col gap-6;
     @apply rounded-md bg-gray-50;
 
-    .container {
-        @apply mx-auto w-full px-3 md:px-6 lg:max-w-[90vw] 2xl:w-7/8;
+    .content {
+        @apply mx-auto max-w-[1920px] px-3 md:px-6 xl:w-[85vw];
     }
 
     .divider {

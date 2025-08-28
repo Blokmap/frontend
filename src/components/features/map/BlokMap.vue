@@ -4,7 +4,7 @@ import Marker from './Marker.vue';
 import { useMapBox } from '@/composables/useMapBox';
 import type { Location } from '@/domain/location';
 import type { LngLatBounds, MapOptions } from '@/domain/map';
-import { faBuildingColumns, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
 import { useTemplateRef, watch } from 'vue';
@@ -20,7 +20,7 @@ const hoveredLocation = defineModel<Location | null>('hoveredLocation', {
 
 const emit = defineEmits<{
     (e: 'click:marker', id: number): void;
-    (e: 'update:bounds', bounds: LngLatBounds | null): void;
+    (e: 'update:bounds', bounds: LngLatBounds): void;
 }>();
 
 const mapContainerRef = useTemplateRef('mapContainer');
@@ -42,11 +42,11 @@ function handleMarkerMouseLeave() {
 watch(
     map.bounds,
     (newBounds) => {
-        emit('update:bounds', newBounds as LngLatBounds);
+        emit('update:bounds', newBounds);
         config.value.center = map.center.value;
         config.value.zoom = map.zoom.value;
     },
-    { deep: true, immediate: true },
+    { deep: true },
 );
 
 defineExpose({ map });

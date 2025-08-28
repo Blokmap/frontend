@@ -1,3 +1,4 @@
+import { useProgress } from '@/composables/store/useProgress';
 import { endpoints } from '@/endpoints';
 import { mockInstitutions } from '@/mock';
 import axios, { HttpStatusCode } from 'axios';
@@ -26,55 +27,98 @@ export const client = axios.create({
  * This includes handling unauthorized responses and mocking certain endpoints.
  */
 export function setupAxiosInterceptors(router: Router, toast: any): void {
-    client.interceptors.response.use(async (response) => {
-        if (response.status === HttpStatusCode.Unauthorized) {
-            router.push({
-                name: 'auth',
-                params: { action: 'login' },
-                query: { redirect: window.location.pathname },
-            });
-            toast.add({
-                severity: 'error',
-                summary: 'Niet ingelogd',
-                detail: 'Je moet ingelogd zijn om deze pagina te bekijken.',
-            });
-        }
+    const progressStore = useProgress();
 
-        if (response.status === HttpStatusCode.InternalServerError) {
-            console.error('Server error:', response);
-            toast.add({
-                severity: 'error',
-                summary: 'Serverfout',
-                detail: 'Er is een fout opgetreden op de server. Probeer het later opnieuw.',
-            });
-        }
+    // Request interceptor to start progress
+    client.interceptors.request.use(
+        async (config) => {
+            progressStore.start();
 
-        if (response.status === HttpStatusCode.BadRequest) {
-            toast.add({
-                severity: 'error',
-                summary: 'Fout bij verwerken verzoek',
-                detail: 'Er is een fout opgetreden bij het verwerken van je verzoek.',
-            });
-        }
-
-        return response;
-    });
-
-    client.interceptors.request.use(async (config) => {
-        if (config.url === endpoints.institutions.list && config.method === 'get') {
-            config.adapter = async () => {
-                return {
-                    data: mockInstitutions,
-                    status: 200,
-                    statusText: 'OK',
-                    headers: {},
-                    config,
+            if (config.url === endpoints.institutions.list && config.method === 'get') {
+                config.adapter = async () => {
+                    return {
+                        data: mockInstitutions,
+                        status: 200,
+                        statusText: 'OK',
+                        headers: {},
+                        config,
+                    };
                 };
-            };
-        }
+            }
 
-        return config;
-    });
+            return config;
+        },
+        (error) => {
+            progressStore.finish();
+            return Promise.reject(error);
+        },
+    );
+
+    // Response interceptor to finish progress and handle errors
+    client.interceptors.response.use(
+        async (response) => {
+            progressStore.finish();
+
+            if (response.status === HttpStatusCode.Unauthorized) {
+                router.push({
+                    name: 'auth',
+                    params: { action: 'login' },
+                    query: { redirect: window.location.pathname },
+                });
+                toast.add({
+                    severity: 'error',
+                    summary: 'Niet ingelogd',
+                    detail: 'Je moet ingelogd zijn om deze pagina te bekijken.',
+                });
+            }
+
+            if (response.status === HttpStatusCode.InternalServerError) {
+                console.error('Server error:', response);
+                toast.add({
+                    severity: 'error',
+                    summary: 'Serverfout',
+                    detail: 'Er is een fout opgetreden op de server. Probeer het later opnieuw.',
+                });
+            }
+
+            if (response.status === HttpStatusCode.BadRequest) {
+                toast.add({
+                    severity: 'error',
+                    summary: 'Fout bij verwerken verzoek',
+                    detail: 'Er is een fout opgetreden bij het verwerken van je verzoek.',
+                });
+            }
+
+            return response;
+        },
+        (error) => {
+            progressStore.finish();
+            return Promise.reject(error);
+        },
+    );
+
+    // Add interceptors for MapBox client as well
+    mapBoxClient.interceptors.request.use(
+        async (config) => {
+            progressStore.start();
+            return config;
+        },
+        (error) => {
+            progressStore.finish();
+            return Promise.reject(error);
+        },
+    );
+
+    mapBoxClient.interceptors.response.use(
+        async (response) => {
+            progressStore.finish();
+            return response;
+        },
+        (error) => {
+            progressStore.finish();
+            return Promise.reject(error);
+        },
+    );
 }
 
 /**

@@ -3,7 +3,7 @@ import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import { useItemAnimation } from '@/composables/anim/useItemAnimation';
 import type { Image } from '@/domain/image';
 import { LOCATION_SETTINGS } from '@/domain/location';
-import { faChevronLeft, faChevronRight, faShare } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRefsList } from '@vueuse/core';
 import Button from 'primevue/button';
@@ -17,7 +17,8 @@ const isFullscreen = ref(false);
 const selectedImageIndex = ref(0);
 
 const imageRefs = useTemplateRefsList();
-useItemAnimation(imageRefs);
+
+useItemAnimation(imageRefs, { duration: 0.5 });
 
 const paddedImages = computed(() => {
     const images = [...(props.images ?? [])];

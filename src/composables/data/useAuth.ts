@@ -11,7 +11,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import type { AxiosError } from 'axios';
 import { type Ref, computed } from 'vue';
 
-const authQueryKeys = {
+export const AUTH_QUERY_KEYS = {
     profile: () => ['profile', 'details'] as const,
 } as const;
 
@@ -25,7 +25,7 @@ export function useAuthProfile(
 ): CompQuery<Profile | null> & { profileId: Ref<number | null> } {
     const query = useQuery<Profile | null, AxiosError>({
         ...options,
-        queryKey: authQueryKeys.profile(),
+        queryKey: AUTH_QUERY_KEYS.profile(),
         refetchInterval: 60000,
         retry: false,
         queryFn: getAuthProfile,
@@ -55,7 +55,7 @@ export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<v
                 summary: 'Uitgelogd',
                 detail: 'Je bent succesvol uitgelogd.',
             });
-            client.invalidateQueries({ queryKey: authQueryKeys.profile() });
+            client.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.profile() });
             options.onSuccess?.(data, vars, context);
         },
     });
@@ -76,7 +76,7 @@ export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<Lo
         ...options,
         mutationFn: login,
         onSuccess: (data, vars, context) => {
-            client.invalidateQueries({ queryKey: authQueryKeys.profile() });
+            client.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.profile() });
             options.onSuccess?.(data, vars, context);
         },
         onError: (error, vars, context) => {
@@ -112,7 +112,7 @@ export function useAuthRegister(options: CompMutationOptions = {}): CompMutation
                 summary: 'Registratie geslaagd',
                 detail: 'Je account is succesvol aangemaakt.',
             });
-            client.invalidateQueries({ queryKey: authQueryKeys.profile() });
+            client.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.profile() });
             options.onSuccess?.(data, vars, context);
         },
         onError: (error, vars, context) => {

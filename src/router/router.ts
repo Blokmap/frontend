@@ -1,3 +1,4 @@
+import { AUTH_QUERY_KEYS } from '@/composables/data/useAuth';
 import { useToast } from '@/composables/store/useToast';
 import AuthLayout from '@/layouts/public/AuthLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
@@ -97,7 +98,7 @@ router.beforeEach(async (to) => {
 
     if (to.meta.requiresAuth) {
         const profile = await client.fetchQuery({
-            queryKey: ['profile', 'details'],
+            queryKey: AUTH_QUERY_KEYS.profile(),
             queryFn: getAuthProfile,
         });
 

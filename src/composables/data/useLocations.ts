@@ -1,5 +1,6 @@
 import type { ImageRequest } from '@/domain/image';
 import type { Location, LocationRequest, NearestLocation } from '@/domain/location';
+import type { LocationFilter } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 import type { OpeningTimeRequest } from '@/domain/openings';
 import { endpoints } from '@/endpoints';
@@ -18,7 +19,6 @@ import type {
     CompQuery,
     CompQueryOptions,
 } from '@/types/Composable';
-import type { LocationFilter } from '@/types/Filter';
 import type { Paginated } from '@/types/Pagination';
 import { client, getRandomDelay } from '@/utils/axios';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';

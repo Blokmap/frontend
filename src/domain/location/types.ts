@@ -1,7 +1,9 @@
+import type { LngLat, LngLatBounds } from '../map';
 import type { Image } from '@/domain/image';
 import type { OpeningTime } from '@/domain/openings';
 import type { Profile } from '@/domain/profile';
 import type { CreateTranslationRequest, Translation } from '@/domain/translation';
+import type { Pagination } from '@/types';
 
 export type LocationAddress = {
     street: string;
@@ -36,6 +38,16 @@ export type Location = {
     createdBy?: Profile | null;
     updatedBy?: Profile | null;
     images?: Image[];
+};
+
+export type LocationFilter = Pagination & {
+    isReservable: boolean | null;
+    openOn: Date | null;
+    bounds: LngLatBounds | null;
+    center: {
+        coords: LngLat;
+        radius?: number | null;
+    } | null;
 };
 
 export type LocationRequest = {

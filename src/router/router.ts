@@ -1,6 +1,8 @@
-import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
+import { useToast } from '@/composables/store/useToast';
 import AuthLayout from '@/layouts/public/AuthLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
+import { getAuthProfile } from '@/services/auth';
+import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -11,6 +13,7 @@ const routes: RouteRecordRaw[] = [
         children: [
             {
                 path: 'profile',
+                meta: { requiresAuth: true },
                 children: [
                     {
                         path: '',
@@ -30,7 +33,6 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: '',
                         name: 'locations',
-                        meta: { keepAlive: true },
                         component: () => import('@/pages/locations/LocationsPage.vue'),
                     },
                     {
@@ -44,6 +46,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: 'locations/submit',
                 name: 'locations.submit',
+                meta: { requiresAuth: true },
                 component: () => import('@/pages/locations/LocationSubmitPage.vue'),
             },
         ],
@@ -87,6 +90,31 @@ const router = createRouter({
     history: createWebHistory(),
     scrollBehavior: () => ({ left: 0, top: 0, behavior: 'smooth' }),
     routes,
+});
+
+router.beforeEach(async (to) => {
+    const client = useQueryClient();
+
+    if (to.meta.requiresAuth) {
+        const profile = await client.fetchQuery({
+            queryKey: ['profile', 'details'],
+            queryFn: getAuthProfile,
+        });
+
+        if (profile === null) {
+            const toast = useToast();
+
+            localStorage.setItem('redirectAfterLogin', to.fullPath);
+
+            toast.add({
+                severity: 'info',
+                summary: 'Niet ingelogd',
+                detail: 'Log in om deze pagina te bekijken.',
+            });
+
+            return { name: 'auth' };
+        }
+    }
 });
 
 export default router;

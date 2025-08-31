@@ -8,8 +8,8 @@ import {
     useCreateLocationImage,
     useCreateLocationTimeslots,
 } from '@/composables/data/useLocations';
-import { useVersionedLocalStorage } from '@/composables/store/useVersionedLocalStorage';
-import { useToast } from '@/composables/useToast';
+import { useToast } from '@/composables/store/useToast';
+import { useLocalStorage } from '@/composables/useLocalStorage';
 import type { ImageRequest } from '@/domain/image';
 import { DEFAULT_LOCATION_REQUEST } from '@/domain/location';
 import type { BuilderStep, BuilderSubstep, Location, LocationRequest } from '@/domain/location';
@@ -34,11 +34,11 @@ const isCreating = computed(
     () => isCreatingLocation.value || isCreatingImages.value || isCreatingOpenings.value,
 );
 
-const locationForm = useVersionedLocalStorage<LocationRequest>('location-form', {
+const locationForm = useLocalStorage<LocationRequest>('location-form', {
     defaults: DEFAULT_LOCATION_REQUEST,
 });
 
-const openingsForm = useVersionedLocalStorage<OpeningTimeRequest[]>('openings-form', {
+const openingsForm = useLocalStorage<OpeningTimeRequest[]>('openings-form', {
     defaults: [],
     dateFields: ['day', 'reservableFrom', 'reservableUntil'],
 });

@@ -1,5 +1,5 @@
 import { gsap } from 'gsap';
-import { type Ref, ref, watch } from 'vue';
+import { type Ref, onActivated, onDeactivated, ref, watch } from 'vue';
 
 /**
  * Composable to animate a list of items using GSAP.
@@ -21,7 +21,7 @@ export async function useItemAnimation<T extends Element>(
 
     function cleanupAnimation() {
         if (anim.value) {
-            anim.value.kill();
+            anim.value.revert();
             anim.value = null;
         }
     }
@@ -56,5 +56,7 @@ export async function useItemAnimation<T extends Element>(
         );
     }
 
-    watch(() => elements.value.length, animateElements, { immediate: true });
+    watch(() => elements.value.length, animateElements);
+
+    onDeactivated(cleanupAnimation);
 }

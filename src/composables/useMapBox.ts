@@ -149,7 +149,6 @@ export function useMapBox<T>(
         map.value = newMap;
     });
 
-    // Handle KeepAlive activation - auto resize map
     onActivated(() => {
         if (map.value) {
             try {

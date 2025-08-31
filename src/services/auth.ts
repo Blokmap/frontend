@@ -10,8 +10,9 @@ import { client } from '@/utils/axios';
  * @returns The authenticated user's profile or null if not authenticated.
  */
 export async function getAuthProfile(): Promise<Profile | null> {
-    const response = await client.get(endpoints.auth.current);
-    return parseProfile(response.data);
+    const { data } = await client.get(endpoints.auth.current);
+    if (data === null) return null;
+    return parseProfile(data);
 }
 
 /**

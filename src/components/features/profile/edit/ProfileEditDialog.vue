@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useUpdateProfile } from '@/composables/data/useProfile';
-import { useToast } from '@/composables/useToast';
+import { useToast } from '@/composables/store/useToast';
 import { type Profile, type ProfileRequest } from '@/domain/profile';
 import { faClose, faSave, faUserXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

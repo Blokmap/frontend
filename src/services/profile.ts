@@ -13,7 +13,7 @@ import { formatDate } from '@vueuse/core';
  * @param profileData - The raw profile data from the API
  * @returns The parsed profile object
  */
-export function parseProfile(profileData: any): Profile {
+export function parseProfile(profileData: any | null): Profile {
     return {
         ...profileData,
         createdAt: stringToDate(profileData.createdAt),

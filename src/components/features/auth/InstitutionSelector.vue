@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useToast } from '@/composables/useToast';
+import { useToast } from '@/composables/store/useToast';
 import type { Institution } from '@/domain/institution';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

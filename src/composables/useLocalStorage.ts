@@ -1,4 +1,4 @@
-import { useLocalStorage } from '@vueuse/core';
+import { useLocalStorage as _useLocalStorage } from '@vueuse/core';
 
 interface VersionedStorageData<T> {
     version: string;
@@ -8,7 +8,7 @@ interface VersionedStorageData<T> {
 interface UseVersionedLocalStorageOptions<T> {
     version?: string;
     defaults: T;
-    dateFields?: string[]; // Field names that should be treated as dates
+    dateFields?: string[];
 }
 
 function generateVersion(defaults: unknown): string {
@@ -46,10 +46,7 @@ function convertDates(value: any, dateFields: string[], deserialize: boolean): a
     return result;
 }
 
-export function useVersionedLocalStorage<T>(
-    key: string,
-    options: UseVersionedLocalStorageOptions<T>,
-) {
+export function useLocalStorage<T>(key: string, options: UseVersionedLocalStorageOptions<T>) {
     const { defaults, dateFields = [] } = options;
     const version = options.version || generateVersion(defaults);
 
@@ -82,7 +79,7 @@ export function useVersionedLocalStorage<T>(
         },
     };
 
-    return useLocalStorage(key, JSON.parse(JSON.stringify(defaults)) as T, {
+    return _useLocalStorage(key, JSON.parse(JSON.stringify(defaults)) as T, {
         serializer,
         writeDefaults: true,
     });

@@ -3,7 +3,7 @@ import LoginForm from '@/components/features/auth/forms/LoginForm.vue';
 import RegisterForm from '@/components/features/auth/forms/RegisterForm.vue';
 import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
 import { useInstitutions } from '@/composables/data/useInstitutions';
-import { useToast } from '@/composables/useToast';
+import { useToast } from '@/composables/store/useToast';
 import { endpoints } from '@/endpoints';
 import { authIdentityProviders } from '@/utils/auth';
 import { faArrowRight, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
@@ -38,8 +38,10 @@ const {
         });
     },
     onSuccess: () => {
-        if (route.query.redirect) {
-            router.push({ path: route.query.redirect.toString() });
+        const redirect = localStorage.getItem('redirectAfterLogin') || route.query.redirect;
+
+        if (redirect) {
+            router.push({ path: redirect.toString() });
         } else {
             router.push({ name: 'locations' });
         }

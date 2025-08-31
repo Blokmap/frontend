@@ -10,9 +10,10 @@ const props = defineProps<{
     location: Location;
 }>();
 
+const mapContainer = useTemplateRef('mapContainer');
 const mapCenter = computed((): LngLat => [props.location.longitude, props.location.latitude]);
 
-useMapBox(useTemplateRef('mapContainer'), {
+useMapBox(mapContainer, {
     center: mapCenter.value,
     zoom: 17,
     geoLocationControl: false,
@@ -21,7 +22,7 @@ useMapBox(useTemplateRef('mapContainer'), {
 </script>
 
 <template>
-    <div ref="mapContainer" class="static-map map h-full w-full">
+    <div ref="mapContainer" class="map w-full">
         <FontAwesomeIcon class="crosshair" :icon="faLocationDot" />
     </div>
 </template>

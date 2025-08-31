@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import ProfileAvatar from './ProfileAvatar.vue';
 import { useDeleteAvatar, useUpdateAvatar } from '@/composables/data/useProfile';
-import { useToast } from '@/composables/useToast';
+import { useToast } from '@/composables/store/useToast';
 import type { Profile } from '@/domain/profile';
 import { faClose, faImagePortrait, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

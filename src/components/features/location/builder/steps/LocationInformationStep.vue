@@ -4,7 +4,7 @@ import LocationBuilderCard from '@/components/features/location/builder/Location
 import AddressMap from '@/components/features/map/AddressMap.vue';
 import Callout from '@/components/shared/Callout.vue';
 import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
-import { useToast } from '@/composables/useToast';
+import { useToast } from '@/composables/store/useToast';
 import { LOCATION_SETTINGS } from '@/domain/location';
 import type { BuilderSubstep, LocationRequest } from '@/domain/location';
 import { formatLocationAddress } from '@/domain/location';

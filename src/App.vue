@@ -3,7 +3,7 @@ import { setupAxiosInterceptors } from './utils/axios';
 import Toast from '@/components/Toast.vue';
 import ProgressBar from '@/components/features/layout/ProgressBar.vue';
 import { useProgress } from '@/composables/store/useProgress';
-import { useToast } from '@/composables/useToast';
+import { useToast } from '@/composables/store/useToast';
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 

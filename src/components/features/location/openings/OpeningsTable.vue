@@ -67,9 +67,9 @@ function formatTimeRange(opening: OpeningTime): string {
             </div>
         </div>
 
-        <div v-else class="overflow-hidden rounded-lg shadow-sm">
+        <div v-else class="overflow-hidden rounded-md">
             <table class="w-full">
-                <thead class="bg-gray-50">
+                <thead class="bg-gray-100">
                     <tr>
                         <th
                             :class="compact ? 'px-3 py-1 text-xs' : 'px-4 py-3 text-xs'"
@@ -83,7 +83,7 @@ function formatTimeRange(opening: OpeningTime): string {
                         </th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 bg-white">
+                <tbody class="divide-y-2 divide-slate-200">
                     <tr
                         v-for="day in weekDays"
                         :key="day.toDateString()"
@@ -127,6 +127,10 @@ function formatTimeRange(opening: OpeningTime): string {
 
 <style scoped>
 @reference '@/assets/styles/main.css';
+
+.opening-hours-timetable {
+    @apply rounded-md border-2 border-slate-200;
+}
 
 .no-hours {
     @apply rounded-lg bg-gray-50;

@@ -5,7 +5,7 @@ import BlokMap from '@/components/features/map/BlokMap.vue';
 import { useItemAnimation } from '@/composables/anim/useItemAnimation';
 import { useLocationsSearch, useNearestLocation } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import { useToast } from '@/composables/useToast';
+import { useToast } from '@/composables/store/useToast';
 import type { Location } from '@/domain/location';
 import type { LngLat, LngLatBounds } from '@/domain/map';
 import { faFilter, faHelicopter, faSpinner } from '@fortawesome/free-solid-svg-icons';

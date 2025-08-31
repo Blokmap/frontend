@@ -23,7 +23,7 @@ import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Chip from 'primevue/chip';
 import Skeleton from 'primevue/skeleton';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
@@ -216,20 +216,27 @@ function openReservationsModal(): void {
             <!-- Achievements -->
             <Card>
                 <template #header>
-                    <h2 class="p-6 pb-0 text-xl font-semibold text-gray-900">Prestaties</h2>
+                    <div class="flex items-center justify-between p-6 pb-0">
+                        <h2 class="text-xl font-semibold text-gray-900">Prestaties</h2>
+                    </div>
                 </template>
                 <template #content>
-                    <div class="space-y-3">
-                        <template v-if="false"> </template>
-                        <template v-else>
-                            <div class="py-6 text-center text-gray-500">
-                                <FontAwesomeIcon :icon="faAward" class="mb-3 text-3xl" />
-                                <p class="text-sm">
-                                    Maak meer reservaties om prestaties te ontgrendelen!
-                                </p>
-                            </div>
-                        </template>
-                    </div>
+                    <template v-if="false"> </template>
+                    <template v-else>
+                        <div class="space-y-4 py-8 text-center text-gray-500">
+                            <FontAwesomeIcon :icon="faAward" class="text-4xl" />
+                            <p class="text-sm">
+                                Maak meer reservaties om prestaties te ontgrendelen!
+                            </p>
+                            <Button
+                                @click="router.push({ name: 'locations' })"
+                                severity="secondary"
+                                outlined
+                                size="small">
+                                Bekijk Locaties
+                            </Button>
+                        </div>
+                    </template>
                 </template>
             </Card>
         </div>

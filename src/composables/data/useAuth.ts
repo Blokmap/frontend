@@ -1,4 +1,4 @@
-import { useToast } from '@/composables/useToast';
+import { useToast } from '@/composables/store/useToast';
 import type { LoginRequest, Profile, RegisterRequest } from '@/domain/profile';
 import { getAuthProfile, login, logout, register } from '@/services/auth';
 import type {
@@ -11,6 +11,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import type { AxiosError } from 'axios';
 import { type Ref, computed } from 'vue';
 
+const authQueryKeys = {
+    profile: () => ['profile', 'details'] as const,
+} as const;
+
 /**
  * Composable to fetch the authenticated user's profile.
  *
@@ -21,8 +25,7 @@ export function useAuthProfile(
 ): CompQuery<Profile | null> & { profileId: Ref<number | null> } {
     const query = useQuery<Profile | null, AxiosError>({
         ...options,
-        queryKey: ['profile', 'details'],
-        throwOnError: false,
+        queryKey: authQueryKeys.profile(),
         refetchInterval: 60000,
         retry: false,
         queryFn: getAuthProfile,
@@ -52,7 +55,7 @@ export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<v
                 summary: 'Uitgelogd',
                 detail: 'Je bent succesvol uitgelogd.',
             });
-            client.invalidateQueries({ queryKey: ['profile'] });
+            client.invalidateQueries({ queryKey: authQueryKeys.profile() });
             options.onSuccess?.(data, vars, context);
         },
     });
@@ -67,13 +70,22 @@ export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<v
  */
 export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<LoginRequest> {
     const client = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         mutationFn: login,
         onSuccess: (data, vars, context) => {
-            client.invalidateQueries({ queryKey: ['profile'] });
+            client.invalidateQueries({ queryKey: authQueryKeys.profile() });
             options.onSuccess?.(data, vars, context);
+        },
+        onError: (error, vars, context) => {
+            toast.add({
+                severity: 'error',
+                summary: 'Inloggen mislukt',
+                detail: 'Er is een fout opgetreden bij het inloggen.',
+            });
+            options.onError?.(error, vars, context);
         },
     });
 
@@ -89,13 +101,27 @@ export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<Lo
  */
 export function useAuthRegister(options: CompMutationOptions = {}): CompMutation<RegisterRequest> {
     const client = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         mutationFn: register,
         onSuccess: (data, vars, context) => {
-            client.invalidateQueries({ queryKey: ['profile'] });
+            toast.add({
+                severity: 'success',
+                summary: 'Registratie geslaagd',
+                detail: 'Je account is succesvol aangemaakt.',
+            });
+            client.invalidateQueries({ queryKey: authQueryKeys.profile() });
             options.onSuccess?.(data, vars, context);
+        },
+        onError: (error, vars, context) => {
+            toast.add({
+                severity: 'error',
+                summary: 'Registratie mislukt',
+                detail: 'Er is een fout opgetreden bij het registreren.',
+            });
+            options.onError?.(error, vars, context);
         },
     });
 

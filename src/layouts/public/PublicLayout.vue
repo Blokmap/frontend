@@ -13,7 +13,7 @@ import PublicHeader from './PublicHeader.vue';
 
         <hr class="divider" />
 
-        <main class="content flex-1">
+        <main class="content w-full flex-1">
             <RouterView v-slot="{ Component }">
                 <KeepAlive :include="['LocationsPage']">
                     <component :is="Component" />

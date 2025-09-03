@@ -1,7 +1,24 @@
 import { AUTH_QUERY_KEYS } from '@/composables/data/useAuth';
 import { useToast } from '@/composables/store/useToast';
-import AuthLayout from '@/layouts/public/AuthLayout.vue';
+import { pullRedirectUrl, pushRedirectUrl } from '@/domain/auth';
+import AuthLayout from '@/layouts/auth/AuthLayout.vue';
+import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
+import {
+    AuthPage,
+    DashboardAuthoritiesPage,
+    DashboardAuthorityPage,
+    DashboardInstitutionPage,
+    DashboardInstitutionsPage,
+    DashboardLocationPage,
+    DashboardLocationsPage,
+    DashboardPage,
+    LocationPage,
+    LocationSubmitPage,
+    LocationsPage,
+    ProfilePage,
+    ReservationsPage,
+} from '@/router/pages';
 import { getAuthProfile } from '@/services/auth';
 import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
@@ -19,12 +36,12 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: '',
                         name: 'profile',
-                        component: () => import('@/pages/profile/ProfilePage.vue'),
+                        component: ProfilePage,
                     },
                     {
                         path: 'reservations/:inWeekOf?',
                         name: 'profile.reservations',
-                        component: () => import('@/pages/profile/ReservationsPage.vue'),
+                        component: ReservationsPage,
                     },
                 ],
             },
@@ -34,13 +51,13 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: '',
                         name: 'locations',
-                        component: () => import('@/pages/locations/LocationsPage.vue'),
+                        component: LocationsPage,
                     },
                     {
                         path: ':locationId',
                         name: 'locations.detail',
                         props: true,
-                        component: () => import('@/pages/locations/LocationPage.vue'),
+                        component: LocationPage,
                     },
                 ],
             },
@@ -48,7 +65,69 @@ const routes: RouteRecordRaw[] = [
                 path: 'locations/submit',
                 name: 'locations.submit',
                 meta: { requiresAuth: true },
-                component: () => import('@/pages/locations/LocationSubmitPage.vue'),
+                component: LocationSubmitPage,
+            },
+        ],
+    },
+    {
+        path: '/dashboard',
+        component: DashboardLayout,
+        children: [
+            {
+                path: '',
+                name: 'dashboard',
+                component: DashboardPage,
+            },
+            {
+                path: '/locations',
+                name: 'dashboard.locations',
+                children: [
+                    {
+                        path: '',
+                        name: 'dashboard.locations.index',
+                        component: DashboardLocationsPage,
+                    },
+                    {
+                        path: ':locationId',
+                        name: 'dashboard.locations.detail',
+                        props: true,
+                        component: DashboardLocationPage,
+                    },
+                ],
+            },
+            {
+                path: '/authorities',
+                name: 'dashboard.authorities',
+                children: [
+                    {
+                        path: '',
+                        name: 'dashboard.authorities.index',
+                        component: DashboardAuthoritiesPage,
+                    },
+                    {
+                        path: ':authorityId',
+                        name: 'dashboard.authorities.detail',
+                        props: true,
+                        component: DashboardAuthorityPage,
+                    },
+                ],
+            },
+            {
+                path: '/institutions',
+                name: 'dashboard.institutions',
+                children: [
+                    {
+                        path: '',
+                        name: 'dashboard.institutions.index',
+                        component: DashboardInstitutionsPage,
+                    },
+                    {
+                        path: ':institutionId',
+                        name: 'dashboard.institutions.detail',
+                        props: true,
+                        component: DashboardInstitutionPage,
+                    },
+                ],
             },
         ],
     },
@@ -59,21 +138,12 @@ const routes: RouteRecordRaw[] = [
             {
                 path: 'auth/sso',
                 name: 'auth.sso',
-                redirect: () => {
-                    const storedRedirectUrl = localStorage.getItem('redirectAfterLogin');
-                    const redirectPath = storedRedirectUrl || { name: 'profile' };
-
-                    if (storedRedirectUrl) {
-                        localStorage.removeItem('redirectAfterLogin');
-                    }
-
-                    return redirectPath;
-                },
+                redirect: () => pullRedirectUrl() || { name: 'profile ' },
             },
             {
                 path: 'auth/:action?',
                 name: 'auth',
-                component: () => import('@/pages/auth/AuthPage.vue'),
+                component: AuthPage,
             },
             {
                 path: 'login',
@@ -105,13 +175,13 @@ router.beforeEach(async (to) => {
         if (profile === null) {
             const toast = useToast();
 
-            localStorage.setItem('redirectAfterLogin', to.fullPath);
-
             toast.add({
                 severity: 'info',
                 summary: 'Niet ingelogd',
                 detail: 'Log in om deze pagina te bekijken.',
             });
+
+            pushRedirectUrl(to.fullPath);
 
             return { name: 'auth' };
         }

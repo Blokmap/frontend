@@ -4,7 +4,7 @@ import RegisterForm from '@/components/features/auth/forms/RegisterForm.vue';
 import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
 import { useInstitutions } from '@/composables/data/useInstitutions';
 import { useToast } from '@/composables/store/useToast';
-import { authIdentityProviders } from '@/domain/auth';
+import { authIdentityProviders, pullRedirectUrl } from '@/domain/auth';
 import { endpoints } from '@/endpoints';
 import { faArrowRight, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -38,7 +38,7 @@ const {
         });
     },
     onSuccess: () => {
-        const redirect = localStorage.getItem('redirectAfterLogin') || route.query.redirect;
+        const redirect = pullRedirectUrl();
 
         if (redirect) {
             router.push({ path: redirect.toString() });

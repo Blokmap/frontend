@@ -5,6 +5,7 @@ import ProgressBar from '@/components/features/layout/ProgressBar.vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useProgress } from '@/composables/store/useProgress';
 import { useToast } from '@/composables/store/useToast';
+import { pushRedirectUrl } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
 import { onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -18,6 +19,7 @@ const profile = useAuthProfile();
 
 watch(profile.data, (profile: Profile | null | undefined) => {
     if (!route.meta.requiresAuth || profile) return;
+    pushRedirectUrl(route.fullPath);
     router.push({ name: 'Login' });
 });
 

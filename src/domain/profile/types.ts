@@ -21,29 +21,8 @@ export type ProfileStats = {
     totalReservationHours: number;
 };
 
-export type Idp = {
-    id: string;
-    name: string;
-    logo?: string | null;
-};
-
 export type ProfileRequest = {
     firstName?: string;
     lastName?: string;
     username?: string;
-};
-
-export type LoginRequest = {
-    username: string;
-    password: string;
-    remember: boolean;
-};
-
-export type RegisterRequest = {
-    firstName: string;
-    lastName: string;
-    email: string;
-    username: string;
-    password: string;
-    passwordConfirmation: string;
 };

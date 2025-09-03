@@ -1,5 +1,5 @@
 import { parseProfile } from './profile';
-import type { LoginRequest, RegisterRequest } from '@/domain/profile';
+import type { LoginRequest, RegisterRequest } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
 import { endpoints } from '@/endpoints';
 import { client } from '@/utils/axios';

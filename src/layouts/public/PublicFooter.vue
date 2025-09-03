@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DOCS_URL } from '../../../constants';
+import { DOCS_URL } from '../../constants';
 import Logo from '@/components/shared/Logo.vue';
 import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

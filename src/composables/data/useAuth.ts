@@ -1,5 +1,6 @@
 import { useToast } from '@/composables/store/useToast';
-import type { LoginRequest, Profile, RegisterRequest } from '@/domain/profile';
+import type { LoginRequest, RegisterRequest } from '@/domain/auth';
+import type { Profile } from '@/domain/profile';
 import { getAuthProfile, login, logout, register } from '@/services/auth';
 import type {
     CompMutation,

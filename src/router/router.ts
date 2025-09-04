@@ -9,6 +9,7 @@ import {
     DashboardAuthorityPage,
     DashboardInstitutionPage,
     DashboardInstitutionsPage,
+    DashboardPage,
     LocationDetailPage,
     LocationPage,
     LocationSubmitPage,
@@ -73,7 +74,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: '',
                 name: 'dashboard',
-                redirect: { name: 'dashboard.locations' },
+                component: DashboardPage,
             },
             {
                 path: 'locations',

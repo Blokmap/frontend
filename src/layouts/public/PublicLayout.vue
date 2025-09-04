@@ -5,13 +5,11 @@ import PublicHeader from './PublicHeader.vue';
 
 <template>
     <div class="wrapper">
-        <header class="header content">
+        <header class="header">
             <div class="content">
                 <PublicHeader />
             </div>
         </header>
-
-        <hr class="divider" />
 
         <main class="content w-full flex-1">
             <RouterView v-slot="{ Component }">
@@ -22,9 +20,7 @@ import PublicHeader from './PublicHeader.vue';
         </main>
 
         <footer class="footer">
-            <div class="content">
-                <PublicFooter />
-            </div>
+            <div class="content"><PublicFooter /></div>
         </footer>
     </div>
 </template>
@@ -33,7 +29,7 @@ import PublicHeader from './PublicHeader.vue';
 @reference '@/assets/styles/main.css';
 
 .wrapper {
-    @apply m-3 flex-1 pt-6 md:m-6;
+    @apply m-3 flex-1 md:m-6;
     @apply flex flex-col gap-6;
     @apply rounded-md bg-gray-50;
 
@@ -41,8 +37,9 @@ import PublicHeader from './PublicHeader.vue';
         @apply mx-auto max-w-[1920px] px-3 md:px-6 xl:w-[85vw];
     }
 
-    .divider {
-        @apply border-t-2 border-slate-200;
+    .header {
+        @apply py-6;
+        @apply border-b-2 border-slate-200;
     }
 
     .footer {

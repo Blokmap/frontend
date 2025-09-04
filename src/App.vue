@@ -38,6 +38,10 @@ onMounted(() => {
 @reference '@/assets/styles/main.css';
 
 .fade-enter-active {
-    transition: opacity 0.15s ease-in;
+    @apply !duration-150;
+}
+
+.fade-leave-active {
+    @apply !duration-150;
 }
 </style>

@@ -1,26 +1,22 @@
-import { AUTH_QUERY_KEYS } from '@/composables/data/useAuth';
-import { useToast } from '@/composables/store/useToast';
-import { pullRedirectUrl, pushRedirectUrl } from '@/domain/auth';
+import { pullRedirectUrl } from '@/domain/auth';
 import AuthLayout from '@/layouts/auth/AuthLayout.vue';
 import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
+import { authRouterGuard, breadcrumbRouterGuard } from '@/router/guards';
 import {
     AuthPage,
     DashboardAuthoritiesPage,
     DashboardAuthorityPage,
     DashboardInstitutionPage,
     DashboardInstitutionsPage,
-    DashboardLocationPage,
-    DashboardLocationsPage,
-    DashboardPage,
+    LocationDetailPage,
     LocationPage,
     LocationSubmitPage,
+    LocationsIndexPage,
     LocationsPage,
     ProfilePage,
     ReservationsPage,
 } from '@/router/pages';
-import { getAuthProfile } from '@/services/auth';
-import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -31,7 +27,7 @@ const routes: RouteRecordRaw[] = [
         children: [
             {
                 path: 'profile',
-                meta: { requiresAuth: true },
+                meta: { auth: { required: true } },
                 children: [
                     {
                         path: '',
@@ -64,7 +60,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: 'locations/submit',
                 name: 'locations.submit',
-                meta: { requiresAuth: true },
+                meta: { auth: { required: true } },
                 component: LocationSubmitPage,
             },
         ],
@@ -72,31 +68,31 @@ const routes: RouteRecordRaw[] = [
     {
         path: '/dashboard',
         component: DashboardLayout,
+        meta: { auth: { required: true } },
         children: [
             {
                 path: '',
                 name: 'dashboard',
-                component: DashboardPage,
+                redirect: { name: 'dashboard.locations' },
             },
             {
-                path: '/locations',
+                path: 'locations',
                 name: 'dashboard.locations',
                 children: [
                     {
                         path: '',
                         name: 'dashboard.locations.index',
-                        component: DashboardLocationsPage,
+                        component: LocationsIndexPage,
                     },
                     {
                         path: ':locationId',
                         name: 'dashboard.locations.detail',
-                        props: true,
-                        component: DashboardLocationPage,
+                        component: LocationDetailPage,
                     },
                 ],
             },
             {
-                path: '/authorities',
+                path: 'authorities',
                 name: 'dashboard.authorities',
                 children: [
                     {
@@ -107,13 +103,12 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: ':authorityId',
                         name: 'dashboard.authorities.detail',
-                        props: true,
                         component: DashboardAuthorityPage,
                     },
                 ],
             },
             {
-                path: '/institutions',
+                path: 'institutions',
                 name: 'dashboard.institutions',
                 children: [
                     {
@@ -124,10 +119,14 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: ':institutionId',
                         name: 'dashboard.institutions.detail',
-                        props: true,
                         component: DashboardInstitutionPage,
                     },
                 ],
+            },
+            {
+                path: 'profiles',
+                name: 'dashboard.profiles',
+                children: [],
             },
         ],
     },
@@ -138,7 +137,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: 'auth/sso',
                 name: 'auth.sso',
-                redirect: () => pullRedirectUrl() || { name: 'profile ' },
+                redirect: () => pullRedirectUrl() || { name: 'profile' },
             },
             {
                 path: 'auth/:action?',
@@ -163,29 +162,7 @@ const router = createRouter({
     routes,
 });
 
-router.beforeEach(async (to) => {
-    const client = useQueryClient();
-
-    if (to.meta.requiresAuth) {
-        const profile = await client.fetchQuery({
-            queryKey: AUTH_QUERY_KEYS.profile(),
-            queryFn: getAuthProfile,
-        });
-
-        if (profile === null) {
-            const toast = useToast();
-
-            toast.add({
-                severity: 'info',
-                summary: 'Niet ingelogd',
-                detail: 'Log in om deze pagina te bekijken.',
-            });
-
-            pushRedirectUrl(to.fullPath);
-
-            return { name: 'auth' };
-        }
-    }
-});
+router.beforeEach(authRouterGuard);
+router.afterEach(breadcrumbRouterGuard);
 
 export default router;

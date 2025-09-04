@@ -1,9 +1,7 @@
 import type { ImageRequest } from '@/domain/image';
-import type { Location, LocationRequest, NearestLocation } from '@/domain/location';
-import type { LocationFilter } from '@/domain/location';
+import type { Location, LocationFilter, LocationRequest, NearestLocation } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 import type { OpeningTimeRequest } from '@/domain/openings';
-import { endpoints } from '@/endpoints';
 import {
     createLocation,
     createLocationImage,
@@ -12,7 +10,6 @@ import {
     getNearestLocation,
     searchLocations,
 } from '@/services/location';
-import type { ReservationIncludes } from '@/services/reservation';
 import type {
     CompMutation,
     CompMutationOptions,
@@ -20,7 +17,7 @@ import type {
     CompQueryOptions,
 } from '@/types/Composable';
 import type { Paginated } from '@/types/Pagination';
-import { client, getRandomDelay } from '@/utils/axios';
+import { getRandomDelay } from '@/utils/axios';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -36,7 +33,7 @@ export type LocationIncludes = 'images' | 'created_by';
  */
 export function useLocationsSearch(
     filters?: MaybeRef<LocationFilter>,
-    options: CompQueryOptions = {},
+    options: CompQueryOptions<LocationIncludes> = {},
 ): CompQuery<Paginated<Location>> {
     const { locale } = useI18n();
 

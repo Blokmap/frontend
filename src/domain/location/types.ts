@@ -41,10 +41,10 @@ export type Location = {
 };
 
 export type LocationFilter = Pagination & {
-    isReservable: boolean | null;
-    openOn: Date | null;
-    bounds: LngLatBounds | null;
-    center: {
+    isReservable?: boolean | null;
+    openOn?: Date | null;
+    bounds?: LngLatBounds | null;
+    center?: {
         coords: LngLat;
         radius?: number | null;
     } | null;

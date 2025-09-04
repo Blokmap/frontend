@@ -40,8 +40,7 @@
 }
 
 .p-badge-contrast {
-    @apply bg-surface-950 text-white;
-    @apply dark:text-surface-950 dark:bg-white;
+    @apply bg-slate-300 text-black;
 }
 
 .p-badge-sm {

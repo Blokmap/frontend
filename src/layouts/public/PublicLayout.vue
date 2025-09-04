@@ -5,7 +5,7 @@ import PublicHeader from './PublicHeader.vue';
 
 <template>
     <div class="wrapper">
-        <header class="header">
+        <header class="header content">
             <div class="content">
                 <PublicHeader />
             </div>
@@ -33,7 +33,7 @@ import PublicHeader from './PublicHeader.vue';
 @reference '@/assets/styles/main.css';
 
 .wrapper {
-    @apply m-3 min-h-screen pt-6 md:m-6;
+    @apply m-3 flex-1 pt-6 md:m-6;
     @apply flex flex-col gap-6;
     @apply rounded-md bg-gray-50;
 

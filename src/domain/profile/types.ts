@@ -12,6 +12,7 @@ export type Profile = {
     institution?: Institution | null;
     authorities?: Authority[];
     createdAt: Date;
+    isAdmin: boolean;
 };
 
 export type ProfileStats = {

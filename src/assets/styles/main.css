@@ -78,7 +78,7 @@ body {
     @apply bg-slate-900 text-base text-slate-800;
 
     #app {
-        @apply h-full min-h-[100vh];
+        @apply flex h-full min-h-[100vh];
     }
 
     &.dark {

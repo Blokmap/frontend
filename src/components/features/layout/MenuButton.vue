@@ -1,15 +1,13 @@
 <script lang="ts" setup>
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
-import { DOCS_URL } from '@/constants';
 import {
     faBars,
     faCalendarDays,
-    faCogs,
-    faInfoCircle,
-    faMapLocation,
+    faDashboard,
     faRightToBracket,
     faSignOut,
+    faUser,
     faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -87,20 +85,22 @@ function handleNavigationClick(): void {
                     </div>
                 </RouterLink>
 
-                <RouterLink
-                    class="menu-link"
-                    :to="{ name: 'profile' }"
-                    @click="handleNavigationClick">
-                    <FontAwesomeIcon :icon="faCalendarDays" class="text-secondary fa-icon" />
-                    <span>Profiel en reservaties</span>
-                </RouterLink>
+                <p class="font-semibold">Profiel</p>
 
                 <RouterLink
                     class="menu-link"
                     :to="{ name: 'profile' }"
                     @click="handleNavigationClick">
-                    <FontAwesomeIcon :icon="faCogs" class="text-secondary fa-icon" />
-                    <span>Beheer je eigen locaties</span>
+                    <FontAwesomeIcon :icon="faUser" class="text-secondary fa-icon" />
+                    <span>Mijn Profiel</span>
+                </RouterLink>
+
+                <RouterLink
+                    class="menu-link"
+                    :to="{ name: 'profile.reservations' }"
+                    @click="handleNavigationClick">
+                    <FontAwesomeIcon :icon="faCalendarDays" class="text-secondary fa-icon" />
+                    <span>Mijn Reservaties</span>
                 </RouterLink>
             </template>
 
@@ -128,25 +128,16 @@ function handleNavigationClick(): void {
                 </div>
             </template>
 
-            <!-- Divider -->
-            <div class="border-t border-slate-200 dark:border-slate-700"></div>
+            <p class="font-semibold">Beheer</p>
 
             <!-- Navigation -->
-            <div class="flex flex-col gap-2">
-                <RouterLink
-                    class="menu-link"
-                    :to="{ name: 'locations' }"
-                    @click="handleNavigationClick">
-                    <FontAwesomeIcon :icon="faMapLocation" class="text-secondary fa-icon" />
-                    <span>Ontdek alle locaties</span>
-                </RouterLink>
-            </div>
-
-            <!-- Help Section -->
-            <a class="menu-link" :href="DOCS_URL + '/' + locale" @click="handleNavigationClick">
-                <FontAwesomeIcon :icon="faInfoCircle" class="text-secondary fa-icon" />
-                <span>Gebruikershandleiding</span>
-            </a>
+            <RouterLink
+                class="menu-link"
+                :to="{ name: 'dashboard' }"
+                @click="handleNavigationClick">
+                <FontAwesomeIcon :icon="faDashboard" class="text-secondary fa-icon" />
+                <span>Dashboard</span>
+            </RouterLink>
         </div>
     </Popover>
 </template>

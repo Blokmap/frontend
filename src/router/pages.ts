@@ -14,8 +14,10 @@ export const AuthPage = () => import('@/pages/auth/AuthPage.vue');
 export const DashboardPage = () => import('@/pages/dashboard/DashboardPage.vue');
 
 // Dashboard Locations
-export const DashboardLocationsPage = () => import('@/pages/dashboard/locations/LocationsPage.vue');
-export const DashboardLocationPage = () => import('@/pages/dashboard/locations/LocationPage.vue');
+export const LocationDetailPage = () =>
+    import('@/pages/dashboard/locations/LocationDetailPage.vue');
+export const LocationsIndexPage = () =>
+    import('@/pages/dashboard/locations/LocationsIndexPage.vue');
 
 // Dashboard Authorities
 export const DashboardAuthoritiesPage = () =>

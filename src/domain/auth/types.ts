@@ -18,3 +18,13 @@ export type Idp = {
     name: string;
     logo?: string | null;
 };
+
+export type AuthSettings = {
+    required: boolean;
+    permissions?: {
+        admin?: boolean;
+        authority?: unknown;
+        location?: unknown;
+        institution?: unknown;
+    };
+};

@@ -2,10 +2,25 @@
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import gsap from 'gsap';
-import { nextTick, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
+
+const props = withDefaults(
+    defineProps<{
+        light?: boolean;
+    }>(),
+    {
+        light: false,
+    },
+);
 
 const logoRef = ref<HTMLElement | null>(null);
 const textRef = ref<HTMLElement | null>(null);
+
+const colorClasses = computed(() => {
+    return props.light
+        ? 'border-secondary-300 text-secondary-300'
+        : 'border-secondary text-secondary';
+});
 
 onMounted(async () => {
     await nextTick();
@@ -48,8 +63,13 @@ function handleHoverOut() {
 </script>
 
 <template>
-    <div ref="logoRef" class="logo" @mouseenter="handleHoverIn" @mouseleave="handleHoverOut">
-        <FontAwesomeIcon :icon="faGraduationCap" class="mr-2 text-xl" />
+    <div
+        ref="logoRef"
+        class="logo"
+        :class="colorClasses"
+        @mouseenter="handleHoverIn"
+        @mouseleave="handleHoverOut">
+        <FontAwesomeIcon :icon="faGraduationCap" class="mr-2" />
         <span ref="textRef" class="flex space-x-[1px]">
             <span v-for="(char, i) in 'Blokmap'" :key="i">{{ char }}</span>
         </span>
@@ -60,7 +80,8 @@ function handleHoverOut() {
 @reference '@/assets/styles/main.css';
 
 .logo {
-    @apply text-secondary border-secondary flex items-center rounded-full border-2 px-3 py-1 transition-shadow duration-200;
+    @apply flex w-fit items-center rounded-full border-2 px-3 py-1;
+    @apply transition-shadow duration-200;
     @apply cursor-pointer text-xl font-bold tracking-wide select-none;
 }
 </style>

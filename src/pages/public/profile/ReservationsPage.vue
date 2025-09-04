@@ -3,10 +3,7 @@ import ReservationCalendar from '@/components/features/reservation/ReservationCa
 import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useProfileReservations } from '@/composables/data/useProfile';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { formatDate } from '@vueuse/core';
-import Button from 'primevue/button';
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -71,19 +68,6 @@ function handleDateSelect(date: any): void {
 
 <template>
     <div class="space-y-6">
-        <!-- Header -->
-        <div class="flex w-full items-center gap-4 py-3">
-            <Button @click="goBackToProfile" severity="secondary" text rounded>
-                <template #icon>
-                    <FontAwesomeIcon :icon="faArrowLeft" />
-                </template>
-            </Button>
-            <h1
-                class="absolute left-1/2 -translate-x-1/2 transform text-3xl font-bold text-gray-900">
-                Mijn Reservaties
-            </h1>
-        </div>
-
         <div class="flex h-full flex-col space-y-6">
             <CalendarControls
                 :current-week="dateInWeek"

@@ -6,9 +6,43 @@
         <link rel="stylesheet" href="/src/assets/styles/main.css" />
         <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
         <title>Blokmap</title>
+        <style>
+            #preloader {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.2s ease;
+            }
+
+            #preloader.hide {
+                opacity: 0;
+            }
+
+            .spinner {
+                width: 24px;
+                height: 24px;
+                border: 2px solid #f3f3f3;
+                border-top: 2px solid #666;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
     </head>
     <body>
         <div id="app"></div>
+
         <script type="module" src="/src/main.ts"></script>
     </body>
 </html>

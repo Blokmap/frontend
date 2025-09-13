@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import Logo from '@/components/shared/Logo.vue';
 import { DOCS_URL } from '@/config/constants';
-import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 </script>
 
 <template>
@@ -15,17 +13,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
                 Ontdek en reserveer de perfecte studeerplekken in België. Van stille bibliotheken
                 tot gezellige cafés.
             </p>
-            <div class="footer-social">
-                <a href="#" aria-label="Facebook" class="footer-social-link">
-                    <FontAwesomeIcon :icon="faFacebook" class="h-3 w-3" />
-                </a>
-                <a href="#" aria-label="Twitter" class="footer-social-link">
-                    <FontAwesomeIcon :icon="faTwitter" class="h-3 w-3" />
-                </a>
-                <a href="#" aria-label="Instagram" class="footer-social-link">
-                    <FontAwesomeIcon :icon="faInstagram" class="h-3 w-3" />
-                </a>
-            </div>
         </div>
 
         <div class="footer-section">
@@ -129,15 +116,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
             &:hover {
                 @apply text-primary-600;
             }
-        }
-    }
-
-    .footer-social {
-        @apply flex space-x-2;
-
-        .footer-social-link {
-            @apply flex h-8 w-8 items-center justify-center rounded-full;
-            @apply bg-primary-100 text-primary-600;
         }
     }
 

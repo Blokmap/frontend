@@ -1,11 +1,12 @@
 import { useProgress } from '@/composables/store/useProgress';
+import { MAPBOX_URL } from '@/config/constants';
 import { endpoints } from '@/config/endpoints';
 import { mockInstitutions } from '@/mock';
 import axios, { HttpStatusCode } from 'axios';
 import { type Router } from 'vue-router';
 
 export const mapBoxClient = axios.create({
-    baseURL: import.meta.env.VITE_MAPBOX_API_BASE_URL,
+    baseURL: MAPBOX_URL,
     params: {
         access_token: import.meta.env.VITE_MAPBOX_API_KEY,
     },

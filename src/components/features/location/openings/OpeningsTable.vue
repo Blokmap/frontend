@@ -99,6 +99,8 @@ const openingTimesByDay = computed(() => {
 </template>
 
 <style scoped>
+@reference '@/assets/styles/main.css';
+
 .opening-hours-timetable {
     @apply rounded-md border border-slate-200;
 }

@@ -79,8 +79,7 @@ watch(
     { deep: true, immediate: true },
 );
 
-const handleBoundsChange = useDebounceFn((bounds: LngLatBounds | null) => {
-    console.log('Bounds changed:', bounds);
+const handleBoundsChange = useDebounceFn(async (bounds: LngLatBounds | null) => {
     filterStore.updateFilters({ bounds, page: 1 });
 }, 400);
 
@@ -194,6 +193,7 @@ function handleMarkerClick(id: number): void {
             <div class="sticky top-4 w-full" :style="{ height: 'calc(100vh - 2rem)' }">
                 <BlokMap
                     ref="map"
+                    class="border-2 border-slate-200"
                     :locations="locations?.data"
                     :is-loading="isLoading"
                     @update:bounds="handleBoundsChange"

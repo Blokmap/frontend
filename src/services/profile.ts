@@ -1,8 +1,8 @@
+import { client } from '@/config/axios';
+import { endpoints } from '@/config/endpoints';
 import type { Profile, ProfileStats } from '@/domain/profile';
 import type { Reservation } from '@/domain/reservation';
-import { endpoints } from '@/endpoints';
 import { type ReservationIncludes, parseReservation } from '@/services/reservation';
-import { client } from '@/utils/axios';
 import { stringToDate } from '@/utils/date/date';
 import { formatIncludes } from '@/utils/service';
 import { formatDate } from '@vueuse/core';

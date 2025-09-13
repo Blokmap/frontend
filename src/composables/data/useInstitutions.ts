@@ -1,7 +1,7 @@
+import { client } from '@/config/axios';
+import { endpoints } from '@/config/endpoints';
 import type { Institution } from '@/domain/institution';
-import { endpoints } from '@/endpoints';
 import type { CompQuery } from '@/types/Composable';
-import { client } from '@/utils/axios';
 import { useQuery } from '@tanstack/vue-query';
 import type { AxiosError } from 'axios';
 

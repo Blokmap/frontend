@@ -34,7 +34,7 @@ const {
     <template v-if="isError"> </template>
     <template v-else>
         <Transition name="scale" appear>
-            <div class="mx-auto max-w-[1080px] space-y-7">
+            <div class="mx-auto max-w-[1148px] space-y-7">
                 <!-- Title -->
                 <h1 class="text-2xl font-semibold">
                     <template v-if="location">{{ location.name }}</template>
@@ -42,7 +42,7 @@ const {
                 </h1>
 
                 <!-- Gallery -->
-                <div class="h-[425px]">
+                <div class="h-[400px]">
                     <Gallery v-if="location?.images" :images="location.images" />
                     <GallerySkeleton v-else-if="isLoading" />
                 </div>
@@ -66,7 +66,7 @@ const {
                         </div>
 
                         <!-- Description -->
-                        <p class="text-sm text-slate-500">
+                        <p class="text-sm text-slate-600">
                             <template v-if="location">{{ location.description[locale] }}</template>
                             <template v-else-if="isLoading">
                                 <Skeleton height="16px" width="100%" class="mb-2" />
@@ -80,15 +80,19 @@ const {
 
                         <!-- Address -->
                         <h2 class="text-lg font-medium">
-                            <template v-if="location">{{
-                                formatLocationAddress(location)
-                            }}</template>
+                            <template v-if="location">
+                                {{ formatLocationAddress(location) }}
+                            </template>
                             <Skeleton v-else-if="isLoading" height="24px" width="250px" />
                         </h2>
 
                         <!-- Map -->
-                        <div class="h-[350px]">
-                            <LocationMap v-if="location" :location="location"> </LocationMap>
+                        <div class="h-[400px]">
+                            <LocationMap
+                                class="border-2 border-slate-200"
+                                v-if="location"
+                                :location="location">
+                            </LocationMap>
                             <LocationMapSkeleton v-else-if="isLoading" />
                         </div>
                     </div>

@@ -1,8 +1,8 @@
 import { parseProfile } from './profile';
+import { client } from '@/config/axios';
+import { endpoints } from '@/config/endpoints';
 import type { LoginRequest, RegisterRequest } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
-import { endpoints } from '@/endpoints';
-import { client } from '@/utils/axios';
 
 /**
  * Fetches the authenticated user's profile.

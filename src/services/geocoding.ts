@@ -1,6 +1,6 @@
+import { mapBoxClient } from '@/config/axios';
+import { mapboxEndpoints } from '@/config/endpoints';
 import type { LngLat } from '@/domain/map';
-import { mapboxEndpoints } from '@/endpoints';
-import { mapBoxClient } from '@/utils/axios';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 

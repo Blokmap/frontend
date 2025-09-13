@@ -1,3 +1,4 @@
+import { getRandomDelay } from '@/config/axios';
 import type { ImageRequest } from '@/domain/image';
 import type { Location, LocationFilter, LocationRequest, NearestLocation } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
@@ -17,7 +18,6 @@ import type {
     CompQueryOptions,
 } from '@/types/Composable';
 import type { Paginated } from '@/types/Pagination';
-import { getRandomDelay } from '@/utils/axios';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -43,7 +43,7 @@ export function useLocationsSearch(
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const params = toValue(filters);
-            await getRandomDelay(100, 250);
+            await getRandomDelay(300, 500); // Simulate network delay for better UX
             return await searchLocations(params, locale.value);
         },
     });

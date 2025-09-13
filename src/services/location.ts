@@ -1,12 +1,11 @@
 import type { LocationIncludes } from '@/composables/data/useLocations';
+import { client } from '@/config/axios';
+import { endpoints } from '@/config/endpoints';
 import type { ImageRequest } from '@/domain/image';
-import type { Location, LocationRequest, NearestLocation } from '@/domain/location';
-import type { LocationFilter } from '@/domain/location';
+import type { Location, LocationFilter, LocationRequest, NearestLocation } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 import type { OpeningTime, OpeningTimeRequest } from '@/domain/openings';
-import { endpoints } from '@/endpoints';
 import type { Paginated } from '@/types/Pagination';
-import { client, getRandomDelay } from '@/utils/axios';
 import { dateToString, stringToDate } from '@/utils/date/date';
 import { stringToTime, timeToString } from '@/utils/date/time';
 import { formatIncludes } from '@/utils/service';

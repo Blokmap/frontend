@@ -13,17 +13,14 @@ import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     openingTimes?: OpeningTime[];
-    compact?: boolean;
 }>();
 
 const { locale } = useI18n();
 
-// Get the current week's start and end dates
 const now = new Date();
 const weekStart = startOfWeek(now);
 const weekEnd = endOfWeek(now);
 
-// Create an array of days for the current week
 const weekDays = computed(() => {
     const days = [];
     const current = new Date(weekStart);
@@ -36,49 +33,32 @@ const weekDays = computed(() => {
     return days;
 });
 
-// Group opening times by day of the week
 const openingTimesByDay = computed(() => {
     if (!props.openingTimes) return new Map();
     return groupOpeningTimesByDay(props.openingTimes);
 });
-
-// Get opening times for a specific day (wrapper for template usage)
-function getOpeningTimesForDayWrapper(day: Date): OpeningTime[] {
-    return getOpeningTimesForDay(openingTimesByDay.value, day);
-}
-
-// Format time range (wrapper for template usage)
-function formatTimeRange(opening: OpeningTime): string {
-    return formatOpeningTimeRange(opening, props.compact);
-}
 </script>
 
 <template>
     <div class="opening-hours-timetable">
         <!-- Timetable -->
         <div v-if="!openingTimes || openingTimes.length === 0" class="no-hours">
-            <div
-                class="flex flex-col items-center justify-center text-gray-500"
-                :class="compact ? 'py-3' : 'py-8'">
-                <FontAwesomeIcon
-                    :icon="faClock"
-                    :class="compact ? 'mb-1 text-lg' : 'mb-3 text-3xl'" />
-                <p :class="compact ? 'text-xs' : 'text-sm'">Geen openingstijden beschikbaar</p>
+            <div class="flex flex-col items-center justify-center py-4 text-gray-500">
+                <FontAwesomeIcon :icon="faClock" class="mb-2 text-lg" />
+                <p class="text-xs">Geen openingstijden beschikbaar</p>
             </div>
         </div>
 
         <div v-else class="overflow-hidden rounded-md">
             <table class="w-full">
-                <thead class="bg-gray-100">
+                <thead class="border-b-2 border-slate-200 bg-gray-100">
                     <tr>
                         <th
-                            :class="compact ? 'px-3 py-1 text-xs' : 'px-4 py-3 text-xs'"
-                            class="text-left font-medium tracking-wider text-gray-500 uppercase">
+                            class="px-3 py-2 text-left font-medium tracking-wider text-gray-500 uppercase">
                             Dag
                         </th>
                         <th
-                            :class="compact ? 'px-3 py-1 text-xs' : 'px-4 py-3 text-xs'"
-                            class="text-right font-medium tracking-wider text-gray-500 uppercase">
+                            class="px-3 py-2 text-right font-medium tracking-wider text-gray-500 uppercase">
                             Tijden
                         </th>
                     </tr>
@@ -88,35 +68,28 @@ function formatTimeRange(opening: OpeningTime): string {
                         v-for="day in weekDays"
                         :key="day.toDateString()"
                         :class="{ 'bg-primary-50': isToday(day) }">
-                        <td :class="compact ? 'px-3 py-1' : 'px-4 py-3'">
+                        <td class="px-3 py-2">
                             <span
-                                :class="[
-                                    compact ? 'text-xs' : 'text-sm',
-                                    'font-medium',
-                                    isToday(day) ? 'text-primary-500' : 'text-gray-900',
-                                ]">
-                                {{ formatDayName(day, compact ? 'short' : 'long', locale) }}
+                                class="text-sm font-medium"
+                                :class="isToday(day) ? 'text-primary-500' : 'text-gray-900'">
+                                {{ formatDayName(day, 'long', locale) }}
                             </span>
                         </td>
 
-                        <td :class="compact ? 'px-3 py-1' : 'px-4 py-3'" class="text-right">
-                            <template v-if="getOpeningTimesForDayWrapper(day).length > 0">
-                                <div class="flex">
-                                    <template
-                                        v-for="opening in getOpeningTimesForDayWrapper(day)"
-                                        :key="opening.id">
-                                        <div class="ml-auto text-xs">
-                                            {{ formatTimeRange(opening) }}
-                                        </div>
-                                    </template>
-                                </div>
+                        <td class="px-3 py-2 text-right">
+                            <template
+                                v-if="getOpeningTimesForDay(openingTimesByDay, day).length > 0">
+                                <span class="text-xs text-gray-900">
+                                    {{
+                                        getOpeningTimesForDay(openingTimesByDay, day)
+                                            .map((opening: OpeningTime) =>
+                                                formatOpeningTimeRange(opening),
+                                            )
+                                            .join(' • ')
+                                    }}
+                                </span>
                             </template>
-                            <span
-                                v-else
-                                :class="compact ? 'text-xs' : 'text-sm'"
-                                class="text-gray-400 italic">
-                                Gesloten
-                            </span>
+                            <span v-else class="text-xs text-gray-400 italic"> Gesloten </span>
                         </td>
                     </tr>
                 </tbody>
@@ -126,10 +99,8 @@ function formatTimeRange(opening: OpeningTime): string {
 </template>
 
 <style scoped>
-@reference '@/assets/styles/main.css';
-
 .opening-hours-timetable {
-    @apply rounded-md border-2 border-slate-200;
+    @apply rounded-md border border-slate-200;
 }
 
 .no-hours {

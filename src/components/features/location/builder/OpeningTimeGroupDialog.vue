@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { i18n } from '@/config/locale';
 import type { OpeningTimeGroupRequest, Time } from '@/domain/openings';
 import { dateToTime, timeToDate } from '@/utils/date/time';
-import { i18n } from '@/utils/locale';
 import { faCalendarPlus, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';

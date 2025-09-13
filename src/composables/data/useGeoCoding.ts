@@ -1,8 +1,8 @@
+import { mapBoxClient } from '@/config/axios';
+import { mapboxEndpoints } from '@/config/endpoints';
 import type { LngLat } from '@/domain/map';
-import { mapboxEndpoints } from '@/endpoints';
 import { geocodeAddress } from '@/services/geocoding';
 import type { CompMutation, CompQuery } from '@/types/Composable';
-import { mapBoxClient } from '@/utils/axios';
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import { useDebounce } from '@vueuse/core';
 import type { AxiosError } from 'axios';

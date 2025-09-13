@@ -22,7 +22,7 @@ useMapBox(mapContainer, {
 </script>
 
 <template>
-    <div ref="mapContainer" class="map w-full">
+    <div ref="mapContainer" class="map">
         <FontAwesomeIcon class="crosshair" :icon="faLocationDot" />
     </div>
 </template>

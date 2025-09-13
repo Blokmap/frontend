@@ -1,5 +1,5 @@
 import { useProgress } from '@/composables/store/useProgress';
-import { endpoints } from '@/endpoints';
+import { endpoints } from '@/config/endpoints';
 import { mockInstitutions } from '@/mock';
 import axios, { HttpStatusCode } from 'axios';
 import { type Router } from 'vue-router';

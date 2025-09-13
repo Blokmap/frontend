@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { getFlagImage } from '@/utils/locale';
+import { getFlagImage } from '@/config/locale';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';

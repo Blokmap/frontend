@@ -1,8 +1,6 @@
 <script lang="ts" setup>
-import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import { useItemAnimation } from '@/composables/anim/useItemAnimation';
 import type { Image } from '@/domain/image';
-import { LOCATION_SETTINGS } from '@/domain/location';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRefsList } from '@vueuse/core';
@@ -13,49 +11,22 @@ const props = defineProps<{
     images: Image[];
 }>();
 
+const imageRefs = useTemplateRefsList();
+useItemAnimation(imageRefs, { duration: 0.5 });
+
 const isFullscreen = ref(false);
 const selectedImageIndex = ref(0);
 
-const imageRefs = useTemplateRefsList();
-
-useItemAnimation(imageRefs, { duration: 0.5 });
-
-const secondaryImages = computed(() => {
-    return props.images.filter((img) => img.index !== 0);
-});
-
 const primaryImage = computed(() => {
-    return (
-        props.images.find((img) => img.index === 0) ?? {
-            url: placeholder,
-            index: 0,
-        }
-    );
-});
-
-const gridConfig = computed(() => {
-    const count = props.images.length;
-
-    if (count === 0) return null;
-    if (count === 1) return { cols: 1, rows: 1 };
-    if (count === 2) return { cols: 2, rows: 1 };
-    return { cols: 4, rows: 2 };
+    return props.images.find((img) => img.index === 0);
 });
 
 const gridClasses = computed(() => {
     const count = props.images.length;
-    if (count === 0) return '';
-    if (count === 1) return 'grid-cols-1 grid-rows-1';
+    if (count <= 1) return 'grid-cols-1 grid-rows-1';
     if (count === 2) return 'grid-cols-2 grid-rows-1';
     return 'grid-cols-4 grid-rows-2';
 });
-
-const getItemClasses = (item: any) => {
-    const base = 'gallery-image-container';
-    const colSpan = item.colSpan === 1 ? '' : item.colSpan === 2 ? 'col-span-2' : 'col-span-4';
-    const rowSpan = item.rowSpan === 1 ? '' : 'row-span-2';
-    return [base, colSpan, rowSpan].filter(Boolean).join(' ');
-};
 
 const imageLayout = computed(() => {
     const count = props.images.length;
@@ -64,59 +35,57 @@ const imageLayout = computed(() => {
         return props.images.map((img, idx) => ({
             image: img,
             index: idx,
-            colSpan: count === 1 ? 1 : 1,
-            rowSpan: 1,
+            classes: 'gallery-image-container',
         }));
     }
 
+    const layout = [];
+    const primary = primaryImage.value;
+    const secondary = props.images.filter((img) => img.index !== 0);
+
+    layout.push({
+        image: primary,
+        index: 0,
+        classes: 'gallery-image-container col-span-2 row-span-2',
+    });
+
     if (count === 3) {
-        return [
-            { image: primaryImage.value, index: 0, colSpan: 2, rowSpan: 2 },
-            ...secondaryImages.value.map((img, idx) => ({
+        secondary.forEach((img, idx) => {
+            layout.push({
                 image: img,
                 index: idx + 1,
-                colSpan: 2,
-                rowSpan: 1,
-            })),
-        ];
+                classes: 'gallery-image-container col-span-2',
+            });
+        });
+    } else {
+        secondary.slice(0, 2).forEach((img, idx) => {
+            layout.push({
+                image: img,
+                index: idx + 1,
+                classes: 'gallery-image-container',
+            });
+        });
+
+        if (secondary.length > 2) {
+            layout.push({
+                image: secondary[2],
+                index: 3,
+                classes: 'gallery-image-container col-span-2',
+            });
+        }
     }
 
-    // 4+ images
-    return [
-        { image: primaryImage.value, index: 0, colSpan: 2, rowSpan: 2 },
-        ...secondaryImages.value.slice(0, 2).map((img, idx) => ({
-            image: img,
-            index: idx + 1,
-            colSpan: 1,
-            rowSpan: 1,
-        })),
-        ...(secondaryImages.value.length > 2
-            ? [
-                  {
-                      image: secondaryImages.value[2],
-                      index: 3,
-                      colSpan: 2,
-                      rowSpan: 1,
-                  },
-              ]
-            : []),
-    ];
+    return layout;
 });
 
-async function openFullScreen(index?: number): Promise<void> {
+function openFullScreen(index: number): void {
     isFullscreen.value = true;
-
-    if (!index) return;
-
     selectedImageIndex.value = index;
 
-    await nextTick();
-
-    const element = document.getElementById(`gallery-image-${selectedImageIndex.value}`);
-
-    if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    nextTick(() => {
+        const element = document.getElementById(`gallery-image-${index}`);
+        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
 }
 
 function closeFullscreen(): void {
@@ -139,22 +108,16 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <!-- No images - show placeholder -->
-    <div
-        v-if="!images?.length"
-        class="flex h-full w-full items-center justify-center rounded-xl bg-gray-100">
-        <img :src="placeholder" alt="No images" class="h-24 w-24 opacity-50" />
-    </div>
-
     <!-- Image grid -->
-    <div v-else :class="`grid h-full w-full gap-2 overflow-hidden rounded-xl ${gridClasses}`">
+    <div
+        :class="`grid h-full w-full gap-2 overflow-hidden rounded-xl border-2 border-slate-200 ${gridClasses}`">
         <div
             v-for="item in imageLayout"
             :key="item.index"
-            :class="getItemClasses(item)"
+            :class="item.classes"
             :ref="imageRefs.set"
             @click="openFullScreen(item.index)">
-            <img :src="item.image.url" :alt="`Image ${item.index + 1}`" class="gallery-image" />
+            <img v-if="item.image" :src="item.image.url" class="gallery-image" />
         </div>
     </div>
 
@@ -232,20 +195,5 @@ onUnmounted(() => {
             @apply h-full w-full cursor-pointer object-cover;
         }
     }
-}
-
-.scale-enter-active,
-.scale-leave-active {
-    transition: all 0.3s ease;
-}
-
-.scale-enter-from {
-    opacity: 0;
-    transform: scale(0.95);
-}
-
-.scale-leave-to {
-    opacity: 0;
-    transform: scale(0.95);
 }
 </style>

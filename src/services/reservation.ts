@@ -1,6 +1,6 @@
+import { client } from '@/config/axios';
+import { endpoints } from '@/config/endpoints';
 import type { Reservation } from '@/domain/reservation';
-import { endpoints } from '@/endpoints';
-import { client } from '@/utils/axios';
 import { stringToTime, timeToString } from '@/utils/date/time';
 import { formatDate } from '@vueuse/core';
 

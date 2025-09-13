@@ -1,8 +1,4 @@
-import { pullRedirectUrl } from '@/domain/auth';
-import AuthLayout from '@/layouts/auth/AuthLayout.vue';
-import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
-import PublicLayout from '@/layouts/public/PublicLayout.vue';
-import { authRouterGuard, breadcrumbRouterGuard } from '@/router/guards';
+import { authRouterGuard, breadcrumbRouterGuard } from './guards';
 import {
     AuthPage,
     DashboardAuthoritiesPage,
@@ -17,7 +13,11 @@ import {
     LocationsPage,
     ProfilePage,
     ReservationsPage,
-} from '@/router/pages';
+} from './pages';
+import { pullRedirectUrl } from '@/domain/auth';
+import AuthLayout from '@/layouts/auth/AuthLayout.vue';
+import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
+import PublicLayout from '@/layouts/public/PublicLayout.vue';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -166,4 +166,4 @@ const router = createRouter({
 router.beforeEach(authRouterGuard);
 router.afterEach(breadcrumbRouterGuard);
 
-export default router;
+export { router };

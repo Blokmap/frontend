@@ -55,7 +55,7 @@ const imageUrl = computed(() => {
 
     .location--image {
         @apply relative h-full w-full overflow-hidden;
-        @apply rounded-2xl shadow-sm;
+        @apply rounded-2xl border-2 border-slate-200;
 
         .heart {
             @apply absolute top-1 right-2 text-2xl text-white transition-colors duration-200 hover:text-red-500;

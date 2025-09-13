@@ -2,6 +2,9 @@ FROM node:slim
 
 WORKDIR /blokmap-frontend
 
+ARG VITE_MAPBOX_API_KEY
+ENV VITE_MAPBOX_API_KEY=$VITE_MAPBOX_API_KEY
+
 COPY package.json package-lock.json ./
 
 RUN npm install -g npm

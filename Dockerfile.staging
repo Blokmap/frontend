@@ -1,20 +1,12 @@
-FROM node:slim AS build
+FROM node:slim
 
 WORKDIR /blokmap-frontend
 
-ARG VITE_MAPBOX_API_KEY
-
 COPY package.json package-lock.json ./
 
-RUN npm install -g npm
+RUN npm install -g npm vite
 RUN npm install
 
 COPY . .
 
-RUN VITE_MAPBOX_API_KEY=$VITE_MAPBOX_API_KEY npm run build -- --mode staging
-
-FROM alpine:3 AS export
-
-WORKDIR /blokmap-frontend/public
-
-COPY --from=build /blokmap-frontend/public .
+CMD ["npm", "run", "build", "--", "--mode", "staging"]

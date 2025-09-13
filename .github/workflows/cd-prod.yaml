@@ -58,5 +58,3 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=registry,ref=ghcr.io/blokmap/blokmap-prod-frontend:buildcache
           cache-to: type=registry,ref=ghcr.io/blokmap/blokmap-prod-frontend:buildcache,mode=max
-          build-args: |
-            VITE_MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY_PROD }}

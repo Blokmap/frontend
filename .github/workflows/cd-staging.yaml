@@ -72,6 +72,6 @@ jobs:
           debug: true
           script: |
             set -e
-            export VITE_MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY_STAGING }}
+            export MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY_STAGING }}
             docker compose -f /home/blokmap/deploy/production/compose.staging.yaml pull
             docker compose -f /home/blokmap/deploy/production/compose.staging.yaml up blokmap-staging-frontend

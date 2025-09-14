@@ -69,7 +69,6 @@ jobs:
           host: ${{ secrets.STAGING_HOST }}
           username: ${{ secrets.STAGING_USERNAME }}
           key: ${{ secrets.PRODUCTION_SSH_KEY }}
-          debug: true
           script: |
             set -e
             export MAPBOX_API_KEY=${{ secrets.MAPBOX_API_KEY_STAGING }}

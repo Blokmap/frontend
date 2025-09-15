@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import type { RegisterRequest } from '@/domain/auth';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
+
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue';
+
+import type { RegisterRequest } from '@/domain/auth';
 
 defineProps<{
     error?: Error | null;
@@ -38,47 +40,41 @@ function handleFormSubmission(): void {
         <div class="grid grid-cols-2 gap-3">
             <FloatLabel variant="on">
                 <label for="first-name">First Name</label>
-                <InputText v-model="form.firstName" id="first-name" class="w-full" required>
-                </InputText>
+                <InputText id="first-name" v-model="form.firstName" class="w-full" required />
             </FloatLabel>
             <FloatLabel variant="on">
                 <label for="last-name">Last Name</label>
-                <InputText v-model="form.lastName" id="last-name" class="w-full" required>
-                </InputText>
+                <InputText id="last-name" v-model="form.lastName" class="w-full" required />
             </FloatLabel>
         </div>
         <div class="grid grid-cols-1 gap-3">
             <FloatLabel variant="on">
                 <label for="email">Email</label>
-                <InputText v-model="form.email" id="email" type="email" class="w-full" required>
-                </InputText>
+                <InputText id="email" v-model="form.email" type="email" class="w-full" required />
             </FloatLabel>
             <FloatLabel variant="on">
                 <label for="username">Username</label>
-                <InputText v-model="form.username" id="username" class="w-full" required>
-                </InputText>
+                <InputText id="username" v-model="form.username" class="w-full" required />
             </FloatLabel>
         </div>
         <div class="grid grid-cols-2 gap-3">
             <FloatLabel variant="on">
                 <label for="password">Password</label>
                 <InputText
-                    v-model="form.password"
                     id="password"
+                    v-model="form.password"
                     type="password"
                     class="w-full"
-                    required>
-                </InputText>
+                    required />
             </FloatLabel>
             <FloatLabel variant="on">
                 <label for="confirm-password">Confirm Password</label>
                 <InputText
-                    v-model="form.passwordConfirmation"
                     id="confirm-password"
+                    v-model="form.passwordConfirmation"
                     type="password"
                     class="w-full"
-                    required>
-                </InputText>
+                    required />
             </FloatLabel>
         </div>
         <Button

@@ -1,11 +1,12 @@
+import { useLocalStorage } from '@vueuse/core';
+import { createI18n } from 'vue-i18n';
+
 import nlFlag from '@/assets/img/flags/be.svg';
 import deFlag from '@/assets/img/flags/de.svg';
 import enFlag from '@/assets/img/flags/en.svg';
 import frFlag from '@/assets/img/flags/fr.svg';
 import en from '@/assets/locale/en.json';
 import nl from '@/assets/locale/nl.json';
-import { useLocalStorage } from '@vueuse/core';
-import { createI18n } from 'vue-i18n';
 
 export const locale = useLocalStorage<string>('locale', 'nl');
 

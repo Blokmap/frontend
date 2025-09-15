@@ -1,13 +1,17 @@
 <script lang="ts" setup>
-import OpeningsTable from '../location/openings/OpeningsTable.vue';
-import Marker from './Marker.vue';
-import { useMapBox } from '@/composables/useMapBox';
-import type { Location } from '@/domain/location';
-import type { LngLatBounds, MapOptions } from '@/domain/map';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
 import { useTemplateRef, watch } from 'vue';
+
+import { useMapBox } from '@/composables/useMapBox';
+
+import OpeningsTable from '../location/openings/OpeningsTable.vue';
+
+import Marker from './Marker.vue';
+
+import type { Location } from '@/domain/location';
+import type { LngLatBounds, MapOptions } from '@/domain/map';
 
 defineProps<{
     locations?: Location[];
@@ -54,15 +58,15 @@ defineExpose({ map });
 
 <template>
     <div ref="mapContainer" class="map">
-        <div class="loader" v-if="isLoading">
+        <div v-if="isLoading" class="loader">
             <span>Loading</span>
             <FontAwesomeIcon :icon="faSpinner" spin />
         </div>
         <slot v-if="map.isLoaded.value">
             <Marker
                 v-for="location in locations"
-                :key="location.id"
                 :id="location.id"
+                :key="location.id"
                 :position="[location.longitude, location.latitude]"
                 :map="map"
                 :active="location.id === hoveredLocation?.id"

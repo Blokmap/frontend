@@ -1,11 +1,13 @@
+import { formatDate } from '@vueuse/core';
+
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import type { Profile, ProfileStats } from '@/domain/profile';
-import type { Reservation } from '@/domain/reservation';
 import { type ReservationIncludes, parseReservation } from '@/services/reservation';
 import { stringToDate } from '@/utils/date/date';
 import { formatIncludes } from '@/utils/service';
-import { formatDate } from '@vueuse/core';
+
+import type { Profile, ProfileStats } from '@/domain/profile';
+import type { Reservation } from '@/domain/reservation';
 
 /**
  * Parse a profile object from the API by converting string dates to Date objects

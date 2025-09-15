@@ -12,6 +12,13 @@ export type LocationAddress = {
     city: string;
 };
 
+export type LocationFeatures = {
+    openAtNight: boolean;
+    openInEvening: boolean;
+    openInMorning: boolean;
+    openInWeekend: boolean;
+};
+
 export type Location = {
     id: number;
     name: string;

@@ -1,5 +1,7 @@
-import type { Location, LocationAddress } from './types';
 import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
+import { isEvening, isMorning, isNight, isWeekend } from '@/utils/date';
+
+import type { Location, LocationAddress, LocationFeatures } from './types';
 
 /**
  * Returns a random placeholder image URL for locations.
@@ -7,7 +9,7 @@ import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
  * @param location - The location object (not used in this function, but included for consistency).
  * @returns A random placeholder image URL.
  */
-export function getLocationPlaceholderImage(location: Location): string {
+export function getLocationPlaceholderImage(_location: Location): string {
     return placeholder;
 }
 
@@ -19,4 +21,24 @@ export function getLocationPlaceholderImage(location: Location): string {
  */
 export function formatLocationAddress(location: LocationAddress): string {
     return `${location?.street || ''} ${location?.number || ''}, ${location?.zip || ''} ${location?.city || ''}`;
+}
+
+/**
+ * Gets the location features based on its opening times.
+ *
+ * @param location - The location to evaluate
+ * @returns An object containing the location's features.
+ */
+export function getLocationFeatures(location: Location): LocationFeatures {
+    const openAtNight = location.openingTimes?.some((time) => isWeekend(time.day)) || false;
+    const openInEvening = location.openingTimes?.some((time) => isEvening(time.endTime)) || false;
+    const openInMorning = location.openingTimes?.some((time) => isMorning(time.startTime)) || false;
+    const openInWeekend = location.openingTimes?.some((time) => isNight(time.startTime)) || false;
+
+    return {
+        openAtNight,
+        openInEvening,
+        openInMorning,
+        openInWeekend,
+    };
 }

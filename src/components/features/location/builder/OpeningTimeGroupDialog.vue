@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { i18n } from '@/config/locale';
-import type { OpeningTimeGroupRequest, Time } from '@/domain/openings';
-import { dateToTime, timeToDate } from '@/utils/date/time';
-import { faCalendarPlus, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import Calendar from 'primevue/calendar';
 import Checkbox from 'primevue/checkbox';
 import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
 import InputNumber from 'primevue/inputnumber';
+
+import { faCalendarPlus, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
+
+import { i18n } from '@/config/locale';
+import { dateToTime, timeToDate } from '@/utils/date/time';
+
+import type { OpeningTimeGroupRequest, Time } from '@/domain/openings';
 
 const props = defineProps<{
     openingTimeGroup: OpeningTimeGroupRequest;
@@ -116,8 +119,7 @@ function handleCancel(): void {
                     :options="openingTimeGroupTypes"
                     option-label="label"
                     option-value="value"
-                    class="w-full">
-                </Dropdown>
+                    class="w-full" />
             </div>
 
             <div class="grid grid-cols-2 gap-4">
@@ -144,7 +146,7 @@ function handleCancel(): void {
             <div>
                 <div class="mb-2 flex items-center justify-between">
                     <label class="text-sm font-medium text-gray-700">Tijdsloten</label>
-                    <Button @click="addTimeSlot" size="small" outlined>
+                    <Button size="small" outlined @click="addTimeSlot">
                         <FontAwesomeIcon :icon="faPlus" class="mr-1" />
                         Tijdslot
                     </Button>
@@ -159,27 +161,25 @@ function handleCancel(): void {
                             <label class="mb-1 block text-xs text-gray-500">Start</label>
                             <Calendar
                                 :model-value="getTimeSlotStartTime(slot)"
-                                @update:model-value="
-                                    (value: Date) => setTimeSlotStartTime(slot, value)
-                                "
                                 show-time
                                 time-only
                                 hour-format="24"
-                                class="w-full">
-                            </Calendar>
+                                class="w-full"
+                                @update:model-value="
+                                    (value: Date) => setTimeSlotStartTime(slot, value)
+                                " />
                         </div>
                         <div class="flex-1">
                             <label class="mb-1 block text-xs text-gray-500">Eind</label>
                             <Calendar
                                 :model-value="getTimeSlotEndTime(slot)"
-                                @update:model-value="
-                                    (value: Date) => setTimeSlotEndTime(slot, value)
-                                "
                                 show-time
                                 time-only
                                 hour-format="24"
-                                class="w-full">
-                            </Calendar>
+                                class="w-full"
+                                @update:model-value="
+                                    (value: Date) => setTimeSlotEndTime(slot, value)
+                                " />
                         </div>
                         <div class="flex-1">
                             <label class="mb-1 block text-xs text-gray-500">Stoelen</label>
@@ -187,10 +187,10 @@ function handleCancel(): void {
                         </div>
                         <Button
                             v-if="localOpeningTimeGroup.timeSlots.length > 1"
-                            @click="removeTimeSlot(index)"
                             size="small"
                             severity="danger"
-                            outlined>
+                            outlined
+                            @click="removeTimeSlot(index)">
                             <FontAwesomeIcon :icon="faTrash" />
                         </Button>
                     </div>
@@ -200,10 +200,10 @@ function handleCancel(): void {
 
         <template #footer>
             <div class="flex justify-end gap-3">
-                <Button @click="handleCancel" severity="secondary" outlined size="small">
+                <Button severity="secondary" outlined size="small" @click="handleCancel">
                     Annuleren
                 </Button>
-                <Button @click="handleApply" size="small">
+                <Button size="small" @click="handleApply">
                     <FontAwesomeIcon :icon="faCalendarPlus" class="mr-2" />
                     Toepassen
                 </Button>

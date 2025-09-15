@@ -1,14 +1,18 @@
 <script lang="ts" setup>
-import ProfileAvatar from './ProfileAvatar.vue';
-import { useDeleteAvatar, useUpdateAvatar } from '@/composables/data/useProfile';
-import { useToast } from '@/composables/store/useToast';
-import type { Profile } from '@/domain/profile';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+
 import { faClose, faImagePortrait, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useQueryClient } from '@tanstack/vue-query';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
 import { ref } from 'vue';
+
+import { useDeleteAvatar, useUpdateAvatar } from '@/composables/data/useProfile';
+import { useToast } from '@/composables/store/useToast';
+
+import ProfileAvatar from './ProfileAvatar.vue';
+
+import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{ profile: Profile }>();
 const visible = defineModel<boolean>('visible', { default: false });
@@ -69,7 +73,7 @@ function onFileChange(e: Event): void {
             <div class="overflow-y-auto p-4">
                 <div class="flex items-center justify-between">
                     <h2 class="text-xl font-medium">Profielfoto</h2>
-                    <Button severity="contrast" @click="visible = false" outlined rounded>
+                    <Button severity="contrast" outlined rounded @click="visible = false">
                         <template #icon>
                             <FontAwesomeIcon :icon="faClose" />
                         </template>

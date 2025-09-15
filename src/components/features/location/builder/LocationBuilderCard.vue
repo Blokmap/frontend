@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 defineProps<{
     icon: IconDefinition;
@@ -8,17 +9,17 @@ defineProps<{
 </script>
 
 <template>
-    <div class="rounded-lg border-2 border-slate-200 bg-white p-4">
+    <div class="rounded-lg border-1 border-slate-200 bg-white p-4">
         <div class="space-y-6">
             <div class="flex items-center space-x-3">
-                <div class="icon" v-if="icon">
+                <div v-if="icon" class="icon">
                     <FontAwesomeIcon :icon="icon" class="text-secondary-600" />
                 </div>
                 <div class="w-full">
-                    <slot name="header"></slot>
+                    <slot name="header" />
                 </div>
             </div>
-            <slot name="default"></slot>
+            <slot name="default" />
         </div>
     </div>
 </template>

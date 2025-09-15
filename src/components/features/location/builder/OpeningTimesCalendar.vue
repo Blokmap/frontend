@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import Calendar from '@/components/shared/calendar/Calendar.vue';
-import type { OpeningTimeRequest } from '@/domain/openings';
-import { openingTimesToTimeSlots } from '@/domain/openings';
-import type { TimeCell, TimeSlot } from '@/domain/openings';
-import { startOfWeek } from '@/utils/date/date';
-import type { Time } from '@/utils/date/time';
-import { timeToString } from '@/utils/date/time';
+
 import { computed } from 'vue';
+
+import { openingTimesToTimeSlots } from '@/domain/openings';
+import { timeToString } from '@/utils/date/time';
+
+import type { OpeningTimeRequest, TimeCell, TimeSlot } from '@/domain/openings';
+import type { Time } from '@/utils/date/time';
 
 const props = defineProps<{
     dateInWeek: Date;
@@ -23,7 +24,6 @@ const emit = defineEmits<{
     'drag:slot': [index: number, slot: OpeningTimeRequest];
 }>();
 
-const weekStart = computed(() => startOfWeek(props.dateInWeek));
 const timeSlots = computed(() => openingTimesToTimeSlots(props.openingTimes));
 
 // Event handlers
@@ -60,9 +60,9 @@ function handleDragSlot(slot: TimeSlot, newStartTime: Time, newEndTime: Time, ne
         :enable-dragging="true"
         :time-interval="15"
         :min-slot-duration="15"
+        class="h-full"
         @click:cell="handleSlotClick"
-        @drag:slot="handleDragSlot"
-        class="h-full">
+        @drag:slot="handleDragSlot">
         <template #time-slot="{ slot }">
             <div class="opening-time-card" @click="handleEditSlot(slot)">
                 <div class="time-display">
@@ -83,7 +83,7 @@ function handleDragSlot(slot: TimeSlot, newStartTime: Time, newEndTime: Time, ne
     @apply flex justify-center;
     @apply p-2;
     @apply cursor-pointer;
-    @apply border-2 border-transparent;
+    @apply border-1 border-transparent;
 
     &:hover {
         @apply border-primary-500;

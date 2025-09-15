@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import ProgressSpinner from 'primevue/progressspinner';
+
+import { useAuthProfile } from '@/composables/data/useAuth';
+
 import DashboardHeader from './DashboardHeader.vue';
 import DashboardSidebar from './DashboardSidebar.vue';
-import { useAuthProfile } from '@/composables/data/useAuth';
-import ProgressSpinner from 'primevue/progressspinner';
 
 const { data: profile } = useAuthProfile();
 </script>
@@ -54,7 +56,7 @@ const { data: profile } = useAuthProfile();
         @apply flex flex-1 flex-col overflow-hidden rounded-md bg-gray-50;
 
         .header {
-            @apply border-b-2 border-slate-200 bg-transparent;
+            @apply border-b-1 border-slate-200 bg-transparent;
             @apply p-4;
             @apply flex items-center;
         }

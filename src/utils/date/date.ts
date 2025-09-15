@@ -24,7 +24,7 @@ export function dateToString(date?: Date | null): string | undefined | null {
  * @param date - The date to calculate the start of the week for.
  * @returns A new Date object representing the start of the week (Monday).
  */
-export function startOfWeek(date: Date): Date {
+export function startOfWeek(date: Date = new Date()): Date {
     const day = date.getDay();
     const diff = date.getDate() - day + (day === 0 ? -6 : 1);
     return new Date(date.setDate(diff));
@@ -37,7 +37,7 @@ export function startOfWeek(date: Date): Date {
  * @param date - The date to calculate the end of the week for.
  * @returns A new Date object representing the end of the week (Sunday).
  */
-export function endOfWeek(date: Date): Date {
+export function endOfWeek(date: Date = new Date()): Date {
     const day = date.getDay();
     const diff = date.getDate() - day + (day === 0 ? 0 : 7);
     return new Date(date.setDate(diff));
@@ -177,4 +177,14 @@ export function isToday(date: Date): boolean {
         date.getMonth() === today.getMonth() &&
         date.getDate() === today.getDate()
     );
+}
+
+/**
+ * Checks if a given date falls on a weekend (Saturday or Sunday).
+ *
+ * @param day - The date to check.
+ * @returns True if the date is a weekend, false otherwise.
+ */
+export function isWeekend(day: Date): boolean {
+    return day.getDay() === 0 || day.getDay() === 6;
 }

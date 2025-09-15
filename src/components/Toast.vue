@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import Button from 'primevue/button';
+import Toast from 'primevue/toast';
+
 import {
     type IconDefinition,
     faCheckCircle,
@@ -8,8 +11,6 @@ import {
     faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Button from 'primevue/button';
-import Toast from 'primevue/toast';
 
 const severityClasses: Record<string, string> = {
     success: 'text-green-500 bg-green-100 dark:bg-green-800 dark:text-green-200',
@@ -43,7 +44,7 @@ const severityIcons: Record<string, IconDefinition> = {
                         {{ slotProps.message.detail }}
                     </span>
                 </div>
-                <Button class="ms-auto" @click="slotProps.closeCallback" rounded text>
+                <Button class="ms-auto" rounded text @click="slotProps.closeCallback">
                     <template #icon>
                         <FontAwesomeIcon :icon="faTimes" />
                     </template>

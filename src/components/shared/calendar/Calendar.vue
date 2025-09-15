@@ -1,18 +1,19 @@
 <script setup lang="ts" generic="T = any">
-import type { TimeCell, TimeSlot } from '@/domain/openings';
+import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { datesInRange, formatDayName, isToday, startOfWeek } from '@/utils/date/date';
-import type { Time } from '@/utils/date/time';
 import {
     addToTime,
     createTime,
     getTimeDuration,
     minutesToTime,
     roundToInterval,
-    stringToTime,
     timeToMinutes,
 } from '@/utils/date/time';
-import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
-import { useI18n } from 'vue-i18n';
+
+import type { TimeCell, TimeSlot } from '@/domain/openings';
+import type { Time } from '@/utils/date/time';
 
 const PIXELS_PER_HOUR = 50;
 const MAX_MINUTES_IN_DAY = 1440;
@@ -246,7 +247,7 @@ function onMouseUp(): void {
             <!-- Header with days -->
             <div class="calendar-header">
                 <!-- Empty corner for time column -->
-                <div></div>
+                <div />
 
                 <!-- Day headers -->
                 <div
@@ -289,7 +290,7 @@ function onMouseUp(): void {
                             class="day-cell"
                             :class="{ disabled: isDayDisabled(day) }"
                             :style="{ height: PIXELS_PER_HOUR + 'px' }"
-                            @click="handleDayCellClick(day, hour - 1)"></div>
+                            @click="handleDayCellClick(day, hour - 1)" />
 
                         <!-- Custom time slots positioned absolutely within the day -->
                         <template v-for="slot in getDayTimeSlots(day)" :key="slot.id">
@@ -306,7 +307,7 @@ function onMouseUp(): void {
                                 }"
                                 :style="getSlotPosition(slot)"
                                 @mousedown="onMouseDown($event, slot, 'move')">
-                                <slot name="time-slot" :slot="slot"> </slot>
+                                <slot :slot="slot" name="time-slot" />
 
                                 <!-- Resize handle - only show if dragging is enabled -->
                                 <div
@@ -314,7 +315,7 @@ function onMouseUp(): void {
                                     class="resize-handle"
                                     @mousedown="onMouseDown($event, slot, 'resize')">
                                     <div
-                                        class="bg-primary-500 h-1 w-8 rounded-full transition-all duration-200"></div>
+                                        class="bg-primary-500 h-1 w-8 rounded-full transition-all duration-200" />
                                 </div>
                             </div>
                         </template>
@@ -325,8 +326,8 @@ function onMouseUp(): void {
                             class="pointer-events-none absolute right-0 left-0 z-20"
                             :style="{ top: `${currentTimePosition}%` }">
                             <div class="flex items-center">
-                                <div class="-ml-1 h-2 w-2 rounded-full bg-red-500"></div>
-                                <div class="h-0.5 flex-1 bg-red-500"></div>
+                                <div class="-ml-1 h-2 w-2 rounded-full bg-red-500" />
+                                <div class="h-0.5 flex-1 bg-red-500" />
                             </div>
                         </div>
                     </div>

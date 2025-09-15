@@ -20,7 +20,9 @@ import PublicHeader from './PublicHeader.vue';
         </main>
 
         <footer class="footer">
-            <div class="content"><PublicFooter /></div>
+            <div class="content">
+                <PublicFooter />
+            </div>
         </footer>
     </div>
 </template>
@@ -39,11 +41,11 @@ import PublicHeader from './PublicHeader.vue';
 
     .header {
         @apply py-6;
-        @apply border-b-2 border-slate-200;
+        @apply border-b-1 border-slate-200;
     }
 
     .footer {
-        @apply rounded-b-md border-t-2 border-slate-200 bg-white;
+        @apply rounded-b-md border-t border-slate-200 bg-white;
     }
 }
 </style>

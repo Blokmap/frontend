@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { startOfWeek } from '@/utils/date/date';
+import Button from 'primevue/button';
+import DatePicker from 'primevue/datepicker';
+
 import {
     faCalendarDays,
     faChevronDown,
@@ -7,10 +9,10 @@ import {
     faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Button from 'primevue/button';
-import DatePicker from 'primevue/datepicker';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import { startOfWeek } from '@/utils/date/date';
 
 const props = defineProps<{
     currentWeek: Date;
@@ -97,12 +99,12 @@ function goToToday(): void {
         <div class="flex items-center justify-between" @click.stop>
             <!-- Previous week button -->
             <Button
-                @click="goToPreviousWeek"
                 severity="secondary"
                 outlined
                 rounded
                 size="small"
-                aria-label="Vorige week">
+                aria-label="Vorige week"
+                @click="goToPreviousWeek">
                 <template #icon>
                     <FontAwesomeIcon :icon="faChevronLeft" />
                 </template>
@@ -112,9 +114,9 @@ function goToToday(): void {
             <div class="relative flex items-center gap-2">
                 <!-- Clickable week label -->
                 <button
-                    @click.stop="toggleDatePicker"
                     class="date-picker-toggle"
-                    :class="{ 'date-picker-toggle--active': showDatePicker }">
+                    :class="{ 'date-picker-toggle--active': showDatePicker }"
+                    @click.stop="toggleDatePicker">
                     <FontAwesomeIcon :icon="faCalendarDays" class="text-xs text-gray-500" />
 
                     <span>{{ weekRangeText }}</span>
@@ -122,27 +124,26 @@ function goToToday(): void {
                     <FontAwesomeIcon
                         :icon="faChevronDown"
                         class="text-xs text-gray-400 transition-all duration-200"
-                        :class="{ 'rotate-180': showDatePicker }">
-                    </FontAwesomeIcon>
+                        :class="{ 'rotate-180': showDatePicker }" />
                 </button>
 
                 <!-- Date picker overlay -->
                 <Transition name="slide-down">
-                    <div v-if="showDatePicker" @click.stop class="date-picker-overlay">
+                    <div v-if="showDatePicker" class="date-picker-overlay" @click.stop>
                         <DatePicker
                             :model-value="props.currentWeek"
                             :locale="locale"
                             :min-date="minDate"
                             :max-date="maxDate"
-                            @update:model-value="handleDateSelect"
-                            inline>
-                            <template #footer v-if="isSelectedDateOutsideCurrentWeek">
+                            inline
+                            @update:model-value="handleDateSelect">
+                            <template v-if="isSelectedDateOutsideCurrentWeek" #footer>
                                 <div class="flex justify-end border-t-1 border-gray-200 pt-3">
                                     <Button
-                                        @click="goToToday"
                                         severity="primary"
                                         size="small"
-                                        class="transition-all duration-200">
+                                        class="transition-all duration-200"
+                                        @click="goToToday">
                                         Vandaag
                                     </Button>
                                 </div>
@@ -153,12 +154,12 @@ function goToToday(): void {
             </div>
             <!-- Next week button -->
             <Button
-                @click="goToNextWeek"
                 severity="secondary"
                 outlined
                 rounded
                 size="small"
-                aria-label="Volgende week">
+                aria-label="Volgende week"
+                @click="goToNextWeek">
                 <template #icon>
                     <FontAwesomeIcon :icon="faChevronRight" />
                 </template>

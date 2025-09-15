@@ -10,7 +10,7 @@ Cypress.Commands.add('login', (email: string, password: string) => {
     cy.get('[data-cy=email-input]').type(email);
     cy.get('[data-cy=password-input]').type(password);
     cy.get('[data-cy=login-button]').click();
-    
+
     // Wait for successful login redirect
     cy.url().should('not.include', '/auth');
 });
@@ -51,16 +51,16 @@ Cypress.Commands.add('waitForMap', () => {
 Cypress.Commands.add('mockApiCalls', () => {
     // Mock locations API
     cy.intercept('GET', '**/locations*', { fixture: 'locations.json' }).as('getLocations');
-    
+
     // Mock auth API
-    cy.intercept('POST', '**/auth/login', { 
-        statusCode: 200, 
-        body: { 
+    cy.intercept('POST', '**/auth/login', {
+        statusCode: 200,
+        body: {
             user: { id: 1, email: 'test@example.com', name: 'Test User' },
-            token: 'mock-jwt-token'
-        }
+            token: 'mock-jwt-token',
+        },
     }).as('loginRequest');
-    
+
     // Mock reservations API
     cy.intercept('GET', '**/reservations*', { fixture: 'reservations.json' }).as('getReservations');
 });
@@ -93,27 +93,27 @@ declare global {
              * Login with email and password
              */
             login(email: string, password: string): Chainable<void>;
-            
+
             /**
              * Mock geolocation to specific coordinates
              */
             mockGeolocation(latitude: number, longitude: number): Chainable<void>;
-            
+
             /**
              * Wait for map component to load
              */
             waitForMap(): Chainable<void>;
-            
+
             /**
              * Mock common API calls
              */
             mockApiCalls(): Chainable<void>;
-            
+
             /**
              * Navigate to specific week in calendar
              */
             navigateToWeek(date: string): Chainable<void>;
-            
+
             /**
              * Test VIM keyboard controls
              */

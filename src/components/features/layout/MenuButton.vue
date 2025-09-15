@@ -1,6 +1,9 @@
 <script lang="ts" setup>
+import Button from 'primevue/button';
+import Popover from 'primevue/popover';
+import Skeleton from 'primevue/skeleton';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
-import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
+
 import {
     faBars,
     faCalendarDays,
@@ -11,15 +14,12 @@ import {
     faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Button from 'primevue/button';
-import Popover from 'primevue/popover';
-import Skeleton from 'primevue/skeleton';
 import { useTemplateRef } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
+import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
+
 const router = useRouter();
-const { locale } = useI18n();
 const { isLoading: profileIsLoading, data: profile } = useAuthProfile();
 const { mutateAsync: logout } = useAuthLogout();
 
@@ -42,7 +42,7 @@ function handleNavigationClick(): void {
 
 <template>
     <!-- Menu Toggle -->
-    <Button severity="contrast" @click="handleMenuButtonClick" rounded class="!px-3 !py-2">
+    <Button severity="contrast" rounded class="!px-3 !py-2" @click="handleMenuButtonClick">
         <template #icon>
             <FontAwesomeIcon :icon="faBars" />
         </template>

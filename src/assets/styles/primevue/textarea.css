@@ -1,5 +1,5 @@
 .p-textarea {
-    @apply appearance-none rounded-md border-2 outline-none;
+    @apply appearance-none rounded-md border-1 outline-none;
 
     @apply bg-surface-0 dark:bg-surface-950;
     @apply text-surface-700 dark:text-surface-0;

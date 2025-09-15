@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import Badge from 'primevue/badge';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import Logo from '@/components/shared/Logo.vue';
-import { useAuthLogout } from '@/composables/data/useAuth';
-import type { Profile } from '@/domain/profile';
+
 import {
     faArrowRight,
     faBuilding,
@@ -12,8 +12,11 @@ import {
     faSignOut,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Badge from 'primevue/badge';
 import { useRouter } from 'vue-router';
+
+import { useAuthLogout } from '@/composables/data/useAuth';
+
+import type { Profile } from '@/domain/profile';
 
 defineProps<{
     profile: Profile;
@@ -49,17 +52,16 @@ async function handleLogoutClick(): Promise<void> {
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </RouterLink>
                 <RouterLink
+                    v-if="profile.isAdmin"
                     class="sidebar-link"
-                    :to="{ name: 'dashboard.locations.index' }"
-                    v-if="profile.isAdmin">
+                    :to="{ name: 'dashboard.locations.index' }">
                     <p>Alle Locaties</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                     <Badge
+                        v-tooltip="'Zoek in alle locaties beschikbaar in Blokmap'"
                         class="ml-auto"
                         severity="contrast"
-                        value="Admin"
-                        v-tooltip="'Zoek in alle locaties beschikbaar in Blokmap'">
-                    </Badge>
+                        value="Admin" />
                 </RouterLink>
             </div>
 
@@ -73,17 +75,16 @@ async function handleLogoutClick(): Promise<void> {
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </RouterLink>
                 <RouterLink
+                    v-if="profile.isAdmin"
                     class="sidebar-link"
-                    :to="{ name: 'locations.submit' }"
-                    v-if="profile.isAdmin">
+                    :to="{ name: 'locations.submit' }">
                     <p>Alle Autoriteiten</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                     <Badge
+                        v-tooltip="'Zoek in alle autoriteiten beschikbaar in Blokmap'"
                         class="ml-auto"
                         severity="contrast"
-                        value="Admin"
-                        v-tooltip="'Zoek in alle autoriteiten beschikbaar in Blokmap'">
-                    </Badge>
+                        value="Admin" />
                 </RouterLink>
             </div>
 
@@ -97,21 +98,20 @@ async function handleLogoutClick(): Promise<void> {
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </RouterLink>
                 <RouterLink
+                    v-if="profile.isAdmin"
                     class="sidebar-link"
-                    :to="{ name: 'locations.submit' }"
-                    v-if="profile.isAdmin">
+                    :to="{ name: 'locations.submit' }">
                     <p>Alle Instituties</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                     <Badge
+                        v-tooltip="'Zoek in alle instituties beschikbaar in Blokmap'"
                         class="ml-auto"
                         severity="contrast"
-                        value="Admin"
-                        v-tooltip="'Zoek in alle instituties beschikbaar in Blokmap'">
-                    </Badge>
+                        value="Admin" />
                 </RouterLink>
             </div>
 
-            <div class="sidebar-section" v-if="profile.isAdmin">
+            <div v-if="profile.isAdmin" class="sidebar-section">
                 <h4>
                     <FontAwesomeIcon class="leading-icon" :icon="faChartLine" />
                     <span>Systeem</span>
@@ -131,7 +131,9 @@ async function handleLogoutClick(): Promise<void> {
             <RouterLink class="sidebar-link" :to="{ name: 'profile' }">
                 <ProfileAvatar :profile="profile" class="h-10 w-10" />
                 <div class="flex-1 space-y-1 leading-tight">
-                    <div class="text-sm font-semibold text-white">{{ profile.firstName }}</div>
+                    <div class="text-sm font-semibold text-white">
+                        {{ profile.firstName }}
+                    </div>
                     <div class="text-xs text-slate-400">Welkom terug!</div>
                 </div>
             </RouterLink>

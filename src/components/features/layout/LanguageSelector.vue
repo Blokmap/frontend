@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { getFlagImage } from '@/config/locale';
-import { faGlobe } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import Popover from 'primevue/popover';
+
+import { faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import { getFlagImage } from '@/config/locale';
 
 interface Props {
     modelValue?: string;
@@ -45,15 +47,15 @@ function handleLocaleChange(newLocale: string): void {
         :current-locale="currentLocale"
         :current-flag="getFlagImage(currentLocale)"
         :current-label="t(`app.locales.${currentLocale}`)">
-        <Button severity="contrast" @click="toggleLanguageSelector" rounded>
+        <Button severity="contrast" rounded @click="toggleLanguageSelector">
             <template #icon>
                 <FontAwesomeIcon :icon="faGlobe" />
             </template>
         </Button>
     </slot>
-    <Popover pt:content:class="p-0 min-w-[150px]" ref="popover">
+    <Popover ref="popover" pt:content:class="p-0 min-w-[150px]">
         <div class="flex flex-col">
-            <template :key="loc" v-for="loc in availableLocales">
+            <template v-for="loc in availableLocales" :key="loc">
                 <div
                     class="locale-item"
                     :class="{ active: loc === currentLocale }"

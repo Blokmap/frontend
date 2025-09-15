@@ -7,7 +7,7 @@ const progressStore = useProgress();
 <template>
     <Transition name="progress-fade">
         <div v-if="progressStore.isLoading" class="progressbar">
-            <div class="progressbar__line"></div>
+            <div class="progressbar__line" />
         </div>
     </Transition>
 </template>

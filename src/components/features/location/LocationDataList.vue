@@ -1,11 +1,14 @@
 <script lang="ts" setup>
-import type { Location } from '@/domain/location';
-import { getLocationPlaceholderImage } from '@/domain/location';
+import Skeleton from 'primevue/skeleton';
+
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Skeleton from 'primevue/skeleton';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import { getLocationPlaceholderImage } from '@/domain/location';
+
+import type { Location } from '@/domain/location';
 
 const { locale } = useI18n();
 
@@ -38,7 +41,7 @@ const getLocationImageUrl = (location: Location) => {
     return getLocationPlaceholderImage(location);
 };
 
-const getNextOpeningTimes = (location: Location) => {
+const _getNextOpeningTimes = (location: Location) => {
     if (!location.openingTimes?.length) return [];
 
     const today = new Date();
@@ -65,7 +68,7 @@ const getNextOpeningTimes = (location: Location) => {
     return upcomingOpenings.slice(0, 3); // Show max 3 upcoming slots
 };
 
-const formatDate = (date: Date | string) => {
+const _formatDate = (date: Date | string) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     const today = new Date();
     const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
@@ -122,7 +125,9 @@ const skeletonData = computed(() =>
             v-else-if="!locations.length"
             class="flex flex-col items-center justify-center py-16 text-center">
             <FontAwesomeIcon :icon="faLocationDot" class="mb-4 text-6xl text-gray-300" />
-            <h3 class="mb-2 text-xl font-semibold text-gray-900">{{ emptyMessage }}</h3>
+            <h3 class="mb-2 text-xl font-semibold text-gray-900">
+                {{ emptyMessage }}
+            </h3>
             <p class="text-gray-500">No locations match your current filters.</p>
         </div>
 
@@ -131,7 +136,7 @@ const skeletonData = computed(() =>
             <div
                 v-for="location in locations"
                 :key="location.id"
-                class="group flex cursor-pointer gap-6 rounded-lg border-2 border-slate-200 bg-white p-4"
+                class="group flex cursor-pointer gap-6 rounded-lg border-1 border-slate-200 bg-white p-4"
                 @click="handleLocationClick(location)">
                 <!-- Location Image -->
                 <div class="flex-shrink-0">

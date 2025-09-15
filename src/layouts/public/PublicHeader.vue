@@ -3,20 +3,18 @@ import LanguageSelector from '@/components/features/layout/LanguageSelector.vue'
 import MenuButton from '@/components/features/layout/MenuButton.vue';
 import LocationSearch from '@/components/features/location/LocationSearch.vue';
 import Logo from '@/components/shared/Logo.vue';
-import { useLocationsSearch } from '@/composables/data/useLocations';
-import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
 import { useLocalStorage } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
-import Button from 'primevue/button';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { RouterLink, useRoute, useRouter } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
+
+import { useLocationsSearch } from '@/composables/data/useLocations';
+import { useLocationFilters } from '@/composables/store/useLocationFilters';
 
 defineEmits<{ (e: 'logout'): Promise<void> }>();
 
-const route = useRoute();
 const { push } = useRouter();
 const { locale } = useI18n();
 const rememberedLocale = useLocalStorage('locale', 'nl');
@@ -76,17 +74,9 @@ function handleLocaleChange(newLocale: string): void {
             v-model:geo-location="geoLocation"
             v-model:filters="filters"
             :is-searching="isFetching"
-            @search="handleSearch">
-        </LocationSearch>
+            @search="handleSearch" />
 
         <div class="actions">
-            <RouterLink :to="{ name: 'locations.submit' }" v-if="route.name !== 'locations.submit'">
-                <Button class="text-[16px]" size="small" rounded>
-                    <template #icon>
-                        <FontAwesomeIcon :icon="faPlus" />
-                    </template>
-                </Button>
-            </RouterLink>
             <MenuButton />
             <LanguageSelector :model-value="locale" @update:model-value="handleLocaleChange" />
         </div>

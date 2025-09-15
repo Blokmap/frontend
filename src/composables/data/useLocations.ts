@@ -1,8 +1,8 @@
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/vue-query';
+import { type MaybeRef, toValue } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { getRandomDelay } from '@/config/axios';
-import type { ImageRequest } from '@/domain/image';
-import type { Location, LocationFilter, LocationRequest, NearestLocation } from '@/domain/location';
-import type { LngLat } from '@/domain/map';
-import type { OpeningTimeRequest } from '@/domain/openings';
 import {
     createLocation,
     createLocationImage,
@@ -11,6 +11,11 @@ import {
     getNearestLocation,
     searchLocations,
 } from '@/services/location';
+
+import type { ImageRequest } from '@/domain/image';
+import type { Location, LocationFilter, LocationRequest, NearestLocation } from '@/domain/location';
+import type { LngLat } from '@/domain/map';
+import type { OpeningTimeRequest } from '@/domain/openings';
 import type {
     CompMutation,
     CompMutationOptions,
@@ -18,11 +23,8 @@ import type {
     CompQueryOptions,
 } from '@/types/Composable';
 import type { Paginated } from '@/types/Pagination';
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { type MaybeRef, toValue } from 'vue';
-import { useI18n } from 'vue-i18n';
 
-export type LocationIncludes = 'images' | 'created_by';
+export type LocationIncludes = 'images' | 'createdBy';
 
 /**
  * Composable to search for locations based on filters.
@@ -43,7 +45,7 @@ export function useLocationsSearch(
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const params = toValue(filters);
-            await getRandomDelay(300, 500); // Simulate network delay for better UX
+            await getRandomDelay(100, 250);
             return await searchLocations(params, locale.value);
         },
     });
@@ -90,8 +92,6 @@ export function useNearestLocation(
 export function useCreateLocation(
     options: CompMutationOptions = {},
 ): CompMutation<LocationRequest, Location> {
-    const client = useQueryClient();
-
     const mutation = useMutation({
         ...options,
         mutationFn: createLocation,

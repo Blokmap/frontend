@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Message from 'primevue/message';
+
 import {
     type IconDefinition,
     faCheckCircle,
@@ -7,7 +9,6 @@ import {
     faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Message from 'primevue/message';
 
 withDefaults(
     defineProps<{

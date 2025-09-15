@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
 import { storeToRefs } from 'pinia';
+
+import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
 
 const { breadcrumbs } = storeToRefs(useBreadcrumbStore());
 </script>

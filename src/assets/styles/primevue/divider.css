@@ -1,5 +1,5 @@
 .p-divider-horizontal {
-    @apply dark:before:border-surface-700 relative mx-0 my-4 flex w-full items-center px-4 py-0 before:absolute before:start-0 before:top-1/2 before:block before:w-full before:border-t-2 before:border-slate-200;
+    @apply dark:before:border-surface-700 relative mx-0 my-4 flex w-full items-center px-4 py-0 before:absolute before:start-0 before:top-1/2 before:block before:w-full before:border-t-1 before:border-slate-200;
 }
 
 .p-divider-horizontal .p-divider-content {

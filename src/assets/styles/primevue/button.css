@@ -142,7 +142,7 @@
 
 .p-button-contrast {
     @apply bg-slate-200 enabled:hover:bg-slate-300 enabled:active:bg-slate-300;
-    @apply border-surface-100 enabled:hover:border-surface-200 enabled:active:border-surface-300;
+    @apply enabled:hover:border-surface-200 enabled:active:border-surface-300 border-slate-300;
     @apply text-surface-600 enabled:hover:text-surface-700 enabled:active:text-surface-800;
     @apply dark:bg-surface-800 dark:enabled:hover:bg-surface-700 dark:enabled:active:bg-surface-600;
     @apply dark:border-surface-800 dark:enabled:hover:border-surface-700 dark:enabled:active:border-surface-600;

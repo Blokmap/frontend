@@ -1,24 +1,27 @@
 <script setup lang="ts">
+import Button from 'primevue/button';
+import ConfirmDialog from 'primevue/confirmdialog';
+import { useConfirm } from 'primevue/useconfirm';
 import OpeningTimeDialog from '@/components/features/location/builder/OpeningTimeDialog.vue';
 import OpeningTimeGroupDialog from '@/components/features/location/builder/OpeningTimeGroupDialog.vue';
 import OpeningTimesCalendar from '@/components/features/location/builder/OpeningTimesCalendar.vue';
 import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
-import type { BuilderSubstep, LocationRequest } from '@/domain/location';
+
+import { faRepeat, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { ref, watchEffect } from 'vue';
+
 import {
     DEFAULT_OPENING_TIME_GROUP_REQUEST,
     DEFAULT_OPENING_TIME_REQUEST,
     type OpeningTimeGroupRequest,
     type OpeningTimeRequest,
     getOpeningsFromGroup,
+    TimeCell,
 } from '@/domain/openings';
-import type { TimeCell } from '@/domain/openings';
-import { type Time, addToTime, createTime, validateTimeRange } from '@/utils/date/time';
-import { faRepeat, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Button from 'primevue/button';
-import ConfirmDialog from 'primevue/confirmdialog';
-import { useConfirm } from 'primevue/useconfirm';
-import { ref, watchEffect } from 'vue';
+import { addToTime, validateTimeRange } from '@/utils/date/time';
+
+import type { BuilderSubstep, LocationRequest } from '@/domain/location';
 
 const { form } = defineProps<{
     form: LocationRequest;
@@ -184,8 +187,7 @@ function confirmClearAll(): void {
                 @click:previous-week="goToPreviousWeek"
                 @click:next-week="goToNextWeek"
                 @click:current-week="goToToday"
-                @select:date="handleDateSelect">
-            </CalendarControls>
+                @select:date="handleDateSelect" />
 
             <div class="flex-1">
                 <OpeningTimesCalendar
@@ -194,8 +196,7 @@ function confirmClearAll(): void {
                     @select:slot="onCalendarSlotClick"
                     @edit:slot="onEditSlot"
                     @delete:slot="removeOpeningTime"
-                    @drag:slot="onDragSlot">
-                </OpeningTimesCalendar>
+                    @drag:slot="onDragSlot" />
             </div>
         </div>
 
@@ -211,20 +212,20 @@ function confirmClearAll(): void {
             <div class="px-4 py-3">
                 <div class="flex items-center justify-between">
                     <Button
-                        @click="showOpeningTimeGroupDialog = true"
                         size="small"
                         severity="secondary"
-                        outlined>
+                        outlined
+                        @click="showOpeningTimeGroupDialog = true">
                         <FontAwesomeIcon :icon="faRepeat" class="mr-2" />
                         Openingstijden groep
                     </Button>
 
                     <Button
                         v-if="openings.length > 0"
-                        @click="confirmClearAll"
                         size="small"
                         severity="danger"
-                        outlined>
+                        outlined
+                        @click="confirmClearAll">
                         <FontAwesomeIcon :icon="faTrash" class="mr-2" />
                         Alles wissen
                     </Button>
@@ -239,15 +240,13 @@ function confirmClearAll(): void {
         :editing-index="editingIndex"
         @save="saveOpeningTime"
         @delete="deleteFromDialog"
-        @close="closeDialog">
-    </OpeningTimeDialog>
+        @close="closeDialog" />
 
     <OpeningTimeGroupDialog
         v-model:visible="showOpeningTimeGroupDialog"
         :opening-time-group="newOpeningTimeGroup"
         :default-seat-count="form.seatCount"
-        @apply="saveOpeningGroup">
-    </OpeningTimeGroupDialog>
+        @apply="saveOpeningGroup" />
 </template>
 
 <style scoped>

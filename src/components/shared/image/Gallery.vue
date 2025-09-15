@@ -1,11 +1,14 @@
 <script lang="ts" setup>
-import { useItemAnimation } from '@/composables/anim/useItemAnimation';
-import type { Image } from '@/domain/image';
+import Button from 'primevue/button';
+
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRefsList } from '@vueuse/core';
-import Button from 'primevue/button';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
+
+import { useItemAnimation } from '@/composables/anim/useItemAnimation';
+
+import type { Image } from '@/domain/image';
 
 const props = defineProps<{
     images: Image[];
@@ -19,6 +22,10 @@ const selectedImageIndex = ref(0);
 
 const primaryImage = computed(() => {
     return props.images.find((img) => img.index === 0);
+});
+
+const secondaryImages = computed(() => {
+    return props.images.filter((img) => img.index !== 0);
 });
 
 const gridClasses = computed(() => {
@@ -41,12 +48,12 @@ const imageLayout = computed(() => {
 
     const layout = [];
     const primary = primaryImage.value;
-    const secondary = props.images.filter((img) => img.index !== 0);
+    const secondary = secondaryImages.value;
 
     layout.push({
         image: primary,
         index: 0,
-        classes: 'gallery-image-container col-span-2 row-span-2',
+        classes: 'col-span-2 row-span-2',
     });
 
     if (count === 3) {
@@ -54,7 +61,7 @@ const imageLayout = computed(() => {
             layout.push({
                 image: img,
                 index: idx + 1,
-                classes: 'gallery-image-container col-span-2',
+                classes: 'col-span-2',
             });
         });
     } else {
@@ -62,7 +69,6 @@ const imageLayout = computed(() => {
             layout.push({
                 image: img,
                 index: idx + 1,
-                classes: 'gallery-image-container',
             });
         });
 
@@ -70,7 +76,7 @@ const imageLayout = computed(() => {
             layout.push({
                 image: secondary[2],
                 index: 3,
-                classes: 'gallery-image-container col-span-2',
+                classes: 'col-span-2',
             });
         }
     }
@@ -78,14 +84,14 @@ const imageLayout = computed(() => {
     return layout;
 });
 
-function openFullScreen(index: number): void {
+async function openFullScreen(index: number): Promise<void> {
     isFullscreen.value = true;
     selectedImageIndex.value = index;
 
-    nextTick(() => {
-        const element = document.getElementById(`gallery-image-${index}`);
-        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
+    await nextTick();
+
+    const element = document.getElementById(`gallery-image-${index}`);
+    element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function closeFullscreen(): void {
@@ -109,13 +115,12 @@ onUnmounted(() => {
 
 <template>
     <!-- Image grid -->
-    <div
-        :class="`grid h-full w-full gap-2 overflow-hidden rounded-xl border-2 border-slate-200 ${gridClasses}`">
+    <div :class="['gallery', gridClasses]">
         <div
             v-for="item in imageLayout"
             :key="item.index"
-            :class="item.classes"
             :ref="imageRefs.set"
+            :class="['gallery-image-container', item.classes]"
             @click="openFullScreen(item.index)">
             <img v-if="item.image" :src="item.image.url" class="gallery-image" />
         </div>
@@ -123,10 +128,10 @@ onUnmounted(() => {
 
     <!-- Fullscreen modal -->
     <Transition name="scale">
-        <div class="gallery-fullscreen" v-if="isFullscreen">
+        <div v-if="isFullscreen" class="gallery-fullscreen">
             <!-- Header with close and share buttons -->
             <div class="flex items-center justify-between p-4">
-                <Button severity="contrast" @click="closeFullscreen" rounded text>
+                <Button severity="contrast" rounded text @click="closeFullscreen">
                     <template #icon>
                         <FontAwesomeIcon :icon="faChevronLeft" />
                     </template>
@@ -139,8 +144,8 @@ onUnmounted(() => {
                 <div class="gallery-grid">
                     <div
                         v-for="(image, index) in images"
-                        :key="index"
                         :id="`gallery-image-${index}`"
+                        :key="index"
                         class="gallery-grid-item">
                         <img
                             :src="image.url"
@@ -155,6 +160,10 @@ onUnmounted(() => {
 
 <style scoped>
 @reference '@/assets/styles/main.css';
+
+.gallery {
+    @apply grid h-full w-full gap-2 overflow-hidden rounded-xl;
+}
 
 .gallery-image-container {
     @apply relative cursor-pointer overflow-hidden;

@@ -1,6 +1,6 @@
 .p-inputtext {
     /* Base appearance */
-    @apply appearance-none rounded-md border-2 outline-none;
+    @apply appearance-none rounded-md border-1 outline-none;
 
     /* Colors and backgrounds */
     @apply bg-surface-0 dark:bg-surface-950;

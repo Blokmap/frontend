@@ -1,8 +1,16 @@
 <script setup lang="ts">
+import Button from 'primevue/button';
+import Checkbox from 'primevue/checkbox';
 import LocationImagesStep from '@/components/features/location/builder/steps/LocationImagesStep.vue';
 import LocationInformationStep from '@/components/features/location/builder/steps/LocationInformationStep.vue';
 import LocationOpeningsStep from '@/components/features/location/builder/steps/LocationOpeningsStep.vue';
 import LocationSettingsStep from '@/components/features/location/builder/steps/LocationSettingsStep.vue';
+
+import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
 import {
     useCreateLocation,
     useCreateLocationImage,
@@ -10,17 +18,12 @@ import {
 } from '@/composables/data/useLocations';
 import { useToast } from '@/composables/store/useToast';
 import { useLocalStorage } from '@/composables/useLocalStorage';
-import type { ImageRequest } from '@/domain/image';
 import { DEFAULT_LOCATION_REQUEST } from '@/domain/location';
-import type { BuilderStep, BuilderSubstep, Location, LocationRequest } from '@/domain/location';
-import type { OpeningTimeRequest } from '@/domain/openings';
 import { deleteLocation, deleteLocationImages, deleteLocationOpenings } from '@/services/location';
-import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Button from 'primevue/button';
-import Checkbox from 'primevue/checkbox';
-import { computed, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+
+import type { ImageRequest } from '@/domain/image';
+import type { BuilderStep, BuilderSubstep, LocationRequest } from '@/domain/location';
+import type { OpeningTimeRequest } from '@/domain/openings';
 
 const router = useRouter();
 const route = useRoute();
@@ -164,8 +167,7 @@ async function submitLocation(): Promise<void> {
 
             <div class="space-y-3">
                 <div v-for="substep in substeps" :key="substep.label">
-                    <Checkbox :model-value="substep.isCompleted" :disabled="true" :binary="true">
-                    </Checkbox>
+                    <Checkbox :model-value="substep.isCompleted" :disabled="true" :binary="true" />
                     <span
                         class="ms-3 text-sm"
                         :class="substep.isCompleted ? 'text-gray-900' : 'text-gray-500'">
@@ -175,27 +177,27 @@ async function submitLocation(): Promise<void> {
             </div>
 
             <div class="progressbar">
-                <div class="indicator" :style="{ width: progressPercentage + '%' }"></div>
+                <div class="indicator" :style="{ width: progressPercentage + '%' }" />
             </div>
 
             <div class="flex justify-between space-x-3">
                 <Button
-                    @click="goPrevious"
                     :disabled="!canGoPrevious"
                     severity="secondary"
                     outlined
-                    size="small">
+                    size="small"
+                    @click="goPrevious">
                     <FontAwesomeIcon :icon="faArrowLeft" class="mr-2" />
                     Vorige
                 </Button>
 
                 <Button
-                    @click="isLastStep ? submitLocation() : goNext()"
                     :disabled="!canGoNext || isCreating"
-                    size="small">
+                    size="small"
+                    @click="isLastStep ? submitLocation() : goNext()">
                     <template v-if="isLastStep">
-                        <FontAwesomeIcon :icon="faCheck" class="mr-2" v-if="!isCreating" />
-                        <FontAwesomeIcon :icon="faSpinner" class="mr-2" spin v-else />
+                        <FontAwesomeIcon v-if="!isCreating" :icon="faCheck" class="mr-2" />
+                        <FontAwesomeIcon v-else :icon="faSpinner" class="mr-2" spin />
                         Voltooien
                     </template>
                     <template v-else>
@@ -207,29 +209,25 @@ async function submitLocation(): Promise<void> {
         </div>
         <div class="w-full md:w-5/7">
             <LocationInformationStep
+                v-if="step === 'basics'"
                 v-model="locationForm"
-                v-model:substeps="substeps"
-                v-if="step === 'basics'">
-            </LocationInformationStep>
+                v-model:substeps="substeps" />
 
             <LocationImagesStep
+                v-if="step === 'images'"
                 v-model="imagesForm"
-                v-model:substeps="substeps"
-                v-if="step === 'images'">
-            </LocationImagesStep>
+                v-model:substeps="substeps" />
 
             <LocationSettingsStep
+                v-if="step === 'settings'"
                 v-model:form="locationForm"
-                v-model:substeps="substeps"
-                v-if="step === 'settings'">
-            </LocationSettingsStep>
+                v-model:substeps="substeps" />
 
             <LocationOpeningsStep
-                :form="locationForm"
+                v-if="step === 'openings'"
                 v-model:openings="openingsForm"
                 v-model:substeps="substeps"
-                v-if="step === 'openings'">
-            </LocationOpeningsStep>
+                :form="locationForm" />
         </div>
     </div>
 </template>

@@ -1,10 +1,10 @@
-import { WEEKDAY_DAYS } from './constants';
-import type { OpeningTimeGroupRequest, OpeningTimeRequest } from './types';
-import type { OpeningTime } from './types';
-import type { TimeSlot } from '@/domain/openings';
 import { datesInRange } from '@/utils/date/date';
-import { minutesToTime, timeToMinutes, validateTimeRange } from '@/utils/date/time';
-import { timeToCompactString, timeToString } from '@/utils/date/time';
+import { timeToMinutes, validateTimeRange } from '@/utils/date/time';
+
+import { WEEKDAY_DAYS } from './constants';
+
+import type { OpeningTime, OpeningTimeGroupRequest, OpeningTimeRequest } from './types';
+import type { TimeSlot } from '@/domain/openings';
 
 export function getOpeningsFromGroup(group: OpeningTimeGroupRequest): OpeningTimeRequest[] {
     const dates = datesInRange(group.startDate, group.endDate);
@@ -93,20 +93,6 @@ export function groupOpeningTimesByDay(openingTimes: OpeningTime[]): Map<string,
     });
 
     return grouped;
-}
-
-/**
- * Formats an opening time range string.
- *
- * @param opening - The opening time object.
- * @param compact - Whether to use compact format (e.g., "8u-17u" vs "08:00 - 17:00").
- * @returns Formatted time range string.
- */
-export function formatOpeningTimeRange(opening: OpeningTime, compact = false): string {
-    if (compact) {
-        return `${timeToCompactString(opening.startTime)}-${timeToCompactString(opening.endTime)}`;
-    }
-    return `${timeToString(opening.startTime)} - ${timeToString(opening.endTime)}`;
 }
 
 /**

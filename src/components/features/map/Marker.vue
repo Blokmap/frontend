@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import type { LngLat, MapAdapter } from '@/domain/map';
+import Popover from 'primevue/popover';
+
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Popover from 'primevue/popover';
 import { onDeactivated, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
+
+import type { LngLat, MapAdapter } from '@/domain/map';
 
 const props = defineProps<{
     id?: number;
@@ -99,7 +101,7 @@ function updatePopoverPosition() {
 
         <!-- Popover with slot for custom content -->
         <Popover ref="popover" class="min-w-[300px]">
-            <slot name="popover"></slot>
+            <slot name="popover" />
         </Popover>
     </Teleport>
 </template>

@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import LocationBuilderCard from '../LocationBuilderCard.vue';
-import type { BuilderSubstep, LocationRequest } from '@/domain/location';
-import { faCircleQuestion, faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
+
+import { faCircleQuestion, faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { watchEffect } from 'vue';
+
+import LocationBuilderCard from '../LocationBuilderCard.vue';
+
+import type { BuilderSubstep, LocationRequest } from '@/domain/location';
 
 const form = defineModel<LocationRequest>('form', { required: true });
 const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
@@ -43,27 +46,25 @@ watchEffect(() => {
                         Aantal zitplaatsen
                     </label>
                     <InputNumber
-                        input-id="seatCount"
                         v-model="form.seatCount"
+                        input-id="seatCount"
                         :min="1"
                         placeholder="Bijv. 50"
-                        class="w-full">
-                    </InputNumber>
+                        class="w-full" />
                     <p class="text-xs text-slate-500">
                         Het maximum aantal personen dat tegelijk kan reserveren in normale
                         omstandigheden
                         <FontAwesomeIcon
-                            :icon="faCircleQuestion"
                             v-tooltip="
                                 'Je kan per openingstijd dit aantal overschrijven wanneer nodig.'
-                            ">
-                        </FontAwesomeIcon>
+                            "
+                            :icon="faCircleQuestion" />
                     </p>
                 </div>
 
                 <div class="checkbox" @click="form.isVisible = !form.isVisible">
                     <div class="flex gap-3">
-                        <Checkbox input-id="visible" v-model="form.isVisible" binary />
+                        <Checkbox v-model="form.isVisible" input-id="visible" binary />
                         <label for="visible"> Meteen zichtbaar maken </label>
                     </div>
                     <p>
@@ -83,12 +84,12 @@ watchEffect(() => {
             <template #default>
                 <div class="checkbox" @click="form.isReservable = !form.isReservable">
                     <div class="flex gap-3">
-                        <Checkbox input-id="reservable" v-model="form.isReservable" binary />
+                        <Checkbox v-model="form.isReservable" input-id="reservable" binary />
                         <label for="reservable"> De locatie is reserveerbaar </label>
                     </div>
                     <p>Vink dit aan om gebruik te maken van het reservatiesysteem.</p>
                 </div>
-                <template v-if="form.isReservable"> </template>
+                <template v-if="form.isReservable" />
             </template>
         </LocationBuilderCard>
     </div>
@@ -99,7 +100,7 @@ watchEffect(() => {
 
 .checkbox {
     @apply w-full cursor-pointer space-y-2 rounded-lg bg-slate-100 p-3;
-    @apply border-2 border-slate-200;
+    @apply border-1 border-slate-200;
 
     label {
         @apply cursor-pointer text-sm font-medium;

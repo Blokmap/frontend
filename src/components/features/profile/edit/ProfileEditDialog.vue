@@ -1,22 +1,21 @@
 <script lang="ts" setup>
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import InputSwitch from 'primevue/inputswitch';
+import InputText from 'primevue/inputtext';
+
+import { faClose, faSave } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { ref } from 'vue';
+
 import { useUpdateProfile } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/store/useToast';
 import { type Profile, type ProfileRequest } from '@/domain/profile';
-import { faClose, faSave, faUserXmark } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useQueryClient } from '@tanstack/vue-query';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-import Divider from 'primevue/divider';
-import InputSwitch from 'primevue/inputswitch';
-import InputText from 'primevue/inputtext';
-import { ref } from 'vue';
 
 const props = defineProps<{ profile: Profile }>();
 const visible = defineModel<boolean>('visible', { default: false });
 
 const messages = useToast();
-const client = useQueryClient();
 
 const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile({
     onSuccess: () => {
@@ -27,7 +26,7 @@ const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile({
             detail: 'Je profielgegevens zijn succesvol bijgewerkt.',
         });
     },
-    onError: (error) => {
+    onError: () => {
         messages.add({
             severity: 'error',
             summary: 'Fout bij bijwerken',
@@ -63,10 +62,6 @@ function handleDeactivate(): void {
         detail: 'Account deactiveren is nog niet geïmplementeerd.',
     });
 }
-
-function handleCancel(): void {
-    visible.value = false;
-}
 </script>
 
 <template>
@@ -76,7 +71,7 @@ function handleCancel(): void {
                 <!-- Header -->
                 <div class="mb-2 flex items-center justify-between">
                     <h2 class="text-xl font-medium">Profiel bewerken</h2>
-                    <Button severity="contrast" @click="visible = false" outlined rounded>
+                    <Button severity="contrast" outlined rounded @click="visible = false">
                         <template #icon>
                             <FontAwesomeIcon :icon="faClose" />
                         </template>
@@ -106,8 +101,7 @@ function handleCancel(): void {
                             v-model="profileData.lastName"
                             class="w-full"
                             placeholder="Achternaam"
-                            :disabled="isUpdating">
-                        </InputText>
+                            :disabled="isUpdating" />
                     </div>
                 </div>
 
@@ -120,8 +114,7 @@ function handleCancel(): void {
                         v-model="profileData.username"
                         class="w-full"
                         placeholder="Gebruikersnaam (optioneel)"
-                        :disabled="isUpdating">
-                    </InputText>
+                        :disabled="isUpdating" />
                 </div>
 
                 <!-- Settings -->
@@ -172,9 +165,9 @@ function handleCancel(): void {
                 <!-- Actions -->
                 <Button
                     class="mt-1 w-full"
-                    @click="handleSave"
                     :loading="isUpdating"
-                    :disabled="!profileData.firstName || !profileData.lastName || isUpdating">
+                    :disabled="!profileData.firstName || !profileData.lastName || isUpdating"
+                    @click="handleSave">
                     <template #icon>
                         <FontAwesomeIcon :icon="faSave" />
                     </template>
@@ -193,8 +186,8 @@ function handleCancel(): void {
                         severity="danger"
                         class="text-xs"
                         text
-                        @click="handleDeactivate"
-                        :disabled="isUpdating">
+                        :disabled="isUpdating"
+                        @click="handleDeactivate">
                         Deactiveren
                     </Button>
                 </div>

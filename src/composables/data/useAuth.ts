@@ -1,16 +1,18 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { type Ref, computed } from 'vue';
+
 import { useToast } from '@/composables/store/useToast';
+import { getAuthProfile, login, logout, register } from '@/services/auth';
+
 import type { LoginRequest, RegisterRequest } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
-import { getAuthProfile, login, logout, register } from '@/services/auth';
 import type {
     CompMutation,
     CompMutationOptions,
     CompQuery,
     CompQueryOptions,
 } from '@/types/Composable';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import type { AxiosError } from 'axios';
-import { type Ref, computed } from 'vue';
 
 export const AUTH_QUERY_KEYS = {
     profile: () => ['profile', 'details'] as const,

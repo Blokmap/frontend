@@ -57,7 +57,7 @@ onUnmounted(() => {
 <template>
     <div class="carousel">
         <div ref="track" class="track">
-            <slot></slot>
+            <slot />
         </div>
     </div>
 </template>

@@ -27,7 +27,6 @@ export function useVimControls(keyMap: VimKeyMap = {}, options: VimControlsOptio
     const { enabled = true, preventDefault = true } = options;
 
     const isCurrentlyEnabled = toRef(enabled);
-    const shouldPreventDefault = toRef(preventDefault);
 
     const currentKeyMap = { ...keyMap };
 

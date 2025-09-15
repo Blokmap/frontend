@@ -1,6 +1,9 @@
 <script lang="ts" setup>
-import { useGeoSearch } from '@/composables/data/useGeoCoding';
-import type { LocationFilter } from '@/domain/location';
+import AutoComplete from 'primevue/autocomplete';
+import Button from 'primevue/button';
+import DatePicker from 'primevue/datepicker';
+import InputText from 'primevue/inputtext';
+
 import {
     faCalendarDays,
     faClose,
@@ -11,10 +14,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { type AutoCompleteOptionSelectEvent } from 'primevue';
-import AutoComplete from 'primevue/autocomplete';
-import Button from 'primevue/button';
-import DatePicker from 'primevue/datepicker';
-import InputText from 'primevue/inputtext';
 import {
     type ComponentPublicInstance,
     computed,
@@ -24,6 +23,11 @@ import {
     withDefaults,
 } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import { useGeoSearch } from '@/composables/data/useGeoCoding';
+
+import type { LocationFilter } from '@/domain/location';
+import type { GeoJSON } from 'geojson';
 
 const emit = defineEmits<{
     search: [];
@@ -127,9 +131,9 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
 
 <template>
     <!-- Invisible overlay to handle outside clicks -->
-    <div v-if="isExpandedSearch" class="fixed inset-0 z-10" @click="handleClickOutside"></div>
+    <div v-if="isExpandedSearch" class="fixed inset-0 z-10" @click="handleClickOutside" />
 
-    <div ref="search" class="search" @keydown.enter="handleSearchClick" tabindex="-1">
+    <div ref="search" class="search" tabindex="-1" @keydown.enter="handleSearchClick">
         <!-- City filter -->
         <div class="search--filter" :class="{ 'has-active-filter': hasActiveLocationFilter }">
             <FontAwesomeIcon :icon="faMapLocation" />
@@ -140,10 +144,10 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
                     option-label="name"
                     placeholder="Zoek op locatie"
                     pt:pcInputText:root:class="search-input"
+                    v-model="geoSearchText"
                     pt:overlay:class="!min-w-[200px] mt-3"
                     :loading="isLoadingGeoSearch"
                     :suggestions="geoSearchData"
-                    v-model="geoSearchText"
                     @option-select="handleLocationOptionSelect">
                     <template #option="{ option }">
                         <div class="flex flex-col gap-1">
@@ -169,11 +173,10 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
                     {{ locationLabel }}
                 </span>
                 <FontAwesomeIcon
+                    v-if="hasActiveLocationFilter"
                     :icon="faClose"
-                    @click.stop="clearLocationFilter"
                     class="me-4"
-                    v-if="hasActiveLocationFilter">
-                </FontAwesomeIcon>
+                    @click.stop="clearLocationFilter" />
             </template>
         </div>
 
@@ -182,12 +185,11 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
             <FontAwesomeIcon :icon="faQuoteLeft" />
             <template v-if="isExpandedSearch">
                 <InputText
-                    ref="queryInput"
-                    class="search-input"
                     id="query"
-                    placeholder="Zoek op naam"
-                    v-model="searchText">
-                </InputText>
+                    ref="queryInput"
+                    v-model="searchText"
+                    class="search-input"
+                    placeholder="Zoek op naam" />
             </template>
             <template v-else>
                 <span class="w-full truncate" @click="handleFocusField('query')">
@@ -201,15 +203,14 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
             <FontAwesomeIcon :icon="faCalendarDays" />
             <template v-if="isExpandedSearch">
                 <DatePicker
-                    v-model="openOnDate"
                     ref="dateInput"
+                    v-model="openOnDate"
                     placeholder="Open op datum"
-                    dateFormat="dd/mm/yy"
-                    inputId="openOnDay"
+                    date-format="dd/mm/yy"
+                    input-id="openOnDay"
                     pt:pc-input-text:root:class="search-input"
-                    @clear-click="openOnDate = null"
-                    show-button-bar>
-                </DatePicker>
+                    show-button-bar
+                    @clear-click="openOnDate = null" />
             </template>
             <template v-else>
                 <span class="w-full" @click="handleFocusField('date')">
@@ -223,8 +224,8 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
             class="search-button bg-gradient-conic flex-shrink-0 rounded-full"
             :disabled="props.isSearching"
             @click.stop="handleSearchClick">
-            <FontAwesomeIcon :icon="faSpinner" spin v-if="props.isSearching" />
-            <FontAwesomeIcon :icon="faMagnifyingGlass" v-else />
+            <FontAwesomeIcon v-if="props.isSearching" :icon="faSpinner" spin />
+            <FontAwesomeIcon v-else :icon="faMagnifyingGlass" />
         </Button>
     </div>
 </template>
@@ -234,7 +235,7 @@ async function handleFocusField(field: 'location' | 'query' | 'date'): Promise<v
 
 .search {
     @apply relative z-20 flex w-full max-w-[500px] min-w-[475] origin-top cursor-pointer flex-row items-center gap-3;
-    @apply rounded-full bg-white text-center text-sm shadow-sm transition-all duration-300;
+    @apply rounded-full border border-slate-200 bg-white text-center text-sm transition-all duration-300;
     @apply ps-5;
 
     .search--filter {

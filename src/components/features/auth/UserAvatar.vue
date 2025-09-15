@@ -1,13 +1,15 @@
 <script lang="ts" setup>
-import type { Profile } from '@/domain/profile';
-import { faSignOut, faSpaghettiMonsterFlying } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Avatar from 'primevue/avatar';
 import Button from 'primevue/button';
 import Divider from 'primevue/divider';
 import Popover from 'primevue/popover';
 import Skeleton from 'primevue/skeleton';
+
+import { faSignOut, faSpaghettiMonsterFlying } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRef } from 'vue';
+
+import type { Profile } from '@/domain/profile';
 
 defineProps<{
     profile?: Profile | null;
@@ -24,9 +26,9 @@ const popoverTemplate = useTemplateRef('popover');
 <template>
     <template v-if="profile">
         <Avatar
+            id="avatar"
             class="h-11 w-11 cursor-pointer text-xl"
             shape="circle"
-            id="avatar"
             @click="popoverTemplate?.toggle($event)">
             <FontAwesomeIcon :icon="faSpaghettiMonsterFlying" class="text-color" />
         </Avatar>
@@ -42,8 +44,8 @@ const popoverTemplate = useTemplateRef('popover');
                     class="px-3 py-1 text-xs"
                     severity="contrast"
                     :loading="logoutIsLoading"
-                    @click="$emit('logout')"
-                    outlined>
+                    outlined
+                    @click="$emit('logout')">
                     <template #icon>
                         <FontAwesomeIcon :icon="faSignOut" />
                     </template>

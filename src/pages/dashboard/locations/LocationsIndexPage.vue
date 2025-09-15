@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import LocationDataList from '@/components/features/location/LocationDataList.vue';
+
+import { ref } from 'vue';
+
 import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
+
 import type { Location, LocationFilter } from '@/domain/location';
-import { ref } from 'vue';
 
 const { setBreadcrumbs } = useBreadcrumbStore();
 
@@ -35,6 +38,5 @@ setBreadcrumbs([
         :locations="locations?.data || []"
         :loading="isLoading"
         empty-message="Geen locaties gevonden"
-        @location-click="handleLocationClick">
-    </LocationDataList>
+        @location-click="handleLocationClick" />
 </template>

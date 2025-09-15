@@ -1,6 +1,7 @@
-import type { LocationFilter } from '@/domain/location';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+
+import type { LocationFilter } from '@/domain/location';
 
 /**
  * Pinia store for managing location filters.

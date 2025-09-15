@@ -1,22 +1,24 @@
 <script lang="ts" setup>
-import LoginForm from '@/components/features/auth/forms/LoginForm.vue';
-import RegisterForm from '@/components/features/auth/forms/RegisterForm.vue';
-import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
-import { useInstitutions } from '@/composables/data/useInstitutions';
-import { useToast } from '@/composables/store/useToast';
-import { endpoints } from '@/config/endpoints';
-import { authIdentityProviders, pullRedirectUrl } from '@/domain/auth';
-import { faArrowRight, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
+import LoginForm from '@/components/features/auth/forms/LoginForm.vue';
+import RegisterForm from '@/components/features/auth/forms/RegisterForm.vue';
+
+import { faArrowRight, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
+
+import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
+import { useInstitutions } from '@/composables/data/useInstitutions';
+import { useToast } from '@/composables/store/useToast';
+import { endpoints } from '@/config/endpoints';
+import { authIdentityProviders, pullRedirectUrl } from '@/domain/auth';
 
 const { locale } = useI18n();
 const toast = useToast();
@@ -112,7 +114,7 @@ function switchToRegister(): void {
 </script>
 
 <template>
-    <h1 class="text-bold text-center text-4xl" ref="title">
+    <h1 ref="title" class="text-bold text-center text-4xl">
         <span class="text-gradient-conic font-bold">Blokmap Account</span>
     </h1>
     <p class="text-md mt-1 max-w-80 text-center text-slate-500">
@@ -134,8 +136,7 @@ function switchToRegister(): void {
                 <InputText
                     v-model="institutionFilter"
                     placeholder="Zoek een instelling"
-                    class="w-full border-0">
-                </InputText>
+                    class="w-full border-0" />
             </template>
             <template #option="{ option }">
                 <div class="flex items-center gap-2">
@@ -144,13 +145,17 @@ function switchToRegister(): void {
                         :src="option.logo.url"
                         class="h-10 w-10 object-contain" />
                     <div class="flex flex-col">
-                        <p class="text-sm font-bold">{{ option.slug[locale] }}</p>
-                        <p class="text-sm text-gray-400">{{ option.name[locale] }}</p>
+                        <p class="text-sm font-bold">
+                            {{ option.slug[locale] }}
+                        </p>
+                        <p class="text-sm text-gray-400">
+                            {{ option.name[locale] }}
+                        </p>
                     </div>
                 </div>
             </template>
             <template #value="{ value }">
-                <p class="text-sm font-bold text-slate-600" v-if="value">
+                <p v-if="value" class="text-sm font-bold text-slate-600">
                     {{ value.name[locale] }}
                 </p>
             </template>
@@ -176,12 +181,12 @@ function switchToRegister(): void {
         </a>
     </template>
     <div class="absolute right-4 bottom-4">
-        <Button severity="secondary" size="small" @click="switchToLogin" link>
+        <Button severity="secondary" size="small" link @click="switchToLogin">
             <span class="hover:underline">Inloggen met wachtwoord</span>
             <FontAwesomeIcon :icon="faArrowRight" />
         </Button>
     </div>
-    <Dialog class="w-[500px]" :visible="isDialogVisible" @update:visible="closeDialog" modal>
+    <Dialog class="w-[500px]" :visible="isDialogVisible" modal @update:visible="closeDialog">
         <template #header>
             <h2 class="text-lg font-bold">
                 {{ route.params.action === 'register' ? 'Registreren' : 'Inloggen met wachtwoord' }}

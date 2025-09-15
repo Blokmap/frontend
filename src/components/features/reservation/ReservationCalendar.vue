@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import ReservationStateLabel from '@/components/features/reservation/ReservationStateLabel.vue';
 import Calendar from '@/components/shared/calendar/Calendar.vue';
-import { formatLocationAddress } from '@/domain/location';
-import type { Reservation } from '@/domain/reservation';
-import { ReservationState } from '@/domain/reservation';
-import { reservationsToTimeSlots } from '@/domain/reservation';
-import { endOfWeek, startOfWeek } from '@/utils/date/date';
-import { faCalendarCheck, faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
+
+import { faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
+
+import { formatLocationAddress } from '@/domain/location';
+import { ReservationState, reservationsToTimeSlots } from '@/domain/reservation';
+import { endOfWeek, startOfWeek } from '@/utils/date/date';
+
+import type { Reservation } from '@/domain/reservation';
 
 const props = defineProps<{
     dateInWeek: Date;
@@ -36,9 +38,8 @@ const reservationTimeSlots = computed(() =>
                 <!-- Header with status and time -->
                 <div class="mb-3 flex items-center justify-between">
                     <ReservationStateLabel
-                        :state="metadata.state"
-                        v-if="metadata.state !== ReservationState.Created">
-                    </ReservationStateLabel>
+                        v-if="metadata.state !== ReservationState.Created"
+                        :state="metadata.state" />
                     <div class="time-display">
                         <FontAwesomeIcon :icon="faClock" class="time-icon" />
                         <span class="time-text">{{ startTime }}-{{ endTime }}</span>

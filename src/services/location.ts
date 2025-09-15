@@ -1,15 +1,19 @@
-import type { LocationIncludes } from '@/composables/data/useLocations';
+import { formatDate } from '@vueuse/core';
+
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
+import { dateToString, stringToDate } from '@/utils/date/date';
+import { stringToTime, timeToString } from '@/utils/date/time';
+import { formatIncludes } from '@/utils/service';
+
+import { parseProfile } from './profile';
+
+import type { LocationIncludes } from '@/composables/data/useLocations';
 import type { ImageRequest } from '@/domain/image';
 import type { Location, LocationFilter, LocationRequest, NearestLocation } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 import type { OpeningTime, OpeningTimeRequest } from '@/domain/openings';
 import type { Paginated } from '@/types/Pagination';
-import { dateToString, stringToDate } from '@/utils/date/date';
-import { stringToTime, timeToString } from '@/utils/date/time';
-import { formatIncludes } from '@/utils/service';
-import { formatDate } from '@vueuse/core';
 
 /**
  * Parse an opening time object from the API by converting string times to Time objects
@@ -50,6 +54,11 @@ function parseLocation(locationData: any): Location {
     // Convert dates if they exist
     if (location.approvedAt) {
         location.approvedAt = stringToDate(location.approvedAt);
+    }
+
+    // Convert profile
+    if (location.createdBy) {
+        location.createdBy = parseProfile(location.createdBy);
     }
 
     return location;

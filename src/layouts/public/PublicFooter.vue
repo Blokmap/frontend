@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Logo from '@/components/shared/Logo.vue';
+
 import { DOCS_URL } from '@/config/constants';
 </script>
 
@@ -134,7 +135,7 @@ import { DOCS_URL } from '@/config/constants';
 }
 
 .footer-bottom {
-    @apply border-t-2 border-slate-200 py-6;
+    @apply border-t border-slate-200 py-6;
 
     .footer-bottom-content {
         @apply mx-auto flex flex-col items-center justify-between rounded-b-lg;

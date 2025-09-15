@@ -1,5 +1,4 @@
 import type { LocationRequest } from './types';
-import { addToDate } from '@/utils/date/date';
 
 export const DEFAULT_LOCATION_REQUEST: LocationRequest = {
     name: '',

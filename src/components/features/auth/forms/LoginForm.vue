@@ -1,12 +1,14 @@
 <script lang="ts" setup>
-import type { LoginRequest } from '@/domain/auth';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
+
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue';
+
+import type { LoginRequest } from '@/domain/auth';
 
 defineProps<{
     error?: Error | null;
@@ -35,18 +37,17 @@ function handleFormSubmission(): void {
     <form class="space-y-3" @submit.prevent="handleFormSubmission">
         <FloatLabel variant="on">
             <label for="username">Username or Email</label>
-            <InputText v-model="form.username" id="username" class="w-full" required> </InputText>
+            <InputText id="username" v-model="form.username" class="w-full" required />
         </FloatLabel>
 
         <FloatLabel variant="on">
             <label for="password">Password</label>
             <InputText
-                v-model="form.password"
                 id="password"
+                v-model="form.password"
                 type="password"
                 class="w-full"
-                required>
-            </InputText>
+                required />
         </FloatLabel>
 
         <label class="mt-5 mb-4 flex items-center gap-2" for="remember">

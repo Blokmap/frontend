@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import type { OpeningTimeRequest } from '@/domain/openings';
-import { dateToTime, timeToDate } from '@/utils/date/time';
-import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import Calendar from 'primevue/calendar';
 import Dialog from 'primevue/dialog';
 import InputNumber from 'primevue/inputnumber';
+
+import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
+
+import { dateToTime, timeToDate } from '@/utils/date/time';
+
+import type { OpeningTimeRequest } from '@/domain/openings';
 
 const props = defineProps<{
     openingTime: OpeningTimeRequest;
@@ -100,8 +103,7 @@ function handleDelete(): void {
                     :min-date="minDate"
                     :max-date="maxDate"
                     date-format="dd/mm/yy"
-                    class="w-full">
-                </Calendar>
+                    class="w-full" />
             </div>
 
             <div class="grid grid-cols-2 gap-4">
@@ -112,8 +114,7 @@ function handleDelete(): void {
                         show-time
                         time-only
                         hour-format="24"
-                        class="w-full">
-                    </Calendar>
+                        class="w-full" />
                 </div>
 
                 <div>
@@ -123,8 +124,7 @@ function handleDelete(): void {
                         show-time
                         time-only
                         hour-format="24"
-                        class="w-full">
-                    </Calendar>
+                        class="w-full" />
                 </div>
             </div>
 
@@ -139,16 +139,16 @@ function handleDelete(): void {
                 <div>
                     <Button
                         v-if="editingIndex !== null"
-                        @click="handleDelete"
                         severity="danger"
                         outlined
-                        size="small">
+                        size="small"
+                        @click="handleDelete">
                         <FontAwesomeIcon :icon="faTrash" class="mr-2" />
                         Verwijderen
                     </Button>
                 </div>
                 <div class="flex gap-3">
-                    <Button @click="handleSave" size="small">
+                    <Button size="small" @click="handleSave">
                         <FontAwesomeIcon :icon="faPlus" class="mr-2" />
                         {{ buttonText }}
                     </Button>

@@ -39,5 +39,5 @@
 }
 
 .p-colorpicker-hue-handle {
-    @apply border-surface-0 absolute start-0 top-[150px] -ms-[2px] -mt-[5px] h-[10px] w-[21px] cursor-pointer border-2 opacity-85;
+    @apply border-surface-0 absolute start-0 top-[150px] -ms-[2px] -mt-[5px] h-[10px] w-[21px] cursor-pointer border-1 opacity-85;
 }

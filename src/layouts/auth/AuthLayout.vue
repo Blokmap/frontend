@@ -1,9 +1,6 @@
 <script lang="ts" setup>
 import Logo from '@/components/shared/Logo.vue';
 import Carousel from '@/components/shared/image/Carousel.vue';
-import { useRoute } from 'vue-router';
-
-const route = useRoute();
 </script>
 <template>
     <main class="auth">

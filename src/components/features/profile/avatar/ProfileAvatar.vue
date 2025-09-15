@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import type { Profile } from '@/domain/profile';
+import Avatar from 'primevue/avatar';
+
 import { faPencil, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Avatar from 'primevue/avatar';
+
+import type { Profile } from '@/domain/profile';
 
 withDefaults(
     defineProps<{
@@ -23,23 +25,23 @@ defineEmits<{
 
 <template>
     <div class="avatar-wrapper">
-        <div class="avatar-overlay" v-if="editable" @click="$emit('click:edit')">
+        <div v-if="editable" class="avatar-overlay" @click="$emit('click:edit')">
             <FontAwesomeIcon class="icon text-white" :icon="faPencil" />
         </div>
         <Avatar
+            v-if="!profile.avatarUrl && !image"
             class="avatar-initials aspect-square h-full w-full"
             :class="avatarClass"
-            shape="circle"
-            v-if="!profile.avatarUrl && !image">
+            shape="circle">
             <FontAwesomeIcon class="icon text-surface" :icon="faUser" />
         </Avatar>
         <img
+            v-else
             alt="Profile Avatar"
             class="aspect-square h-full w-full rounded-full object-cover"
             :class="avatarClass"
             loading="lazy"
-            :src="image || profile.avatarUrl?.url"
-            v-else />
+            :src="image || profile.avatarUrl?.url" />
     </div>
 </template>
 

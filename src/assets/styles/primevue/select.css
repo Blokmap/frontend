@@ -3,7 +3,7 @@
 @import './iconfield';
 
 .p-select {
-    @apply bg-surface-0 dark:bg-surface-950 dark:border-surface-700 relative inline-flex cursor-pointer rounded-md border-2 border-slate-200 transition-colors duration-200 select-none;
+    @apply bg-surface-0 dark:bg-surface-950 dark:border-surface-700 relative inline-flex cursor-pointer rounded-md border-1 border-slate-200 transition-colors duration-200 select-none;
     @apply py-1;
 }
 
@@ -60,7 +60,7 @@ input.p-select-label {
 }
 
 .p-select-overlay {
-    @apply bg-surface-0 dark:bg-surface-900 dark:border-surface-700 text-surface-700 dark:text-surface-0 absolute top-0 left-0 mt-1 rounded-md border-2 border-slate-200;
+    @apply bg-surface-0 dark:bg-surface-900 dark:border-surface-700 text-surface-700 dark:text-surface-0 absolute top-0 left-0 mt-1 rounded-md border-1 border-slate-200;
 }
 
 .p-select-header {

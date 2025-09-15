@@ -1,12 +1,14 @@
 <script lang="ts" setup>
-import type { Location } from '@/domain/location';
+import Button from 'primevue/button';
+import Popover from 'primevue/popover';
+
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { PrimeIcons } from '@primevue/core';
-import Button from 'primevue/button';
-import Popover from 'primevue/popover';
 import { ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import type { Location } from '@/domain/location';
 
 defineProps<{
     selectedLocation: Location | null;
@@ -58,23 +60,23 @@ defineExpose({
         @show="isShown = true">
         <template v-if="selectedLocation !== null">
             <div class="justify-content-between flex">
-                <h2 class="m-0 text-xl font-bold">{{ selectedLocation.name }}</h2>
+                <h2 class="m-0 text-xl font-bold">
+                    {{ selectedLocation.name }}
+                </h2>
                 <div class="cursor-pointer">
                     <template v-if="isFavoriteLocation">
                         <i
                             v-tooltip.top="t('components.blokmap.popover.unfavorite')"
-                            :class="PrimeIcons.STAR_FILL">
-                        </i>
+                            :class="PrimeIcons.STAR_FILL" />
                     </template>
                     <template v-else>
                         <i
                             v-tooltip.top="t('components.blokmap.popover.favorite')"
-                            :class="PrimeIcons.STAR">
-                        </i>
+                            :class="PrimeIcons.STAR" />
                     </template>
                 </div>
             </div>
-            <div class="my-3 flex gap-2"></div>
+            <div class="my-3 flex gap-2" />
             <p>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum possimus vitae culpa
                 minus iste non inventore, sint accusantium nostrum ipsum, maiores laudantium!

@@ -1,6 +1,8 @@
-import { parseProfile } from './profile';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
+
+import { parseProfile } from './profile';
+
 import type { LoginRequest, RegisterRequest } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
 

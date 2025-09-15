@@ -6,9 +6,9 @@ import { type Ref, ref, watch } from 'vue';
  *
  * @param elements - A reference to the HTML elements to animate.
  * @param options - Optional configuration for the animation.
- * @returns - An object containing the animation instance and previous item count.
+ * @returns - An object containing the cleanup function.
  */
-export async function useItemAnimation<T extends Element>(
+export function useItemAnimation<T extends Element>(
     elements: Ref<T[]>,
     options: {
         duration?: number;
@@ -57,4 +57,8 @@ export async function useItemAnimation<T extends Element>(
     }
 
     watch(() => elements.value.length, animateElements);
+
+    return {
+        cleanupAnimation,
+    };
 }

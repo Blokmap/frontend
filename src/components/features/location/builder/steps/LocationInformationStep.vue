@@ -1,23 +1,24 @@
 <script setup lang="ts">
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
 import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import AddressMap from '@/components/features/map/AddressMap.vue';
 import Callout from '@/components/shared/Callout.vue';
-import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
-import { useToast } from '@/composables/store/useToast';
-import { LOCATION_SETTINGS } from '@/domain/location';
-import type { BuilderSubstep, LocationRequest } from '@/domain/location';
-import { formatLocationAddress } from '@/domain/location';
-import type { LngLat } from '@/domain/map';
-import { defaultMapOptions } from '@/domain/map';
-import { faEdit, faHome, faInfoCircle, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+
+import { faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import Message from 'primevue/message';
-import Textarea from 'primevue/textarea';
 import { computed, nextTick, ref, useTemplateRef, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
+import { useToast } from '@/composables/store/useToast';
+import { LOCATION_SETTINGS, formatLocationAddress } from '@/domain/location';
+import { defaultMapOptions } from '@/domain/map';
+
+import type { BuilderSubstep, LocationRequest } from '@/domain/location';
+import type { LngLat } from '@/domain/map';
 
 const form = defineModel<LocationRequest>({ required: true });
 const complete = defineModel<boolean>('complete', { default: false });
@@ -101,7 +102,7 @@ async function handleConfirmAddress(): Promise<void> {
             behavior: 'smooth',
             block: 'start',
         });
-    } catch (error) {
+    } catch {
         toast.add({
             severity: 'error',
             summary: 'Fout bij het ophalen van coördinaten',
@@ -123,7 +124,7 @@ async function handleConfirmAddress(): Promise<void> {
                     <div class="flex items-center space-x-2">
                         <LanguageSelector v-model="currentLanguage">
                             <template #button="{ toggle, currentFlag, currentLabel }">
-                                <Button @click="toggle" severity="contrast" size="small">
+                                <Button severity="contrast" size="small" @click="toggle">
                                     <img :src="currentFlag" alt="flag" class="mr-2 h-4 w-4" />
                                     <span class="text-sm">{{ currentLabel }}</span>
                                 </Button>
@@ -137,8 +138,11 @@ async function handleConfirmAddress(): Promise<void> {
                     <label for="name" class="mb-2 block text-sm font-medium text-gray-700">
                         Locatie naam *
                     </label>
-                    <InputText id="name" v-model="form.name" class="w-full" placeholder="De Krook">
-                    </InputText>
+                    <InputText
+                        id="name"
+                        v-model="form.name"
+                        class="w-full"
+                        placeholder="De Krook" />
                     <small class="mt-1 block text-gray-500">
                         Kies een herkenbare naam voor de locatie
                     </small>
@@ -152,12 +156,11 @@ async function handleConfirmAddress(): Promise<void> {
                         Korte omschrijving ({{ currentLanguage }})
                     </label>
                     <InputText
+                        :id="`excerpt-${currentLanguage}`"
+                        v-model="form.excerpt![currentLanguage]"
                         class="w-full"
                         placeholder="Stadsbibliotheek met zicht op het water"
-                        :id="`excerpt-${currentLanguage}`"
-                        :maxlength="LOCATION_SETTINGS.MAX_EXCERPT_LENGTH"
-                        v-model="form.excerpt![currentLanguage]">
-                    </InputText>
+                        :maxlength="LOCATION_SETTINGS.MAX_EXCERPT_LENGTH" />
                     <div class="mt-1 flex justify-between">
                         <small class="text-gray-500">
                             Omschrijf de locatie in maximaal 6 beschrijvende woorden
@@ -188,8 +191,7 @@ async function handleConfirmAddress(): Promise<void> {
                             class="w-full"
                             :maxlength="LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH"
                             rows="5"
-                            placeholder="De Krook is de stadsbibliotheek van Gent, de ideale plek om rustig te studeren tussen andere studenten, met zicht op de Leie.">
-                        </Textarea>
+                            placeholder="De Krook is de stadsbibliotheek van Gent, de ideale plek om rustig te studeren tussen andere studenten, met zicht op de Leie." />
                         <small class="mt-1 block text-gray-500">
                             {{ (form.description?.[currentLanguage] || '').length }}/{{
                                 LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH
@@ -216,11 +218,10 @@ async function handleConfirmAddress(): Promise<void> {
                 <!-- Map with overlay address input -->
                 <div class="relative">
                     <AddressMap
-                        class="aspect-video h-full w-full rounded-lg"
                         ref="map-container"
                         v-model:center="mapCenter"
-                        v-model:zoom="mapZoom">
-                    </AddressMap>
+                        v-model:zoom="mapZoom"
+                        class="aspect-video h-full w-full rounded-lg" />
 
                     <!-- Address Input Overlay -->
                     <div class="absolute top-3 left-3 z-10 w-64">
@@ -234,14 +235,12 @@ async function handleConfirmAddress(): Promise<void> {
                                         v-model="form.street"
                                         placeholder="Straat"
                                         class="address-input"
-                                        @keyup.enter="handleConfirmAddress">
-                                    </InputText>
+                                        @keyup.enter="handleConfirmAddress" />
                                     <InputText
                                         v-model="form.number"
                                         placeholder="Nr"
                                         class="address-input"
-                                        @keyup.enter="handleConfirmAddress">
-                                    </InputText>
+                                        @keyup.enter="handleConfirmAddress" />
                                 </div>
 
                                 <div class="flex overflow-hidden rounded-md bg-gray-50">
@@ -249,24 +248,22 @@ async function handleConfirmAddress(): Promise<void> {
                                         v-model="form.zip"
                                         placeholder="Postcode"
                                         class="address-input"
-                                        @keyup.enter="handleConfirmAddress">
-                                    </InputText>
+                                        @keyup.enter="handleConfirmAddress" />
                                     <InputText
                                         v-model="form.city"
                                         placeholder="Stad"
                                         class="address-input"
-                                        @keyup.enter="handleConfirmAddress">
-                                    </InputText>
+                                        @keyup.enter="handleConfirmAddress" />
                                 </div>
                             </div>
 
                             <!-- Action button -->
                             <Button
-                                @click="handleConfirmAddress"
                                 :disabled="!canConfirmAddress"
                                 :loading="isLoading"
                                 class="w-full"
-                                size="small">
+                                size="small"
+                                @click="handleConfirmAddress">
                                 <FontAwesomeIcon :icon="faMapMarkerAlt" class="mr-1" />
                                 <span>Vlieg naar coordinaten</span>
                             </Button>

@@ -1,10 +1,12 @@
 <script lang="ts" setup>
-import type { Location } from '@/domain/location';
-import { getLocationPlaceholderImage } from '@/domain/location';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import { getLocationPlaceholderImage } from '@/domain/location';
+
+import type { Location } from '@/domain/location';
 
 const { locale } = useI18n();
 
@@ -31,12 +33,14 @@ const imageUrl = computed(() => {
     <div class="location">
         <div class="location--image" :class="{ active }">
             <img :src="imageUrl" />
-            <div class="address" v-tooltip="location.city">
+            <div v-tooltip="location.city" class="address">
                 <FontAwesomeIcon :icon="faLocationDot" class="text-secondary" />
                 {{ location.city }}
             </div>
         </div>
-        <h2 class="text-md mt-1 truncate font-semibold">{{ location.name }}</h2>
+        <h2 class="text-md mt-1 truncate font-semibold">
+            {{ location.name }}
+        </h2>
         <p class="line-clamp-2 text-xs text-gray-600">
             {{ location.excerpt?.[locale] }}
         </p>
@@ -55,7 +59,7 @@ const imageUrl = computed(() => {
 
     .location--image {
         @apply relative h-full w-full overflow-hidden;
-        @apply rounded-2xl border-2 border-slate-200;
+        @apply rounded-2xl border-1 border-slate-200;
 
         .heart {
             @apply absolute top-1 right-2 text-2xl text-white transition-colors duration-200 hover:text-red-500;

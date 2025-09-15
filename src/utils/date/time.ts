@@ -16,8 +16,17 @@ export type TimeGranularity = 'hours' | 'minutes';
  * @param time - The Time object to convert.
  * @returns A string in HH:MM format.
  */
-export function timeToString(time?: Time | null): string | undefined | null {
+export function timeToString(
+    time?: Time | null,
+    compact: boolean = false,
+): string | undefined | null {
     if (!time) return time;
+    if (compact) {
+        if (time.minutes === 0) {
+            return `${time.hours}u`;
+        }
+        return `${time.hours}u${time.minutes.toString().padStart(2, '0')}`;
+    }
     return `${time.hours.toString().padStart(2, '0')}:${time.minutes.toString().padStart(2, '0')}`;
 }
 
@@ -153,15 +162,31 @@ export function getTimeDuration(startTime: Time, endTime: Time): number {
 }
 
 /**
- * Converts a Time object to a compact string format (e.g., "8u", "13u30").
+ * Checks if a given time is considered "evening" (between 6 PM and 10 PM).
  *
- * @param time - The Time object to convert.
- * @returns A string in compact format (e.g., "8u" for 8:00, "13u30" for 13:30).
+ * @param time - The Time object to check.
+ * @returns True if the time is in the evening, false otherwise.
  */
-export function timeToCompactString(time?: Time | null): string | undefined | null {
-    if (!time) return time;
-    if (time.minutes === 0) {
-        return `${time.hours}u`;
-    }
-    return `${time.hours}u${time.minutes.toString().padStart(2, '0')}`;
+export function isEvening(time: Time): boolean {
+    return time.hours >= 18 && time.hours < 22;
+}
+
+/**
+ * Checks if a given time is considered "night" (before 6 AM or after 8 PM).
+ *
+ * @param time - The Time object to check.
+ * @returns True if the time is at night, false otherwise.
+ */
+export function isNight(time: Time): boolean {
+    return time.hours < 6 || time.hours >= 22;
+}
+
+/**
+ * Checks if a given time is considered "morning" (between 6 AM and 12 PM).
+ *
+ * @param time - The Time object to check.
+ * @returns True if the time is in the morning, false otherwise.
+ */
+export function isMorning(time: Time): boolean {
+    return time.hours >= 6 && time.hours < 12;
 }

@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload';
+import InputText from 'primevue/inputtext';
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
-import type { ImageRequest } from '@/domain/image';
-import { type BuilderSubstep, LOCATION_SETTINGS } from '@/domain/location';
+
 import {
     faImage,
     faLink,
@@ -11,11 +14,11 @@ import {
     faUpload,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload';
-import InputText from 'primevue/inputtext';
 import { computed, onMounted, ref, watchEffect } from 'vue';
+
+import { type BuilderSubstep, LOCATION_SETTINGS } from '@/domain/location';
+
+import type { ImageRequest } from '@/domain/image';
 
 const images = defineModel<ImageRequest[]>({ required: true, default: () => [] });
 const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
@@ -199,9 +202,9 @@ function onTouchEnd(): void {
                         @touchstart="onTouchStart($event, 0)"
                         @touchend="onTouchEnd">
                         <img
+                            v-if="primaryImage.tempUrl"
                             :src="primaryImage.tempUrl"
-                            alt="Hoofdafbeelding"
-                            v-if="primaryImage.tempUrl" />
+                            alt="Hoofdafbeelding" />
 
                         <!-- Primary Badge -->
                         <div class="primary-image__badge">
@@ -213,11 +216,11 @@ function onTouchEnd(): void {
                         <div class="image-actions">
                             <div class="image-actions__buttons">
                                 <Button
-                                    @click.stop="removeImage(0)"
                                     size="small"
                                     severity="danger"
                                     class="action-button action-button--danger"
-                                    rounded>
+                                    rounded
+                                    @click.stop="removeImage(0)">
                                     <FontAwesomeIcon :icon="faTrash" />
                                 </Button>
                             </div>
@@ -243,27 +246,27 @@ function onTouchEnd(): void {
                             @touchstart="onTouchStart($event, image.index ?? 0)"
                             @touchend="onTouchEnd">
                             <img
+                                v-if="image.tempUrl"
                                 :src="image.tempUrl"
-                                :alt="`Afbeelding ${index + 2}`"
-                                v-if="image.tempUrl" />
+                                :alt="`Afbeelding ${index + 2}`" />
 
                             <!-- Actions -->
                             <div class="image-actions">
                                 <div class="image-actions__buttons">
                                     <Button
-                                        @click.stop="setPrimary(image.index ?? 0)"
                                         size="small"
                                         severity="secondary"
                                         class="action-button action-button--secondary"
-                                        rounded>
+                                        rounded
+                                        @click.stop="setPrimary(image.index ?? 0)">
                                         <FontAwesomeIcon :icon="faStar" />
                                     </Button>
                                     <Button
-                                        @click.stop="removeImage(image.index ?? 0)"
                                         size="small"
                                         severity="danger"
                                         class="action-button action-button--danger"
-                                        rounded>
+                                        rounded
+                                        @click.stop="removeImage(image.index ?? 0)">
                                         <FontAwesomeIcon :icon="faTrash" />
                                     </Button>
                                 </div>
@@ -349,7 +352,7 @@ function onTouchEnd(): void {
 
             <!-- Divider -->
             <div class="relative flex items-center justify-center">
-                <div class="absolute inset-x-0 top-1/2 h-px bg-gray-200"></div>
+                <div class="absolute inset-x-0 top-1/2 h-px bg-gray-200" />
                 <span class="relative bg-white px-2 text-sm text-gray-500">of</span>
             </div>
 
@@ -368,17 +371,16 @@ function onTouchEnd(): void {
                     v-model="urlInput"
                     class="w-full"
                     placeholder="https://example.com/image.jpg"
-                    @keyup.enter="addImageFromUrl">
-                </InputText>
+                    @keyup.enter="addImageFromUrl" />
             </div>
         </div>
 
         <template #footer>
             <div class="flex justify-end gap-3">
-                <Button @click="showAddDialog = false" severity="secondary" outlined size="small">
+                <Button severity="secondary" outlined size="small" @click="showAddDialog = false">
                     Annuleren
                 </Button>
-                <Button @click="addImageFromUrl" :disabled="!urlInput" size="small">
+                <Button :disabled="!urlInput" size="small" @click="addImageFromUrl">
                     <FontAwesomeIcon :icon="faPlus" class="mr-2" />
                     Toevoegen
                 </Button>
@@ -482,13 +484,13 @@ function onTouchEnd(): void {
 
 .add-placeholder {
     @apply flex aspect-square cursor-pointer items-center justify-center rounded-lg;
-    @apply border-2 border-dashed border-gray-300 bg-gray-50;
+    @apply border-1 border-dashed border-gray-300 bg-gray-50;
     @apply hover:border-primary-400 hover:bg-primary-50 transition-colors duration-200;
 }
 
 .empty-placeholder {
     @apply flex h-48 cursor-pointer items-center justify-center rounded-lg;
-    @apply border-2 border-dashed border-gray-300;
+    @apply border-1 border-dashed border-gray-300;
     @apply hover:border-primary-400 hover:bg-primary-50 transition-colors duration-200;
 }
 </style>

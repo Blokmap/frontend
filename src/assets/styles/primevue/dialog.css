@@ -15,7 +15,7 @@
 
 .p-dialog-header {
     @apply flex shrink-0 items-center justify-between;
-    @apply border-b-2 border-b-slate-200;
+    @apply border-b-1 border-b-slate-200;
     @apply px-5 py-3;
 }
 
@@ -25,7 +25,7 @@
 
 .p-dialog-footer {
     @apply flex shrink-0 justify-end gap-2;
-    @apply border-t-2 border-slate-200;
+    @apply border-t-1 border-slate-200;
     @apply px-5 py-3;
 }
 

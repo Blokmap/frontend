@@ -2,7 +2,6 @@
 import { faCalendarWeek, faClock, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-
 import { type Location, getLocationFeatures } from '@/domain/location';
 
 const props = defineProps<{

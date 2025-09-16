@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-
 import type { Breadcrumbs } from '@/types/Breadcrumb';
 
 export const useBreadcrumbStore = defineStore('breadcrumbs', () => {

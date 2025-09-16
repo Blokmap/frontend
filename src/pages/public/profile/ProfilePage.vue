@@ -10,7 +10,6 @@ import StatsCard from '@/components/features/profile/stats/StatsCard.vue';
 import StatsCardSkeleton from '@/components/features/profile/stats/StatsCardSkeleton.vue';
 import ReservationItem from '@/components/features/reservation/ReservationItem.vue';
 import ReservationItemSkeleton from '@/components/features/reservation/ReservationItemSkeleton.vue';
-
 import {
     faAward,
     faBuilding,
@@ -24,7 +23,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useProfileReservations, useProfileStats } from '@/composables/data/useProfile';
 

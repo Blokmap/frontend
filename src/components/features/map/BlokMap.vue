@@ -3,13 +3,9 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
 import { useTemplateRef, watch } from 'vue';
-
 import { useMapBox } from '@/composables/useMapBox';
-
 import OpeningsTable from '../location/openings/OpeningsTable.vue';
-
 import Marker from './Marker.vue';
-
 import type { Location } from '@/domain/location';
 import type { LngLatBounds, MapOptions } from '@/domain/map';
 

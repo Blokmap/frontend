@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
-
 import { ReservationState } from '@/domain/reservation';
 
 defineProps<{

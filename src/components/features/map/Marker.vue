@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import Popover from 'primevue/popover';
-
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { onDeactivated, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
-
 import type { LngLat, MapAdapter } from '@/domain/map';
 
 const props = defineProps<{

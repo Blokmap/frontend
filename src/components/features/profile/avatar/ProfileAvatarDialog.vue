@@ -1,17 +1,13 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-
 import { faClose, faImagePortrait, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useQueryClient } from '@tanstack/vue-query';
 import { ref } from 'vue';
-
 import { useDeleteAvatar, useUpdateAvatar } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/store/useToast';
-
 import ProfileAvatar from './ProfileAvatar.vue';
-
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{ profile: Profile }>();

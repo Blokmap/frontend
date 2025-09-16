@@ -1,13 +1,10 @@
 import { formatDate } from '@vueuse/core';
-
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { dateToString, stringToDate } from '@/utils/date/date';
 import { stringToTime, timeToString } from '@/utils/date/time';
 import { formatIncludes } from '@/utils/service';
-
 import { parseProfile } from './profile';
-
 import type { LocationIncludes } from '@/composables/data/useLocations';
 import type { ImageRequest } from '@/domain/image';
 import type { Location, LocationFilter, LocationRequest, NearestLocation } from '@/domain/location';

@@ -2,9 +2,7 @@
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, useTemplateRef } from 'vue';
-
 import { useMapBox } from '@/composables/useMapBox';
-
 import type { Location } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 

@@ -1,11 +1,8 @@
 import AuthLayout from '@/layouts/auth/AuthLayout.vue';
 import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
-
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
-
 import { pullRedirectUrl } from '@/domain/auth';
-
 import { authRouterGuard, breadcrumbRouterGuard } from './guards';
 import {
     AuthPage,

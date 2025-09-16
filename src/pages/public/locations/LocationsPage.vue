@@ -5,19 +5,16 @@ import Skeleton from 'primevue/skeleton';
 import LocationCard from '@/components/features/location/LocationCard.vue';
 import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
 import BlokMap from '@/components/features/map/BlokMap.vue';
-
 import { faFilter, faHelicopter, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn, useTemplateRefsList } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, onDeactivated, ref, useTemplateRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
-
 import { useItemAnimation } from '@/composables/anim/useItemAnimation';
 import { useLocationsSearch, useNearestLocation } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useToast } from '@/composables/store/useToast';
-
 import type { Location } from '@/domain/location';
 import type { LngLat, LngLatBounds } from '@/domain/map';
 

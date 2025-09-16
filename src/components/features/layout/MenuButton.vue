@@ -3,7 +3,6 @@ import Button from 'primevue/button';
 import Popover from 'primevue/popover';
 import Skeleton from 'primevue/skeleton';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
-
 import {
     faBars,
     faCalendarDays,
@@ -16,7 +15,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRef } from 'vue';
 import { useRouter } from 'vue-router';
-
 import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
 
 const router = useRouter();

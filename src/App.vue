@@ -1,13 +1,10 @@
 <script lang="ts" setup>
 import Toast from '@/components/Toast.vue';
 import ProgressBar from '@/components/features/layout/ProgressBar.vue';
-
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-
 import { useProgress } from '@/composables/store/useProgress';
 import { useToast } from '@/composables/store/useToast';
-
 import { setupAxiosInterceptors } from './config/axios';
 
 const router = useRouter();

@@ -3,13 +3,11 @@ import LanguageSelector from '@/components/features/layout/LanguageSelector.vue'
 import MenuButton from '@/components/features/layout/MenuButton.vue';
 import LocationSearch from '@/components/features/location/LocationSearch.vue';
 import Logo from '@/components/shared/Logo.vue';
-
 import { useLocalStorage } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink, useRouter } from 'vue-router';
-
 import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 

@@ -1,5 +1,4 @@
 import { isDateInRange, startOfDay } from '@/utils/date/date';
-
 import type { Reservation } from './types';
 import type { TimeSlot } from '@/domain/openings';
 

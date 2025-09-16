@@ -1,8 +1,6 @@
 import { datesInRange } from '@/utils/date/date';
 import { timeToMinutes, validateTimeRange } from '@/utils/date/time';
-
 import { WEEKDAY_DAYS } from './constants';
-
 import type { OpeningTime, OpeningTimeGroupRequest, OpeningTimeRequest } from './types';
 import type { TimeSlot } from '@/domain/openings';
 

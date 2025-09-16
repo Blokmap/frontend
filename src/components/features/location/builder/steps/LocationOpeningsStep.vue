@@ -6,11 +6,9 @@ import OpeningTimeDialog from '@/components/features/location/builder/OpeningTim
 import OpeningTimeGroupDialog from '@/components/features/location/builder/OpeningTimeGroupDialog.vue';
 import OpeningTimesCalendar from '@/components/features/location/builder/OpeningTimesCalendar.vue';
 import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
-
 import { faRepeat, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref, watchEffect } from 'vue';
-
 import {
     DEFAULT_OPENING_TIME_GROUP_REQUEST,
     DEFAULT_OPENING_TIME_REQUEST,
@@ -20,7 +18,6 @@ import {
     TimeCell,
 } from '@/domain/openings';
 import { addToTime, validateTimeRange } from '@/utils/date/time';
-
 import type { BuilderSubstep, LocationRequest } from '@/domain/location';
 
 const { form } = defineProps<{

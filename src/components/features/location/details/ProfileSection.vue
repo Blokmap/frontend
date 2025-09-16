@@ -1,10 +1,8 @@
 <script lang="ts" setup>
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
-
 import { faStar, faUserCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
-
 import type { Profile } from '@/domain/profile';
 
 defineProps<{

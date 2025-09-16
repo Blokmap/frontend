@@ -3,11 +3,9 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputSwitch from 'primevue/inputswitch';
 import InputText from 'primevue/inputtext';
-
 import { faClose, faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue';
-
 import { useUpdateProfile } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/store/useToast';
 import { type Profile, type ProfileRequest } from '@/domain/profile';

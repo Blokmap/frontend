@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Toast from 'primevue/toast';
-
 import {
     type IconDefinition,
     faCheckCircle,

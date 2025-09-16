@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import DatePicker from 'primevue/datepicker';
-
 import {
     faCalendarDays,
     faChevronDown,
@@ -11,7 +10,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-
 import { startOfWeek } from '@/utils/date/date';
 
 const props = defineProps<{

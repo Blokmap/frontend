@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import Avatar from 'primevue/avatar';
-
 import { faPencil, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-
 import type { Profile } from '@/domain/profile';
 
 withDefaults(

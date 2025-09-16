@@ -5,12 +5,10 @@ import LocationImagesStep from '@/components/features/location/builder/steps/Loc
 import LocationInformationStep from '@/components/features/location/builder/steps/LocationInformationStep.vue';
 import LocationOpeningsStep from '@/components/features/location/builder/steps/LocationOpeningsStep.vue';
 import LocationSettingsStep from '@/components/features/location/builder/steps/LocationSettingsStep.vue';
-
 import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-
 import {
     useCreateLocation,
     useCreateLocationImage,
@@ -20,7 +18,6 @@ import { useToast } from '@/composables/store/useToast';
 import { useLocalStorage } from '@/composables/useLocalStorage';
 import { DEFAULT_LOCATION_REQUEST } from '@/domain/location';
 import { deleteLocation, deleteLocationImages, deleteLocationOpenings } from '@/services/location';
-
 import type { ImageRequest } from '@/domain/image';
 import type { BuilderStep, BuilderSubstep, LocationRequest } from '@/domain/location';
 import type { OpeningTimeRequest } from '@/domain/openings';

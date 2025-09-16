@@ -3,13 +3,10 @@ import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import Skeleton from 'primevue/skeleton';
-
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
-
 import { useToast } from '@/composables/store/useToast';
-
 import type { Institution } from '@/domain/institution';
 
 defineProps<{

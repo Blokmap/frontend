@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import Badge from 'primevue/badge';
-
 import { faCheckCircle, faHourglassHalf, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-
 import { ReservationState } from '@/domain/reservation';
 
 defineProps<{

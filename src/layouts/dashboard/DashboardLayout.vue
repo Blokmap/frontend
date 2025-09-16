@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import ProgressSpinner from 'primevue/progressspinner';
-
 import { useAuthProfile } from '@/composables/data/useAuth';
-
 import DashboardHeader from './DashboardHeader.vue';
 import DashboardSidebar from './DashboardSidebar.vue';
 

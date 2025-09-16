@@ -3,11 +3,9 @@ import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
-
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue';
-
 import type { LoginRequest } from '@/domain/auth';
 
 defineProps<{

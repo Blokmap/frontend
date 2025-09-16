@@ -55,12 +55,11 @@ export default [
         },
         rules: {
             // TypeScript
-            '@typescript-eslint/no-empty-object-type': ['error', { allowInterfaces: 'always' }],
+            '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/no-unused-vars': [
                 'error',
                 { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
             ],
-            '@typescript-eslint/no-explicit-any': 'off',
 
             // Vue
             'vue/multi-word-component-names': 'off',
@@ -80,7 +79,6 @@ export default [
                         'type',
                     ],
                     pathGroups: [
-                        // Group 1: Vue components AND PrimeVue together
                         {
                             pattern: 'primevue/**',
                             group: 'builtin',

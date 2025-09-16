@@ -1,8 +1,7 @@
 import axios, { HttpStatusCode } from 'axios';
 import { type Router } from 'vue-router';
-
 import { useProgress } from '@/composables/store/useProgress';
-import { MAPBOX_API_KEY, MAPBOX_URL } from '@/config/constants';
+import { MAPBOX_API_KEY, MAPBOX_URL } from '@/config';
 import { endpoints } from '@/config/endpoints';
 import { mockInstitutions } from '@/mock';
 

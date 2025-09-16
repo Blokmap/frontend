@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
-
 import { faCircleQuestion, faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { watchEffect } from 'vue';
-
 import LocationBuilderCard from '../LocationBuilderCard.vue';
-
 import type { BuilderSubstep, LocationRequest } from '@/domain/location';
 
 const form = defineModel<LocationRequest>('form', { required: true });

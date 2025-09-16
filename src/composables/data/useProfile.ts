@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
-
 import {
     deleteProfileAvatar,
     getProfileReservations,
@@ -8,7 +7,6 @@ import {
     updateProfile,
     updateProfileAvatar,
 } from '@/services/profile';
-
 import type { Profile, ProfileStats } from '@/domain/profile';
 import type { Reservation } from '@/domain/reservation';
 import type { CompMutation, CompMutationOptions, CompQuery } from '@/types/Composable';

@@ -1,13 +1,11 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
 import Popover from 'primevue/popover';
-
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { PrimeIcons } from '@primevue/core';
 import { ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-
 import type { Location } from '@/domain/location';
 
 defineProps<{

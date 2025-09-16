@@ -7,13 +7,11 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import LoginForm from '@/components/features/auth/forms/LoginForm.vue';
 import RegisterForm from '@/components/features/auth/forms/RegisterForm.vue';
-
 import { faArrowRight, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
-
 import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
 import { useInstitutions } from '@/composables/data/useInstitutions';
 import { useToast } from '@/composables/store/useToast';

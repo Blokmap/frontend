@@ -1,6 +1,5 @@
 import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import { isEvening, isMorning, isNight, isWeekend } from '@/utils/date';
-
 import type { Location, LocationAddress, LocationFeatures } from './types';
 
 /**

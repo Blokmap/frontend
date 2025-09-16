@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 defineProps<{

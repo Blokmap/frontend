@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import ReservationStateLabel from '@/components/features/reservation/ReservationStateLabel.vue';
 import Calendar from '@/components/shared/calendar/Calendar.vue';
-
 import { faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-
 import { formatLocationAddress } from '@/domain/location';
 import { ReservationState, reservationsToTimeSlots } from '@/domain/reservation';
 import { endOfWeek, startOfWeek } from '@/utils/date/date';
-
 import type { Reservation } from '@/domain/reservation';
 
 const props = defineProps<{

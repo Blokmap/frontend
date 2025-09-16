@@ -2,7 +2,6 @@
 import Badge from 'primevue/badge';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import Logo from '@/components/shared/Logo.vue';
-
 import {
     faArrowRight,
     faBuilding,
@@ -13,9 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useRouter } from 'vue-router';
-
 import { useAuthLogout } from '@/composables/data/useAuth';
-
 import type { Profile } from '@/domain/profile';
 
 defineProps<{

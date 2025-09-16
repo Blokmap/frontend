@@ -4,7 +4,6 @@ import Dialog from 'primevue/dialog';
 import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload';
 import InputText from 'primevue/inputtext';
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
-
 import {
     faImage,
     faLink,
@@ -15,9 +14,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, onMounted, ref, watchEffect } from 'vue';
-
 import { type BuilderSubstep, LOCATION_SETTINGS } from '@/domain/location';
-
 import type { ImageRequest } from '@/domain/image';
 
 const images = defineModel<ImageRequest[]>({ required: true, default: () => [] });

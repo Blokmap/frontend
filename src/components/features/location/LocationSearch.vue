@@ -3,7 +3,6 @@ import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import DatePicker from 'primevue/datepicker';
 import InputText from 'primevue/inputtext';
-
 import {
     faCalendarDays,
     faClose,
@@ -23,9 +22,7 @@ import {
     withDefaults,
 } from 'vue';
 import { useI18n } from 'vue-i18n';
-
 import { useGeoSearch } from '@/composables/data/useGeoCoding';
-
 import type { LocationFilter } from '@/domain/location';
 import type { GeoJSON } from 'geojson';
 

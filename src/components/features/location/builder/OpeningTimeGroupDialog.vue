@@ -5,14 +5,11 @@ import Checkbox from 'primevue/checkbox';
 import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
 import InputNumber from 'primevue/inputnumber';
-
 import { faCalendarPlus, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
-
 import { i18n } from '@/config/locale';
 import { dateToTime, timeToDate } from '@/utils/date/time';
-
 import type { OpeningTimeGroupRequest, Time } from '@/domain/openings';
 
 const props = defineProps<{

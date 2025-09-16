@@ -1,7 +1,6 @@
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
-
 import { getRandomDelay } from '@/config/axios';
 import {
     createLocation,
@@ -11,7 +10,6 @@ import {
     getNearestLocation,
     searchLocations,
 } from '@/services/location';
-
 import type { ImageRequest } from '@/domain/image';
 import type { Location, LocationFilter, LocationRequest, NearestLocation } from '@/domain/location';
 import type { LngLat } from '@/domain/map';

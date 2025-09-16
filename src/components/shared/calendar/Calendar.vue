@@ -1,7 +1,6 @@
 <script setup lang="ts" generic="T = any">
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-
 import { datesInRange, formatDayName, isToday, startOfWeek } from '@/utils/date/date';
 import {
     addToTime,
@@ -11,7 +10,6 @@ import {
     roundToInterval,
     timeToMinutes,
 } from '@/utils/date/time';
-
 import type { TimeCell, TimeSlot } from '@/domain/openings';
 import type { Time } from '@/utils/date/time';
 

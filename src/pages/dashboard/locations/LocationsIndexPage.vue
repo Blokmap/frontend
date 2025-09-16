@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import LocationDataList from '@/components/features/location/LocationDataList.vue';
-
 import { ref } from 'vue';
-
 import { useLocationsSearch } from '@/composables/data/useLocations';
 import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
-
 import type { Location, LocationFilter } from '@/domain/location';
 
 const { setBreadcrumbs } = useBreadcrumbStore();

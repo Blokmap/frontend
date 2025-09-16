@@ -1,6 +1,5 @@
 import { addToDate } from '@/utils/date/date';
 import { createTime } from '@/utils/date/time';
-
 import type { OpeningTimeGroupRequest, OpeningTimeRequest } from './types';
 
 export const WEEKDAY_DAYS = [0, 1, 2, 3, 4];

@@ -1,13 +1,10 @@
 <script lang="ts" setup>
 import Skeleton from 'primevue/skeleton';
-
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-
 import { getLocationPlaceholderImage } from '@/domain/location';
-
 import type { Location } from '@/domain/location';
 
 const { locale } = useI18n();

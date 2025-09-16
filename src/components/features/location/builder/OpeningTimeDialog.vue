@@ -3,13 +3,10 @@ import Button from 'primevue/button';
 import Calendar from 'primevue/calendar';
 import Dialog from 'primevue/dialog';
 import InputNumber from 'primevue/inputnumber';
-
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
-
 import { dateToTime, timeToDate } from '@/utils/date/time';
-
 import type { OpeningTimeRequest } from '@/domain/openings';
 
 const props = defineProps<{

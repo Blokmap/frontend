@@ -1,13 +1,10 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
-
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRefsList } from '@vueuse/core';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
-
 import { useItemAnimation } from '@/composables/anim/useItemAnimation';
-
 import type { Image } from '@/domain/image';
 
 const props = defineProps<{

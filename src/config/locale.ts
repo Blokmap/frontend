@@ -1,6 +1,5 @@
 import { useLocalStorage } from '@vueuse/core';
 import { createI18n } from 'vue-i18n';
-
 import nlFlag from '@/assets/img/flags/be.svg';
 import deFlag from '@/assets/img/flags/de.svg';
 import enFlag from '@/assets/img/flags/en.svg';

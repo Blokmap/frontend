@@ -4,11 +4,9 @@ import Button from 'primevue/button';
 import Divider from 'primevue/divider';
 import Popover from 'primevue/popover';
 import Skeleton from 'primevue/skeleton';
-
 import { faSignOut, faSpaghettiMonsterFlying } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRef } from 'vue';
-
 import type { Profile } from '@/domain/profile';
 
 defineProps<{

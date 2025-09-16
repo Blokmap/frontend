@@ -11,11 +11,9 @@ import LocationMap from '@/components/features/map/LocationMap.vue';
 import LocationMapSkeleton from '@/components/features/map/LocationMapSkeleton.vue';
 import Gallery from '@/components/shared/image/Gallery.vue';
 import GallerySkeleton from '@/components/shared/image/GallerySkeleton.vue';
-
 import { faCheckCircle, faLocationDot, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
-
 import { useLocation } from '@/composables/data/useLocations';
 import { formatLocationAddress } from '@/domain/location';
 

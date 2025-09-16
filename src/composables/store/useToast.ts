@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import { useToast as usePrimeToast } from 'primevue';
 import { onMounted, ref } from 'vue';
-
 import type { ToastMessageOptions } from 'primevue/toast';
 import type { ToastServiceMethods } from 'primevue/toastservice';
 

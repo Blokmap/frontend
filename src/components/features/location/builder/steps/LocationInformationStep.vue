@@ -6,17 +6,14 @@ import LanguageSelector from '@/components/features/layout/LanguageSelector.vue'
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import AddressMap from '@/components/features/map/AddressMap.vue';
 import Callout from '@/components/shared/Callout.vue';
-
 import { faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, nextTick, ref, useTemplateRef, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
-
 import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/store/useToast';
 import { LOCATION_SETTINGS, formatLocationAddress } from '@/domain/location';
 import { defaultMapOptions } from '@/domain/map';
-
 import type { BuilderSubstep, LocationRequest } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 

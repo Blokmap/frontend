@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Logo from '@/components/shared/Logo.vue';
-
-import { DOCS_URL } from '@/config/constants';
+import { DOCS_URL } from '@/config';
 </script>
 
 <template>

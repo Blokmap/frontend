@@ -149,7 +149,7 @@ watch(isVisible, async (newValue) => {
 }
 
 .search {
-    @apply w-full max-w-2xl rounded-2xl bg-white/80 px-6 py-4 backdrop-blur-xs;
+    @apply w-full max-w-2xl rounded-2xl bg-white/90 px-6 py-4 backdrop-blur-xs;
     @apply transition-all duration-300 ease-out;
     @apply overflow-hidden;
 

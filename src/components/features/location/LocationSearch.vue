@@ -29,7 +29,7 @@ defineEmits<{
     }
 
     .search-input {
-        @apply text-primary-800 flex-1 text-sm;
+        @apply text-primary-800 flex-1 text-sm font-semibold;
     }
 }
 </style>

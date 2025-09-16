@@ -1,5 +1,6 @@
 import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import { isEvening, isMorning, isNight, isWeekend } from '@/utils/date';
+import { GOOGLE_MAPS_DIRECTIONS_BASE_URL } from './constants';
 import type { Location, LocationAddress, LocationFeatures } from './types';
 
 /**
@@ -40,4 +41,16 @@ export function getLocationFeatures(location: Location): LocationFeatures {
         openInMorning,
         openInWeekend,
     };
+}
+
+/**
+ * Generates a Google Maps directions link for a given location.
+ *
+ * @param location - The location object containing address details.
+ * @returns A URL string for Google Maps directions to the location.
+ */
+export function getGoogleMapsDirectionsLink(location: Location): string {
+    const address = formatLocationAddress(location);
+    const encodedAddress = encodeURIComponent(address);
+    return `${GOOGLE_MAPS_DIRECTIONS_BASE_URL}${encodedAddress}`;
 }

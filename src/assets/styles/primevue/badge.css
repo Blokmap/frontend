@@ -40,7 +40,7 @@
 }
 
 .p-badge-contrast {
-    @apply border border-slate-200 bg-transparent bg-white text-slate-800;
+    @apply border border-slate-200 bg-slate-50 text-slate-800;
 }
 
 .p-badge-sm {

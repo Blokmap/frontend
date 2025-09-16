@@ -39,13 +39,12 @@ const openingTimesByDay = computed(() => {
                 v-for="day in weekDays"
                 :key="day.toDateString()"
                 :day="day"
-                :opening-times-by-day="openingTimesByDay" />
+                :opening-times-by-day="openingTimesByDay">
+            </OpeningsTableDay>
         </div>
 
         <!-- No Hours Available -->
-        <div
-            v-else
-            class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center">
+        <div class="no-hours" v-else>
             <FontAwesomeIcon :icon="faClock" class="mb-2 h-6 w-6 text-gray-400" />
             <p class="mb-3 text-sm font-medium text-gray-600">Geen openingstijden beschikbaar</p>
             <Button link size="small" class="text-xs text-gray-500 hover:text-gray-700">
@@ -55,4 +54,10 @@ const openingTimesByDay = computed(() => {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.no-hours {
+    @apply rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center;
+}
+</style>

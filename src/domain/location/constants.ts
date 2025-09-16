@@ -1,5 +1,8 @@
 import type { LocationRequest } from './types';
 
+export const GOOGLE_MAPS_DIRECTIONS_BASE_URL =
+    'https://www.google.com/maps/dir/?api=1&destination=';
+
 export const DEFAULT_LOCATION_REQUEST: LocationRequest = {
     name: '',
     excerpt: {},

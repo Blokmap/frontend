@@ -150,7 +150,7 @@
 }
 
 .p-button-outlined {
-    @apply border-2 bg-transparent dark:bg-transparent;
+    @apply border bg-transparent dark:bg-transparent;
     @apply border-primary-400 enabled:hover:border-primary-400 enabled:active:border-primary-400;
     @apply text-primary enabled:hover:text-primary enabled:active:text-primary;
     @apply enabled:hover:bg-primary-50 enabled:active:bg-primary-100;

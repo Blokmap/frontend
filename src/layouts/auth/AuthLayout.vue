@@ -11,10 +11,15 @@ import Carousel from '@/components/shared/image/Carousel.vue';
             </h2>
             <h4 class="mt-4 text-xl">Vind de perfecte studieplek in jouw buurt</h4>
             <Carousel class="mt-4 max-w-[600px]">
-                <img src="@/assets/img/partners/monochrome/ugent.png" alt="Universiteit Gent" />
-                <img src="@/assets/img/partners/monochrome/stadgent.png" alt="Stad Gent" />
-                <img src="@/assets/img/partners/monochrome/hogent.png" alt="HoGent" class="!w-15" />
-                <img src="@/assets/img/partners/monochrome/kuleuven.png" alt="KU Leuven" />
+                <img
+                    src="@/assets/img/logos/partners/monochrome/ugent.png"
+                    alt="Universiteit Gent" />
+                <img src="@/assets/img/logos/partners/monochrome/stadgent.png" alt="Stad Gent" />
+                <img
+                    src="@/assets/img/logos/partners/monochrome/hogent.png"
+                    alt="HoGent"
+                    class="!w-15" />
+                <img src="@/assets/img/logos/partners/monochrome/kuleuven.png" alt="KU Leuven" />
             </Carousel>
         </div>
         <div class="auth--section relative rounded-2xl bg-white p-8">

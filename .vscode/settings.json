@@ -1,5 +1,6 @@
 {
     "css.customData": [".vscode/tailwind.json"],
+    "css.lint.unknownAtRules": "ignore",
     "editor.formatOnSave": true,
     "editor.foldingImportsByDefault": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",

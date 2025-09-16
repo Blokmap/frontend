@@ -17,9 +17,7 @@ const logoRef = ref<HTMLElement | null>(null);
 const textRef = ref<HTMLElement | null>(null);
 
 const colorClasses = computed(() => {
-    return props.light
-        ? 'border-secondary-300 text-secondary-300'
-        : 'border-secondary text-secondary';
+    return props.light ? 'text-secondary-300' : 'text-secondary';
 });
 
 onMounted(async () => {
@@ -69,8 +67,8 @@ function handleHoverOut() {
         :class="colorClasses"
         @mouseenter="handleHoverIn"
         @mouseleave="handleHoverOut">
-        <FontAwesomeIcon :icon="faGraduationCap" class="mr-2" />
-        <span ref="textRef" class="flex space-x-[1px]">
+        <FontAwesomeIcon :icon="faGraduationCap" class="mr-1" />
+        <span ref="textRef">
             <span v-for="(char, i) in 'Blokmap'" :key="i">{{ char }}</span>
         </span>
     </div>
@@ -80,7 +78,7 @@ function handleHoverOut() {
 @reference '@/assets/styles/main.css';
 
 .logo {
-    @apply flex w-fit items-center rounded-full border-2 px-3 py-1;
+    @apply flex w-fit items-center rounded-full;
     @apply transition-shadow duration-200;
     @apply cursor-pointer text-xl font-bold tracking-wide select-none;
 }

@@ -2,6 +2,7 @@
 import Badge from 'primevue/badge';
 import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton';
+import AddressCard from '@/components/features/location/details/AddressCard.vue';
 import LocationFeatures from '@/components/features/location/details/LocationFeatures.vue';
 import ProfileSection from '@/components/features/location/details/ProfileSection.vue';
 import ProfileSectionSkeleton from '@/components/features/location/details/ProfileSectionSkeleton.vue';
@@ -15,7 +16,6 @@ import { faCheckCircle, faLocationDot, faUsers } from '@fortawesome/free-solid-s
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
 import { useLocation } from '@/composables/data/useLocations';
-import { formatLocationAddress } from '@/domain/location';
 
 const { locationId } = defineProps<{ locationId: string }>();
 
@@ -38,7 +38,7 @@ const {
         </div>
     </template>
     <template v-else>
-        <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
+        <div class="space-y-8">
             <!-- Hero Section -->
             <div class="space-y-3">
                 <!-- Title and Quick Info -->
@@ -83,9 +83,9 @@ const {
             </div>
 
             <!-- Main Content Grid -->
-            <div class="grid gap-12 lg:grid-cols-3">
+            <div class="grid gap-6 lg:grid-cols-3">
                 <!-- Main Content -->
-                <div class="space-y-8 lg:col-span-2">
+                <div class="space-y-6 lg:col-span-2">
                     <!-- Description Section -->
                     <div class="border-b border-gray-200 pb-8">
                         <h2 class="mb-4 text-2xl font-semibold text-gray-900">
@@ -110,16 +110,14 @@ const {
                     </div>
 
                     <!-- Features Section -->
-                    <div v-if="location" class="border-b border-gray-200 pb-8">
-                        <h2 class="mb-6 text-2xl font-semibold text-gray-900">
-                            Wat deze plek biedt
-                        </h2>
+                    <div v-if="location" class="space-y-6 border-b border-gray-200 pb-8">
+                        <h2 class="text-2xl font-semibold text-gray-900">Wat deze plek biedt</h2>
                         <LocationFeatures :location="location" />
                     </div>
 
                     <!-- Host Section -->
-                    <div class="border-b border-gray-200 pb-8">
-                        <h2 class="mb-6 text-2xl font-semibold text-gray-900">
+                    <div class="space-y-6 border-b border-gray-200 pb-8">
+                        <h2 class="text-2xl font-semibold text-gray-900">
                             <template v-if="location"> Over de inzender </template>
                             <Skeleton v-else-if="isPending" height="28px" width="200px" />
                         </h2>
@@ -128,44 +126,26 @@ const {
                     </div>
 
                     <!-- Location Section -->
-                    <div>
-                        <h2 class="mb-6 text-2xl font-semibold text-gray-900">
+                    <div class="space-y-6">
+                        <h2 class="text-2xl font-semibold text-gray-900">
                             <template v-if="location"> Locatie </template>
                             <Skeleton v-else-if="isPending" height="28px" width="200px" />
                         </h2>
 
-                        <div class="space-y-6">
-                            <!-- Address Card -->
-                            <div
-                                v-if="location"
-                                class="rounded-xl border border-slate-200 bg-white p-6">
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="bg-primary-100 flex h-10 w-10 items-center justify-center rounded-lg">
-                                        <FontAwesomeIcon
-                                            :icon="faLocationDot"
-                                            class="text-primary-600 h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-gray-900">Adres</h3>
-                                        <p class="text-gray-600">
-                                            {{ formatLocationAddress(location) }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <Skeleton
-                                v-else-if="isPending"
-                                height="88px"
-                                width="100%"
-                                class="rounded-xl" />
+                        <!-- Address Card -->
+                        <AddressCard v-if="location" :location="location" />
 
-                            <!-- Map -->
-                            <div
-                                class="h-[400px] overflow-hidden rounded-xl border border-slate-200">
-                                <LocationMap v-if="location" :location="location" />
-                                <LocationMapSkeleton v-else-if="isPending" />
-                            </div>
+                        <Skeleton
+                            v-else-if="isPending"
+                            height="88px"
+                            width="100%"
+                            class="rounded-xl">
+                        </Skeleton>
+
+                        <!-- Map -->
+                        <div class="h-[400px] overflow-hidden rounded-xl border border-slate-200">
+                            <LocationMap v-if="location" :location="location" />
+                            <LocationMapSkeleton v-else-if="isPending" />
                         </div>
                     </div>
                 </div>
@@ -174,7 +154,7 @@ const {
                 <div class="lg:col-span-1">
                     <div class="sticky top-8">
                         <!-- Reservation/Hours Card -->
-                        <div class="rounded-lg border border-slate-200 bg-white p-6">
+                        <div class="rounded-xl border border-slate-200 bg-white p-6">
                             <div class="mb-6">
                                 <h3 class="text-xl font-semibold text-gray-900">
                                     <template v-if="location?.isReservable">

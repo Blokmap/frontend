@@ -40,7 +40,7 @@ function handleNavigationClick(): void {
 
 <template>
     <!-- Menu Toggle -->
-    <Button severity="contrast" rounded class="!px-3 !py-2" @click="handleMenuButtonClick">
+    <Button severity="contrast" class="!px-3 !py-2" @click="handleMenuButtonClick" outlined rounded>
         <template #icon>
             <FontAwesomeIcon :icon="faBars" />
         </template>

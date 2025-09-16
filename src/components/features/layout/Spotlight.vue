@@ -1,225 +1,194 @@
 <template>
-    <Teleport to="body">
-        <Transition name="spotlight">
-            <div v-if="isVisible" class="spotlight-overlay" @click="closeSpotlight">
-                <div class="spotlight-container" @click.stop>
-                    <!-- Search Bar -->
-                    <div class="search-wrapper" :class="{ 'search-active': isSearchActive }">
-                        <div class="search-bar">
-                            <FontAwesomeIcon :icon="faMagnifyingGlass" class="search-icon" />
-                            <input
-                                ref="searchInput"
-                                v-model="searchQuery"
-                                type="text"
-                                placeholder="Zoek bloklocaties..."
-                                class="search-input"
-                                @focus="onSearchFocus"
-                                @blur="onSearchBlur" />
+    <Transition name="fade">
+        <div
+            v-if="isVisible"
+            class="spotlight"
+            @click="isVisible = false"
+            @keydown.escape="isVisible = false">
+            <div class="search" @click.stop>
+                <div class="flex items-center">
+                    <FontAwesomeIcon :icon="faMagnifyingGlass" class="search-icon" />
+                    <input
+                        ref="searchInput"
+                        v-model="search"
+                        type="text"
+                        placeholder="Zoek bloklocaties..."
+                        class="search-input" />
+
+                    <FontAwesomeIcon v-if="isSearching" :icon="faSpinner" class="search-icon" spin>
+                    </FontAwesomeIcon>
+                    <FontAwesomeIcon
+                        v-else
+                        :icon="faFilter"
+                        class="search-icon"
+                        @click="emit('filter')">
+                    </FontAwesomeIcon>
+                </div>
+
+                <!-- Results Section -->
+                <div v-if="hasResults" class="results">
+                    <!-- Location Results -->
+                    <div v-if="locations?.data.length">
+                        <h3>Bloklocaties</h3>
+                        <div
+                            v-for="location in locations.data"
+                            :key="location.id"
+                            class="result"
+                            @click="handleLocationClick(location)">
+                            <div class="result-content">
+                                <div>{{ location.name }}</div>
+                                <div class="address">
+                                    {{ location.street }} {{ location.number }},
+                                    {{ location.city }}
+                                </div>
+                            </div>
+                            <FontAwesomeIcon :icon="faChevronRight" class="result-arrow" />
                         </div>
                     </div>
 
-                    <!-- Search Results Container -->
-                    <div v-if="isSearchActive && searchQuery.length > 0" class="results-container">
-                        <div v-if="isLoading" class="results-loading">
-                            <FontAwesomeIcon :icon="faSpinner" class="spinner" spin />
-                            <span>Zoeken...</span>
-                        </div>
-
-                        <div v-if="locationResults?.data" class="results">
-                            <div
-                                v-for="(location, index) in locationResults.data"
-                                :key="location.id"
-                                class="result-item slide-in-right"
-                                :style="{ animationDelay: `${index * 50}ms` }">
-                                <FontAwesomeIcon
-                                    :icon="faMapMarkerAlt"
-                                    style="
-                                        color: rgb(59 130 246);
-                                        font-size: 1.125rem;
-                                        flex-shrink: 0;
-                                    " />
-                                <div style="flex: 1; min-width: 0">
-                                    <div class="result-title">{{ location.name }}</div>
-                                    <div class="result-subtitle">{{ location.city }}</div>
+                    <!-- Geolocation Results -->
+                    <div v-if="geolocations?.length">
+                        <h3>Locaties</h3>
+                        <div
+                            v-for="(geo, index) in geolocations"
+                            :key="index"
+                            class="result"
+                            @click="handleGeoClick(geo)">
+                            <div class="result-content">
+                                <div>{{ geo?.name || 'Unknown' }}</div>
+                                <div class="address">
+                                    {{ geo?.place_formatted || geo?.full_address || 'No address' }}
                                 </div>
                             </div>
-                        </div>
-
-                        <div v-if="!isLoading && hasNoResults" class="no-results">
-                            <FontAwesomeIcon :icon="faSearch" style="font-size: 1.125rem" />
-                            <span>Geen resultaten gevonden</span>
+                            <FontAwesomeIcon :icon="faChevronRight" class="result-arrow" />
                         </div>
                     </div>
                 </div>
             </div>
-        </Transition>
-    </Teleport>
+        </div>
+    </Transition>
 </template>
 
 <script setup lang="ts">
 import {
     faMagnifyingGlass,
-    faMapMarkerAlt,
-    faSearch,
     faSpinner,
+    faFilter,
+    faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
+import { useDebounce } from '@vueuse/core';
+import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { useGeoSearch } from '@/composables/data/useGeoCoding';
 import { useLocationsSearch } from '@/composables/data/useLocations';
+import type { Location } from '@/domain/location';
 
 const isVisible = defineModel<boolean>('visible', { default: false });
 
-const searchQuery = ref('');
-const isSearchActive = ref(false);
-const searchInput = useTemplateRef<HTMLInputElement>('searchInput');
+const emit = defineEmits<{
+    filter: [];
+}>();
 
-const locationFilters = computed(() => ({
-    query: searchQuery.value,
-    perPage: 5,
-    page: 1,
-}));
+const search = ref('');
+const debouncedSearch = useDebounce(search, 500);
 
-const { data: locationResults, isFetching: locationsFetching } = useLocationsSearch(
-    locationFilters,
+const router = useRouter();
+
+const { data: locations, isPending: isFetchingLocations } = useLocationsSearch(
+    computed(() => ({ query: debouncedSearch.value, perPage: 5 })),
     {
-        enabled: computed(() => searchQuery.value.length > 0),
+        enabled: computed(() => debouncedSearch.value.length >= 2),
     },
 );
 
-const isLoading = computed(() => locationsFetching.value);
+const { data: geolocations, isPending: isFetchingGeolocations } = useGeoSearch(
+    computed(() => ({ search: debouncedSearch.value, limit: 5 })),
+    {
+        enabled: computed(() => debouncedSearch.value.length >= 2),
+    },
+);
 
-const hasNoResults = computed(() => {
-    if (searchQuery.value.length === 0) return false;
-    return locationResults.value && locationResults.value.data.length === 0;
+const searchInput = useTemplateRef<HTMLInputElement>('searchInput');
+
+const isSearching = computed(() => {
+    return (
+        (isFetchingLocations.value || isFetchingGeolocations.value) &&
+        debouncedSearch.value.length >= 2
+    );
 });
 
-function closeSpotlight() {
+const hasResults = computed(() => {
+    const hasLocations = locations.value?.data.length || 0;
+    const hasGeos = geolocations.value?.length || 0;
+    return (hasLocations > 0 || hasGeos > 0) && debouncedSearch.value.length >= 2;
+});
+
+function handleLocationClick(location: Location) {
+    router.push({ name: 'locations.detail', params: { locationId: location.id } });
     isVisible.value = false;
-    searchQuery.value = '';
-    isSearchActive.value = false;
 }
 
-function onSearchFocus() {
-    isSearchActive.value = true;
-}
-
-function onSearchBlur() {
-    if (!searchQuery.value) {
-        isSearchActive.value = false;
-    }
-}
-
-function handleEscapeKey(event: KeyboardEvent) {
-    if (event.key === 'Escape' && isVisible.value) {
-        event.preventDefault();
-        closeSpotlight();
-    }
-}
+const handleGeoClick = (geo: any) => {
+    alert(`Geolocation clicked: ${geo?.name} - ${geo?.place_formatted}`);
+};
 
 watch(isVisible, async (newValue) => {
     if (newValue) {
         await nextTick();
         searchInput.value?.focus();
-    } else {
-        searchQuery.value = '';
-        isSearchActive.value = false;
     }
-});
-
-onMounted(() => {
-    window.addEventListener('keydown', handleEscapeKey);
-});
-
-onUnmounted(() => {
-    window.removeEventListener('keydown', handleEscapeKey);
 });
 </script>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.spotlight-overlay {
-    @apply fixed inset-0 z-50 flex items-start justify-center bg-black/60 pt-20 backdrop-blur-sm;
+.spotlight {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-black/10;
 }
 
-.spotlight-container {
-    @apply flex w-full max-w-2xl flex-col px-6;
-}
+.search {
+    @apply w-full max-w-2xl rounded-2xl bg-white/80 px-6 py-4 backdrop-blur-xs;
+    @apply transition-all duration-300 ease-out;
+    @apply overflow-hidden;
 
-.search-wrapper {
-    @apply transform transition-all duration-300 ease-out;
+    .search-icon {
+        @apply mr-4 text-xl text-gray-500;
 
-    &.search-active {
-        @apply -translate-y-8;
-    }
-
-    .search-bar {
-        @apply flex items-center rounded-2xl bg-white/75 px-6 py-4 backdrop-blur-xs;
-
-        .search-icon {
-            @apply mr-4 text-xl text-gray-400;
-        }
-
-        .search-input {
-            @apply flex-1 border-none bg-transparent text-lg text-gray-900 placeholder-gray-500 outline-none;
+        &:last-child {
+            @apply mr-0 ml-4 cursor-pointer hover:text-gray-700;
         }
     }
-}
 
-.results-container {
-    @apply mt-4 max-h-96 overflow-y-auto rounded-xl bg-white/80;
-
-    .results-loading {
-        @apply flex items-center justify-center gap-3 py-8 text-gray-500;
-
-        .spinner {
-            @apply text-lg;
-        }
+    .search-input {
+        @apply flex-1 border-none bg-transparent text-lg text-gray-700 placeholder-gray-400 outline-none;
     }
 
     .results {
-        @apply divide-y divide-gray-100;
+        @apply mt-4 border-t border-gray-100 pt-4;
 
-        .result-item {
-            @apply flex cursor-pointer items-center gap-4 p-4 transition-all duration-200 hover:bg-gray-50;
+        h3 {
+            @apply mb-3 text-sm font-medium text-gray-600;
+        }
 
-            .result-title {
-                @apply truncate font-medium text-gray-900;
+        .result {
+            @apply flex cursor-pointer items-center justify-between;
+            @apply transition-all duration-200;
+
+            .result-content .address {
+                @apply mt-1 text-sm text-gray-500;
             }
 
-            .result-subtitle {
-                @apply truncate text-sm text-gray-500;
+            .result-arrow {
+                @apply translate-x-2 transform text-gray-400 opacity-0;
+                @apply transition-all duration-200;
+            }
+
+            &:hover .result-arrow {
+                @apply translate-x-0 transform opacity-100;
             }
         }
-    }
-
-    .no-results {
-        @apply flex items-center justify-center gap-3 py-8 text-gray-500;
-    }
-}
-
-.spotlight-enter-active {
-    @apply transition-all duration-200;
-
-    .spotlight-container {
-        @apply transition-all duration-200;
-    }
-}
-
-.spotlight-leave-active {
-    @apply transition-all duration-150;
-
-    .spotlight-container {
-        @apply transition-all duration-150;
-    }
-}
-
-.spotlight-enter-from,
-.spotlight-leave-to {
-    @apply opacity-0;
-
-    .spotlight-container {
-        @apply -translate-y-4 scale-95 transform;
     }
 }
 </style>

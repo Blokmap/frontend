@@ -80,6 +80,6 @@ function handleHoverOut() {
 .logo {
     @apply flex w-fit items-center rounded-full;
     @apply transition-shadow duration-200;
-    @apply cursor-pointer text-xl font-bold tracking-wide select-none;
+    @apply cursor-pointer text-2xl font-bold tracking-wide select-none;
 }
 </style>

@@ -70,8 +70,8 @@ defineExpose({ map });
                 @mouseleave="handleMarkerMouseLeave"
                 @click="handleMarkerClick(location.id)">
                 <template #popover>
-                    <div class="space-y-3">
-                        <p class="text-lg font-bold">
+                    <div class="space-y-3 p-3">
+                        <p class="text-lg font-semibold">
                             {{ location.name }}
                         </p>
                         <p class="mb-6">

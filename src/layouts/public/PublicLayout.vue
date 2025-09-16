@@ -2,7 +2,7 @@
 import Spotlight from '@/components/features/layout/Spotlight.vue';
 import PublicHeader from '@/layouts/public//PublicHeader.vue';
 import PublicFooter from '@/layouts/public/PublicFooter.vue';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 const showSpotlight = ref(false);
 
@@ -12,7 +12,7 @@ function handleOpenSpotlight() {
 
 function handleKeyboardShortcuts(event: KeyboardEvent) {
     const isMetaKey = event.metaKey || event.ctrlKey;
-    const isTriggerKey = event.code === 'Space' || event.key.toLowerCase() === 'a';
+    const isTriggerKey = event.code === 'Space';
 
     if (isMetaKey && isTriggerKey) {
         event.preventDefault();
@@ -21,28 +21,31 @@ function handleKeyboardShortcuts(event: KeyboardEvent) {
 }
 
 onMounted(() => {
-    window.addEventListener('keydown', handleKeyboardShortcuts);
+    document.addEventListener('keydown', handleKeyboardShortcuts);
 });
 
 onUnmounted(() => {
-    window.removeEventListener('keydown', handleKeyboardShortcuts);
+    document.removeEventListener('keydown', handleKeyboardShortcuts);
 });
 </script>
 
 <template>
     <div class="wrapper">
+        <Teleport to="body"> <Spotlight v-model:visible="showSpotlight" /> </Teleport>
         <header class="header">
             <div class="content">
                 <PublicHeader @click:search="handleOpenSpotlight" />
             </div>
         </header>
 
-        <main class="content main">
-            <RouterView v-slot="{ Component }">
-                <KeepAlive :include="['LocationsPage']">
-                    <component :is="Component" />
-                </KeepAlive>
-            </RouterView>
+        <main class="main">
+            <div class="content">
+                <RouterView v-slot="{ Component }">
+                    <KeepAlive :include="['LocationsPage']">
+                        <component :is="Component" />
+                    </KeepAlive>
+                </RouterView>
+            </div>
         </main>
 
         <footer class="footer">
@@ -51,19 +54,18 @@ onUnmounted(() => {
             </div>
         </footer>
     </div>
-
-    <Spotlight v-model:visible="showSpotlight" />
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
 .wrapper {
-    @apply m-3 flex-1 md:m-6;
-    @apply flex flex-col;
+    @apply w-full;
+    @apply m-3 md:m-6;
+    @apply flex flex-1 flex-col;
 
     .content {
-        @apply mx-auto max-w-[1680px] px-3 md:px-6 2xl:w-[80vw];
+        @apply mx-auto max-w-[1920px] px-3 md:px-6 2xl:w-[78vw];
     }
 
     .main {

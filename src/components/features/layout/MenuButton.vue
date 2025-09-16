@@ -47,9 +47,7 @@ function handleNavigationClick(): void {
     </Button>
 
     <!-- Popover -->
-    <Popover
-        ref="popover"
-        class="w-full max-w-[275px] rounded-lg border border-slate-200 shadow-lg">
+    <Popover ref="popover" class="w-full max-w-[275px] rounded-lg">
         <div class="dark:text-slate-20 space-y-2 p-1 text-sm text-slate-800">
             <!-- Profile Section -->
             <template v-if="profileIsLoading">
@@ -83,7 +81,7 @@ function handleNavigationClick(): void {
                     </div>
                 </RouterLink>
 
-                <p class="font-semibold">Profiel</p>
+                <p class="font-semibold text-slate-700">Profiel</p>
 
                 <RouterLink
                     class="menu-link"
@@ -103,7 +101,7 @@ function handleNavigationClick(): void {
             </template>
 
             <template v-else>
-                <h3 class="text-lg font-bold">Jouw Profiel</h3>
+                <h3 class="font-semibold">Profiel</h3>
                 <p class="mt-2 mb-3 text-sm text-slate-500 dark:text-slate-400">
                     Reserveer een plek op een van onze
                     <span class="text-gradient-conic">locaties</span> of meld zelf een plek aan.
@@ -126,7 +124,7 @@ function handleNavigationClick(): void {
                 </div>
             </template>
 
-            <p class="font-semibold">Beheer</p>
+            <p class="font-semibold text-slate-700">Beheer</p>
 
             <!-- Navigation -->
             <RouterLink

@@ -6,15 +6,13 @@
 @import './maps.css';
 @import './transitions.css';
 @import './utilities.css';
-@import './fonts.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
     --text-base: 14px;
 
-    --font-family-sans: 'Lexend', ui-sans-serif, system-ui, sans-serif;
-    --font-family-lexend: 'Lexend', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'Merriweather', ui-sans-serif, system-ui, sans-serif;
 
     --color-timber-green-50: #f0f9f5;
     --color-timber-green-100: #dbf0e5;
@@ -75,9 +73,16 @@
 }
 
 body {
-    @apply bg-slate-900 text-base text-slate-800;
-    font-family: var(--font-family-sans);
-    font-weight: 450;
+    @apply bg-slate-900 font-sans text-base text-slate-800;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply text-inherit;
+    }
 
     #app {
         @apply flex h-full min-h-[100vh];

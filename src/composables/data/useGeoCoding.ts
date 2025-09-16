@@ -1,24 +1,24 @@
 import { useMutation, useQuery } from '@tanstack/vue-query';
-import { useDebounce } from '@vueuse/core';
-import { type Ref, computed } from 'vue';
+import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { mapBoxClient } from '@/config/axios';
 import { mapboxEndpoints } from '@/config/endpoints';
 import { geocodeAddress } from '@/services/geocoding';
 import type { LngLat } from '@/domain/map';
-import type { CompMutation, CompQuery } from '@/types/Composable';
+import type { CompMutation, CompQuery, CompQueryOptions } from '@/types/Composable';
 import type { AxiosError } from 'axios';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 
-type UseGeoSearchOptions = {
+type GeoSearchFilter = {
+    search: string;
     types?: string;
     auto_complete?: boolean;
     country?: string;
     limit?: number;
 };
 
-const defaultGeoSearchOptions: UseGeoSearchOptions = {
+const defaultGeoSearchOptions: Partial<GeoSearchFilter> = {
     auto_complete: true,
     types: 'place,locality',
     country: 'be',
@@ -28,35 +28,39 @@ const defaultGeoSearchOptions: UseGeoSearchOptions = {
 /**
  * A composable function to perform a location search using Mapbox's geocoding API.
  *
- * @param options - Optional parameters to customize the geocoding search.
- * @returns An object containing the search input and the query result.
+ * @param filters - MaybeRef filters containing search query and mapbox options
+ * @param options - CompQueryOptions for query configuration (enabled, etc.)
+ * @returns An object containing the search results and their state.
  */
 export function useGeoSearch(
-    search: Ref<string>,
-    options: UseGeoSearchOptions = defaultGeoSearchOptions,
+    filters?: MaybeRef<GeoSearchFilter>,
+    options: CompQueryOptions = {},
 ): CompQuery<GeoJSON.GeoJsonProperties[]> {
     const { locale } = useI18n();
 
-    const debouncedSearch = useDebounce(search, 250);
-    const isEnabled = computed(() => debouncedSearch.value.length > 0);
-
     const query = useQuery<GeoJSON.GeoJsonProperties[], AxiosError>({
-        queryKey: ['geosearch', debouncedSearch],
+        ...options,
+        queryKey: ['geosearch', filters, locale],
         retry: false,
-        enabled: isEnabled,
         queryFn: async () => {
-            const q = debouncedSearch.value.trim().toLowerCase();
+            const params = toValue(filters);
+            const searchQuery = params?.search?.trim().toLowerCase();
 
-            const params = {
-                q,
+            if (!searchQuery) {
+                return [];
+            }
+
+            const requestParams = {
+                q: searchQuery,
                 access_token: MAPBOX_ACCESS_TOKEN,
                 language: locale.value,
-                ...options,
+                ...defaultGeoSearchOptions,
+                ...params,
             };
 
             const response = await mapBoxClient.get<GeoJSON.FeatureCollection>(
                 mapboxEndpoints.geocoding.forward,
-                { params },
+                { params: requestParams },
             );
 
             // Filter out duplicate names in the results

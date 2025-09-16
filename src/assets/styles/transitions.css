@@ -1,6 +1,5 @@
-/* Bouncy Scale Up Transition
-   Used for: Markers, buttons, icons that need a bouncy entrance
-   ========================================================================== */
+/* Bouncy Scale Up Transition */
+/* Used for: Markers, buttons, icons that need a bouncy entrance */
 .bounce-scale-enter-active {
     transition-property: transform, opacity;
     transition-duration: 400ms;
@@ -17,9 +16,8 @@
     opacity: 1;
 }
 
-/* Slide Down Transition
-   Used for: Dropdowns, popovers, overlays that slide down from above
-   ========================================================================== */
+/* Slide Down Transition */
+/* Used for: Dropdowns, popovers, overlays that slide down from above */
 .slide-down-enter-active {
     @apply transition-all duration-200 ease-out;
 }
@@ -44,9 +42,8 @@
     @apply -translate-y-2 scale-95 opacity-0;
 }
 
-/* Slide Up Entry Transition
-   Used for: List items, cards, elements that slide up when appearing and down when leaving
-   ========================================================================== */
+/* Slide Up Entry Transition */
+/* Used for: List items, cards, elements that slide up when appearing and down when leaving */
 .slide-up-enter-active,
 .slide-up-leave-active {
     @apply transition-all duration-300 ease-out;
@@ -68,16 +65,14 @@
     @apply translate-y-2 scale-90 opacity-0;
 }
 
-/* Smooth Move Transition
-   Used for: Reordering list items, position changes with smooth movement
-   ========================================================================== */
+/* Smooth Move Transition */
+/* Used for: Reordering list items, position changes with smooth movement */
 .slide-up-move {
     @apply transition-transform duration-300 ease-out;
 }
 
-/* Fade Transition
-   Used for: Simple fade in/out effects
-   ========================================================================== */
+/* Fade Transition */
+/* Used for: Simple fade in/out effects */
 .fade-enter-active,
 .fade-leave-active {
     @apply transition-opacity duration-300 ease-out;
@@ -93,9 +88,8 @@
     @apply opacity-100;
 }
 
-/* Scale Transition
-   Used for: Modal dialogs, overlays that scale in/out
-   ========================================================================== */
+/* Scale Transition */
+/* Used for: Modal dialogs, overlays that scale in/out */
 .scale-enter-active,
 .scale-leave-active {
     @apply transition-all duration-200 ease-out;

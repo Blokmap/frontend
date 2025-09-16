@@ -48,7 +48,7 @@ const { locale } = useI18n();
 
 .day {
     @apply flex min-h-[50px] items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors;
-    @apply hover:bg-gray-50;
+    @apply bg-gray-50 hover:bg-gray-50;
 
     &.today {
         @apply bg-primary-50;

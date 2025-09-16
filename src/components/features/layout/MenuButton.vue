@@ -40,7 +40,7 @@ function handleNavigationClick(): void {
 
 <template>
     <!-- Menu Toggle -->
-    <Button severity="contrast" class="!px-3 !py-2" @click="handleMenuButtonClick" outlined rounded>
+    <Button severity="contrast" class="!px-3 !py-2" @click="handleMenuButtonClick" rounded>
         <template #icon>
             <FontAwesomeIcon :icon="faBars" />
         </template>
@@ -143,7 +143,7 @@ function handleNavigationClick(): void {
 
 .menu-link {
     @apply flex w-full cursor-pointer items-center gap-2 px-2 py-1;
-    @apply rounded-md transition hover:bg-slate-100 dark:hover:bg-slate-800;
+    @apply rounded-md transition hover:bg-slate-100/60;
 }
 
 .menu-link .fa-icon {

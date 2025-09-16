@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Spotlight from '@/components/features/layout/Spotlight.vue';
+import LocationSearch from '@/components/features/location/search/LocationSearchSpotlight.vue';
 import PublicHeader from '@/layouts/public//PublicHeader.vue';
 import PublicFooter from '@/layouts/public/PublicFooter.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
@@ -31,7 +31,7 @@ onUnmounted(() => {
 
 <template>
     <div class="wrapper">
-        <Teleport to="body"> <Spotlight v-model:visible="showSpotlight" /> </Teleport>
+        <Teleport to="body"> <LocationSearch v-model:visible="showSpotlight" /> </Teleport>
         <header class="header">
             <div class="content">
                 <PublicHeader @click:search="handleOpenSpotlight" />

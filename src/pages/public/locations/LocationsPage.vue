@@ -21,7 +21,7 @@ import type { LngLat, LngLatBounds } from '@/domain/map';
 defineOptions({ name: 'LocationsPage' });
 
 const filterStore = useLocationFilters();
-const { geoLocation, geoLocationActionTrigger } = storeToRefs(filterStore);
+const { geoLocation } = storeToRefs(filterStore);
 const toast = useToast();
 const router = useRouter();
 
@@ -62,7 +62,7 @@ watch(locations, (locations) => {
 });
 
 watch(
-    [() => mapRef.value?.map.isLoaded, geoLocation, geoLocationActionTrigger],
+    [() => mapRef.value?.map.isLoaded, geoLocation],
     ([isLoaded, geoLocation]) => {
         if (!isLoaded || !geoLocation) return;
         try {
@@ -81,10 +81,10 @@ const handleBoundsChange = useDebounceFn(async (bounds: LngLatBounds | null) => 
     filterStore.updateFilters({ bounds, page: 1 });
 }, 400);
 
-const handlePageChange = (event: { page: number }): void => {
+function handlePageChange(event: { page: number }): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     filterStore.updateFilters({ page: event.page + 1 });
-};
+}
 
 function handleMarkerClick(id: number): void {
     router.push({ name: 'locations.detail', params: { locationId: id } });

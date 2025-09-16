@@ -34,23 +34,32 @@ const openingTimesByDay = computed(() => {
 <template>
     <div class="space-y-4">
         <!-- Opening Hours Table -->
-        <div v-if="openingTimes && openingTimes.length > 0" class="space-y-1">
-            <OpeningsTableDay
-                v-for="day in weekDays"
-                :key="day.toDateString()"
-                :day="day"
-                :opening-times-by-day="openingTimesByDay">
-            </OpeningsTableDay>
-        </div>
+        <template v-if="openingTimes && openingTimes.length > 0">
+            <div class="space-y-1">
+                <OpeningsTableDay
+                    v-for="day in weekDays"
+                    :key="day.toDateString()"
+                    :day="day"
+                    :opening-times-by-day="openingTimesByDay">
+                </OpeningsTableDay>
+            </div>
+        </template>
 
         <!-- No Hours Available -->
-        <div class="no-hours" v-else>
-            <FontAwesomeIcon :icon="faClock" class="mb-2 h-6 w-6 text-gray-400" />
-            <p class="mb-3 text-sm font-medium text-gray-600">Geen openingstijden beschikbaar</p>
-            <Button link size="small" class="text-xs text-gray-500 hover:text-gray-700">
-                Vraag de beheerder om openingstijden toe te voegen
-            </Button>
-        </div>
+        <template v-else>
+            <div class="no-hours">
+                <FontAwesomeIcon :icon="faClock" class="mb-2 h-6 w-6 text-gray-400" />
+                <p class="mb-3 text-sm font-medium text-gray-600">
+                    Geen openingstijden beschikbaar
+                </p>
+                <Button
+                    link
+                    size="small"
+                    class="text-xs text-gray-500 underline hover:text-gray-700">
+                    Vraag de beheerder om openingstijden toe te voegen
+                </Button>
+            </div>
+        </template>
     </div>
 </template>
 

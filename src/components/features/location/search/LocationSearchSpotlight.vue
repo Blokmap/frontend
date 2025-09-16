@@ -19,7 +19,7 @@
                     </FontAwesomeIcon>
                     <FontAwesomeIcon
                         v-else
-                        :icon="faFilter"
+                        :icon="faSliders"
                         class="search-icon"
                         @click="emit('filter')">
                     </FontAwesomeIcon>
@@ -28,7 +28,7 @@
                 <!-- Results Section -->
                 <div v-if="hasResults" class="results">
                     <!-- Location Results -->
-                    <div v-if="locations?.data.length">
+                    <div class="space-y-2" v-if="locations?.data.length">
                         <h3>Bloklocaties</h3>
                         <div
                             v-for="location in locations.data"
@@ -47,7 +47,7 @@
                     </div>
 
                     <!-- Geolocation Results -->
-                    <div v-if="geolocations?.length">
+                    <div class="space-y-2" v-if="geolocations?.length">
                         <h3>Locaties</h3>
                         <div
                             v-for="(geo, index) in geolocations"
@@ -73,16 +73,19 @@
 import {
     faMagnifyingGlass,
     faSpinner,
-    faFilter,
     faChevronRight,
+    faSliders,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounce } from '@vueuse/core';
+import { storeToRefs } from 'pinia';
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useGeoSearch } from '@/composables/data/useGeoCoding';
 import { useLocationsSearch } from '@/composables/data/useLocations';
+import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { Location } from '@/domain/location';
+import type { GeoJsonProperties } from 'geojson';
 
 const isVisible = defineModel<boolean>('visible', { default: false });
 
@@ -94,6 +97,7 @@ const search = ref('');
 const debouncedSearch = useDebounce(search, 500);
 
 const router = useRouter();
+const filters = storeToRefs(useLocationFilters());
 
 const { data: locations, isPending: isFetchingLocations } = useLocationsSearch(
     computed(() => ({ query: debouncedSearch.value, perPage: 5 })),
@@ -129,9 +133,11 @@ function handleLocationClick(location: Location) {
     isVisible.value = false;
 }
 
-const handleGeoClick = (geo: any) => {
-    alert(`Geolocation clicked: ${geo?.name} - ${geo?.place_formatted}`);
-};
+function handleGeoClick(geo: GeoJsonProperties) {
+    router.push({ name: 'locations' });
+    filters.geoLocation.value = geo;
+    isVisible.value = false;
+}
 
 watch(isVisible, async (newValue) => {
     if (newValue) {
@@ -166,7 +172,7 @@ watch(isVisible, async (newValue) => {
     }
 
     .results {
-        @apply mt-4 border-t border-gray-100 pt-4;
+        @apply mt-4 space-y-3 border-t border-gray-100 pt-4;
 
         h3 {
             @apply mb-3 text-sm font-medium text-gray-600;

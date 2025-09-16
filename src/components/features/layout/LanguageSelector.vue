@@ -45,7 +45,7 @@ function handleLocaleChange(newLocale: string): void {
         :current-locale="currentLocale"
         :current-flag="getFlagImage(currentLocale)"
         :current-label="t(`app.locales.${currentLocale}`)">
-        <Button severity="contrast" @click="toggleLanguageSelector" rounded outlined>
+        <Button severity="contrast" @click="toggleLanguageSelector" rounded>
             <template #icon>
                 <FontAwesomeIcon :icon="faGlobe" />
             </template>

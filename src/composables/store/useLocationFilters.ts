@@ -7,7 +7,6 @@ import type { LocationFilter } from '@/domain/location';
  */
 export const useLocationFilters = defineStore('locationFilters', () => {
     const geoLocation = ref<GeoJSON.GeoJsonProperties | null>(null);
-    const geoLocationActionTrigger = ref(0);
 
     const filters = ref<LocationFilter>({
         query: null,
@@ -28,19 +27,9 @@ export const useLocationFilters = defineStore('locationFilters', () => {
         Object.assign(filters.value, newFilters);
     }
 
-    /**
-     * Trigger actions for the current geoLocation without changing its value.
-     * Useful for forcing map updates or re-running location-based logic.
-     */
-    function triggerGeoLocationAction(): void {
-        geoLocationActionTrigger.value++;
-    }
-
     return {
         filters,
         geoLocation,
-        geoLocationActionTrigger,
         updateFilters,
-        triggerGeoLocationAction,
     };
 });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { faMagnifyingGlass, faFilter } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faSliders } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 defineEmits<{
@@ -12,7 +12,7 @@ defineEmits<{
         <div class="flex w-full items-center">
             <FontAwesomeIcon :icon="faMagnifyingGlass" class="search-icon" />
             <span class="search-input">Zoek bloklocaties...</span>
-            <FontAwesomeIcon :icon="faFilter" class="search-icon filter-icon" />
+            <FontAwesomeIcon :icon="faSliders" class="search-icon filter-icon" />
         </div>
     </button>
 </template>
@@ -25,7 +25,7 @@ defineEmits<{
     @apply min-w-[280px] px-6 py-3;
 
     .search-icon {
-        @apply text-primary-500;
+        @apply text-primary-800;
     }
 
     .search-input {

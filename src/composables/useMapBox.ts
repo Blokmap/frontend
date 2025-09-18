@@ -298,7 +298,7 @@ export function useMapBox<T>(
             map.value.flyTo({
                 center: lngLat,
                 zoom,
-                duration: 1000,
+                duration: 2000,
                 essential: true,
             });
         });

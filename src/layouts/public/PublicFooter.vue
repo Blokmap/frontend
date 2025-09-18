@@ -16,7 +16,7 @@
 @reference '@/assets/styles/main.css';
 
 .footer-bottom {
-    @apply mx-auto flex flex-col items-center justify-between rounded-b-lg;
+    @apply mx-auto flex flex-col items-center justify-between gap-3 rounded-b-lg;
     @apply md:flex-row md:text-left;
 }
 </style>

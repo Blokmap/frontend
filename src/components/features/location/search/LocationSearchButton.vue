@@ -21,15 +21,15 @@ defineEmits<{
 @reference '@/assets/styles/main.css';
 
 .search-button {
-    @apply bg-primary-50 cursor-pointer rounded-2xl border-none;
     @apply min-w-[280px] px-6 py-3;
+    @apply bg-primary-100/50 cursor-pointer rounded-2xl border-none text-[15px];
 
     .search-icon {
         @apply text-primary-800;
     }
 
     .search-input {
-        @apply text-primary-800 flex-1 text-sm font-semibold;
+        @apply text-primary-800 flex-1 font-semibold;
     }
 }
 </style>

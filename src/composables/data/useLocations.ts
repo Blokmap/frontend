@@ -9,6 +9,7 @@ import {
     getLocationById,
     getNearestLocation,
     searchLocations,
+    type LocationIncludes,
 } from '@/services/location';
 import type { ImageRequest } from '@/domain/image';
 import type { Location, LocationFilter, LocationRequest, NearestLocation } from '@/domain/location';
@@ -21,8 +22,6 @@ import type {
     CompQueryOptions,
 } from '@/types/Composable';
 import type { Paginated } from '@/types/Pagination';
-
-export type LocationIncludes = 'images' | 'createdBy';
 
 /**
  * Composable to search for locations based on filters.
@@ -64,7 +63,11 @@ export function useLocation(
     const query = useQuery({
         ...options,
         queryKey: ['location', id],
-        queryFn: () => getLocationById(toValue(id), options.includes ?? []),
+        queryFn: () => {
+            const locationId = toValue(id);
+            const includes = options.includes ?? [];
+            return getLocationById(locationId, includes);
+        },
     });
 
     return query;

@@ -208,23 +208,27 @@ async function submitLocation(): Promise<void> {
             <LocationInformationStep
                 v-if="step === 'basics'"
                 v-model="locationForm"
-                v-model:substeps="substeps" />
+                v-model:substeps="substeps">
+            </LocationInformationStep>
 
             <LocationImagesStep
                 v-if="step === 'images'"
                 v-model="imagesForm"
-                v-model:substeps="substeps" />
+                v-model:substeps="substeps">
+            </LocationImagesStep>
 
             <LocationSettingsStep
                 v-if="step === 'settings'"
                 v-model:form="locationForm"
-                v-model:substeps="substeps" />
+                v-model:substeps="substeps">
+            </LocationSettingsStep>
 
             <LocationOpeningsStep
                 v-if="step === 'openings'"
                 v-model:openings="openingsForm"
                 v-model:substeps="substeps"
-                :form="locationForm" />
+                :form="locationForm">
+            </LocationOpeningsStep>
         </div>
     </div>
 </template>

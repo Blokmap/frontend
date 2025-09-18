@@ -14,6 +14,7 @@ import Gallery from '@/components/shared/image/Gallery.vue';
 import GallerySkeleton from '@/components/shared/image/GallerySkeleton.vue';
 import { faCheckCircle, faLocationDot, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useLocation } from '@/composables/data/useLocations';
 
@@ -25,7 +26,10 @@ const {
     data: location,
     isPending,
     isError,
-} = useLocation(+locationId, { includes: ['createdBy'] });
+} = useLocation(
+    computed(() => +locationId),
+    { includes: ['createdBy'] },
+);
 </script>
 
 <template>
@@ -49,27 +53,19 @@ const {
                     <Skeleton v-else-if="isPending" height="36px" width="400px" />
                 </h1>
 
-                <!-- Location and Rating Bar -->
-                <div class="flex items-center gap-3">
-                    <Badge severity="contrast" class="flex items-center gap-2">
+                <!-- Tags -->
+                <div class="flex items-center gap-3" v-if="location">
+                    <Badge severity="contrast" class="flex items-center gap-2 border-0 p-0">
                         <FontAwesomeIcon :icon="faLocationDot" class="text-primary" />
-                        <span>
-                            <template v-if="location">
-                                {{ location.city }}, {{ location.street }}
-                            </template>
-                            <Skeleton v-else-if="isPending" height="16px" width="150px" />
-                        </span>
+                        <span> {{ location.city }}, {{ location.street }} </span>
                     </Badge>
 
-                    <Badge
-                        v-if="location?.seatCount"
-                        severity="contrast"
-                        class="flex items-center gap-2">
+                    <Badge severity="contrast" class="flex items-center gap-2 border-0 p-0">
                         <FontAwesomeIcon :icon="faUsers" class="text-primary" />
                         <span>{{ location.seatCount }} plaatsen</span>
                     </Badge>
 
-                    <Badge v-if="location" severity="contrast" class="flex items-center gap-2">
+                    <Badge severity="contrast" class="flex items-center gap-2 border-0 p-0">
                         <FontAwesomeIcon class="text-primary" :icon="faCheckCircle" />
                         <span>Geverifieerd</span>
                     </Badge>
@@ -82,7 +78,7 @@ const {
                 <GallerySkeleton v-else-if="isPending" />
             </div>
 
-            <!-- Main Content Grid -->
+            <!-- Content Grid -->
             <div class="grid gap-6 lg:grid-cols-3">
                 <!-- Main Content -->
                 <div class="space-y-6 lg:col-span-2">
@@ -116,7 +112,9 @@ const {
                     </div>
 
                     <!-- Host Section -->
-                    <div class="space-y-6 border-b border-gray-200 pb-8">
+                    <div
+                        class="space-y-6 border-b border-gray-200 pb-8"
+                        v-if="isPending || location?.createdBy">
                         <h2 class="text-2xl font-semibold text-gray-900">
                             <template v-if="location"> Over de inzender </template>
                             <Skeleton v-else-if="isPending" height="28px" width="200px" />

@@ -2,7 +2,7 @@ import PrimeVuePlugin from 'primevue/config';
 import App from '@/App.vue';
 import { VueQueryPlugin } from '@tanstack/vue-query';
 import { createPinia } from 'pinia';
-import { ConfirmationService, Ripple, ToastService, Tooltip } from 'primevue';
+import { ConfirmationService, FocusTrap, Ripple, ToastService, Tooltip } from 'primevue';
 import { createApp } from 'vue';
 import { i18n } from '@/config/locale';
 import { vueQueryConfig, primevueConfig } from '@/config/plugin';
@@ -25,6 +25,7 @@ app.use(PrimeVuePlugin, primevueConfig);
 // Register directives.
 app.directive('tooltip', Tooltip);
 app.directive('ripple', Ripple);
+app.directive('focustrap', FocusTrap);
 
 // Mount the app.
 app.mount('#app');

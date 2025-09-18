@@ -1,3 +1,5 @@
+import type { Paginated } from '@/types';
+
 /**
  * Utility function to format an array of includes into a record.
  *
@@ -12,4 +14,23 @@ export function formatIncludes(includes: string[]): Record<string, boolean> {
         },
         {} as Record<string, boolean>,
     );
+}
+
+/**
+ * Transforms a paginated response by parsing each item using the provided parser function.
+ *
+ * @param parser - A function that takes an item and returns the parsed item.
+ * @returns A function that takes a JSON string and returns a Paginated object with parsed items.
+ */
+export function transformPaginatedResponse<T>(
+    parser: (item: any) => T,
+): (data: string) => Paginated<T> {
+    return (data: string) => {
+        const parsed = JSON.parse(data);
+        const items = parsed.data.map(parser);
+        return {
+            ...parsed,
+            data: items,
+        };
+    };
 }

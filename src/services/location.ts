@@ -3,14 +3,15 @@ import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { dateToString, stringToDate } from '@/utils/date/date';
 import { stringToTime, timeToString } from '@/utils/date/time';
-import { formatIncludes } from '@/utils/service';
+import { formatIncludes, transformPaginatedResponse } from '@/utils/service';
 import { parseProfile } from './profile';
-import type { LocationIncludes } from '@/composables/data/useLocations';
 import type { ImageRequest } from '@/domain/image';
 import type { Location, LocationFilter, LocationRequest, NearestLocation } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 import type { OpeningTime, OpeningTimeRequest } from '@/domain/openings';
 import type { Paginated } from '@/types/Pagination';
+
+export type LocationIncludes = 'images' | 'createdBy';
 
 /**
  * Parse an opening time object from the API by converting string times to Time objects
@@ -43,17 +44,14 @@ function parseLocation(locationData: any): Location {
     location.createdAt = stringToDate(location.createdAt);
     location.updatedAt = stringToDate(location.updatedAt);
 
-    // Convert opening times if they exist
     if (location.openingTimes) {
         location.openingTimes = location.openingTimes.map(parseOpeningTime);
     }
 
-    // Convert dates if they exist
     if (location.approvedAt) {
         location.approvedAt = stringToDate(location.approvedAt);
     }
 
-    // Convert profile
     if (location.createdBy) {
         location.createdBy = parseProfile(location.createdBy);
     }
@@ -103,18 +101,19 @@ export async function searchLocations(
         language,
     };
 
-    const response = await client.get(endpoints.locations.search, { params });
+    const response = await client.get(endpoints.locations.search, {
+        params,
+        transformResponse: transformPaginatedResponse(parseLocation),
+    });
 
-    return {
-        ...response.data,
-        data: response.data.data.map(parseLocation),
-    };
+    return response.data;
 }
 
 /**
  * Function to get a location by its ID.
  *
  * @param {string} id - The ID of the location to fetch.
+ * @param {LocationIncludes[]} includes - The related data to include in the response.
  * @returns {Promise<Location>} A promise that resolves to the location data.
  */
 export async function getLocationById(id: number, includes: LocationIncludes[]): Promise<Location> {

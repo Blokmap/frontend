@@ -4,7 +4,8 @@
             v-if="isVisible"
             class="spotlight"
             @click="isVisible = false"
-            @keydown.escape="isVisible = false">
+            @keydown.escape="isVisible = false"
+            v-focustrap>
             <div class="search" @click.stop>
                 <div class="flex items-center">
                     <FontAwesomeIcon :icon="faMagnifyingGlass" class="search-icon" />
@@ -13,7 +14,9 @@
                         v-model="search"
                         type="text"
                         placeholder="Zoek bloklocaties..."
-                        class="search-input" />
+                        class="search-input"
+                        aria-label="Zoek naar bloklocaties en locaties"
+                        :aria-describedby="hasResults ? 'search-results' : undefined" />
 
                     <FontAwesomeIcon v-if="isSearching" :icon="faSpinner" class="search-icon" spin>
                     </FontAwesomeIcon>
@@ -26,14 +29,16 @@
                 </div>
 
                 <!-- Results Section -->
-                <div v-if="hasResults" class="results">
+                <div v-if="hasResults" class="results" aria-label="Zoekresultaten">
                     <!-- Location Results -->
                     <div class="space-y-2" v-if="locations?.data.length">
                         <h3>Bloklocaties</h3>
-                        <div
+                        <button
                             v-for="location in locations.data"
                             :key="location.id"
+                            type="button"
                             class="result"
+                            :aria-label="`Ga naar ${location.name} op ${location.street} ${location.number}, ${location.city}`"
                             @click="handleLocationClick(location)">
                             <div class="result-content">
                                 <div>{{ location.name }}</div>
@@ -43,16 +48,18 @@
                                 </div>
                             </div>
                             <FontAwesomeIcon :icon="faChevronRight" class="result-arrow" />
-                        </div>
+                        </button>
                     </div>
 
                     <!-- Geolocation Results -->
                     <div class="space-y-2" v-if="geolocations?.length">
                         <h3>Locaties</h3>
-                        <div
+                        <button
                             v-for="(geo, index) in geolocations"
                             :key="index"
+                            type="button"
                             class="result"
+                            :aria-label="`Ga naar ${geo?.name || 'Unknown'} op ${geo?.place_formatted || geo?.full_address || 'No address'}`"
                             @click="handleGeoClick(geo)">
                             <div class="result-content">
                                 <div>{{ geo?.name || 'Unknown' }}</div>
@@ -61,7 +68,7 @@
                                 </div>
                             </div>
                             <FontAwesomeIcon :icon="faChevronRight" class="result-arrow" />
-                        </div>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -116,16 +123,13 @@ const { data: geolocations, isPending: isFetchingGeolocations } = useGeoSearch(
 const searchInput = useTemplateRef<HTMLInputElement>('searchInput');
 
 const isSearching = computed(() => {
-    return (
-        (isFetchingLocations.value || isFetchingGeolocations.value) &&
-        debouncedSearch.value.length >= 2
-    );
+    return isFetchingLocations.value || isFetchingGeolocations.value;
 });
 
 const hasResults = computed(() => {
     const hasLocations = locations.value?.data.length || 0;
     const hasGeos = geolocations.value?.length || 0;
-    return (hasLocations > 0 || hasGeos > 0) && debouncedSearch.value.length >= 2;
+    return hasLocations > 0 || hasGeos > 0;
 });
 
 function handleLocationClick(location: Location) {
@@ -140,10 +144,9 @@ function handleGeoClick(geo: GeoJsonProperties) {
 }
 
 watch(isVisible, async (newValue) => {
-    if (newValue) {
-        await nextTick();
-        searchInput.value?.focus();
-    }
+    if (!newValue) return;
+    await nextTick();
+    searchInput.value?.focus();
 });
 </script>
 
@@ -151,7 +154,9 @@ watch(isVisible, async (newValue) => {
 @reference '@/assets/styles/main.css';
 
 .spotlight {
-    @apply fixed inset-0 z-50 flex items-center justify-center bg-black/10;
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs;
+    @apply items-start md:items-center;
+    @apply px-3 pt-20 md:pt-0;
 }
 
 .search {
@@ -179,7 +184,8 @@ watch(isVisible, async (newValue) => {
         }
 
         .result {
-            @apply flex cursor-pointer items-center justify-between;
+            @apply flex w-full cursor-pointer items-center justify-between;
+            @apply border-none bg-transparent p-0 text-left;
             @apply transition-all duration-200;
 
             .result-content .address {
@@ -191,8 +197,13 @@ watch(isVisible, async (newValue) => {
                 @apply transition-all duration-200;
             }
 
-            &:hover .result-arrow {
+            &:hover .result-arrow,
+            &:focus .result-arrow {
                 @apply translate-x-0 transform opacity-100;
+            }
+
+            &:focus {
+                @apply outline-none;
             }
         }
     }

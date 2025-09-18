@@ -29,9 +29,9 @@ const imageUrl = computed(() => {
 
 <template>
     <div class="location">
-        <div class="location--image" :class="{ active }">
+        <div class="location__image" :class="{ active }">
             <img :src="imageUrl" />
-            <div v-tooltip="location.city" class="address">
+            <div v-tooltip="location.city" class="location__address">
                 <FontAwesomeIcon :icon="faLocationDot" class="text-secondary" />
                 {{ location.city }}
             </div>
@@ -55,16 +55,13 @@ const imageUrl = computed(() => {
         @apply hidden;
     }
 
-    .location--image {
+    .location__image {
         @apply relative h-full w-full overflow-hidden;
         @apply rounded-2xl border-1 border-slate-200;
 
-        .heart {
-            @apply absolute top-1 right-2 text-2xl text-white transition-colors duration-200 hover:text-red-500;
-        }
-
-        .address {
-            @apply absolute top-2 left-2 flex max-w-30 items-center gap-2 truncate rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium shadow;
+        .location__address {
+            @apply absolute top-2 left-2 flex max-w-30 items-center gap-2 py-0.5;
+            @apply truncate rounded-full bg-white/80 px-2 text-xs font-medium backdrop-blur-xs;
         }
 
         img {

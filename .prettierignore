@@ -40,3 +40,6 @@ pnpm-lock.yaml
 # Cypress
 cypress/screenshots/
 cypress/videos/
+
+# HTML files
+index.html

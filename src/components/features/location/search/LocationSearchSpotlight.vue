@@ -106,14 +106,14 @@ const debouncedSearch = useDebounce(search, 500);
 const router = useRouter();
 const filters = storeToRefs(useLocationFilters());
 
-const { data: locations, isPending: isFetchingLocations } = useLocationsSearch(
+const { data: locations, isFetching: isFetchingLocations } = useLocationsSearch(
     computed(() => ({ query: debouncedSearch.value, perPage: 5 })),
     {
         enabled: computed(() => debouncedSearch.value.length >= 2),
     },
 );
 
-const { data: geolocations, isPending: isFetchingGeolocations } = useGeoSearch(
+const { data: geolocations, isFetching: isFetchingGeolocations } = useGeoSearch(
     computed(() => ({ search: debouncedSearch.value, limit: 5 })),
     {
         enabled: computed(() => debouncedSearch.value.length >= 2),

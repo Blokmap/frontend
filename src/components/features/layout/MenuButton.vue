@@ -47,7 +47,7 @@ function handleNavigationClick(): void {
 
     <!-- Popover -->
     <Popover ref="popover" class="w-full max-w-[275px] rounded-lg">
-        <div class="dark:text-slate-20 space-y-3 p-1 text-sm text-slate-800">
+        <div class="dark:text-slate-20 space-y-3 p-1 text-slate-800">
             <!-- Profile Section -->
             <template v-if="profileIsLoading">
                 <div class="flex items-center gap-3">

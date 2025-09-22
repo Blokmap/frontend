@@ -9,9 +9,12 @@ import {
     getNearestLocation,
     searchLocations,
     type LocationIncludes,
-} from '@/services/location';
+    type Location,
+    type LocationFilter,
+    type LocationRequest,
+    type NearestLocation,
+} from '@/domain/location';
 import type { ImageRequest } from '@/domain/image';
-import type { Location, LocationFilter, LocationRequest, NearestLocation } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 import type { OpeningTimeRequest } from '@/domain/openings';
 import type {

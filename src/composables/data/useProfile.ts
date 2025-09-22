@@ -6,7 +6,7 @@ import {
     getProfileStats,
     updateProfile,
     updateProfileAvatar,
-} from '@/services/profile';
+} from '@/domain/profile';
 import type { Profile, ProfileStats } from '@/domain/profile';
 import type { Reservation } from '@/domain/reservation';
 import type { CompMutation, CompMutationOptions, CompQuery } from '@/types/Composable';

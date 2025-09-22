@@ -30,3 +30,13 @@ export const DashboardInstitutionsPage = () =>
     import('@/pages/dashboard/institutions/InstitutionsPage.vue');
 export const DashboardInstitutionPage = () =>
     import('@/pages/dashboard/institutions/InstitutionPage.vue');
+
+// Dashboard Statistics
+export const DashboardStatisticsPage = () =>
+    import('@/pages/dashboard/statistics/StatisticsPage.vue');
+
+// Dashboard Users
+export const DashboardUsersPage = () => import('@/pages/dashboard/users/UsersPage.vue');
+
+// Dashboard Reviews
+export const DashboardReviewsPage = () => import('@/pages/dashboard/reviews/ReviewsPage.vue');

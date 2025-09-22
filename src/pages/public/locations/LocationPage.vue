@@ -129,7 +129,9 @@ watch(
 
                     <!-- Features Section -->
                     <div v-if="location" class="space-y-6 border-b border-gray-200 pb-8">
-                        <h2 class="text-2xl font-semibold text-gray-900">Wat deze plek biedt</h2>
+                        <h2 class="text-2xl font-semibold text-gray-900">
+                            Wat deze bloklocatie biedt
+                        </h2>
                         <LocationFeatures :location="location" />
                     </div>
 
@@ -148,7 +150,7 @@ watch(
                     <!-- Location Section -->
                     <div class="space-y-6">
                         <h2 class="text-2xl font-semibold text-gray-900">
-                            <template v-if="location"> Locatie </template>
+                            <template v-if="location"> Locatie op kaart </template>
                             <Skeleton v-else-if="isPending" height="28px" width="200px" />
                         </h2>
 

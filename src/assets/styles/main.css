@@ -10,8 +10,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --text-base: 14px;
-
+    --text-base: 15px;
     --font-sans: 'Merriweather', ui-sans-serif, system-ui, sans-serif;
 
     --color-timber-green-50: #f0f9f5;

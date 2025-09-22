@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type Ref, computed } from 'vue';
 import { useToast } from '@/composables/store/useToast';
-import { getAuthProfile, login, logout, register } from '@/services/auth';
+import { getAuthProfile, login, logout, register } from '@/domain/auth';
 import type { LoginRequest, RegisterRequest } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
 import type {

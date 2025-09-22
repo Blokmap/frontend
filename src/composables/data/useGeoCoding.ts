@@ -3,7 +3,7 @@ import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { mapBoxClient } from '@/config/axios';
 import { mapboxEndpoints } from '@/config/endpoints';
-import { geocodeAddress } from '@/services/geocoding';
+import { geocodeAddress } from '@/domain/map';
 import type { LngLat } from '@/domain/map';
 import type { CompMutation, CompQuery, CompQueryOptions } from '@/types/Composable';
 import type { AxiosError } from 'axios';

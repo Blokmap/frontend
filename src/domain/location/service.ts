@@ -1,12 +1,12 @@
 import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
+import { parseProfile } from '@/domain/profile';
 import { dateToString, stringToDate } from '@/utils/date/date';
 import { stringToTime, timeToString } from '@/utils/date/time';
 import { formatIncludes, transformPaginatedResponse } from '@/utils/service';
-import { parseProfile } from './profile';
+import type { Location, LocationFilter, LocationRequest, NearestLocation } from './types';
 import type { ImageRequest } from '@/domain/image';
-import type { Location, LocationFilter, LocationRequest, NearestLocation } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 import type { OpeningTime, OpeningTimeRequest } from '@/domain/openings';
 import type { Paginated } from '@/types/Pagination';

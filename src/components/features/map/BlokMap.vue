@@ -77,7 +77,7 @@ defineExpose({ map });
                 @mouseenter="handleMarkerMouseEnter(location)"
                 @mouseleave="handleMarkerMouseLeave">
                 <template #popover>
-                    <div class="space-y-2 p-1">
+                    <div class="max-w-[450px] space-y-2 p-1">
                         <p class="text-lg font-semibold">
                             {{ location.name }}
                         </p>

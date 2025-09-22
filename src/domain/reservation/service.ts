@@ -2,7 +2,7 @@ import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { stringToTime, timeToString } from '@/utils/date/time';
-import type { Reservation } from '@/domain/reservation';
+import type { Reservation } from './types';
 
 export type ReservationIncludes = 'profile' | 'location' | 'openingTime' | 'confirmedBy';
 

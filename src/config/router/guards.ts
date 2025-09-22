@@ -3,8 +3,7 @@ import { AUTH_QUERY_KEYS } from '@/composables/data/useAuth';
 import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useToast } from '@/composables/store/useToast';
-import { type AuthSettings, pushRedirectUrl } from '@/domain/auth';
-import { getAuthProfile } from '@/services/auth';
+import { type AuthSettings, pushRedirectUrl, getAuthProfile } from '@/domain/auth';
 import type { Breadcrumbs } from '@/types/Breadcrumb';
 import type { NavigationGuardReturn, RouteLocationNormalized } from 'vue-router';
 

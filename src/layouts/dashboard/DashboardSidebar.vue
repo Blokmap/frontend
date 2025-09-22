@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import Badge from 'primevue/badge';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import Logo from '@/components/shared/Logo.vue';
 import {
     faArrowRight,
     faBuilding,
     faChartLine,
+    faChartSimple,
     faCity,
     faList,
     faMapLocationDot,
     faSignOut,
+    faStar,
+    faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
+import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useAuthLogout } from '@/composables/data/useAuth';
+import { abbreviateCount } from '@/utils/format';
 import type { Profile } from '@/domain/profile';
 
 defineProps<{
@@ -21,11 +25,19 @@ defineProps<{
 }>();
 
 const router = useRouter();
+const route = useRoute();
+
 const { mutateAsync: logout } = useAuthLogout();
+
+const { data: counts, isLoading: isLoadingCounts } = useAdminCounts();
 
 async function handleLogoutClick(): Promise<void> {
     await router.push({ name: 'auth' });
     await logout();
+}
+
+function isRouteActive(routeName: string): boolean {
+    return route.name?.toString().startsWith(routeName) || false;
 }
 </script>
 
@@ -45,23 +57,13 @@ async function handleLogoutClick(): Promise<void> {
                     <FontAwesomeIcon class="leading-icon" :icon="faMapLocationDot" />
                     <span>Locaties</span>
                 </h4>
-                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.locations' }">
+                <RouterLink
+                    class="sidebar-link"
+                    :class="{ active: isRouteActive('dashboard.locations') }"
+                    :to="{ name: 'dashboard.locations' }">
                     <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Locaties</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                </RouterLink>
-                <RouterLink
-                    v-if="profile.isAdmin"
-                    class="sidebar-link"
-                    :to="{ name: 'dashboard.locations.index' }">
-                    <p>Alle Locaties</p>
-                    <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                    <Badge
-                        v-tooltip="'Zoek in alle locaties beschikbaar in Blokmap'"
-                        class="ml-auto"
-                        severity="contrast"
-                        value="Admin">
-                    </Badge>
                 </RouterLink>
             </div>
 
@@ -70,22 +72,13 @@ async function handleLogoutClick(): Promise<void> {
                     <FontAwesomeIcon class="leading-icon" :icon="faBuilding" />
                     <span>Autoriteiten</span>
                 </h4>
-                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.authorities' }">
+                <RouterLink
+                    class="sidebar-link"
+                    :class="{ active: isRouteActive('dashboard.authorities') }"
+                    :to="{ name: 'dashboard.authorities' }">
+                    <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Autoriteiten</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                </RouterLink>
-                <RouterLink
-                    v-if="profile.isAdmin"
-                    class="sidebar-link"
-                    :to="{ name: 'locations.submit' }">
-                    <p>Alle Autoriteiten</p>
-                    <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                    <Badge
-                        v-tooltip="'Zoek in alle autoriteiten beschikbaar in Blokmap'"
-                        class="ml-auto"
-                        severity="contrast"
-                        value="Admin">
-                    </Badge>
                 </RouterLink>
             </div>
 
@@ -94,22 +87,13 @@ async function handleLogoutClick(): Promise<void> {
                     <FontAwesomeIcon class="leading-icon" :icon="faCity" />
                     <span>Instituties</span>
                 </h4>
-                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.institutions' }">
+                <RouterLink
+                    class="sidebar-link"
+                    :class="{ active: isRouteActive('dashboard.institutions') }"
+                    :to="{ name: 'dashboard.institutions' }">
+                    <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Instituties</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                </RouterLink>
-                <RouterLink
-                    v-if="profile.isAdmin"
-                    class="sidebar-link"
-                    :to="{ name: 'locations.submit' }">
-                    <p>Alle Instituties</p>
-                    <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                    <Badge
-                        v-tooltip="'Zoek in alle instituties beschikbaar in Blokmap'"
-                        class="ml-auto"
-                        severity="contrast"
-                        value="Admin">
-                    </Badge>
                 </RouterLink>
             </div>
 
@@ -118,12 +102,67 @@ async function handleLogoutClick(): Promise<void> {
                     <FontAwesomeIcon class="leading-icon" :icon="faChartLine" />
                     <span>Systeem</span>
                 </h4>
-                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.institutions' }">
+                <RouterLink
+                    class="sidebar-link"
+                    :class="{ active: isRouteActive('dashboard.statistics') }"
+                    :to="{ name: 'dashboard.statistics' }">
+                    <FontAwesomeIcon :icon="faChartSimple" />
                     <p>Statistieken</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </RouterLink>
-                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.institutions' }">
+                <RouterLink
+                    class="sidebar-link"
+                    :class="{ active: isRouteActive('dashboard.institutions') }"
+                    :to="{ name: 'dashboard.institutions' }">
+                    <FontAwesomeIcon :icon="faCity" />
+                    <p>Instituties</p>
+                    <span v-if="counts && !isLoadingCounts" class="count">
+                        ({{ abbreviateCount(counts.institutionCount) }})
+                    </span>
+                    <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
+                </RouterLink>
+                <RouterLink
+                    class="sidebar-link"
+                    :class="{ active: isRouteActive('dashboard.authorities') }"
+                    :to="{ name: 'dashboard.authorities' }">
+                    <FontAwesomeIcon :icon="faBuilding" />
+                    <p>Autoriteiten</p>
+                    <span v-if="counts && !isLoadingCounts" class="count">
+                        ({{ abbreviateCount(counts.authorityCount) }})
+                    </span>
+                    <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
+                </RouterLink>
+                <RouterLink
+                    class="sidebar-link"
+                    :class="{ active: isRouteActive('dashboard.locations') }"
+                    :to="{ name: 'dashboard.locations' }">
+                    <FontAwesomeIcon :icon="faMapLocationDot" />
+                    <p>Locaties</p>
+                    <span v-if="counts && !isLoadingCounts" class="count">
+                        ({{ abbreviateCount(counts.locationCount)
+                        }}<span v-if="counts.pendingLocationCount > 0" class="pending"
+                            >+{{ abbreviateCount(counts.pendingLocationCount) }}</span
+                        >)
+                    </span>
+                    <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
+                </RouterLink>
+                <RouterLink
+                    class="sidebar-link"
+                    :class="{ active: isRouteActive('dashboard.users') }"
+                    :to="{ name: 'dashboard.users' }">
+                    <FontAwesomeIcon :icon="faUsers" />
                     <p>Gebruikers</p>
+                    <span v-if="counts && !isLoadingCounts" class="count">
+                        ({{ abbreviateCount(counts.profileCount) }})
+                    </span>
+                    <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
+                </RouterLink>
+                <RouterLink
+                    class="sidebar-link"
+                    :class="{ active: isRouteActive('dashboard.reviews') }"
+                    :to="{ name: 'dashboard.reviews' }">
+                    <FontAwesomeIcon :icon="faStar" />
+                    <p>Reviews</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </RouterLink>
             </div>
@@ -158,18 +197,20 @@ async function handleLogoutClick(): Promise<void> {
         @apply flex-1 space-y-6 px-6 py-6;
 
         .sidebar-section {
-            @apply space-y-3;
+            @apply space-y-1;
 
             &:not(:last-child) {
                 @apply border-b border-slate-700 pb-6;
             }
 
             h4 {
-                @apply flex items-center text-[15px] font-bold text-white;
+                @apply mb-3 flex items-center text-[15px] font-bold text-white;
             }
 
             .leading-icon {
-                @apply text-primary-300 mr-2;
+                @apply text-primary-300 mr-2 flex-shrink-0;
+                width: 1rem;
+                text-align: center;
             }
 
             .arrow-icon {
@@ -181,13 +222,39 @@ async function handleLogoutClick(): Promise<void> {
     .sidebar-link {
         @apply flex w-full items-center space-x-3;
         @apply transition-colors duration-200 hover:text-slate-300;
+        @apply border-l-2 border-transparent py-1;
 
         &:hover .arrow-icon {
             @apply translate-x-0 opacity-100;
         }
 
+        &.active {
+            @apply text-primary-300 border-l-primary-300 pl-2;
+
+            .arrow-icon {
+                @apply translate-x-0 opacity-100;
+            }
+        }
+
+        &.router-link-active {
+            @apply text-primary-300;
+        }
+
+        > *:first-child {
+            @apply flex-shrink-0;
+            width: 1rem;
+            text-align: center;
+        }
         p {
-            @apply text-sm font-medium;
+            @apply flex-1 text-sm font-medium;
+        }
+
+        .count {
+            @apply text-xs font-medium text-slate-400;
+
+            .pending {
+                @apply text-primary-400;
+            }
         }
     }
 

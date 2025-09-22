@@ -111,6 +111,10 @@ export const endpoints = {
         update: '/translations/{id}',
         delete: '/translations/{id}',
     },
+    admin: {
+        stats: '/admin/stats',
+        counts: '/admin/counts',
+    },
 };
 
 export const mapboxEndpoints = {

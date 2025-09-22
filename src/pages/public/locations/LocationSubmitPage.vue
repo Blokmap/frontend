@@ -16,8 +16,12 @@ import {
 } from '@/composables/data/useLocations';
 import { useToast } from '@/composables/store/useToast';
 import { useLocalStorage } from '@/composables/useLocalStorage';
-import { DEFAULT_LOCATION_REQUEST } from '@/domain/location';
-import { deleteLocation, deleteLocationImages, deleteLocationOpenings } from '@/services/location';
+import {
+    DEFAULT_LOCATION_REQUEST,
+    deleteLocation,
+    deleteLocationImages,
+    deleteLocationOpenings,
+} from '@/domain/location';
 import type { ImageRequest } from '@/domain/image';
 import type { BuilderStep, BuilderSubstep, LocationRequest } from '@/domain/location';
 import type { OpeningTimeRequest } from '@/domain/openings';

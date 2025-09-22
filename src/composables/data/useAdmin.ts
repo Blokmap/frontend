@@ -20,6 +20,7 @@ export function useAdminCounts(options: CompQueryOptions = {}): CompQuery<AdminC
         ...options,
         queryKey: ADMIN_QUERY_KEYS.counts(),
         queryFn: getAdminCounts,
+        staleTime: 60 * 60 * 1000, // 60 minutes
     });
 
     return query;

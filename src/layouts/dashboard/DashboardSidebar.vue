@@ -139,9 +139,9 @@ function isRouteActive(routeName: string): boolean {
                     <FontAwesomeIcon :icon="faMapLocationDot" />
                     <p>Locaties</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
-                        ({{ abbreviateCount(counts.locationCount)
-                        }}<span v-if="counts.pendingLocationCount > 0" class="pending"
-                            >+{{ abbreviateCount(counts.pendingLocationCount) }}</span
+                        ({{ abbreviateCount(counts.locationCount) }}
+                        <span v-if="counts.pendingLocationCount > 0" class="pending">
+                            <b>+</b>{{ abbreviateCount(counts.pendingLocationCount) }} </span
                         >)
                     </span>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
@@ -219,7 +219,7 @@ function isRouteActive(routeName: string): boolean {
         }
     }
 
-    .sidebar-link {
+    .sidebar-items .sidebar-link {
         @apply flex w-full items-center space-x-3;
         @apply transition-colors duration-200 hover:text-slate-300;
         @apply border-l-2 border-transparent py-1;
@@ -256,6 +256,11 @@ function isRouteActive(routeName: string): boolean {
                 @apply text-primary-400;
             }
         }
+    }
+
+    .sidebar-link {
+        @apply flex w-full items-center;
+        @apply transition-colors duration-200 hover:text-slate-300;
     }
 
     .sidebar-profile {

@@ -31,13 +31,7 @@ const { locale } = useI18n();
                     :key="opening.id"
                     class="font-mono text-xs"
                     :class="isToday(day) ? 'text-primary-700' : 'text-gray-600'">
-                    {{ timeToString(opening.startTime, true) }}–{{
-                        timeToString(opening.endTime, true)
-                    }}
-                    <template
-                        v-if="index < getOpeningTimesForDay(openingTimesByDay, day).length - 1">
-                        ,
-                    </template>
+                    {{ timeToString(opening.startTime, true) }}–{{ timeToString(opening.endTime, true) }}{{ index < getOpeningTimesForDay(openingTimesByDay, day).length - 1 ? ', ' : '' }}
                 </span>
             </template>
             <span

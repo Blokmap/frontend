@@ -65,7 +65,7 @@ onUnmounted(() => {
     @apply flex flex-1 flex-col;
 
     .content {
-        @apply mx-auto max-w-[1920px] px-3 md:px-6 2xl:w-[78vw];
+        @apply mx-auto max-w-[1420px] px-3 md:px-6 2xl:w-[78vw];
     }
 
     .main {

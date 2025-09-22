@@ -46,7 +46,7 @@ function isRouteActive(routeName: string): boolean {
         <!-- Logo Section -->
         <div class="flex justify-center py-1">
             <RouterLink :to="{ name: 'locations' }">
-                <Logo light />
+                <Logo light :show-subtitle="false" />
             </RouterLink>
         </div>
 

@@ -7,22 +7,24 @@ import { computed, nextTick, onMounted, ref } from 'vue';
 const props = withDefaults(
     defineProps<{
         light?: boolean;
+        showSubtitle?: boolean;
     }>(),
     {
         light: false,
+        showSubtitle: true,
     },
 );
 
 const logoRef = ref<HTMLElement | null>(null);
 const textRef = ref<HTMLElement | null>(null);
-const sloganRef = ref<HTMLElement | null>(null);
+const subtitleRef = ref<HTMLElement | null>(null);
 
 const colorClasses = computed(() => {
     return props.light ? 'text-primary-300' : 'text-primary-500';
 });
 
-const sloganColorClasses = computed(() => {
-    return props.light ? 'text-primary-100' : 'text-primary-600';
+const subtitleColorClasses = computed(() => {
+    return props.light ? 'text-primary-200' : 'text-primary-600';
 });
 
 onMounted(async () => {
@@ -45,9 +47,10 @@ onMounted(async () => {
         '-=0.2',
     );
 
-    // Set initial slogan state
-    const sloganLetters = sloganRef.value?.querySelectorAll('span') ?? [];
-    gsap.set(sloganLetters, { opacity: 0, y: 15, rotateX: -90 });
+    // Set initial subtitle state - just hidden
+    if (subtitleRef.value) {
+        gsap.set(subtitleRef.value, { opacity: 0 });
+    }
 });
 
 function handleHoverIn() {
@@ -57,17 +60,14 @@ function handleHoverIn() {
         ease: 'power2.out',
     });
 
-    // Show and animate slogan on hover
-    const sloganLetters = sloganRef.value?.querySelectorAll('span') ?? [];
-    gsap.to(sloganRef.value, { opacity: 1, duration: 0.2 });
-    gsap.to(sloganLetters, {
-        opacity: 1,
-        y: 0,
-        rotateX: 0,
-        stagger: 0.02,
-        duration: 0.5,
-        ease: 'power3.out',
-    });
+    // Simple fade in for subtitle
+    if (subtitleRef.value) {
+        gsap.to(subtitleRef.value, {
+            opacity: 1,
+            duration: 0.3,
+            ease: 'power2.out',
+        });
+    }
 }
 
 function handleHoverOut() {
@@ -77,17 +77,14 @@ function handleHoverOut() {
         ease: 'elastic.out(1, 0.4)',
     });
 
-    // Hide slogan when not hovering
-    const sloganLetters = sloganRef.value?.querySelectorAll('span') ?? [];
-    gsap.to(sloganLetters, {
-        opacity: 0,
-        y: 15,
-        rotateX: -90,
-        stagger: 0.01,
-        duration: 0.3,
-        ease: 'power2.in',
-    });
-    gsap.to(sloganRef.value, { opacity: 0, duration: 0.3, delay: 0.2 });
+    // Simple fade out for subtitle
+    if (subtitleRef.value) {
+        gsap.to(subtitleRef.value, {
+            opacity: 0,
+            duration: 0.3,
+            ease: 'power2.in',
+        });
+    }
 }
 </script>
 
@@ -99,10 +96,12 @@ function handleHoverOut() {
                 <span v-for="(char, i) in 'Blokmap'" :key="i">{{ char }}</span>
             </span>
         </div>
-        <div class="slogan" :class="sloganColorClasses" ref="sloganRef">
-            <span v-for="(char, i) in 'BlokLocaties Op Kaart Met Aanduidende Pins'" :key="i">
-                {{ char === ' ' ? '\u00A0' : char }}
-            </span>
+        <div
+            v-if="showSubtitle"
+            ref="subtitleRef"
+            class="subtitle"
+            :class="subtitleColorClasses">
+            BlokLocaties Op Kaart Met Aanduidende Pins
         </div>
     </div>
 </template>
@@ -116,13 +115,8 @@ function handleHoverOut() {
     @apply cursor-pointer text-2xl font-bold tracking-wide select-none;
 }
 
-.slogan {
-    @apply text-xs font-medium tracking-wide opacity-0;
-    @apply absolute top-full left-0 -mt-2 whitespace-nowrap select-none;
-    perspective: 1000px;
-    span {
-        @apply inline-block;
-        transform-style: preserve-3d;
-    }
+.subtitle {
+    @apply text-xs font-medium tracking-wide;
+    @apply absolute top-full left-0 -mt-1 whitespace-nowrap select-none;
 }
 </style>

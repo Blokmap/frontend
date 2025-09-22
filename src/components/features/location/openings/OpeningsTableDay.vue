@@ -8,34 +8,40 @@ import type { OpeningTime } from '@/domain/openings';
 defineProps<{
     day: Date;
     openingTimesByDay: Map<string, OpeningTime[]>;
+    isLast?: boolean;
 }>();
 
 const { locale } = useI18n();
 </script>
 
 <template>
-    <div class="day" :class="{ today: isToday(day) }">
-        <span class="font-medium" :class="isToday(day) ? 'text-primary-700' : 'text-gray-900'">
-            {{ formatDayName(day, 'long', locale) }}
-        </span>
+    <div class="table-row" :class="{ today: isToday(day), 'last-row': isLast }">
+        <div class="day-cell">
+            <span class="day-name" :class="isToday(day) ? 'text-primary-700' : 'text-gray-900'">
+                {{ formatDayName(day, 'short', locale) }}
+            </span>
+        </div>
 
-        <div class="text-right">
+        <div class="times-cell">
             <template v-if="getOpeningTimesForDay(openingTimesByDay, day).length > 0">
-                <div class="space-y-0.5">
-                    <div
-                        v-for="opening in getOpeningTimesForDay(openingTimesByDay, day)"
+                <div class="opening-times">
+                    <span
+                        v-for="(opening, index) in getOpeningTimesForDay(openingTimesByDay, day)"
                         :key="opening.id"
-                        class="font-mono text-xs"
+                        class="time-range"
                         :class="isToday(day) ? 'text-primary-700' : 'text-gray-600'">
                         {{ timeToString(opening.startTime, true) }}–{{
                             timeToString(opening.endTime, true)
-                        }}
-                    </div>
+                        }}<template
+                            v-if="index < getOpeningTimesForDay(openingTimesByDay, day).length - 1"
+                            >,
+                        </template>
+                    </span>
                 </div>
             </template>
             <span
                 v-else
-                class="text-xs italic"
+                class="closed-text"
                 :class="isToday(day) ? 'text-primary-500' : 'text-gray-400'">
                 Gesloten
             </span>
@@ -46,13 +52,51 @@ const { locale } = useI18n();
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.day {
-    @apply flex min-h-[50px] items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors;
-    @apply bg-gray-50 hover:bg-gray-50;
+.table-row {
+    @apply relative flex items-center border-b border-gray-200 bg-white text-sm transition-colors;
 
     &.today {
         @apply bg-primary-50;
-        @apply hover:bg-primary-50;
     }
+
+    &.last-row {
+        @apply border-b-0;
+    }
+
+    &:hover {
+        @apply bg-gray-50;
+
+        &.today {
+            @apply bg-primary-100;
+        }
+    }
+
+    &::after {
+        @apply absolute top-0 bottom-0 left-1/2 border-l border-gray-200 content-[''];
+    }
+}
+
+.day-cell {
+    @apply flex-1 px-4 py-2.5;
+}
+
+.day-name {
+    @apply text-sm font-medium;
+}
+
+.times-cell {
+    @apply flex-1 px-4 py-2.5 text-right;
+}
+
+.opening-times {
+    @apply space-x-1;
+}
+
+.time-range {
+    @apply font-mono text-xs;
+}
+
+.closed-text {
+    @apply text-xs italic;
 }
 </style>

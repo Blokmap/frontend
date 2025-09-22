@@ -12,15 +12,23 @@ import LocationMap from '@/components/features/map/LocationMap.vue';
 import LocationMapSkeleton from '@/components/features/map/LocationMapSkeleton.vue';
 import Gallery from '@/components/shared/image/Gallery.vue';
 import GallerySkeleton from '@/components/shared/image/GallerySkeleton.vue';
-import { faCheckCircle, faLocationDot, faUsers } from '@fortawesome/free-solid-svg-icons';
+import {
+    faArrowRight,
+    faCheckCircle,
+    faLocationDot,
+    faUsers,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import placeholder from '@/assets/img/placeholder/location-stock-2.jpg';
 import { useLocation } from '@/composables/data/useLocations';
+import { usePageTitleStore } from '@/composables/store/usePageTitle';
 
 const { locationId } = defineProps<{ locationId: string }>();
 
 const { locale } = useI18n();
+const { setPageTitle } = usePageTitleStore();
 
 const {
     data: location,
@@ -29,6 +37,16 @@ const {
 } = useLocation(
     computed(() => +locationId),
     { includes: ['createdBy'] },
+);
+
+watch(
+    location,
+    (newLocation) => {
+        if (newLocation) {
+            setPageTitle(newLocation.name);
+        }
+    },
+    { immediate: true },
 );
 </script>
 
@@ -74,7 +92,11 @@ const {
 
             <!-- Gallery -->
             <div class="h-[480px] overflow-hidden rounded-2xl">
-                <Gallery v-if="location?.images" :images="location.images" />
+                <Gallery
+                    v-if="location?.images"
+                    :images="location.images"
+                    :placeholder="placeholder">
+                </Gallery>
                 <GallerySkeleton v-else-if="isPending" />
             </div>
 
@@ -153,22 +175,30 @@ const {
                     <div class="sticky top-8">
                         <!-- Reservation/Hours Card -->
                         <div class="rounded-xl border border-slate-200 bg-white p-6">
-                            <div class="mb-6">
-                                <h3 class="text-xl font-semibold text-gray-900">
-                                    <template v-if="location?.isReservable">
-                                        Reserveer een plek
-                                    </template>
-                                    <template v-else> Openingsuren </template>
-                                </h3>
+                            <h3 class="text-xl font-semibold text-gray-900">
+                                <template v-if="location?.isReservable">
+                                    Reserveer een plek
+                                </template>
+                                <template v-else> Openingsuren </template>
+                            </h3>
+
+                            <div class="my-6">
+                                <OpeningsTable
+                                    v-if="location"
+                                    :opening-times="location.openingTimes" />
+                                <OpeningsTableSkeleton v-else-if="isPending" />
                             </div>
 
-                            <OpeningsTable v-if="location" :opening-times="location.openingTimes" />
-                            <OpeningsTableSkeleton v-else-if="isPending" />
-
-                            <!-- Action Button -->
-                            <div v-if="location?.isReservable" class="mt-6">
-                                <Button class="w-full"> Plek Reserveren </Button>
-                            </div>
+                            <!-- Action Button or No Reservation Needed -->
+                            <template v-if="location?.isReservable">
+                                <Button class="w-full">
+                                    Plek Reserveren
+                                    <FontAwesomeIcon :icon="faArrowRight" />
+                                </Button>
+                            </template>
+                            <template v-else-if="location && !location.isReservable">
+                                <div class="text-center">Geen reservatie nodig 🥳</div>
+                            </template>
                         </div>
                     </div>
                 </div>

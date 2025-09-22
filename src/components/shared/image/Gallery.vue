@@ -9,10 +9,12 @@ import type { Image } from '@/domain/image';
 
 const props = defineProps<{
     images: Image[];
+    placeholder?: string;
 }>();
 
 const imageRefs = useTemplateRefsList();
-useItemAnimation(imageRefs, { duration: 0.5 });
+
+const { cleanupAnimation } = useItemAnimation(imageRefs, { duration: 0.5 });
 
 const isFullscreen = ref(false);
 const selectedImageIndex = ref(0);
@@ -107,12 +109,13 @@ onMounted(() => {
 
 onUnmounted(() => {
     document.removeEventListener('keydown', handleKeydown);
+    cleanupAnimation();
 });
 </script>
 
 <template>
     <!-- Image grid -->
-    <div :class="['gallery', gridClasses]">
+    <div v-if="images.length > 0" :class="['gallery', gridClasses]">
         <div
             v-for="item in imageLayout"
             :key="item.index"
@@ -120,6 +123,13 @@ onUnmounted(() => {
             :class="['gallery-image-container', item.classes]"
             @click="openFullScreen(item.index)">
             <img v-if="item.image" :src="item.image.url" class="gallery-image" />
+        </div>
+    </div>
+
+    <!-- Placeholder when no images -->
+    <div v-else-if="placeholder" class="gallery grid-cols-1 grid-rows-1">
+        <div class="gallery-image-container">
+            <img :src="placeholder" class="gallery-image" />
         </div>
     </div>
 

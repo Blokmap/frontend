@@ -1,7 +1,6 @@
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getRandomDelay } from '@/config/axios';
 import {
     createLocation,
     createLocationImage,
@@ -42,7 +41,6 @@ export function useLocationsSearch(
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const params = toValue(filters);
-            await getRandomDelay(100, 250);
             return await searchLocations(params, locale.value);
         },
     });

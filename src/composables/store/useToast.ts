@@ -18,10 +18,10 @@ export const useToast = defineStore('toast', () => {
         const toast = primeToast.value;
 
         if (toast) {
-            messages.value.forEach((message) => {
+            for (const message of messages.value) {
                 toast.add(message);
-            });
-            clear();
+            }
+            messages.value = [];
         }
     });
 
@@ -60,16 +60,11 @@ export const useToast = defineStore('toast', () => {
         }
     }
 
-    function clear() {
-        messages.value = [];
-    }
-
     return {
         messages,
         add,
         remove,
         removeGroup,
         removeAllGroups,
-        clear,
     };
 });

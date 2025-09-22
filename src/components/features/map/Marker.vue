@@ -52,8 +52,8 @@ onMounted(() => {
 
 onDeactivated(() => {
     if (isShowingPopover.value) {
-        isShowingPopover.value = false;
         popoverRef?.value?.hide();
+        isShowingPopover.value = false;
     }
 });
 
@@ -72,8 +72,7 @@ function handleMouseEnter(event: MouseEvent) {
 }
 
 function handleMouseLeave() {
-    isShowingPopover.value = false;
-    popoverRef.value?.hide();
+    // Don't hide popover on mouse leave - it should stay visible
     emit('mouseleave');
 }
 

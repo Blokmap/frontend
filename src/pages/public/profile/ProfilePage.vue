@@ -11,7 +11,6 @@ import StatsCardSkeleton from '@/components/features/profile/stats/StatsCardSkel
 import ReservationItem from '@/components/features/reservation/ReservationItem.vue';
 import ReservationItemSkeleton from '@/components/features/reservation/ReservationItemSkeleton.vue';
 import {
-    faAward,
     faBuilding,
     faCalendarDays,
     faChartLine,
@@ -25,6 +24,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useProfileReservations, useProfileStats } from '@/composables/data/useProfile';
+import { useProfileScan } from '@/composables/useProfileScan';
 
 const router = useRouter();
 
@@ -42,6 +42,8 @@ const {
     data: profileStatsData,
 } = useProfileStats(profileId);
 
+const { currentCodeUrl, toggleScanMode } = useProfileScan();
+
 const showAvatarDialog = ref(false);
 const showEditDialog = ref(false);
 
@@ -55,71 +57,94 @@ function openReservationsModal(): void {
         <!-- Profile Header -->
         <Card>
             <template #content>
-                <div class="flex flex-col items-center gap-6 md:flex-row">
-                    <!-- Avatar Section -->
-                    <template v-if="profileIsLoading || !profile">
-                        <Skeleton shape="circle" size="96px" />
-                    </template>
-                    <template v-else>
-                        <ProfileAvatar
-                            avatar-class="avatar-placeholder"
-                            :profile="profile"
-                            editable
-                            @click:edit="showAvatarDialog = true" />
-                        <ProfileAvatarDialog
-                            v-model:visible="showAvatarDialog"
-                            :profile="profile" />
-                    </template>
-
-                    <!-- Profile Info -->
-                    <div class="flex-1 space-y-3">
-                        <template v-if="profileIsLoading">
-                            <Skeleton height="36px" width="200px" />
-                            <Skeleton height="21px" width="300px" />
-                            <Skeleton height="21px" width="250px" />
-                        </template>
-                        <template v-else-if="profile">
-                            <h1 class="text-2xl font-bold text-gray-900">
-                                {{ profile.firstName }} {{ profile.lastName }}
-                            </h1>
-                            <div class="flex items-center gap-2 text-gray-600">
-                                <FontAwesomeIcon :icon="faUser" class="text-gray-400" />
-                                @{{ profile.username }}
-                            </div>
-                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <div class="flex items-center gap-3">
-                                    <FontAwesomeIcon :icon="faEnvelope" class="text-gray-400" />
-                                    <span class="text-gray-700">{{ profile.email }}</span>
-                                </div>
-                                <div v-if="profile.institution" class="flex items-center gap-3">
-                                    <FontAwesomeIcon :icon="faBuilding" class="text-gray-400" />
-                                    <span class="text-gray-700">{{
-                                        profile.institution?.name
-                                    }}</span>
-                                </div>
-                            </div>
-
-                            <!-- Authorities/Roles -->
-                            <div v-if="profile.authorities?.length" class="flex flex-wrap gap-2">
-                                <Chip
-                                    v-for="authority in profile.authorities"
-                                    :key="authority.id"
-                                    :label="authority.name"
-                                    class="bg-primary-100 text-primary-700" />
-                            </div>
-                        </template>
+                <div class="relative">
+                    <!-- QR/Bar Code Section - Top Right -->
+                    <div
+                        v-if="!profileIsLoading && profile"
+                        class="absolute top-0 right-0 flex h-full flex-col justify-start">
+                        <div
+                            class="aspect-square h-24 cursor-pointer rounded-lg border border-gray-200 bg-gray-50 p-2 transition-colors hover:bg-gray-100"
+                            @click="toggleScanMode">
+                            <img
+                                :src="currentCodeUrl"
+                                alt="Profile scan code"
+                                class="h-full w-full object-contain" />
+                        </div>
                     </div>
 
-                    <!-- Edit Profile Button -->
-                    <div v-if="!profileIsLoading && profile" class="flex justify-end self-start">
-                        <Button
-                            size="small"
-                            severity="secondary"
-                            text
-                            @click="showEditDialog = true">
-                            Profiel Bewerken
-                        </Button>
-                        <ProfileEditDialog v-model:visible="showEditDialog" :profile="profile" />
+                    <!-- Main Profile Content -->
+                    <div class="flex flex-col items-center gap-6 pr-20 md:flex-row">
+                        <!-- Avatar Section -->
+                        <template v-if="profileIsLoading || !profile">
+                            <Skeleton shape="circle" size="96px" />
+                        </template>
+                        <template v-else>
+                            <ProfileAvatar
+                                avatar-class="avatar-placeholder"
+                                :profile="profile"
+                                editable
+                                @click:edit="showAvatarDialog = true" />
+                            <ProfileAvatarDialog
+                                v-model:visible="showAvatarDialog"
+                                :profile="profile" />
+                        </template>
+
+                        <!-- Profile Info -->
+                        <div class="flex-1 space-y-3">
+                            <template v-if="profileIsLoading">
+                                <Skeleton height="36px" width="200px" />
+                                <Skeleton height="21px" width="300px" />
+                                <Skeleton height="21px" width="250px" />
+                            </template>
+                            <template v-else-if="profile">
+                                <!-- Name and Edit Button -->
+                                <div class="flex items-center gap-3">
+                                    <h1 class="text-2xl font-bold text-gray-900">
+                                        {{ profile.firstName }} {{ profile.lastName }}
+                                    </h1>
+                                    <Button
+                                        size="small"
+                                        severity="secondary"
+                                        text
+                                        @click="showEditDialog = true"
+                                        class="text-sm">
+                                        Profiel Bewerken
+                                    </Button>
+                                    <ProfileEditDialog
+                                        v-model:visible="showEditDialog"
+                                        :profile="profile" />
+                                </div>
+
+                                <div class="flex items-center gap-2 text-gray-600">
+                                    <FontAwesomeIcon :icon="faUser" class="text-gray-400" />
+                                    @{{ profile.username }}
+                                </div>
+                                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div class="flex items-center gap-3">
+                                        <FontAwesomeIcon :icon="faEnvelope" class="text-gray-400" />
+                                        <span class="text-gray-700">{{ profile.email }}</span>
+                                    </div>
+                                    <div v-if="profile.institution" class="flex items-center gap-3">
+                                        <FontAwesomeIcon :icon="faBuilding" class="text-gray-400" />
+                                        <span class="text-gray-700">{{
+                                            profile.institution?.name
+                                        }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Authorities/Roles -->
+                                <div
+                                    v-if="profile.authorities?.length"
+                                    class="flex flex-wrap gap-2">
+                                    <Chip
+                                        v-for="authority in profile.authorities"
+                                        :key="authority.id"
+                                        :label="authority.name"
+                                        class="bg-primary-100 text-primary-700">
+                                    </Chip>
+                                </div>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </template>
@@ -136,89 +161,61 @@ function openReservationsModal(): void {
                     :icon="faCalendarDays"
                     :value="profileStatsData?.totalReservations || 0"
                     label="Aantal reservaties"
-                    icon-color="text-primary-500" />
+                    icon-color="text-secondary-500">
+                </StatsCard>
 
                 <!-- Study Hours Card -->
                 <StatsCard
                     :icon="faClock"
                     :value="`${profileStatsData?.totalReservationHours || 0}u`"
                     label="Uren gereserveerd"
-                    icon-color="text-secondary-500" />
+                    icon-color="text-secondary-500">
+                </StatsCard>
 
                 <!-- Completed Card -->
                 <StatsCard
                     :icon="faCheckCircle"
                     :value="profileStatsData?.completedReservations || 0"
                     label="Voltooide reservaties"
-                    icon-color="text-slate-500" />
+                    icon-color="text-slate-500">
+                </StatsCard>
 
                 <!-- Upcoming Card -->
                 <StatsCard
                     :icon="faChartLine"
                     :value="profileStatsData?.upcomingReservations || 0"
                     label="Komende reservaties"
-                    icon-color="text-slate-500" />
+                    icon-color="text-slate-500">
+                </StatsCard>
             </template>
         </div>
 
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <!-- Current Week Activity -->
-            <Card>
-                <template #header>
-                    <div class="flex items-center justify-between p-6 pb-0">
-                        <h2 class="text-xl font-semibold text-gray-900">Reservaties Deze Week</h2>
-                        <Button
-                            size="small"
-                            severity="secondary"
-                            text
-                            @click="openReservationsModal">
-                            Bekijk Kalender
-                        </Button>
-                    </div>
-                </template>
-                <template #content>
-                    <div class="space-y-4">
-                        <template v-if="reservationsIsLoading || reservationsIsPending">
-                            <ReservationItemSkeleton v-for="n in 3" :key="n" />
-                        </template>
-                        <template v-else-if="reservations && reservations.length > 0">
-                            <ReservationItem
-                                v-for="reservation in reservations"
-                                :key="reservation.id"
-                                :reservation="reservation" />
-                        </template>
-                        <template v-else>
-                            <div class="space-y-4 py-8 text-center text-gray-500">
-                                <FontAwesomeIcon :icon="faCalendarDays" class="text-4xl" />
-                                <p>Geen reservaties deze week</p>
-                                <Button
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    @click="router.push({ name: 'locations' })">
-                                    Bekijk Locaties
-                                </Button>
-                            </div>
-                        </template>
-                    </div>
-                </template>
-            </Card>
-
-            <!-- Achievements -->
-            <Card>
-                <template #header>
-                    <div class="flex items-center justify-between p-6 pb-0">
-                        <h2 class="text-xl font-semibold text-gray-900">Prestaties</h2>
-                    </div>
-                </template>
-                <template #content>
-                    <template v-if="false" />
+        <!-- Current Week Activity -->
+        <Card>
+            <template #header>
+                <div class="flex items-center justify-between p-6 pb-0">
+                    <h2 class="text-xl font-semibold text-gray-900">Reservaties Deze Week</h2>
+                    <Button size="small" severity="secondary" text @click="openReservationsModal">
+                        Bekijk Kalender
+                    </Button>
+                </div>
+            </template>
+            <template #content>
+                <div class="space-y-4">
+                    <template v-if="reservationsIsLoading || reservationsIsPending">
+                        <ReservationItemSkeleton v-for="n in 3" :key="n" />
+                    </template>
+                    <template v-else-if="reservations && reservations.length > 0">
+                        <ReservationItem
+                            v-for="reservation in reservations"
+                            :key="reservation.id"
+                            :reservation="reservation">
+                        </ReservationItem>
+                    </template>
                     <template v-else>
                         <div class="space-y-4 py-8 text-center text-gray-500">
-                            <FontAwesomeIcon :icon="faAward" class="text-4xl" />
-                            <p class="text-sm">
-                                Maak meer reservaties om prestaties te ontgrendelen!
-                            </p>
+                            <FontAwesomeIcon :icon="faCalendarDays" class="text-4xl" />
+                            <p>Geen reservaties deze week</p>
                             <Button
                                 severity="secondary"
                                 outlined
@@ -228,9 +225,9 @@ function openReservationsModal(): void {
                             </Button>
                         </div>
                     </template>
-                </template>
-            </Card>
-        </div>
+                </div>
+            </template>
+        </Card>
     </div>
 </template>
 

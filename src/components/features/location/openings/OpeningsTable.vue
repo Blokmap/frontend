@@ -32,15 +32,16 @@ const openingTimesByDay = computed(() => {
 </script>
 
 <template>
-    <div class="space-y-4">
+    <div>
         <!-- Opening Hours Table -->
         <template v-if="openingTimes && openingTimes.length > 0">
-            <div class="space-y-1">
+            <div class="openings-table">
                 <OpeningsTableDay
-                    v-for="day in weekDays"
+                    v-for="(day, index) in weekDays"
                     :key="day.toDateString()"
                     :day="day"
-                    :opening-times-by-day="openingTimesByDay">
+                    :opening-times-by-day="openingTimesByDay"
+                    :is-last="index === weekDays.length - 1">
                 </OpeningsTableDay>
             </div>
         </template>
@@ -65,6 +66,10 @@ const openingTimesByDay = computed(() => {
 
 <style scoped>
 @reference '@/assets/styles/main.css';
+
+.openings-table {
+    @apply border border-gray-200 bg-white text-sm;
+}
 
 .no-hours {
     @apply rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center;

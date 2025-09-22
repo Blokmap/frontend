@@ -5,8 +5,7 @@ import Skeleton from 'primevue/skeleton';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import {
     faBars,
-    faCalendarDays,
-    faDashboard,
+    faCity,
     faRightToBracket,
     faSignOut,
     faUser,
@@ -48,7 +47,7 @@ function handleNavigationClick(): void {
 
     <!-- Popover -->
     <Popover ref="popover" class="w-full max-w-[275px] rounded-lg">
-        <div class="dark:text-slate-20 space-y-2 p-1 text-sm text-slate-800">
+        <div class="dark:text-slate-20 space-y-3 p-1 text-sm text-slate-800">
             <!-- Profile Section -->
             <template v-if="profileIsLoading">
                 <div class="flex items-center gap-3">
@@ -62,7 +61,7 @@ function handleNavigationClick(): void {
 
             <template v-else-if="profile">
                 <RouterLink
-                    class="flex items-center gap-3"
+                    class="flex items-center gap-3 rounded-lg bg-slate-100 p-2"
                     :to="{ name: 'profile' }"
                     @click="handleNavigationClick">
                     <ProfileAvatar :profile="profile" class="h-[3rem] w-[3rem]" />
@@ -72,39 +71,20 @@ function handleNavigationClick(): void {
                         </div>
                         <div class="text-xs text-slate-500 dark:text-slate-400">Welkom terug!</div>
                     </div>
-
-                    <div
-                        class="ms-auto cursor-pointer self-end text-[10px] text-red-500 hover:text-red-600"
-                        @click.prevent="handleLogoutClick">
-                        <FontAwesomeIcon :icon="faSignOut" class="me-1" />
-                        <span>Uitloggen</span>
-                    </div>
                 </RouterLink>
-
-                <p class="font-semibold text-slate-700">Profiel</p>
-
                 <RouterLink
                     class="menu-link"
                     :to="{ name: 'profile' }"
                     @click="handleNavigationClick">
                     <FontAwesomeIcon :icon="faUser" class="text-secondary fa-icon" />
-                    <span>Mijn Profiel</span>
-                </RouterLink>
-
-                <RouterLink
-                    class="menu-link"
-                    :to="{ name: 'profile.reservations' }"
-                    @click="handleNavigationClick">
-                    <FontAwesomeIcon :icon="faCalendarDays" class="text-secondary fa-icon" />
-                    <span>Mijn Reservaties</span>
+                    <span>Profiel en Reservaties</span>
                 </RouterLink>
             </template>
 
             <template v-else>
                 <h3 class="font-semibold">Profiel</h3>
                 <p class="mt-2 mb-3 text-sm text-slate-500 dark:text-slate-400">
-                    Reserveer een plek op een van onze
-                    <span class="text-gradient-conic">locaties</span> of meld zelf een plek aan.
+                    Reserveer een plek op een van onze locaties of meld zelf een plek aan.
                 </p>
                 <div class="flex gap-1">
                     <RouterLink
@@ -123,17 +103,17 @@ function handleNavigationClick(): void {
                     </RouterLink>
                 </div>
             </template>
-
-            <p class="font-semibold text-slate-700">Beheer</p>
-
-            <!-- Navigation -->
             <RouterLink
                 class="menu-link"
                 :to="{ name: 'dashboard' }"
                 @click="handleNavigationClick">
-                <FontAwesomeIcon :icon="faDashboard" class="text-secondary fa-icon" />
-                <span>Dashboard</span>
+                <FontAwesomeIcon :icon="faCity" class="text-secondary fa-icon" />
+                <span>Beheer van Locaties</span>
             </RouterLink>
+            <div class="menu-link logout-link" @click="handleLogoutClick">
+                <FontAwesomeIcon :icon="faSignOut" class="text-secondary fa-icon" />
+                <span>Uitloggen</span>
+            </div>
         </div>
     </Popover>
 </template>
@@ -142,11 +122,10 @@ function handleNavigationClick(): void {
 @reference '@/assets/styles/main.css';
 
 .menu-link {
-    @apply flex w-full cursor-pointer items-center gap-2 px-2 py-1;
-    @apply rounded-md transition hover:bg-slate-100/60;
-}
+    @apply flex w-full cursor-pointer items-center gap-2;
 
-.menu-link .fa-icon {
-    @apply w-4 text-center;
+    .fa-icon {
+        @apply w-4 text-center;
+    }
 }
 </style>

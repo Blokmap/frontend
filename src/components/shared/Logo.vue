@@ -17,7 +17,7 @@ const logoRef = ref<HTMLElement | null>(null);
 const textRef = ref<HTMLElement | null>(null);
 
 const colorClasses = computed(() => {
-    return props.light ? 'text-primary-300' : 'text-primary-600';
+    return props.light ? 'text-primary-300' : 'text-primary-500';
 });
 
 onMounted(async () => {

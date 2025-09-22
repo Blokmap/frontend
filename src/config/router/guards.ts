@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/vue-query';
 import { AUTH_QUERY_KEYS } from '@/composables/data/useAuth';
 import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
+import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useToast } from '@/composables/store/useToast';
 import { type AuthSettings, pushRedirectUrl } from '@/domain/auth';
 import { getAuthProfile } from '@/services/auth';
@@ -46,12 +47,22 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
 export async function breadcrumbRouterGuard(
     to: RouteLocationNormalized,
 ): Promise<NavigationGuardReturn> {
-    const { setBreadcrumbs } = useBreadcrumbStore();
-
-    setBreadcrumbs([]);
+    const { setBreadcrumbs, clearBreadcrumbs } = useBreadcrumbStore();
 
     if (to.meta.breadcrumbs) {
         const breadcrumbs = to.meta.breadcrumbs as Breadcrumbs;
         setBreadcrumbs(breadcrumbs);
+    } else {
+        clearBreadcrumbs();
+    }
+}
+
+export async function titleRouterGuard(
+    to: RouteLocationNormalized,
+): Promise<NavigationGuardReturn> {
+    const { setPageTitle } = usePageTitleStore();
+
+    if (to.meta.title) {
+        setPageTitle(to.meta.title);
     }
 }

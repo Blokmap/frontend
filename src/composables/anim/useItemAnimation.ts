@@ -1,6 +1,13 @@
 import { gsap } from 'gsap';
 import { type Ref, ref, watch } from 'vue';
 
+type ItemAnimationOptions = {
+    duration?: number;
+    y?: number;
+    ease?: string;
+    staggerAmount?: number;
+};
+
 /**
  * Composable to animate a list of items using GSAP.
  *
@@ -10,20 +17,15 @@ import { type Ref, ref, watch } from 'vue';
  */
 export function useItemAnimation<T extends Element>(
     elements: Ref<T[]>,
-    options: {
-        duration?: number;
-        y?: number;
-        ease?: string;
-        staggerAmount?: number;
-    } = {},
+    options: ItemAnimationOptions = {},
 ) {
     const anim = ref<GSAPTween | null>(null);
 
     function cleanupAnimation() {
-        if (anim.value) {
-            anim.value.revert();
-            anim.value = null;
-        }
+        if (!anim.value) return;
+        anim.value.revert();
+        anim.value.kill();
+        anim.value = null;
     }
 
     function animateElements() {
@@ -33,15 +35,8 @@ export function useItemAnimation<T extends Element>(
 
         cleanupAnimation();
 
-        // Filter out invalid elements
-        const validElements = elements.value.filter((el) => el && el.nodeType === 1);
-
-        if (validElements.length === 0) {
-            return;
-        }
-
         anim.value = gsap.fromTo(
-            validElements,
+            elements.value,
             { opacity: 0, y: options.y ?? 20 },
             {
                 opacity: 1,

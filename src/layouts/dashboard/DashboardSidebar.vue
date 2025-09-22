@@ -7,6 +7,7 @@ import {
     faBuilding,
     faChartLine,
     faCity,
+    faList,
     faMapLocationDot,
     faSignOut,
 } from '@fortawesome/free-solid-svg-icons';
@@ -45,6 +46,7 @@ async function handleLogoutClick(): Promise<void> {
                     <span>Locaties</span>
                 </h4>
                 <RouterLink class="sidebar-link" :to="{ name: 'dashboard.locations' }">
+                    <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Locaties</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </RouterLink>
@@ -58,7 +60,8 @@ async function handleLogoutClick(): Promise<void> {
                         v-tooltip="'Zoek in alle locaties beschikbaar in Blokmap'"
                         class="ml-auto"
                         severity="contrast"
-                        value="Admin" />
+                        value="Admin">
+                    </Badge>
                 </RouterLink>
             </div>
 
@@ -81,7 +84,8 @@ async function handleLogoutClick(): Promise<void> {
                         v-tooltip="'Zoek in alle autoriteiten beschikbaar in Blokmap'"
                         class="ml-auto"
                         severity="contrast"
-                        value="Admin" />
+                        value="Admin">
+                    </Badge>
                 </RouterLink>
             </div>
 
@@ -104,7 +108,8 @@ async function handleLogoutClick(): Promise<void> {
                         v-tooltip="'Zoek in alle instituties beschikbaar in Blokmap'"
                         class="ml-auto"
                         severity="contrast"
-                        value="Admin" />
+                        value="Admin">
+                    </Badge>
                 </RouterLink>
             </div>
 
@@ -168,13 +173,13 @@ async function handleLogoutClick(): Promise<void> {
             }
 
             .arrow-icon {
-                @apply ml-2 translate-x-2 opacity-0 transition-all duration-200;
+                @apply translate-x-2 opacity-0 transition-all duration-200;
             }
         }
     }
 
     .sidebar-link {
-        @apply flex w-full items-center;
+        @apply flex w-full items-center space-x-3;
         @apply transition-colors duration-200 hover:text-slate-300;
 
         &:hover .arrow-icon {

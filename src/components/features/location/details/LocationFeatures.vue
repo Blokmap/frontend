@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { faCalendarWeek, faClock, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarWeek, faChair, faClock, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { type Location, getLocationFeatures } from '@/domain/location';
@@ -63,7 +63,7 @@ const featuresList = computed(() => {
 
     if (props.location.seatCount && props.location.seatCount > 0) {
         list.push({
-            icon: faClock,
+            icon: faChair,
             title: `${props.location.seatCount} zitplaatsen`,
             description: 'Beschikbare zitcapaciteit',
             iconColor: 'text-primary-600',

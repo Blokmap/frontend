@@ -9,5 +9,9 @@ export const useBreadcrumbStore = defineStore('breadcrumbs', () => {
         breadcrumbs.value = newBreadcrumbs;
     }
 
-    return { breadcrumbs, setBreadcrumbs };
+    function clearBreadcrumbs(): void {
+        breadcrumbs.value = [];
+    }
+
+    return { breadcrumbs, setBreadcrumbs, clearBreadcrumbs };
 });

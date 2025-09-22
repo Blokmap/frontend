@@ -2,8 +2,9 @@ import AuthLayout from '@/layouts/auth/AuthLayout.vue';
 import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
+import { useToast } from '@/composables/store/useToast';
 import { pullRedirectUrl } from '@/domain/auth';
-import { authRouterGuard, breadcrumbRouterGuard } from './guards';
+import { authRouterGuard, breadcrumbRouterGuard, titleRouterGuard } from './guards';
 import {
     AuthPage,
     DashboardAuthoritiesPage,
@@ -34,11 +35,13 @@ const routes: RouteRecordRaw[] = [
                         path: '',
                         name: 'profile',
                         component: ProfilePage,
+                        meta: { title: 'Profiel' },
                     },
                     {
                         path: 'reservations/:inWeekOf?',
                         name: 'profile.reservations',
                         component: ReservationsPage,
+                        meta: { title: 'Reserveringen' },
                     },
                 ],
             },
@@ -49,6 +52,7 @@ const routes: RouteRecordRaw[] = [
                         path: '',
                         name: 'locations',
                         component: LocationsPage,
+                        meta: { title: 'Locaties' },
                     },
                     {
                         path: ':locationId',
@@ -61,7 +65,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: 'locations/submit',
                 name: 'locations.submit',
-                meta: { auth: { required: true } },
+                meta: { auth: { required: true }, title: 'Locatie Toevoegen' },
                 component: LocationSubmitPage,
             },
         ],
@@ -75,6 +79,7 @@ const routes: RouteRecordRaw[] = [
                 path: '',
                 name: 'dashboard',
                 component: DashboardPage,
+                meta: { title: 'Dashboard' },
             },
             {
                 path: 'locations',
@@ -84,6 +89,7 @@ const routes: RouteRecordRaw[] = [
                         path: '',
                         name: 'dashboard.locations.index',
                         component: LocationsIndexPage,
+                        meta: { title: 'Locaties Beheer' },
                     },
                     {
                         path: ':locationId',
@@ -100,11 +106,13 @@ const routes: RouteRecordRaw[] = [
                         path: '',
                         name: 'dashboard.authorities.index',
                         component: DashboardAuthoritiesPage,
+                        meta: { title: 'Autorisaties Beheer' },
                     },
                     {
                         path: ':authorityId',
                         name: 'dashboard.authorities.detail',
                         component: DashboardAuthorityPage,
+                        meta: { title: 'Autorisatie Beheer' },
                     },
                 ],
             },
@@ -116,11 +124,13 @@ const routes: RouteRecordRaw[] = [
                         path: '',
                         name: 'dashboard.institutions.index',
                         component: DashboardInstitutionsPage,
+                        meta: { title: 'Instellingen Beheer' },
                     },
                     {
                         path: ':institutionId',
                         name: 'dashboard.institutions.detail',
                         component: DashboardInstitutionPage,
+                        meta: { title: 'Instelling Beheer' },
                     },
                 ],
             },
@@ -128,6 +138,7 @@ const routes: RouteRecordRaw[] = [
                 path: 'profiles',
                 name: 'dashboard.profiles',
                 children: [],
+                meta: { title: 'Profielen Beheer' },
             },
         ],
     },
@@ -138,12 +149,23 @@ const routes: RouteRecordRaw[] = [
             {
                 path: 'auth/sso',
                 name: 'auth.sso',
-                redirect: () => pullRedirectUrl() || { name: 'profile' },
+                redirect: () => {
+                    const toast = useToast();
+
+                    toast.add({
+                        severity: 'success',
+                        summary: 'Succesvol ingelogd',
+                        detail: 'Je bent succesvol ingelogd via je instelling!',
+                    });
+
+                    return pullRedirectUrl() || { name: 'profile' };
+                },
             },
             {
                 path: 'auth/:action?',
                 name: 'auth',
                 component: AuthPage,
+                meta: { title: 'Inloggen' },
             },
             {
                 path: 'login',
@@ -165,5 +187,6 @@ const router = createRouter({
 
 router.beforeEach(authRouterGuard);
 router.afterEach(breadcrumbRouterGuard);
+router.afterEach(titleRouterGuard);
 
 export { router };

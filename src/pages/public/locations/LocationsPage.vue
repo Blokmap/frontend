@@ -9,11 +9,12 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn, useTemplateRefsList } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, onDeactivated, ref, useTemplateRef, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { onBeforeRouteLeave } from 'vue-router';
 import { useItemAnimation } from '@/composables/anim/useItemAnimation';
 import { useLocationsSearch, useNearestLocation } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useToast } from '@/composables/store/useToast';
+import { router } from '@/config/router';
 import type { Location } from '@/domain/location';
 import type { LngLatBounds } from '@/domain/map';
 
@@ -22,7 +23,6 @@ defineOptions({ name: 'LocationsPage' });
 const filterStore = useLocationFilters();
 const { geoLocation } = storeToRefs(filterStore);
 const toast = useToast();
-const router = useRouter();
 
 const { data: locations, isPending: locationsIsPending } = useLocationsSearch(filterStore.filters, {
     enabled: computed(() => !!filterStore.filters.bounds),
@@ -65,9 +65,10 @@ watch(locations, (locations) => {
 });
 
 watch(
-    [() => mapRef.value?.map.isLoaded, geoLocation],
-    ([isLoaded, geoLocation]) => {
+    geoLocation,
+    (geoLocation) => {
         try {
+            const isLoaded = mapRef.value?.map.isLoaded;
             if (isLoaded && geoLocation) {
                 mapRef.value?.map.flyTo([
                     geoLocation.coordinates.longitude,
@@ -91,7 +92,15 @@ function handlePageChange(event: { page: number }): void {
 }
 
 function handleMarkerClick(id: number): void {
-    router.push({ name: 'locations.detail', params: { locationId: id } });
+    const location = locations.value?.data.find((loc) => loc.id === id);
+
+    if (!location) return;
+
+    if (hoveredLocation.value?.id === location.id) {
+        router.push({ name: 'locations.detail', params: { locationId: location.id } });
+    } else {
+        hoveredLocation.value = location;
+    }
 }
 
 function handleNearestClick(): void {
@@ -100,9 +109,8 @@ function handleNearestClick(): void {
     flyToNearestLocation(center);
 }
 
-onDeactivated(() => {
-    cleanupAnimation();
-});
+onBeforeRouteLeave(cleanupAnimation);
+onDeactivated(cleanupAnimation);
 </script>
 
 <template>
@@ -152,23 +160,24 @@ onDeactivated(() => {
             </div>
 
             <div class="grid grid-cols-2 gap-4 xl:grid-cols-3">
-                <LocationCardSkeleton v-for="n in previousLocationCount" v-if="isLoading" :key="n">
-                </LocationCardSkeleton>
+                <template v-if="isLoading">
+                    <LocationCardSkeleton v-for="n in previousLocationCount" :key="n">
+                    </LocationCardSkeleton>
+                </template>
 
-                <div
-                    v-for="location in locations.data"
-                    v-else-if="locations?.data?.length"
-                    :key="location.id"
-                    :ref="locationRefs.set">
+                <template v-else-if="locations?.data?.length">
                     <RouterLink
-                        :to="{ name: 'locations.detail', params: { locationId: location.id } }">
+                        :to="{ name: 'locations.detail', params: { locationId: location.id } }"
+                        :key="location.id"
+                        :ref="locationRefs.set"
+                        v-for="location in locations.data">
                         <LocationCard
                             :location="location"
                             @mouseenter="hoveredLocation = location"
                             @mouseleave="hoveredLocation = null">
                         </LocationCard>
                     </RouterLink>
-                </div>
+                </template>
             </div>
 
             <Paginator

@@ -22,7 +22,9 @@ defineEmits<{
 
 .search-button {
     @apply min-w-[280px] px-6 py-3;
-    @apply bg-primary-100/50 cursor-pointer rounded-2xl border-none text-[15px];
+    @apply bg-primary-100/50 border-primary-100 rounded-2xl border;
+    @apply transition-transform hover:scale-105;
+    @apply cursor-pointer text-[15px];
 
     .search-icon {
         @apply text-primary-800;

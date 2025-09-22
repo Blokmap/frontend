@@ -3,6 +3,10 @@ import type { MapOptions } from './types';
 export const defaultMapOptions = {
     style: 'mapbox://styles/mapbox/outdoors-v11',
     zoom: 7,
+    maxBounds: [
+        [2.4, 49.5],
+        [6.5083, 51.6509],
+    ],
     center: [4.4764595, 50.5010789],
     autoGeolocation: false,
     geoLocationControl: true,

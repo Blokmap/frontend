@@ -1,8 +1,10 @@
 <script lang="ts" setup>
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import Button from 'primevue/button';
+import { faSpinner, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalStorage } from '@vueuse/core';
 import { useTemplateRef, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useMapBox } from '@/composables/useMapBox';
 import OpeningsTable from '../location/openings/OpeningsTable.vue';
 import Marker from './Marker.vue';
@@ -26,6 +28,7 @@ const emit = defineEmits<{
 const mapContainerRef = useTemplateRef('mapContainer');
 const config = useLocalStorage<MapOptions>('map', {});
 const map = useMapBox(mapContainerRef, config.value);
+const router = useRouter();
 
 function handleMarkerClick(id: number): void {
     emit('click:marker', id);
@@ -36,7 +39,11 @@ function handleMarkerMouseEnter(location: Location) {
 }
 
 function handleMarkerMouseLeave() {
-    hoveredLocation.value = null;
+    // Don't hide popover on marker hover out - let it stay visible
+}
+
+function handleLocationDetailClick(locationId: number): void {
+    router.push({ name: 'locations.detail', params: { locationId } });
 }
 
 watch(
@@ -66,19 +73,32 @@ defineExpose({ map });
                 :position="[location.longitude, location.latitude]"
                 :map="map"
                 :active="location.id === hoveredLocation?.id"
+                @click="handleMarkerClick(location.id)"
                 @mouseenter="handleMarkerMouseEnter(location)"
-                @mouseleave="handleMarkerMouseLeave"
-                @click="handleMarkerClick(location.id)">
+                @mouseleave="handleMarkerMouseLeave">
                 <template #popover>
-                    <div class="space-y-3 p-3">
+                    <div class="space-y-2 p-1">
                         <p class="text-lg font-semibold">
                             {{ location.name }}
                         </p>
-                        <p class="mb-6">
+
+                        <p>
                             {{ location.street }} {{ location.number }} • {{ location.zip }}
                             {{ location.city }}
                         </p>
-                        <OpeningsTable :opening-times="location.openingTimes" compact />
+
+                        <OpeningsTable class="my-3" :opening-times="location.openingTimes" compact>
+                        </OpeningsTable>
+
+                        <div class="flex justify-end">
+                            <Button
+                                @click="handleLocationDetailClick(location.id)"
+                                size="small"
+                                text>
+                                Meer Informatie
+                                <FontAwesomeIcon :icon="faArrowRight" class="ml-2" />
+                            </Button>
+                        </div>
                     </div>
                 </template>
             </Marker>

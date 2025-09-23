@@ -26,6 +26,7 @@ export default [
             '**/*.spec.*',
             '**/cypress/**',
             'dist/**',
+            'public/**',
         ],
     },
 

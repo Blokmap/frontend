@@ -6,23 +6,23 @@ import LocationCardSkeleton from '@/components/features/location/LocationCardSke
 import BlokMap from '@/components/features/map/BlokMap.vue';
 import { faArrowRight, faFilter, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useDebounceFn, useTemplateRefsList } from '@vueuse/core';
+import { useDebounceFn } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
-import { computed, onDeactivated, ref, useTemplateRef, watch } from 'vue';
-import { onBeforeRouteLeave } from 'vue-router';
-import { useItemAnimation } from '@/composables/anim/useItemAnimation';
+import { computed, ref, useTemplateRef, watch } from 'vue';
 import { useLocationsSearch, useNearestLocation } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useToast } from '@/composables/store/useToast';
 import { router } from '@/config/router';
+import { hasNextPage } from '@/domain/shared';
 import type { Location } from '@/domain/location';
 import type { LngLatBounds } from '@/domain/map';
 
 defineOptions({ name: 'LocationsPage' });
 
 const filterStore = useLocationFilters();
-const { geoLocation } = storeToRefs(filterStore);
 const toast = useToast();
+
+const { geoLocation } = storeToRefs(filterStore);
 
 const { data: locations, isPending: locationsIsPending } = useLocationsSearch(filterStore.filters, {
     enabled: computed(() => !!filterStore.filters.bounds),
@@ -43,20 +43,12 @@ const { mutate: flyToNearestLocation, isPending: isFlyingToNearestLocation } = u
 });
 
 const mapRef = useTemplateRef('map');
-const locationRefs = useTemplateRefsList();
-
-const { cleanupAnimation } = useItemAnimation(locationRefs);
 
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
 
 const isLoading = computed(() => {
     return locationsIsPending.value;
-});
-
-const hasNextPage = computed(() => {
-    if (!locations.value) return false;
-    return locations.value.page * locations.value.perPage < locations.value.total;
 });
 
 watch(locations, (locations) => {
@@ -108,9 +100,6 @@ function handleNearestClick(): void {
     if (!center) return;
     flyToNearestLocation(center);
 }
-
-onBeforeRouteLeave(cleanupAnimation);
-onDeactivated(cleanupAnimation);
 </script>
 
 <template>
@@ -142,7 +131,7 @@ onDeactivated(cleanupAnimation);
                     </FontAwesomeIcon>
                 </h2>
 
-                <template v-if="locations && hasNextPage">
+                <template v-if="locations && hasNextPage(locations)">
                     <p class="text-slate-500">
                         {{ locations.perPage }} van {{ locations.total }}
                         locaties getoond. Gebruik de filters om je zoekopdracht te verfijnen.
@@ -167,10 +156,10 @@ onDeactivated(cleanupAnimation);
 
                 <template v-else-if="locations?.data?.length">
                     <RouterLink
-                        :to="{ name: 'locations.detail', params: { locationId: location.id } }"
+                        v-for="location in locations.data"
                         :key="location.id"
-                        :ref="locationRefs.set"
-                        v-for="location in locations.data">
+                        :to="{ name: 'locations.detail', params: { locationId: location.id } }"
+                        class="location-card-link">
                         <LocationCard
                             :location="location"
                             @mouseenter="hoveredLocation = location"
@@ -203,3 +192,55 @@ onDeactivated(cleanupAnimation);
         </div>
     </div>
 </template>
+
+<style scoped>
+.location-card-link {
+    animation: fadeInUp 0.4s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.location-card-link:nth-child(1) {
+    animation-delay: 0.05s;
+}
+.location-card-link:nth-child(2) {
+    animation-delay: 0.1s;
+}
+.location-card-link:nth-child(3) {
+    animation-delay: 0.15s;
+}
+.location-card-link:nth-child(4) {
+    animation-delay: 0.2s;
+}
+.location-card-link:nth-child(5) {
+    animation-delay: 0.25s;
+}
+.location-card-link:nth-child(6) {
+    animation-delay: 0.3s;
+}
+.location-card-link:nth-child(7) {
+    animation-delay: 0.35s;
+}
+.location-card-link:nth-child(8) {
+    animation-delay: 0.4s;
+}
+.location-card-link:nth-child(9) {
+    animation-delay: 0.45s;
+}
+.location-card-link:nth-child(10) {
+    animation-delay: 0.5s;
+}
+.location-card-link:nth-child(11) {
+    animation-delay: 0.55s;
+}
+.location-card-link:nth-child(12) {
+    animation-delay: 0.6s;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>

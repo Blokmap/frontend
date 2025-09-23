@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { LocationFilter } from '@/domain/location';
+import type { LocationSearchFilter } from '@/domain/location';
 
 /**
  * Pinia store for managing location filters.
@@ -8,7 +8,7 @@ import type { LocationFilter } from '@/domain/location';
 export const useLocationFilters = defineStore('locationFilters', () => {
     const geoLocation = ref<GeoJSON.GeoJsonProperties | null>(null);
 
-    const filters = ref<LocationFilter>({
+    const filters = ref<LocationSearchFilter>({
         query: null,
         isReservable: null,
         openOn: null,
@@ -20,10 +20,10 @@ export const useLocationFilters = defineStore('locationFilters', () => {
     /**
      * Update the location filters with new values.
      *
-     * @param {Partial<LocationFilter>} newFilters - The new filter values to update.
+     * @param {Partial<LocationSearchFilter>} newFilters - The new filter values to update.
      * @returns {void}
      */
-    function updateFilters(newFilters: Partial<LocationFilter>): void {
+    function updateFilters(newFilters: Partial<LocationSearchFilter>): void {
         Object.assign(filters.value, newFilters);
     }
 

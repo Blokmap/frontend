@@ -19,7 +19,6 @@ app.use(ToastService);
 app.use(ConfirmationService);
 
 app.use(VueQueryPlugin, vueQueryConfig);
-
 app.use(PrimeVuePlugin, primevueConfig);
 
 // Register directives.

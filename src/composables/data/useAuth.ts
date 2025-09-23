@@ -9,7 +9,7 @@ import type {
     CompMutationOptions,
     CompQuery,
     CompQueryOptions,
-} from '@/types/Composable';
+} from '@/domain/shared';
 import type { AxiosError } from 'axios';
 
 export const AUTH_QUERY_KEYS = {

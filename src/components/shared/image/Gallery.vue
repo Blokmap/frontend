@@ -2,19 +2,13 @@
 import Button from 'primevue/button';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useTemplateRefsList } from '@vueuse/core';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
-import { useItemAnimation } from '@/composables/anim/useItemAnimation';
 import type { Image } from '@/domain/image';
 
 const props = defineProps<{
     images: Image[];
     placeholder?: string;
 }>();
-
-const imageRefs = useTemplateRefsList();
-
-const { cleanupAnimation } = useItemAnimation(imageRefs, { duration: 0.5 });
 
 const isFullscreen = ref(false);
 const selectedImageIndex = ref(0);
@@ -109,7 +103,6 @@ onMounted(() => {
 
 onUnmounted(() => {
     document.removeEventListener('keydown', handleKeydown);
-    cleanupAnimation();
 });
 </script>
 
@@ -119,7 +112,6 @@ onUnmounted(() => {
         <div
             v-for="item in imageLayout"
             :key="item.index"
-            :ref="imageRefs.set"
             :class="['gallery-image-container', item.classes]"
             @click="openFullScreen(item.index)">
             <img v-if="item.image" :src="item.image.url" class="gallery-image" />

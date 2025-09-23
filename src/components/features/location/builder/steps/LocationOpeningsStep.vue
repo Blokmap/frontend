@@ -15,7 +15,7 @@ import {
     type OpeningTimeGroupRequest,
     type OpeningTimeRequest,
     getOpeningsFromGroup,
-    TimeCell,
+    type TimeCell,
 } from '@/domain/openings';
 import { addToTime, validateTimeRange } from '@/utils/date/time';
 import type { BuilderSubstep, LocationRequest } from '@/domain/location';

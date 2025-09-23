@@ -38,37 +38,68 @@ const routes: RouteRecordRaw[] = [
                         path: '',
                         name: 'profile',
                         component: ProfilePage,
-                        meta: { title: 'Profiel' },
+                        meta: {
+                            title: 'Profiel',
+                            breadcrumbs: [{ label: 'Profiel', to: { name: 'profile' } }],
+                        },
                     },
                     {
                         path: 'reservations/:inWeekOf?',
                         name: 'profile.reservations',
                         component: ReservationsPage,
-                        meta: { title: 'Reserveringen' },
+                        meta: {
+                            title: 'Reserveringen',
+                            breadcrumbs: [
+                                { label: 'Profiel', to: { name: 'profile' } },
+                                { label: 'Reserveringen', to: { name: 'profile.reservations' } },
+                            ],
+                        },
                     },
                 ],
             },
             {
                 path: 'locations',
+                meta: {
+                    title: 'Locaties',
+                    breadcrumbs: [{ label: 'Locaties', to: { name: 'locations' } }],
+                },
                 children: [
                     {
                         path: '',
                         name: 'locations',
                         component: LocationsPage,
-                        meta: { title: 'Locaties' },
+                        meta: {
+                            title: 'Locaties',
+                            breadcrumbs: [{ label: 'Locaties', to: { name: 'locations' } }],
+                        },
                     },
                     {
                         path: ':locationId',
                         name: 'locations.detail',
                         props: true,
                         component: LocationPage,
+                        meta: {
+                            title: 'Locatie Details',
+                            breadcrumbs: [
+                                { label: 'Locaties', to: { name: 'locations' } },
+                                { label: 'Locatie Details', to: { name: 'locations.detail' } },
+                            ],
+                        },
+                        // Note: breadcrumbs should be updated dynamically by the component to include location name
                     },
                 ],
             },
             {
                 path: 'locations/submit',
                 name: 'locations.submit',
-                meta: { auth: { required: true }, title: 'Locatie Toevoegen' },
+                meta: {
+                    auth: { required: true },
+                    title: 'Locatie Toevoegen',
+                    breadcrumbs: [
+                        { label: 'Locaties', to: { name: 'locations' } },
+                        { label: 'Locatie Toevoegen', to: { name: 'locations.submit' } },
+                    ],
+                },
                 component: LocationSubmitPage,
             },
         ],
@@ -82,58 +113,139 @@ const routes: RouteRecordRaw[] = [
                 path: '',
                 name: 'dashboard',
                 component: DashboardPage,
-                meta: { title: 'Dashboard' },
+                meta: {
+                    title: 'Dashboard',
+                    breadcrumbs: [{ label: 'Dashboard', to: { name: 'dashboard' } }],
+                },
             },
             {
                 path: 'locations',
-                name: 'dashboard.locations',
                 children: [
                     {
                         path: '',
                         name: 'dashboard.locations.index',
                         component: LocationsIndexPage,
-                        meta: { title: 'Locaties Beheer' },
+                        meta: {
+                            auth: { admin: true },
+                            title: 'Beheer Locaties',
+                            breadcrumbs: [
+                                { label: 'Dashboard', to: { name: 'dashboard' } },
+                                { label: 'Locaties', to: { name: 'dashboard.locations.index' } },
+                            ],
+                        },
                     },
                     {
                         path: ':locationId',
                         name: 'dashboard.locations.detail',
                         component: LocationDetailPage,
+                        meta: {
+                            title: 'Beheer Locatie',
+                            breadcrumbs: [
+                                { label: 'Dashboard', to: { name: 'dashboard' } },
+                                { label: 'Locaties', to: { name: 'dashboard.locations.index' } },
+                                {
+                                    label: 'Locatie Details',
+                                    to: { name: 'dashboard.locations.detail' },
+                                },
+                            ],
+                        },
+                        // Note: breadcrumbs should be updated dynamically by the component to include location name
                     },
                 ],
             },
             {
                 path: 'authorities',
                 name: 'dashboard.authorities',
+                meta: {
+                    title: 'Beheer Autorisaties',
+                    breadcrumbs: [
+                        { label: 'Dashboard', to: { name: 'dashboard' } },
+                        { label: 'Autoriteiten', to: { name: 'dashboard.authorities.index' } },
+                    ],
+                },
                 children: [
                     {
                         path: '',
                         name: 'dashboard.authorities.index',
                         component: DashboardAuthoritiesPage,
-                        meta: { title: 'Autorisaties Beheer' },
+                        meta: {
+                            title: 'Beheer Autorisaties',
+                            breadcrumbs: [
+                                { label: 'Dashboard', to: { name: 'dashboard' } },
+                                {
+                                    label: 'Autoriteiten',
+                                    to: { name: 'dashboard.authorities.index' },
+                                },
+                            ],
+                        },
                     },
                     {
                         path: ':authorityId',
                         name: 'dashboard.authorities.detail',
                         component: DashboardAuthorityPage,
-                        meta: { title: 'Autorisatie Beheer' },
+                        meta: {
+                            title: 'Beheer Autorisatie',
+                            breadcrumbs: [
+                                { label: 'Dashboard', to: { name: 'dashboard' } },
+                                {
+                                    label: 'Autoriteiten',
+                                    to: { name: 'dashboard.authorities.index' },
+                                },
+                                {
+                                    label: 'Autoriteit Details',
+                                    to: { name: 'dashboard.authorities.detail' },
+                                },
+                            ],
+                        },
+                        // Note: breadcrumbs should be updated dynamically by the component to include authority name
                     },
                 ],
             },
             {
                 path: 'institutions',
                 name: 'dashboard.institutions',
+                meta: {
+                    title: 'Beheer Instellingen',
+                    breadcrumbs: [
+                        { label: 'Dashboard', to: { name: 'dashboard' } },
+                        { label: 'Instituties', to: { name: 'dashboard.institutions.index' } },
+                    ],
+                },
                 children: [
                     {
                         path: '',
                         name: 'dashboard.institutions.index',
                         component: DashboardInstitutionsPage,
-                        meta: { title: 'Instellingen Beheer' },
+                        meta: {
+                            title: 'Beheer Instellingen',
+                            breadcrumbs: [
+                                { label: 'Dashboard', to: { name: 'dashboard' } },
+                                {
+                                    label: 'Instellingen',
+                                    to: { name: 'dashboard.institutions.index' },
+                                },
+                            ],
+                        },
                     },
                     {
                         path: ':institutionId',
                         name: 'dashboard.institutions.detail',
                         component: DashboardInstitutionPage,
-                        meta: { title: 'Instelling Beheer' },
+                        meta: {
+                            title: 'Beheer Instelling',
+                            breadcrumbs: [
+                                { label: 'Dashboard', to: { name: 'dashboard' } },
+                                {
+                                    label: 'Instituties',
+                                    to: { name: 'dashboard.institutions.index' },
+                                },
+                                {
+                                    label: 'Institutie Details',
+                                    to: { name: 'dashboard.institutions.detail' },
+                                },
+                            ],
+                        },
+                        // Note: breadcrumbs should be updated dynamically by the component to include institution name
                     },
                 ],
             },
@@ -141,25 +253,49 @@ const routes: RouteRecordRaw[] = [
                 path: 'profiles',
                 name: 'dashboard.profiles',
                 children: [],
-                meta: { title: 'Profielen Beheer' },
+                meta: {
+                    title: 'Beheer Profielen',
+                    breadcrumbs: [
+                        { label: 'Dashboard', to: { name: 'dashboard' } },
+                        { label: 'Profielen', to: { name: 'dashboard.profiles' } },
+                    ],
+                },
             },
             {
                 path: 'statistics',
                 name: 'dashboard.statistics',
                 component: DashboardStatisticsPage,
-                meta: { title: 'Statistieken' },
+                meta: {
+                    title: 'Statistieken',
+                    breadcrumbs: [
+                        { label: 'Dashboard', to: { name: 'dashboard' } },
+                        { label: 'Statistieken', to: { name: 'dashboard.statistics' } },
+                    ],
+                },
             },
             {
                 path: 'users',
                 name: 'dashboard.users',
                 component: DashboardUsersPage,
-                meta: { title: 'Gebruikers Beheer' },
+                meta: {
+                    title: 'Beheer Gebruikers',
+                    breadcrumbs: [
+                        { label: 'Dashboard', to: { name: 'dashboard' } },
+                        { label: 'Gebruikers', to: { name: 'dashboard.users' } },
+                    ],
+                },
             },
             {
                 path: 'reviews',
                 name: 'dashboard.reviews',
                 component: DashboardReviewsPage,
-                meta: { title: 'Reviews Beheer' },
+                meta: {
+                    title: 'Beheer Reviews',
+                    breadcrumbs: [
+                        { label: 'Dashboard', to: { name: 'dashboard' } },
+                        { label: 'Reviews', to: { name: 'dashboard.reviews' } },
+                    ],
+                },
             },
         ],
     },
@@ -186,7 +322,10 @@ const routes: RouteRecordRaw[] = [
                 path: 'auth/:action?',
                 name: 'auth',
                 component: AuthPage,
-                meta: { title: 'Inloggen' },
+                meta: {
+                    title: 'Inloggen',
+                    breadcrumbs: [{ label: 'Inloggen', to: { name: 'auth' } }],
+                },
             },
             {
                 path: 'login',

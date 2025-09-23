@@ -1,6 +1,7 @@
-import axios, { HttpStatusCode } from 'axios';
-import { type Router } from 'vue-router';
+import axios, { AxiosError, HttpStatusCode } from 'axios';
+import { useRouter } from 'vue-router';
 import { useProgress } from '@/composables/store/useProgress';
+import { useToast } from '@/composables/store/useToast';
 import { MAPBOX_API_KEY, MAPBOX_URL } from '@/config';
 import { endpoints } from '@/config/endpoints';
 import { mockInstitutions } from '@/mock';
@@ -27,8 +28,10 @@ export const client = axios.create({
  * Sets up Axios interceptors for the client.
  * This includes handling unauthorized responses and mocking certain endpoints.
  */
-export function setupAxiosInterceptors(router: Router, toast: any): void {
+export function setupAxiosInterceptors(): void {
+    const router = useRouter();
     const progressStore = useProgress();
+    const toast = useToast();
 
     // Request interceptor to start progress
     client.interceptors.request.use(
@@ -60,7 +63,12 @@ export function setupAxiosInterceptors(router: Router, toast: any): void {
         async (response) => {
             progressStore.finish();
 
-            if (response.status === HttpStatusCode.Unauthorized) {
+            return response;
+        },
+        (error: AxiosError) => {
+            progressStore.finish();
+
+            if (error.status === HttpStatusCode.Unauthorized) {
                 router.push({
                     name: 'auth',
                     params: { action: 'login' },
@@ -73,8 +81,8 @@ export function setupAxiosInterceptors(router: Router, toast: any): void {
                 });
             }
 
-            if (response.status === HttpStatusCode.InternalServerError) {
-                console.error('Server error:', response);
+            if (error.status === HttpStatusCode.InternalServerError) {
+                console.error('Server error:', error);
                 toast.add({
                     severity: 'error',
                     summary: 'Serverfout',
@@ -82,7 +90,7 @@ export function setupAxiosInterceptors(router: Router, toast: any): void {
                 });
             }
 
-            if (response.status === HttpStatusCode.BadRequest) {
+            if (error.status === HttpStatusCode.BadRequest) {
                 toast.add({
                     severity: 'error',
                     summary: 'Fout bij verwerken verzoek',
@@ -90,10 +98,19 @@ export function setupAxiosInterceptors(router: Router, toast: any): void {
                 });
             }
 
-            return response;
-        },
-        (error) => {
-            progressStore.finish();
+            if (error.status === HttpStatusCode.NotFound) {
+                const detail =
+                    error.request?.method === 'GET'
+                        ? 'De opgevraagde data werd niet gevonden.'
+                        : 'De opgevraagde actie kon niet worden voltooid.';
+
+                toast.add({
+                    severity: 'error',
+                    summary: 'Niet gevonden',
+                    detail,
+                });
+            }
+
             return Promise.reject(error);
         },
     );

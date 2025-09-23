@@ -5,8 +5,8 @@
     "type": "module",
     "scripts": {
         "build": "tsc -b && vite build",
-        "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
-        "lint:check": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts",
+        "lint": "npm run type:check && eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
+        "lint:check": "npm run type:check && eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts",
         "type:check": "tsc -b --noEmit",
         "dev": "vite",
         "format": "prettier --write src test",

@@ -5,11 +5,11 @@ import { parseProfile } from '@/domain/profile';
 import { dateToString, stringToDate } from '@/utils/date/date';
 import { stringToTime, timeToString } from '@/utils/date/time';
 import { formatIncludes, transformPaginatedResponse } from '@/utils/service';
-import type { Location, LocationFilter, LocationRequest, NearestLocation } from './types';
+import type { Location, LocationSearchFilter, LocationRequest, NearestLocation } from './types';
 import type { ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { OpeningTime, OpeningTimeRequest } from '@/domain/openings';
-import type { Paginated } from '@/types/Pagination';
+import type { Paginated } from '@/domain/shared';
 
 export type LocationIncludes = 'images' | 'createdBy';
 
@@ -60,14 +60,14 @@ function parseLocation(locationData: any): Location {
 }
 
 /**
- * Function to search for locations based on filters.
+ * Search for locations based on filters.
  *
- * @param {LocationFilter} [filters] - The filters to apply when searching for locations.
+ * @param {LocationSearchFilter} [filters] - The filters to apply when searching for locations.
  * @param {string} [locale] - The locale to use for the search.
  * @returns {Promise<Paginated<Location>>} A promise that resolves to a paginated list of locations.
  */
 export async function searchLocations(
-    filters?: Partial<LocationFilter>,
+    filters?: Partial<LocationSearchFilter>,
     locale?: string,
 ): Promise<Paginated<Location>> {
     const [southWest, northEast] = filters?.bounds ?? [];
@@ -110,7 +110,7 @@ export async function searchLocations(
 }
 
 /**
- * Function to get a location by its ID.
+ * Get a location by its ID.
  *
  * @param {string} id - The ID of the location to fetch.
  * @param {LocationIncludes[]} includes - The related data to include in the response.
@@ -126,7 +126,7 @@ export async function getLocationById(id: number, includes: LocationIncludes[]):
     return parseLocation(response.data);
 }
 
-/** Function to get the nearest location based on a center point.
+/** Get the nearest location based on a center point.
  *
  * @param {LngLat} center - The center point to find the nearest location to.
  * @returns {Promise<NearestLocation>} A promise that resolves to the nearest location data.
@@ -143,7 +143,7 @@ export async function getNearestLocation(center: LngLat): Promise<NearestLocatio
 }
 
 /**
- * Function to create a new location.
+ * Create a new location.
  *
  * @param {LocationRequest} locationData - The location data to create.
  * @returns {Promise<Location>} A promise that resolves to the created location.
@@ -154,7 +154,7 @@ export async function createLocation(locationData: LocationRequest): Promise<Loc
 }
 
 /**
- * Function to set images for a location.
+ * Set images for a location.
  *
  * @param {number} locationId - The ID of the location to set images for.
  * @param {ImageRequest} image - The images to set for the location.
@@ -180,7 +180,7 @@ export async function createLocationImage(
 }
 
 /**
- * Function to update a location.
+ * Update a location.
  *
  * @param {number} id - The ID of the location to update.
  * @param {LocationRequest} locationData - The updated location data.
@@ -195,7 +195,7 @@ export async function updateLocation(id: number, locationData: LocationRequest):
 }
 
 /**
- * Function to delete a location by its ID.
+ * Delete a location by its ID.
  *
  * @param {number} id - The ID of the location to delete.
  * @returns {Promise<void>} A promise that resolves when the deletion is complete.
@@ -205,7 +205,7 @@ export async function deleteLocation(id: number): Promise<void> {
 }
 
 /**
- * Function to create time slots for a location.
+ * Create time slots for a location.
  *
  * @param {number} locationId - The ID of the location to create time slots for.
  * @param {OpeningTimeRequest[]} openings - The opening times to create as time slots.
@@ -234,7 +234,7 @@ export async function createLocationOpenings(
 }
 
 /**
- * Function to delete all opening times for a location.
+ * Delete all opening times for a location.
  *
  * @param {number} locationId - The ID of the location to delete opening times for.
  * @returns {Promise<void>} A promise that resolves when the deletion is complete.
@@ -246,7 +246,7 @@ export async function deleteLocationOpenings(locationId: number): Promise<void> 
 }
 
 /**
- * Function to delete all images for a location.
+ * Delete all images for a location.
  *
  * @param {number} locationId - The ID of the location to delete images for.
  * @returns {Promise<void>} A promise that resolves when the deletion is complete.
@@ -255,4 +255,26 @@ export async function deleteLocationImages(locationId: number): Promise<void> {
     await client.delete(
         endpoints.locations.images.deleteAll.replace('{id}', locationId.toString()),
     );
+}
+
+/**
+ * Approve a location to make it appear in the public listing.
+ *
+ * @param {number} id - The ID of the location to approve.
+ * @returns {Promise<Location>} A promise that resolves to the approved location.
+ */
+export async function approveLocation(id: number): Promise<Location> {
+    const response = await client.post(endpoints.locations.approve.replace('{id}', id.toString()));
+    return parseLocation(response.data);
+}
+
+/**
+ * Reject a location to remove it from the public listing.
+ *
+ * @param {number} id - The ID of the location to reject.
+ * @returns {Promise<Location>} A promise that resolves to the rejected location.
+ */
+export async function rejectLocation(id: number): Promise<Location> {
+    const response = await client.post(endpoints.locations.reject.replace('{id}', id.toString()));
+    return parseLocation(response.data);
 }

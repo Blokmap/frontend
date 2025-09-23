@@ -9,6 +9,7 @@ import {
     faCity,
     faList,
     faMapLocationDot,
+    faPlus,
     faSignOut,
     faStar,
     faUsers,
@@ -59,10 +60,18 @@ function isRouteActive(routeName: string): boolean {
                 </h4>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.locations') }"
-                    :to="{ name: 'dashboard.locations' }">
+                    :class="{ active: isRouteActive('dashboard.locations.index') }"
+                    :to="{ name: 'dashboard.locations.index' }">
                     <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Locaties</p>
+                    <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
+                </RouterLink>
+                <RouterLink
+                    class="sidebar-link"
+                    :class="{ active: isRouteActive('locations.submit') }"
+                    :to="{ name: 'locations.submit' }">
+                    <FontAwesomeIcon :icon="faPlus" />
+                    <p>Nieuwe Locatie</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </RouterLink>
             </div>
@@ -134,8 +143,8 @@ function isRouteActive(routeName: string): boolean {
                 </RouterLink>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.locations') }"
-                    :to="{ name: 'dashboard.locations' }">
+                    :class="{ active: isRouteActive('dashboard.locations.index') }"
+                    :to="{ name: 'dashboard.locations.index' }">
                     <FontAwesomeIcon :icon="faMapLocationDot" />
                     <p>Locaties</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
@@ -245,6 +254,7 @@ function isRouteActive(routeName: string): boolean {
             width: 1rem;
             text-align: center;
         }
+
         p {
             @apply flex-1 text-sm font-medium;
         }

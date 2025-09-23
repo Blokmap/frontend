@@ -1,7 +1,7 @@
 import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import { isEvening, isMorning, isNight, isWeekend } from '@/utils/date';
 import { GOOGLE_MAPS_DIRECTIONS_BASE_URL } from './constants';
-import type { Location, LocationAddress, LocationFeatures } from './types';
+import type { Location, LocationAddress, LocationFeatures, LocationStatus } from './types';
 
 /**
  * Returns a random placeholder image URL for locations.
@@ -41,6 +41,24 @@ export function getLocationFeatures(location: Location): LocationFeatures {
         openInMorning,
         openInWeekend,
     };
+}
+
+/**
+ * Determines the status of a location based on its approval and rejection dates.
+ *
+ * @param location - The location object to evaluate.
+ * @returns The status of the location: 'approved', 'pending', or 'rejected'.
+ */
+export function getLocationStatus(location: Location): LocationStatus {
+    if (location.rejectedAt) {
+        return 'rejected';
+    }
+
+    if (location.approvedAt) {
+        return 'approved';
+    }
+
+    return 'pending';
 }
 
 /**

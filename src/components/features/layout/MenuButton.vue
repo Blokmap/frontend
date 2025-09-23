@@ -39,7 +39,7 @@ function handleNavigationClick(): void {
 
 <template>
     <!-- Menu Toggle -->
-    <Button severity="contrast" class="!px-3 !py-2" @click="handleMenuButtonClick" rounded>
+    <Button class="!px-3 !py-2" @click="handleMenuButtonClick" rounded>
         <template #icon>
             <FontAwesomeIcon :icon="faBars" />
         </template>
@@ -83,7 +83,7 @@ function handleNavigationClick(): void {
 
             <template v-else>
                 <h3 class="font-semibold">Profiel</h3>
-                <p class="mt-2 mb-3 text-sm text-slate-500 dark:text-slate-400">
+                <p class="text-sm text-slate-500 dark:text-slate-400">
                     Reserveer een plek op een van onze locaties of meld zelf een plek aan.
                 </p>
                 <div class="flex gap-1">
@@ -110,10 +110,12 @@ function handleNavigationClick(): void {
                 <FontAwesomeIcon :icon="faCity" class="text-secondary fa-icon" />
                 <span>Beheer van Locaties</span>
             </RouterLink>
-            <div class="menu-link logout-link" @click="handleLogoutClick">
-                <FontAwesomeIcon :icon="faSignOut" class="text-secondary fa-icon" />
-                <span>Uitloggen</span>
-            </div>
+            <template v-if="profile">
+                <div class="menu-link logout-link" @click="handleLogoutClick">
+                    <FontAwesomeIcon :icon="faSignOut" class="text-secondary fa-icon" />
+                    <span>Uitloggen</span>
+                </div>
+            </template>
         </div>
     </Popover>
 </template>

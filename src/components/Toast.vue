@@ -10,6 +10,27 @@ import {
     faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { storeToRefs } from 'pinia';
+import { useToast as usePrimeToast } from 'primevue';
+import { onMounted, watch } from 'vue';
+import { useToast } from '@/composables/store/useToast';
+
+const toast = useToast();
+const primeToast = usePrimeToast();
+
+const { messages } = storeToRefs(toast);
+
+watch(
+    messages,
+    () => {
+        toast.processQueuedMessages(primeToast);
+    },
+    { deep: true },
+);
+
+onMounted(() => {
+    toast.processQueuedMessages(primeToast);
+});
 
 const severityClasses: Record<string, string> = {
     success: 'text-green-500 bg-green-100 dark:bg-green-800 dark:text-green-200',
@@ -30,9 +51,7 @@ const severityIcons: Record<string, IconDefinition> = {
     <Toast position="bottom-right">
         <template #container="slotProps">
             <div class="flex items-center gap-3 p-3">
-                <div
-                    class="inline-flex aspect-square h-10 shrink-0 items-center justify-center rounded-lg"
-                    :class="severityClasses[slotProps.message.severity]">
+                <div class="icon-container" :class="severityClasses[slotProps.message.severity]">
                     <FontAwesomeIcon :icon="severityIcons[slotProps.message.severity]" />
                 </div>
                 <div class="flex flex-col">
@@ -52,3 +71,11 @@ const severityIcons: Record<string, IconDefinition> = {
         </template>
     </Toast>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.icon-container {
+    @apply inline-flex aspect-square h-10 shrink-0 items-center justify-center rounded-lg;
+}
+</style>

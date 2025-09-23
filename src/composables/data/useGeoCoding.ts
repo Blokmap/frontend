@@ -1,11 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { mapBoxClient } from '@/config/axios';
+import { getRandomDelay, mapBoxClient } from '@/config/axios';
 import { mapboxEndpoints } from '@/config/endpoints';
 import { geocodeAddress } from '@/domain/map';
 import type { LngLat } from '@/domain/map';
-import type { CompMutation, CompQuery, CompQueryOptions } from '@/types/Composable';
+import type { CompMutation, CompQuery, CompQueryOptions } from '@/domain/shared';
 import type { AxiosError } from 'axios';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
@@ -90,7 +90,10 @@ export function useGeoSearch(
  */
 export function useForwardGeoSearch(): CompMutation<string, LngLat> {
     const mutation = useMutation({
-        mutationFn: geocodeAddress,
+        mutationFn: async (address: string) => {
+            await getRandomDelay(500, 800);
+            return geocodeAddress(address);
+        },
     });
 
     return mutation;

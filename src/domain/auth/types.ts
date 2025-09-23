@@ -20,11 +20,9 @@ export type Idp = {
 };
 
 export type AuthSettings = {
-    required: boolean;
-    permissions?: {
-        admin?: boolean;
-        authority?: unknown;
-        location?: unknown;
-        institution?: unknown;
-    };
+    required?: boolean;
+    admin?: boolean;
+    authority?: unknown;
+    location?: unknown;
+    institution?: unknown;
 };

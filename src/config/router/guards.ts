@@ -3,43 +3,47 @@ import { AUTH_QUERY_KEYS } from '@/composables/data/useAuth';
 import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useToast } from '@/composables/store/useToast';
-import { type AuthSettings, pushRedirectUrl, getAuthProfile } from '@/domain/auth';
-import type { Breadcrumbs } from '@/types/Breadcrumb';
+import { pushRedirectUrl, getAuthProfile } from '@/domain/auth';
+import type { Breadcrumbs } from '@/domain/shared';
 import type { NavigationGuardReturn, RouteLocationNormalized } from 'vue-router';
 
 export async function authRouterGuard(to: RouteLocationNormalized): Promise<NavigationGuardReturn> {
     const client = useQueryClient();
     const toast = useToast();
 
-    const authSettings = to.meta.auth as AuthSettings;
+    const authSettings = to.meta.auth;
 
-    if (authSettings?.required) {
-        const profile = await client.fetchQuery({
-            queryKey: AUTH_QUERY_KEYS.profile(),
-            queryFn: getAuthProfile,
+    console.log('Auth settings for route', to.name, authSettings);
+
+    if (!authSettings || authSettings.required === false) {
+        return;
+    }
+
+    const profile = await client.fetchQuery({
+        queryKey: AUTH_QUERY_KEYS.profile(),
+        queryFn: getAuthProfile,
+    });
+
+    if (profile === null) {
+        toast.add({
+            severity: 'info',
+            summary: 'Niet ingelogd',
+            detail: 'Log in om deze pagina te bekijken.',
         });
 
-        if (profile === null) {
-            toast.add({
-                severity: 'info',
-                summary: 'Niet ingelogd',
-                detail: 'Log in om deze pagina te bekijken.',
-            });
+        pushRedirectUrl(to.fullPath);
 
-            pushRedirectUrl(to.fullPath);
+        return { name: 'auth' };
+    }
 
-            return { name: 'auth' };
-        }
+    if (authSettings?.admin && !profile.isAdmin) {
+        toast.add({
+            severity: 'error',
+            summary: 'Geen toegang',
+            detail: 'Je hebt geen toegang tot deze pagina.',
+        });
 
-        if (authSettings?.permissions?.admin && !profile.isAdmin) {
-            toast.add({
-                severity: 'error',
-                summary: 'Geen toegang',
-                detail: 'Je hebt geen toegang tot deze pagina.',
-            });
-
-            return { name: 'dashboard' };
-        }
+        return { name: 'dashboard' };
     }
 }
 
@@ -59,9 +63,11 @@ export async function breadcrumbRouterGuard(
 export async function titleRouterGuard(
     to: RouteLocationNormalized,
 ): Promise<NavigationGuardReturn> {
-    const { setPageTitle } = usePageTitleStore();
+    const { setPageTitle, clearPageTitle } = usePageTitleStore();
 
     if (to.meta.title) {
         setPageTitle(to.meta.title);
+    } else {
+        clearPageTitle();
     }
 }

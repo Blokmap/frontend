@@ -141,8 +141,8 @@
 }
 
 .p-button-contrast {
-    @apply bg-slate-100/80 enabled:hover:bg-slate-200/50 enabled:active:bg-slate-200/80;
-    @apply enabled:hover:border-surface-200 enabled:active:border-surface-300 border border-gray-200;
+    @apply bg-slate-200/80 enabled:hover:bg-slate-300/50 enabled:active:bg-slate-300/80;
+    @apply enabled:hover:border-surface-200 enabled:active:border-surface-300 border-gray-200;
     @apply text-surface-600 enabled:hover:text-surface-700 enabled:active:text-surface-800;
 }
 

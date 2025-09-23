@@ -33,7 +33,7 @@ export async function getProfileStats(profileId: number): Promise<ProfileStats> 
 }
 
 /**
- * Function to get reservations for a specific profile on a given date.
+ * Get reservations for a specific profile on a given date.
  *
  * @param {number} profileId - The ID of the profile to fetch reservations for.
  * @param {Date} [dateOfWeek] - The date for which to fetch reservations. Defaults to today.

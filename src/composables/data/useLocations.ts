@@ -10,9 +10,11 @@ import {
     searchLocations,
     type LocationIncludes,
     type Location,
-    type LocationFilter,
+    type LocationSearchFilter,
     type LocationRequest,
     type NearestLocation,
+    approveLocation,
+    rejectLocation,
 } from '@/domain/location';
 import type { ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
@@ -22,8 +24,8 @@ import type {
     CompMutationOptions,
     CompQuery,
     CompQueryOptions,
-} from '@/types/Composable';
-import type { Paginated } from '@/types/Pagination';
+    Paginated,
+} from '@/domain/shared';
 
 /**
  * Composable to search for locations based on filters.
@@ -33,7 +35,7 @@ import type { Paginated } from '@/types/Pagination';
  * @returns An object containing the search results and their state.
  */
 export function useLocationsSearch(
-    filters?: MaybeRef<LocationFilter>,
+    filters?: MaybeRef<LocationSearchFilter>,
     options: CompQueryOptions<LocationIncludes> = {},
 ): CompQuery<Paginated<Location>> {
     const { locale } = useI18n();
@@ -50,6 +52,8 @@ export function useLocationsSearch(
 
     return query;
 }
+
+export function useLocations() {}
 
 /**
  * Composable to fetch a single location by its ID.
@@ -133,6 +137,28 @@ export function useCreateLocationTimeslots(
         mutationFn: ({ locationId, timeslots }: CreateLocationTimeslotsParams) => {
             return createLocationOpenings(locationId, timeslots);
         },
+    });
+
+    return mutation;
+}
+
+export function useApproveLocation(
+    options: CompMutationOptions = {},
+): CompMutation<number, Location> {
+    const mutation = useMutation({
+        ...options,
+        mutationFn: approveLocation,
+    });
+
+    return mutation;
+}
+
+export function useRejectLocation(
+    options: CompMutationOptions = {},
+): CompMutation<number, Location> {
+    const mutation = useMutation({
+        ...options,
+        mutationFn: rejectLocation,
     });
 
     return mutation;

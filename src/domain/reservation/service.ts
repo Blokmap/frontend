@@ -7,7 +7,7 @@ import type { Reservation } from './types';
 export type ReservationIncludes = 'profile' | 'location' | 'openingTime' | 'confirmedBy';
 
 /**
- * Function to parse a reservation object. Used to ensure that API responses
+ * Parse a reservation object. Used to ensure that API responses
  * are correctly formatted with Date objects and Time objects.
  *
  * @param {any} reservationData - The reservation data from the API.
@@ -26,7 +26,7 @@ export function parseReservation(reservationData: any): Reservation {
 }
 
 /**
- * Function to serialize a reservation object for API requests.
+ * Serialize a reservation object for API requests.
  *
  * @param {Reservation} reservation - The reservation object to serialize.
  * @returns {any} The serialized reservation data for the API.
@@ -41,7 +41,7 @@ export function serializeReservation(reservation: Reservation): any {
 }
 
 /**
- * Function to get reservations for a specific location on a given date.
+ * Get reservations for a specific location on a given date.
  *
  * @param {number} locationId - The ID of the location to fetch reservations for.
  * @param {Date} [dateOfWeek] - The date for which to fetch reservations. Defaults to today.

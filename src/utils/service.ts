@@ -1,4 +1,4 @@
-import type { Paginated } from '@/types';
+import type { Paginated } from '@/domain/shared';
 
 /**
  * Utility function to format an array of includes into a record.

@@ -12,7 +12,7 @@ defineEmits<{
         <div class="flex w-full items-center">
             <FontAwesomeIcon :icon="faMagnifyingGlass" class="search-icon" />
             <span class="search-input">Zoek bloklocaties...</span>
-            <FontAwesomeIcon :icon="faSliders" class="search-icon filter-icon" />
+            <FontAwesomeIcon :icon="faSliders" class="filter-icon" />
         </div>
     </button>
 </template>
@@ -21,17 +21,21 @@ defineEmits<{
 @reference '@/assets/styles/main.css';
 
 .search-button {
-    @apply min-w-[280px] px-6 py-3;
-    @apply bg-primary-100/50 border-primary-100 rounded-2xl border;
-    @apply transition-transform hover:scale-105;
+    @apply min-w-[280px] px-4 py-2;
+    @apply rounded-xl border border-slate-200 bg-slate-100;
+    @apply transition-all duration-150 ease-in-out hover:scale-105;
     @apply cursor-pointer text-[15px];
 
     .search-icon {
-        @apply text-primary-800;
+        @apply h-4 w-4 text-gray-500;
     }
 
     .search-input {
-        @apply text-primary-800 flex-1 font-semibold;
+        @apply mx-3 flex-1 font-medium text-gray-600;
+    }
+
+    .filter-icon {
+        @apply h-4 w-4 text-gray-400;
     }
 }
 </style>

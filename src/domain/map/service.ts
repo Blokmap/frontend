@@ -2,8 +2,6 @@ import { mapBoxClient } from '@/config/axios';
 import { mapboxEndpoints } from '@/config/endpoints';
 import type { LngLat } from './types';
 
-const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
-
 /**
  * Convert an address string to coordinates using Mapbox Geocoding API
  */
@@ -14,16 +12,15 @@ export async function geocodeAddress(address: string): Promise<LngLat> {
             {
                 params: {
                     q: address.trim(),
-                    access_token: MAPBOX_ACCESS_TOKEN,
                     country: 'be',
                     limit: 1,
                 },
             },
         );
 
-        const feature = response.data.features[0];
+        const [feature] = response.data.features;
 
-        if (feature?.geometry?.type === 'Point') {
+        if (feature.geometry?.type === 'Point') {
             const [lng, lat] = feature.geometry.coordinates;
             return [lng, lat];
         }

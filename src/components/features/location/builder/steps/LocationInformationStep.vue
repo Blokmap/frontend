@@ -6,7 +6,7 @@ import LanguageSelector from '@/components/features/layout/LanguageSelector.vue'
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import AddressMap from '@/components/features/map/AddressMap.vue';
 import Callout from '@/components/shared/Callout.vue';
-import { faEdit, faHome, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faEdit, faHome, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, nextTick, ref, useTemplateRef, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -24,7 +24,7 @@ const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
 const toast = useToast();
 
 const { locale } = useI18n();
-const { mutateAsync: geocodeAddress, isPending: isLoading } = useForwardGeoSearch();
+const { mutateAsync: geocodeAddress, isPending } = useForwardGeoSearch();
 
 const mapContainer = useTemplateRef('map-container');
 const currentLanguage = ref(locale.value);
@@ -218,26 +218,43 @@ async function handleConfirmAddress(): Promise<void> {
                         ref="map-container"
                         v-model:center="mapCenter"
                         v-model:zoom="mapZoom"
-                        class="aspect-video h-full w-full rounded-lg" />
+                        class="aspect-video h-full w-full rounded-lg">
+                    </AddressMap>
 
                     <!-- Address Input Overlay -->
                     <div class="absolute top-3 left-3 z-10 w-64">
-                        <div class="rounded-lg bg-white p-3 shadow-xs">
-                            <h4 class="mb-3 text-sm font-medium text-gray-900">Adres</h4>
+                        <div class="space-y-3 rounded-lg bg-white p-3 shadow-xs">
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-sm font-medium text-gray-900">Adres</h4>
+                                <button
+                                    :disabled="!canConfirmAddress || isPending"
+                                    class="save-address-btn"
+                                    @click="handleConfirmAddress">
+                                    <FontAwesomeIcon
+                                        :icon="isPending ? faSpinner : faArrowRight"
+                                        :spin="isPending"
+                                        class="h-3 w-3">
+                                    </FontAwesomeIcon>
+                                </button>
+                            </div>
 
                             <!-- Compact address input -->
-                            <div class="mb-3 space-y-2">
+                            <div class="space-y-2">
                                 <div class="flex overflow-hidden rounded-md bg-gray-50">
                                     <InputText
                                         v-model="form.street"
                                         placeholder="Straat"
                                         class="address-input"
-                                        @keyup.enter="handleConfirmAddress" />
+                                        :disabled="isPending"
+                                        @keyup.enter="handleConfirmAddress">
+                                    </InputText>
                                     <InputText
                                         v-model="form.number"
                                         placeholder="Nr"
                                         class="address-input"
-                                        @keyup.enter="handleConfirmAddress" />
+                                        :disabled="isPending"
+                                        @keyup.enter="handleConfirmAddress">
+                                    </InputText>
                                 </div>
 
                                 <div class="flex overflow-hidden rounded-md bg-gray-50">
@@ -245,25 +262,18 @@ async function handleConfirmAddress(): Promise<void> {
                                         v-model="form.zip"
                                         placeholder="Postcode"
                                         class="address-input"
-                                        @keyup.enter="handleConfirmAddress" />
+                                        :disabled="isPending"
+                                        @keyup.enter="handleConfirmAddress">
+                                    </InputText>
                                     <InputText
                                         v-model="form.city"
                                         placeholder="Stad"
                                         class="address-input"
-                                        @keyup.enter="handleConfirmAddress" />
+                                        :disabled="isPending"
+                                        @keyup.enter="handleConfirmAddress">
+                                    </InputText>
                                 </div>
                             </div>
-
-                            <!-- Action button -->
-                            <Button
-                                :disabled="!canConfirmAddress"
-                                :loading="isLoading"
-                                class="w-full"
-                                size="small"
-                                @click="handleConfirmAddress">
-                                <FontAwesomeIcon :icon="faMapMarkerAlt" class="mr-1" />
-                                <span>Vlieg naar coordinaten</span>
-                            </Button>
                         </div>
                     </div>
                 </div>
@@ -285,5 +295,9 @@ async function handleConfirmAddress(): Promise<void> {
     &:last-child {
         @apply rounded-l-none;
     }
+}
+
+.save-address-btn {
+    @apply flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200;
 }
 </style>

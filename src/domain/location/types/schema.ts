@@ -43,6 +43,7 @@ export type Location = {
     createdAt: Date;
     updatedAt: Date;
     rejectedAt: Date | null;
+    rejectedReason: string | null;
     approvedBy?: Profile | null;
     createdBy?: Profile | null;
     updatedBy?: Profile | null;

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type Ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { useToast } from '@/composables/store/useToast';
 import { getAuthProfile, login, logout, register } from '@/domain/auth';
 import type { LoginRequest, RegisterRequest } from '@/domain/auth';
@@ -72,12 +73,14 @@ export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<v
 export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<LoginRequest> {
     const client = useQueryClient();
     const toast = useToast();
+    const router = useRouter();
 
     const mutation = useMutation({
         ...options,
         mutationFn: login,
         onSuccess: (data, vars, context) => {
             client.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.profile() });
+            router.push({ name: 'auth.sso' });
             options.onSuccess?.(data, vars, context);
         },
         onError: (error, vars, context) => {

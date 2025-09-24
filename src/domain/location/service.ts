@@ -74,7 +74,7 @@ function parseLocation(locationData: any): Location {
  */
 export async function searchLocations(
     filters?: Partial<LocationSearchFilter>,
-    locale?: string,
+    language?: string,
 ): Promise<Paginated<Location>> {
     const [southWest, northEast] = filters?.bounds ?? [];
     const northEastLng = northEast?.[0];
@@ -89,7 +89,6 @@ export async function searchLocations(
     const query = filters?.query || null;
     const page = filters?.page;
     const perPage = filters?.perPage;
-    const language = locale;
     const openOnDay = dateToString(filters?.openOn);
 
     const params = {
@@ -117,9 +116,21 @@ export async function searchLocations(
 
 export async function listLocations(
     filters: Partial<LocationFilter> = {},
+    language: string,
+    includes: LocationIncludes[],
 ): Promise<Paginated<Location>> {
+    const query = filters.query || null;
+    const load = formatIncludes(includes);
+
+    const params = {
+        ...filters,
+        ...load,
+        query,
+        language,
+    };
+
     const response = await client.get(endpoints.admin.locations.list, {
-        params: filters,
+        params,
         transformResponse: transformPaginatedResponse(parseLocation),
     });
 
@@ -288,10 +299,13 @@ export async function approveLocation(id: number): Promise<Location> {
  * Reject a location to remove it from the public listing.
  *
  * @param {number} id - The ID of the location to reject.
+ * @param {string | null} reason - The reason for rejecting the location.
  * @returns {Promise<Location>} A promise that resolves to the rejected location.
  */
-export async function rejectLocation(id: number): Promise<Location> {
-    const response = await client.post(endpoints.locations.reject.replace('{id}', id.toString()));
+export async function rejectLocation(id: number, reason?: string | null): Promise<Location> {
+    const response = await client.post(endpoints.locations.reject.replace('{id}', id.toString()), {
+        reason,
+    });
     return parseLocation(response.data);
 }
 

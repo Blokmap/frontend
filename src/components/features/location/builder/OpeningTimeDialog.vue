@@ -27,25 +27,20 @@ const emit = defineEmits<{
 
 const localOpeningTime = ref<OpeningTimeRequest>({ ...props.openingTime });
 
-// Computed properties for time-only inputs that preserve the date part
 const startTimeForInput = computed({
     get: () => {
-        // Convert Time string to Date for the input
         return timeToDate(localOpeningTime.value.startTime);
     },
     set: (timeOnlyDate: Date) => {
-        // Convert Date back to Time string
         localOpeningTime.value.startTime = dateToTime(timeOnlyDate);
     },
 });
 
 const endTimeForInput = computed({
     get: () => {
-        // Convert Time string to Date for the input
         return timeToDate(localOpeningTime.value.endTime);
     },
     set: (timeOnlyDate: Date) => {
-        // Convert Date back to Time string
         localOpeningTime.value.endTime = dateToTime(timeOnlyDate);
     },
 });

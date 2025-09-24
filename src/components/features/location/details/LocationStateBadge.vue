@@ -1,8 +1,8 @@
 <template>
-    <Badge :severity="severities[status]" class="w-[90px]">
+    <Badge :severity="severities[location.state]" class="w-[90px]" v-tooltip.top="'helalur'">
         <div class="flex w-full items-center justify-around gap-1">
-            <FontAwesomeIcon :icon="icons[status]" />
-            <span>{{ capitalize(status) }}</span>
+            <FontAwesomeIcon :icon="icons[location.state]" />
+            <span>{{ capitalize(location.state) }}</span>
         </div>
     </Badge>
 </template>
@@ -13,10 +13,10 @@ import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { faCheck, faTimes, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { capitalize } from 'vue';
-import type { LocationState } from '@/domain/location';
+import type { Location, LocationState } from '@/domain/location';
 
 defineProps<{
-    status: LocationState;
+    location: Location;
 }>();
 
 const severities: Record<LocationState, string> = {

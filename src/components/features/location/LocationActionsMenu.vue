@@ -1,15 +1,17 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
 import Popover from 'primevue/popover';
-import Select from 'primevue/select';
+import Select, { type SelectChangeEvent } from 'primevue/select';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { faEllipsisH, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faEllipsisH, faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useTemplateRef, computed } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
+import LocationConfirmationDialog from './LocationConfirmationDialog.vue';
 import type { Location, LocationState } from '@/domain/location';
 
 const props = defineProps<{
     location: Location;
+    isPending?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -17,6 +19,7 @@ const emit = defineEmits<{
 }>();
 
 const actionMenu = useTemplateRef('menu');
+const showRejectionDialog = ref(false);
 
 const statusOptions = computed(() => {
     return [
@@ -35,11 +38,29 @@ const onToggleActionMenu = (event: Event) => {
     actionMenu.value?.toggle(event);
 };
 
-const onStatusChange = (event: any) => {
-    const newStatus = event.value as LocationState;
+const onConfirmRejection = () => {
+    if (props.location.state !== 'rejected') {
+        emit('change:status', props.location.id, 'rejected');
+    }
+    showRejectionDialog.value = false;
+};
 
-    if (newStatus && newStatus !== props.location.state) {
-        emit('change:status', props.location.id, newStatus);
+const onCancelRejection = () => {
+    showRejectionDialog.value = false;
+};
+
+const onStatusChange = async (event: SelectChangeEvent) => {
+    const state = event.value as LocationState;
+
+    if (state && state !== props.location.state) {
+        actionMenu.value?.hide();
+
+        if (state === 'rejected') {
+            showRejectionDialog.value = true;
+            return;
+        }
+
+        emit('change:status', props.location.id, state);
     }
 };
 </script>
@@ -54,7 +75,8 @@ const onStatusChange = (event: any) => {
                 @click="onToggleActionMenu"
                 text>
                 <template #icon>
-                    <FontAwesomeIcon :icon="faEllipsisH" />
+                    <FontAwesomeIcon :icon="faEllipsisH" v-if="!isPending" />
+                    <FontAwesomeIcon :icon="faSpinner" spin v-else />
                 </template>
             </Button>
         </slot>
@@ -70,6 +92,7 @@ const onStatusChange = (event: any) => {
                         <Select
                             :model-value="props.location.state"
                             :options="statusOptions"
+                            :loading="isPending"
                             option-label="label"
                             option-value="value"
                             placeholder="Selecteer nieuwe status"
@@ -92,5 +115,12 @@ const onStatusChange = (event: any) => {
                 </div>
             </div>
         </Popover>
+
+        <LocationConfirmationDialog
+            v-model:visible="showRejectionDialog"
+            :location="location"
+            @click:confirm="onConfirmRejection"
+            @click:cancel="onCancelRejection">
+        </LocationConfirmationDialog>
     </div>
 </template>

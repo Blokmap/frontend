@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import Badge from 'primevue/badge';
+import { faUser } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
 import { formatLocationAddress, getLocationPlaceholderImage } from '@/domain/location';
 import LocationActionsMenu from './LocationActionsMenu.vue';
@@ -8,6 +11,7 @@ import type { Location, LocationState } from '@/domain/location';
 
 const props = defineProps<{
     location: Location;
+    actionIsPending?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -51,8 +55,16 @@ const onStatusChange = (locationId: number, status: LocationState) => {
                 <h3 class="location-title">
                     {{ location.name }}
                 </h3>
-                <LocationStateBadge :status="location.state" />
+                <LocationStateBadge :location="location" />
             </div>
+
+            <Badge severity="contrast" class="inline-flex gap-2">
+                <FontAwesomeIcon :icon="faUser" />
+                <span v-if="location.createdBy?.firstName">
+                    {{ location.createdBy?.firstName }}
+                </span>
+                <span class="text-italics" v-else> Onbekend </span>
+            </Badge>
 
             <LocationLanguagesList :location="location" />
 
@@ -68,7 +80,11 @@ const onStatusChange = (locationId: number, status: LocationState) => {
 
         <!-- Action Button -->
         <div class="flex items-center justify-center border-l border-slate-100 ps-4">
-            <LocationActionsMenu :location="location" @change:status="onStatusChange" />
+            <LocationActionsMenu
+                :location="location"
+                :is-pending="actionIsPending"
+                @change:status="onStatusChange">
+            </LocationActionsMenu>
         </div>
     </div>
 </template>

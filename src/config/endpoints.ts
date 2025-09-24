@@ -1,10 +1,12 @@
 export const endpoints = {
     auth: {
-        login: '/auth/login',
-        logout: '/logout', // endpoint in backend
-        register: '/auth/register',
-        current: '/profiles/me',
+        // endpoints in auth service
+        login: '/auth/local/login',
+        register: '/auth/local/register',
         sso: '/auth/sso/{provider}',
+        // endpoints in backend
+        current: '/profiles/me',
+        logout: '/logout',
     },
     institutions: {
         list: '/institutions',

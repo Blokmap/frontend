@@ -8,10 +8,12 @@ withDefaults(
         locations?: Location[];
         loading?: boolean;
         emptyMessage?: string;
+        isLocationPending?: (locationId: number) => boolean;
     }>(),
     {
         loading: false,
         emptyMessage: 'No locations found',
+        isLocationPending: () => false,
     },
 );
 
@@ -43,6 +45,7 @@ const onChangeState = (locationId: number, status: LocationState) => {
                     v-for="location in locations"
                     :key="location.id"
                     :location="location"
+                    :action-is-pending="isLocationPending?.(location.id)"
                     @click="onLocationClick"
                     @change:state="onChangeState">
                 </LocationItem>

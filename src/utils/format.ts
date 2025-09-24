@@ -4,9 +4,9 @@
  * @param count - The number to abbreviate
  * @returns Abbreviated string representation
  */
-export function abbreviateCount(count?: number): string {
+export function abbreviateCount(count?: number): string | undefined | null {
     if (count === undefined || count === null) {
-        return '';
+        return count;
     }
 
     if (count < 1000) {

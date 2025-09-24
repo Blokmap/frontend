@@ -50,7 +50,8 @@ export function useLocationsSearch(
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const params = toValue(filters);
-            return await searchLocations(params, locale.value);
+            const language = toValue(locale);
+            return await searchLocations(params, language);
         },
     });
 
@@ -68,13 +69,17 @@ export function useLocations(
     filters?: MaybeRef<LocationFilter>,
     options: CompQueryOptions<LocationIncludes> = {},
 ): CompQuery<Paginated<Location>> {
+    const { locale } = useI18n();
+
     const query = useQuery({
         ...options,
-        queryKey: ['locations', filters],
+        queryKey: ['locations', filters, locale],
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const params = toValue(filters);
-            return await listLocations(params);
+            const language = toValue(locale);
+            const includes = options.includes ?? [];
+            return await listLocations(params, language, includes);
         },
     });
 
@@ -193,6 +198,7 @@ export function useRejectLocation(
 type LocationStateParams = {
     locationId: number;
     state: LocationState;
+    reason?: string | null;
 };
 
 export function useLocationState(
@@ -200,11 +206,11 @@ export function useLocationState(
 ): CompMutation<LocationStateParams, Location> {
     const mutation = useMutation({
         ...options,
-        mutationFn: ({ locationId, state }: LocationStateParams) => {
+        mutationFn: ({ locationId, state, reason }: LocationStateParams) => {
             if (state === 'approved') {
                 return approveLocation(locationId);
             } else if (state === 'rejected') {
-                return rejectLocation(locationId);
+                return rejectLocation(locationId, reason);
             } else if (state === 'pending') {
                 return pendLocation(locationId);
             }

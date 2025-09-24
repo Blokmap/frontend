@@ -33,9 +33,17 @@ const {
     includes: ['images', 'createdBy'],
 });
 
-const { mutateAsync: updateLocationState } = useLocationState();
+const {
+    mutateAsync: updateLocationState,
+    isPending: isUpdatingLocation,
+    variables: updateVariables,
+} = useLocationState();
 
 const { data: counts } = useAdminCounts();
+
+const isLocationPending = (locationId: number): boolean => {
+    return isUpdatingLocation.value && updateVariables.value?.locationId === locationId;
+};
 
 const onPageChange = (event: { page: number }): void => {
     filters.value.page = event.page + 1;
@@ -63,9 +71,19 @@ const onChangeLocationStatus = async (locationId: number, status: LocationState)
 
 <template>
     <div class="flex items-end justify-between gap-3">
-        <h1 class="text-3xl font-bold">
-            Alle Locaties ({{ abbreviateCount(counts?.locationCount) ?? '...' }})
-        </h1>
+        <div class="space-y-2">
+            <h1 class="text-3xl font-bold">
+                Alle Locaties ({{ abbreviateCount(counts?.locationCount) ?? '...' }})
+            </h1>
+
+            <p class="text-sm font-normal text-slate-700">
+                <template v-if="locations?.total">
+                    {{ locations?.data.length ?? '...' }} van {{ locations?.total ?? '...' }}
+                    <template v-if="locations?.truncated">+</template> resultaten getoond.
+                </template>
+                <template v-else> Geen locaties gevonden. </template>
+            </p>
+        </div>
         <SearchField
             v-model="searchQuery"
             placeholder="Zoek door alle locaties..."
@@ -81,6 +99,7 @@ const onChangeLocationStatus = async (locationId: number, status: LocationState)
     <LocationDataList
         :locations="locations?.data"
         :loading="isLoading"
+        :is-location-pending="isLocationPending"
         @click:location="onLocationClick"
         @change:state="onChangeLocationStatus">
     </LocationDataList>

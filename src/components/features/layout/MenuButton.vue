@@ -108,7 +108,7 @@ function handleNavigationClick(): void {
                 :to="{ name: 'dashboard' }"
                 @click="handleNavigationClick">
                 <FontAwesomeIcon :icon="faCity" class="text-secondary fa-icon" />
-                <span>Beheer van Locaties</span>
+                <span>Dashboard</span>
             </RouterLink>
             <template v-if="profile">
                 <div class="menu-link logout-link" @click="handleLogoutClick">

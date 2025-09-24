@@ -15,13 +15,14 @@ import {
     faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useAuthLogout } from '@/composables/data/useAuth';
 import { abbreviateCount } from '@/utils/format';
 import type { Profile } from '@/domain/profile';
 
-defineProps<{
+const props = defineProps<{
     profile: Profile;
 }>();
 
@@ -30,7 +31,9 @@ const route = useRoute();
 
 const { mutateAsync: logout } = useAuthLogout();
 
-const { data: counts, isLoading: isLoadingCounts } = useAdminCounts();
+const { data: counts, isLoading: isLoadingCounts } = useAdminCounts({
+    enabled: computed(() => props.profile.isAdmin),
+});
 
 async function handleLogoutClick(): Promise<void> {
     await router.push({ name: 'auth' });

@@ -15,7 +15,6 @@ export const endpoints = {
         create: '/profiles',
         update: '/profiles/{id}',
         delete: '/profiles/{id}',
-        list: '/profiles',
         avatar: '/profiles/{id}/avatar',
         block: '/profiles/{id}/block',
         unblock: '/profiles/{id}/unblock',
@@ -119,6 +118,9 @@ export const endpoints = {
         counts: '/admin/counts',
         locations: {
             list: '/admin/locations',
+        },
+        profiles: {
+            list: '/admin/profiles',
         },
     },
 };

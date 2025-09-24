@@ -14,13 +14,13 @@ import {
     DashboardPage,
     DashboardReviewsPage,
     DashboardStatisticsPage,
-    DashboardUsersPage,
     LocationDetailPage,
     LocationPage,
     LocationSubmitPage,
     LocationsIndexPage,
     LocationsPage,
     ProfilePage,
+    ProfilesIndexPage,
     ReservationsPage,
 } from './pages';
 
@@ -251,15 +251,21 @@ const routes: RouteRecordRaw[] = [
             },
             {
                 path: 'profiles',
-                name: 'dashboard.profiles',
-                children: [],
-                meta: {
-                    title: 'Beheer Profielen',
-                    breadcrumbs: [
-                        { label: 'Dashboard', to: { name: 'dashboard' } },
-                        { label: 'Profielen', to: { name: 'dashboard.profiles' } },
-                    ],
-                },
+                children: [
+                    {
+                        path: '',
+                        name: 'dashboard.profiles.index',
+                        component: ProfilesIndexPage,
+                        meta: {
+                            auth: { admin: true },
+                            title: 'Beheer Profielen',
+                            breadcrumbs: [
+                                { label: 'Dashboard', to: { name: 'dashboard' } },
+                                { label: 'Profielen', to: { name: 'dashboard.profiles.index' } },
+                            ],
+                        },
+                    },
+                ],
             },
             {
                 path: 'statistics',
@@ -273,18 +279,7 @@ const routes: RouteRecordRaw[] = [
                     ],
                 },
             },
-            {
-                path: 'users',
-                name: 'dashboard.users',
-                component: DashboardUsersPage,
-                meta: {
-                    title: 'Beheer Gebruikers',
-                    breadcrumbs: [
-                        { label: 'Dashboard', to: { name: 'dashboard' } },
-                        { label: 'Gebruikers', to: { name: 'dashboard.users' } },
-                    ],
-                },
-            },
+
             {
                 path: 'reviews',
                 name: 'dashboard.reviews',

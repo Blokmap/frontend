@@ -28,7 +28,7 @@ defineEmits<{
         </div>
         <Avatar
             v-if="!profile.avatarUrl && !image"
-            class="avatar-initials aspect-square h-full w-full"
+            class="aspect-square h-full w-full"
             :class="avatarClass"
             shape="circle">
             <FontAwesomeIcon class="icon text-surface" :icon="faUser" />
@@ -48,6 +48,7 @@ defineEmits<{
 
 .avatar-wrapper {
     @apply relative flex items-center justify-center;
+    @apply aspect-square w-fit;
 
     .avatar-overlay {
         @apply flex items-center justify-center opacity-0;

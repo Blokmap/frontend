@@ -19,6 +19,9 @@ export const LocationDetailPage = () =>
 export const LocationsIndexPage = () =>
     import('@/pages/dashboard/locations/LocationsIndexPage.vue');
 
+// Dashboard Profiles
+export const ProfilesIndexPage = () => import('@/pages/dashboard/profiles/ProfilesIndexPage.vue');
+
 // Dashboard Authorities
 export const DashboardAuthoritiesPage = () =>
     import('@/pages/dashboard/authorities/AuthoritiesPage.vue');
@@ -34,9 +37,6 @@ export const DashboardInstitutionPage = () =>
 // Dashboard Statistics
 export const DashboardStatisticsPage = () =>
     import('@/pages/dashboard/statistics/StatisticsPage.vue');
-
-// Dashboard Users
-export const DashboardUsersPage = () => import('@/pages/dashboard/users/UsersPage.vue');
 
 // Dashboard Reviews
 export const DashboardReviewsPage = () => import('@/pages/dashboard/reviews/ReviewsPage.vue');

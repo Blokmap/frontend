@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import Badge from 'primevue/badge';
 import { faUser } from '@fortawesome/free-regular-svg-icons';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
 import { formatLocationAddress, getLocationPlaceholderImage } from '@/domain/location';
@@ -58,12 +59,12 @@ const onStatusChange = (locationId: number, status: LocationState) => {
                 <LocationStateBadge :location="location" />
             </div>
 
-            <Badge severity="contrast" class="inline-flex gap-2">
+            <Badge severity="contrast" class="inline-flex gap-2" v-if="location.createdBy">
                 <FontAwesomeIcon :icon="faUser" />
-                <span v-if="location.createdBy?.firstName">
+                <span>
                     {{ location.createdBy?.firstName }}
                 </span>
-                <span class="text-italics" v-else> Onbekend </span>
+                <FontAwesomeIcon :icon="faArrowRight" />
             </Badge>
 
             <LocationLanguagesList :location="location" />

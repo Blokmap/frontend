@@ -27,3 +27,10 @@ export type ProfileRequest = {
     lastName?: string;
     username?: string;
 };
+
+export type ProfileFilter = {
+    query?: string;
+    page?: number;
+    perPage?: number;
+    isAdmin?: boolean;
+};

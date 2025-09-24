@@ -160,15 +160,16 @@ function isRouteActive(routeName: string): boolean {
                 </RouterLink>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.users') }"
-                    :to="{ name: 'dashboard.users' }">
+                    :class="{ active: isRouteActive('dashboard.profiles.index') }"
+                    :to="{ name: 'dashboard.profiles.index' }">
                     <FontAwesomeIcon :icon="faUsers" />
-                    <p>Gebruikers</p>
+                    <p>Profielen</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
                         ({{ abbreviateCount(counts.profileCount) }})
                     </span>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </RouterLink>
+
                 <RouterLink
                     class="sidebar-link"
                     :class="{ active: isRouteActive('dashboard.reviews') }"

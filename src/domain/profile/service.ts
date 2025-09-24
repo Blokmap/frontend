@@ -3,9 +3,10 @@ import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { parseReservation } from '@/domain/reservation';
 import { stringToDate } from '@/utils/date/date';
-import { formatIncludes } from '@/utils/service';
-import type { Profile, ProfileStats } from './types';
+import { formatIncludes, transformPaginatedResponse } from '@/utils/service';
+import type { Profile, ProfileStats, ProfileFilter } from './types';
 import type { Reservation, ReservationIncludes } from '@/domain/reservation';
+import type { Paginated } from '@/domain/shared';
 
 /**
  * Parse a profile object from the API by converting string dates to Date objects
@@ -104,4 +105,25 @@ export async function updateProfile(
 export async function deleteProfileAvatar(profileId: number): Promise<void> {
     const url = endpoints.profiles.avatar.replace('{id}', String(profileId));
     await client.delete(url);
+}
+
+/**
+ * List profiles with optional filters (admin endpoint).
+ *
+ * @param filters - The filters to apply when listing profiles.
+ * @returns A promise that resolves to a paginated list of profiles.
+ */
+export async function listProfiles(
+    filters: Partial<ProfileFilter> = {},
+): Promise<Paginated<Profile>> {
+    const params = {
+        ...filters,
+    };
+
+    const response = await client.get(endpoints.admin.profiles.list, {
+        params,
+        transformResponse: transformPaginatedResponse(parseProfile),
+    });
+
+    return response.data;
 }

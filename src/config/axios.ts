@@ -81,12 +81,12 @@ export function setupAxiosInterceptors(): void {
                 });
             }
 
-            if (error.status === HttpStatusCode.InternalServerError) {
-                console.error('Server error:', error);
+            if (error.status === HttpStatusCode.Forbidden) {
+                router.push({ name: 'dashboard' });
                 toast.add({
                     severity: 'error',
-                    summary: 'Serverfout',
-                    detail: 'Er is een fout opgetreden op de server. Probeer het later opnieuw.',
+                    summary: 'Toegang geweigerd',
+                    detail: 'Je hebt geen toegang tot deze actie of pagina.',
                 });
             }
 

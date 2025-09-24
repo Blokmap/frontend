@@ -4,12 +4,13 @@ import {
     deleteProfileAvatar,
     getProfileReservations,
     getProfileStats,
+    listProfiles,
     updateProfile,
     updateProfileAvatar,
 } from '@/domain/profile';
-import type { Profile, ProfileStats } from '@/domain/profile';
+import type { Profile, ProfileStats, ProfileFilter } from '@/domain/profile';
 import type { Reservation } from '@/domain/reservation';
-import type { CompMutation, CompMutationOptions, CompQuery } from '@/domain/shared';
+import type { CompMutation, CompMutationOptions, CompQuery, Paginated } from '@/domain/shared';
 import type { AxiosError } from 'axios';
 
 export function useProfileStats(
@@ -94,4 +95,17 @@ export function useDeleteAvatar(options: CompMutationOptions = {}): CompMutation
     });
 
     return mutation;
+}
+
+export function useProfiles(
+    filters: MaybeRefOrGetter<Partial<ProfileFilter>>,
+    options: CompMutationOptions = {},
+): CompQuery<Paginated<Profile>> {
+    const query = useQuery<Paginated<Profile>, AxiosError>({
+        ...options,
+        queryKey: ['admin', 'profiles', filters],
+        queryFn: () => listProfiles(toValue(filters)),
+    });
+
+    return query;
 }

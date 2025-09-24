@@ -1,8 +1,8 @@
 <template>
-    <Badge :severity="severities[status]">
-        <div class="space-x-3">
+    <Badge :severity="severities[status]" class="w-[90px]">
+        <div class="flex w-full items-center justify-around gap-1">
             <FontAwesomeIcon :icon="icons[status]" />
-            {{ capitalize(status) }}
+            <span>{{ capitalize(status) }}</span>
         </div>
     </Badge>
 </template>
@@ -13,19 +13,19 @@ import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { faCheck, faTimes, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { capitalize } from 'vue';
-import type { LocationStatus } from '@/domain/location';
+import type { LocationState } from '@/domain/location';
 
 defineProps<{
-    status: LocationStatus;
+    status: LocationState;
 }>();
 
-const severities: Record<LocationStatus, string> = {
+const severities: Record<LocationState, string> = {
     approved: 'success',
-    pending: 'warning',
+    pending: 'info',
     rejected: 'danger',
 };
 
-const icons: Record<LocationStatus, IconDefinition> = {
+const icons: Record<LocationState, IconDefinition> = {
     approved: faCheck,
     pending: faClock,
     rejected: faTimes,

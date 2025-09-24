@@ -5,7 +5,13 @@ import { parseProfile } from '@/domain/profile';
 import { dateToString, stringToDate } from '@/utils/date/date';
 import { stringToTime, timeToString } from '@/utils/date/time';
 import { formatIncludes, transformPaginatedResponse } from '@/utils/service';
-import type { Location, LocationSearchFilter, LocationRequest, NearestLocation } from './types';
+import type {
+    Location,
+    LocationSearchFilter,
+    LocationRequest,
+    NearestLocation,
+    LocationFilter,
+} from './types';
 import type { ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { OpeningTime, OpeningTimeRequest } from '@/domain/openings';
@@ -109,6 +115,16 @@ export async function searchLocations(
     return response.data;
 }
 
+export async function listLocations(
+    filters: Partial<LocationFilter> = {},
+): Promise<Paginated<Location>> {
+    const response = await client.get(endpoints.admin.locations.list, {
+        params: filters,
+        transformResponse: transformPaginatedResponse(parseLocation),
+    });
+
+    return response.data;
+}
 /**
  * Get a location by its ID.
  *
@@ -276,5 +292,16 @@ export async function approveLocation(id: number): Promise<Location> {
  */
 export async function rejectLocation(id: number): Promise<Location> {
     const response = await client.post(endpoints.locations.reject.replace('{id}', id.toString()));
+    return parseLocation(response.data);
+}
+
+/**
+ * Pend a location to set its status to pending review.
+ *
+ * @param {number} id - The ID of the location to pend.
+ * @returns {Promise<Location>} A promise that resolves to the pended location.
+ */
+export async function pendLocation(id: number): Promise<Location> {
+    const response = await client.post(endpoints.locations.pend.replace('{id}', id.toString()));
     return parseLocation(response.data);
 }

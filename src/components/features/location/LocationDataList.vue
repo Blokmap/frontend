@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import LocationItem from './LocationItem.vue';
-import LocationItemSkeleton from './LocationItemSkeleton.vue';
-import type { Location } from '@/domain/location';
+import LocationItem from './LocationDataItem.vue';
+import LocationItemSkeleton from './LocationDataItemSkeleton.vue';
+import type { Location, LocationState } from '@/domain/location';
 
 withDefaults(
     defineProps<{
@@ -17,10 +17,15 @@ withDefaults(
 
 const emit = defineEmits<{
     'click:location': [location: Location];
+    'change:state': [locationId: number, status: LocationState];
 }>();
 
 const onLocationClick = (location: Location) => {
     emit('click:location', location);
+};
+
+const onChangeState = (locationId: number, status: LocationState) => {
+    emit('change:state', locationId, status);
 };
 </script>
 
@@ -38,7 +43,8 @@ const onLocationClick = (location: Location) => {
                     v-for="location in locations"
                     :key="location.id"
                     :location="location"
-                    @click="onLocationClick">
+                    @click="onLocationClick"
+                    @change:state="onChangeState">
                 </LocationItem>
             </template>
         </div>

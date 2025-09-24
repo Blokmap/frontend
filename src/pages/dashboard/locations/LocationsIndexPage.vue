@@ -1,33 +1,39 @@
 <script setup lang="ts">
 import Paginator from 'primevue/paginator';
 import LocationDataList from '@/components/features/location/LocationDataList.vue';
-import LocationStatusDropdown from '@/components/features/location/forms/LocationStatusDropdown.vue';
+import LocationStateDropdown from '@/components/features/location/forms/LocationStateSelect.vue';
 import SearchField from '@/components/shared/filter/SearchField.vue';
 import { useDebounceFn } from '@vueuse/core';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
-import { useLocationsSearch } from '@/composables/data/useLocations';
+import { useLocations, useLocationState } from '@/composables/data/useLocations';
+import { useToast } from '@/composables/store/useToast';
 import { abbreviateCount } from '@/utils/format';
-import type { Location, LocationSearchFilter } from '@/domain/location';
+import type { Location, LocationFilter, LocationState } from '@/domain/location';
 
 const router = useRouter();
+const toast = useToast();
 
 const searchQuery = ref<string>('');
 
-const filters = ref<LocationSearchFilter>({
+const filters = ref<LocationFilter>({
     query: '',
+    state: null,
     page: 1,
     perPage: 5,
 });
 
 const {
     data: locations,
+    refetch,
     isFetching,
     isLoading,
-} = useLocationsSearch(filters, {
+} = useLocations(filters, {
     includes: ['images', 'createdBy'],
 });
+
+const { mutateAsync: updateLocationState } = useLocationState();
 
 const { data: counts } = useAdminCounts();
 
@@ -42,6 +48,16 @@ const onSearchChange = useDebounceFn(() => {
 
 const onLocationClick = (location: Location) => {
     router.push({ name: 'locations.detail', params: { locationId: location.id } });
+};
+
+const onChangeLocationStatus = async (locationId: number, status: LocationState) => {
+    await updateLocationState({ locationId, state: status });
+    await refetch();
+    toast.add({
+        severity: 'success',
+        summary: 'Status Bijgewerkt',
+        detail: 'Locatiestatus werd succesvol bijgewerkt!',
+    });
 };
 </script>
 
@@ -59,13 +75,14 @@ const onLocationClick = (location: Location) => {
     </div>
 
     <div class="flex gap-3">
-        <LocationStatusDropdown></LocationStatusDropdown>
+        <LocationStateDropdown v-model:status="filters.state" />
     </div>
 
     <LocationDataList
         :locations="locations?.data"
         :loading="isLoading"
-        @click:location="onLocationClick">
+        @click:location="onLocationClick"
+        @change:state="onChangeLocationStatus">
     </LocationDataList>
 
     <Paginator

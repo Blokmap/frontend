@@ -1,10 +1,10 @@
-import type { LocationStatus } from './schema';
+import type { LocationState } from './schema';
 import type { LngLat, LngLatBounds } from '../../map';
 import type { Pagination } from '@/domain/shared';
 
 export type LocationFilter = Pagination & {
     query?: string | null;
-    status?: LocationStatus | null;
+    state?: LocationState | null;
 };
 
 export type LocationSearchFilter = Pagination & {

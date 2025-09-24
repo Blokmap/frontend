@@ -1,18 +1,10 @@
 <script lang="ts" setup>
-import Button from 'primevue/button';
-import Menu from 'primevue/menu';
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-import {
-    formatLocationAddress,
-    getLocationPlaceholderImage,
-    getLocationStatus,
-} from '@/domain/location';
+import { formatLocationAddress, getLocationPlaceholderImage } from '@/domain/location';
+import LocationActionsMenu from './LocationActionsMenu.vue';
 import LocationLanguagesList from './details/LocationLanguagesList.vue';
-import LocationStatusBadge from './details/LocationStatusBadge.vue';
-import type { Location } from '@/domain/location';
+import LocationStateBadge from './details/LocationStateBadge.vue';
+import type { Location, LocationState } from '@/domain/location';
 
 const props = defineProps<{
     location: Location;
@@ -20,13 +12,10 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     click: [location: Location];
-    'click:approve': [location: Location];
-    'click:reject': [location: Location];
+    'change:state': [locationId: number, status: LocationState];
 }>();
 
 const { locale } = useI18n();
-
-const menu = useTemplateRef('menu');
 
 const getLocationImageUrl = (location: Location) => {
     const [image] = location.images || [];
@@ -38,20 +27,8 @@ const onClick = () => {
     emit('click', props.location);
 };
 
-// const onApproveClick = (event: Event) => {
-//     event.stopPropagation();
-//     emit('click:approve', props.location);
-// };
-
-// const onRejectClick = (event: Event) => {
-//     event.stopPropagation();
-//     emit('click:reject', props.location);
-// };
-
-const onToggleActionMenu = (event: Event) => {
-    event.stopPropagation();
-    console.log('Toggling menu', menu.value);
-    menu.value?.toggle(event);
+const onStatusChange = (locationId: number, status: LocationState) => {
+    emit('change:state', locationId, status);
 };
 </script>
 
@@ -74,7 +51,7 @@ const onToggleActionMenu = (event: Event) => {
                 <h3 class="location-title">
                     {{ location.name }}
                 </h3>
-                <LocationStatusBadge :status="getLocationStatus(location)" />
+                <LocationStateBadge :status="location.state" />
             </div>
 
             <LocationLanguagesList :location="location" />
@@ -90,19 +67,8 @@ const onToggleActionMenu = (event: Event) => {
         </div>
 
         <!-- Action Button -->
-        <div
-            class="flex items-center justify-center border-l border-slate-100 ps-4"
-            @click="onToggleActionMenu">
-            <Button
-                severity="contrast"
-                aria-haspopup="true"
-                :aria-controls="`location-actions-${location.id}`"
-                text>
-                <template #icon>
-                    <FontAwesomeIcon :icon="faEllipsisH" />
-                </template>
-            </Button>
-            <Menu ref="menu" :id="`location-actions-${location.id}`"> Hellaur </Menu>
+        <div class="flex items-center justify-center border-l border-slate-100 ps-4">
+            <LocationActionsMenu :location="location" @change:status="onStatusChange" />
         </div>
     </div>
 </template>

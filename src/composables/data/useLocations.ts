@@ -15,6 +15,10 @@ import {
     type NearestLocation,
     approveLocation,
     rejectLocation,
+    type LocationFilter,
+    listLocations,
+    type LocationState,
+    pendLocation,
 } from '@/domain/location';
 import type { ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
@@ -53,7 +57,29 @@ export function useLocationsSearch(
     return query;
 }
 
-export function useLocations() {}
+/**
+ * Composable to fetch a list of locations based on filters.
+ *
+ * @param filters - The filters to apply when fetching locations.
+ * @param options - Additional options for the query, such as initial data or query configuration.
+ * @returns An object containing the list of locations and their state.
+ */
+export function useLocations(
+    filters?: MaybeRef<LocationFilter>,
+    options: CompQueryOptions<LocationIncludes> = {},
+): CompQuery<Paginated<Location>> {
+    const query = useQuery({
+        ...options,
+        queryKey: ['locations', filters],
+        placeholderData: keepPreviousData,
+        queryFn: async () => {
+            const params = toValue(filters);
+            return await listLocations(params);
+        },
+    });
+
+    return query;
+}
 
 /**
  * Composable to fetch a single location by its ID.
@@ -159,6 +185,32 @@ export function useRejectLocation(
     const mutation = useMutation({
         ...options,
         mutationFn: rejectLocation,
+    });
+
+    return mutation;
+}
+
+type LocationStateParams = {
+    locationId: number;
+    state: LocationState;
+};
+
+export function useLocationState(
+    options: CompMutationOptions = {},
+): CompMutation<LocationStateParams, Location> {
+    const mutation = useMutation({
+        ...options,
+        mutationFn: ({ locationId, state }: LocationStateParams) => {
+            if (state === 'approved') {
+                return approveLocation(locationId);
+            } else if (state === 'rejected') {
+                return rejectLocation(locationId);
+            } else if (state === 'pending') {
+                return pendLocation(locationId);
+            }
+
+            throw new Error(`Invalid state: ${state}`);
+        },
     });
 
     return mutation;

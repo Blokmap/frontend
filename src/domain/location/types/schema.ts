@@ -17,11 +17,12 @@ export type LocationFeatures = {
     openInWeekend: boolean;
 };
 
-export type LocationStatus = 'approved' | 'pending' | 'rejected';
+export type LocationState = 'approved' | 'pending' | 'rejected';
 
 export type Location = {
     id: number;
     name: string;
+    state: LocationState;
     excerpt: Translation;
     description: Translation;
     seatCount: number;

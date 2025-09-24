@@ -12,7 +12,7 @@ function handleOpenSpotlight() {
 
 function handleKeyboardShortcuts(event: KeyboardEvent) {
     const isMetaKey = event.metaKey || event.ctrlKey;
-    const isTriggerKey = event.code === 'Space';
+    const isTriggerKey = event.code === 'Space' || event.code === 'KeyK';
 
     if (isMetaKey && isTriggerKey) {
         event.preventDefault();

@@ -1,7 +1,7 @@
 export const endpoints = {
     auth: {
         login: '/auth/login',
-        logout: '/auth/logout',
+        logout: '/logout', // endpoint in backend
         register: '/auth/register',
         current: '/profiles/me',
         sso: '/auth/sso/{provider}',
@@ -58,6 +58,7 @@ export const endpoints = {
         search: '/locations',
         approve: '/locations/{id}/approve',
         reject: '/locations/{id}/reject',
+        pend: '/locations/{id}/pend',
         permissions: '/locations/permissions',
         nearest: '/locations/nearest',
         openingTimes: {
@@ -114,6 +115,9 @@ export const endpoints = {
     admin: {
         stats: '/admin/stats',
         counts: '/admin/counts',
+        locations: {
+            list: '/admin/locations',
+        },
     },
 };
 

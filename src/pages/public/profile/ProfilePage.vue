@@ -184,7 +184,7 @@ function openReservationsModal(): void {
                 <StatsCard
                     :icon="faChartLine"
                     :value="profileStatsData?.upcomingReservations || 0"
-                    label="Komende reservaties"
+                    label="Aanstaande reservaties"
                     icon-color="text-slate-500">
                 </StatsCard>
             </template>

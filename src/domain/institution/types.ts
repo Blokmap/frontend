@@ -2,7 +2,6 @@ import type { Image } from '@/domain/image';
 import type { Translation } from '@/domain/translation';
 
 export type Institution = {
-    id: number;
     slug: Translation;
     name: Translation;
     logo: Image;

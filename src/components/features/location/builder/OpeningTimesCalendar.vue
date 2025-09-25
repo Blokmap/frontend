@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Calendar from '@/components/shared/calendar/Calendar.vue';
+import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
 import { computed } from 'vue';
 import { openingTimesToTimeSlots } from '@/domain/openings';
 import { timeToString } from '@/utils/date/time';

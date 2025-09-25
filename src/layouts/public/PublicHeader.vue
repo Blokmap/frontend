@@ -2,7 +2,7 @@
 import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
 import MenuButton from '@/components/features/layout/MenuButton.vue';
 import LocationSearch from '@/components/features/location/search/LocationSearchButton.vue';
-import Logo from '@/components/shared/Logo.vue';
+import Logo from '@/components/shared/atoms/Logo.vue';
 import { useLocalStorage } from '@vueuse/core';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';

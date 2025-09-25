@@ -1,14 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
 import {
+    blockProfile,
     deleteProfileAvatar,
     getProfileReservations,
     getProfileStats,
     listProfiles,
+    unblockProfile,
     updateProfile,
     updateProfileAvatar,
 } from '@/domain/profile';
-import type { Profile, ProfileStats, ProfileFilter } from '@/domain/profile';
+import type { Profile, ProfileStats, ProfileFilter, ProfileState } from '@/domain/profile';
 import type { Reservation } from '@/domain/reservation';
 import type { CompMutation, CompMutationOptions, CompQuery, Paginated } from '@/domain/shared';
 import type { AxiosError } from 'axios';
@@ -108,4 +110,28 @@ export function useProfiles(
     });
 
     return query;
+}
+
+type ProfileStateParams = {
+    profileId: number;
+    state: ProfileState;
+};
+
+export function useProfileState(
+    options: CompMutationOptions = {},
+): CompMutation<ProfileStateParams, Profile> {
+    const mutation = useMutation({
+        ...options,
+        mutationFn: ({ profileId, state }: ProfileStateParams) => {
+            if (state === 'disabled') {
+                return blockProfile(profileId);
+            } else if (state === 'active') {
+                return unblockProfile(profileId);
+            }
+
+            throw new Error(`Invalid state: ${state}`);
+        },
+    });
+
+    return mutation;
 }

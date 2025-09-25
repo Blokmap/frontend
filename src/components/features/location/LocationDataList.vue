@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import LocationItem from './LocationDataItem.vue';
-import LocationItemSkeleton from './LocationDataItemSkeleton.vue';
 import type { Location, LocationState } from '@/domain/location';
 
 withDefaults(
@@ -35,9 +34,7 @@ const onChangeState = (locationId: number, status: LocationState) => {
     <div class="location-data-list">
         <div class="space-y-4">
             <!-- Show skeleton items when loading -->
-            <template v-if="loading">
-                <LocationItemSkeleton v-for="i in 6" :key="`skeleton-${i}`" />
-            </template>
+            <template v-if="loading"> </template>
 
             <!-- Show actual locations when not loading -->
             <template v-else>

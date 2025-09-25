@@ -2,7 +2,7 @@
 import Paginator from 'primevue/paginator';
 import LocationDataList from '@/components/features/location/LocationDataList.vue';
 import LocationStateDropdown from '@/components/features/location/forms/LocationStateSelect.vue';
-import SearchField from '@/components/shared/filter/SearchField.vue';
+import SearchField from '@/components/shared/atoms/SearchField.vue';
 import { useDebounceFn } from '@vueuse/core';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';

@@ -40,13 +40,8 @@ const onStatusChange = (locationId: number, status: LocationState) => {
 <template>
     <div class="location-card" @click="onClick">
         <!-- Location Image -->
-        <div class="flex-shrink-0">
-            <div class="location-image-container">
-                <img
-                    :src="getLocationImageUrl(location)"
-                    :alt="location.name"
-                    class="location-image" />
-            </div>
+        <div class="location-image-container">
+            <img :src="getLocationImageUrl(location)" :alt="location.name" class="location-image" />
         </div>
 
         <!-- Main Content -->
@@ -94,13 +89,14 @@ const onStatusChange = (locationId: number, status: LocationState) => {
 @reference '@/assets/styles/main.css';
 
 .location-card {
-    @apply flex cursor-pointer gap-6 rounded-lg border border-slate-200 bg-white p-4;
+    @apply flex cursor-pointer items-center gap-6 p-4;
+    @apply rounded-lg border border-slate-200 bg-white;
 
     .location-image-container {
-        @apply relative h-32 w-32 overflow-hidden rounded-xl;
+        @apply relative aspect-square max-h-[175px] flex-shrink-0 overflow-hidden rounded-xl;
 
         .location-image {
-            @apply h-full w-full object-cover transition-transform duration-200;
+            @apply h-full w-full object-cover;
         }
     }
 

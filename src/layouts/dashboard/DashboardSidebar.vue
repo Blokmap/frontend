@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
-import Logo from '@/components/shared/Logo.vue';
+import Logo from '@/components/shared/atoms/Logo.vue';
 import {
     faArrowRight,
     faBuilding,
@@ -204,7 +204,7 @@ function isRouteActive(routeName: string): boolean {
 @reference '@/assets/styles/main.css';
 
 .sidebar {
-    @apply flex h-full flex-col bg-slate-900 py-1 text-slate-300;
+    @apply fixed flex h-[calc(100vh-3rem)] flex-col bg-slate-900 py-1 text-slate-300;
 
     .sidebar-items {
         @apply flex-1 space-y-6 px-6 py-6;

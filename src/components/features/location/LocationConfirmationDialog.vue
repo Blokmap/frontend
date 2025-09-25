@@ -82,7 +82,7 @@ function onCancel() {
             <div class="flex justify-end gap-3">
                 <Button
                     label="Annuleren"
-                    severity="secondary"
+                    severity="contrast"
                     :disabled="isLoading"
                     @click="onCancel"
                     outlined>

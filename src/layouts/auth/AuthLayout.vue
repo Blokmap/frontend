@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import Logo from '@/components/shared/Logo.vue';
-import Carousel from '@/components/shared/image/Carousel.vue';
+import Logo from '@/components/shared/atoms/Logo.vue';
+import Carousel from '@/components/shared/organisms/image/Carousel.vue';
 </script>
 <template>
     <main class="auth">

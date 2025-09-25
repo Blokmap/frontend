@@ -127,3 +127,29 @@ export async function listProfiles(
 
     return response.data;
 }
+
+/**
+ * Block a profile to prevent it from accessing the application.
+ *
+ * @param profileId - The ID of the profile to block.
+ * @returns A promise that resolves to the blocked profile.
+ */
+export async function blockProfile(profileId: number): Promise<Profile> {
+    const response = await client.post(
+        endpoints.profiles.block.replace('{id}', profileId.toString()),
+    );
+    return parseProfile(response.data);
+}
+
+/**
+ * Unblock a profile to restore its access to the application.
+ *
+ * @param profileId - The ID of the profile to unblock.
+ * @returns A promise that resolves to the unblocked profile.
+ */
+export async function unblockProfile(profileId: number): Promise<Profile> {
+    const response = await client.post(
+        endpoints.profiles.unblock.replace('{id}', profileId.toString()),
+    );
+    return parseProfile(response.data);
+}

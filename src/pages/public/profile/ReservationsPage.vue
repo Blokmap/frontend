@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ReservationCalendar from '@/components/features/reservation/ReservationCalendar.vue';
-import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
+import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import { formatDate } from '@vueuse/core';
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';

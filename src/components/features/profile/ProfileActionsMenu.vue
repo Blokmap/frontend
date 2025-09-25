@@ -1,59 +1,37 @@
 <script lang="ts" setup>
 import Select, { type SelectChangeEvent } from 'primevue/select';
 import ActionMenu from '@/components/shared/atoms/ActionMenu.vue';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faUserSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref } from 'vue';
-import LocationConfirmationDialog from './LocationConfirmationDialog.vue';
-import type { Location, LocationState } from '@/domain/location';
+import { computed } from 'vue';
+import type { Profile, ProfileState } from '@/domain/profile';
 
 const props = defineProps<{
-    location: Location;
+    profile: Profile;
     isPending?: boolean;
 }>();
 
 const emit = defineEmits<{
-    'change:status': [locationId: number, status: LocationState];
+    'change:status': [profileId: number, status: ProfileState];
 }>();
-
-const showRejectionDialog = ref(false);
 
 const statusOptions = computed(() => {
     return [
-        { label: 'In Afwachting', value: 'pending', icon: faClock },
-        { label: 'Goedgekeurd', value: 'approved', icon: faCheck },
-        { label: 'Afgekeurd', value: 'rejected', icon: faTimes },
+        { label: 'Actief', value: 'active', icon: faUser },
+        { label: 'Geblokkeerd', value: 'disabled', icon: faUserSlash },
     ];
 });
 
 const selectedOption = computed(() => {
-    return statusOptions.value.find((opt) => opt.value === props.location.state) || null;
+    return statusOptions.value.find((opt) => opt.value === props.profile.state) || null;
 });
 
-const onConfirmRejection = () => {
-    if (props.location.state !== 'rejected') {
-        emit('change:status', props.location.id, 'rejected');
-    }
-    showRejectionDialog.value = false;
-};
-
-const onCancelRejection = () => {
-    showRejectionDialog.value = false;
-};
-
 const onStatusChange = async (event: SelectChangeEvent, hideMenu: () => void) => {
-    const state = event.value as LocationState;
+    const state = event.value as ProfileState;
 
-    if (state && state !== props.location.state) {
+    if (state && state !== props.profile.state) {
         hideMenu();
-
-        if (state === 'rejected') {
-            showRejectionDialog.value = true;
-            return;
-        }
-
-        emit('change:status', props.location.id, state);
+        emit('change:status', props.profile.id, state);
     }
 };
 </script>
@@ -72,7 +50,7 @@ const onStatusChange = async (event: SelectChangeEvent, hideMenu: () => void) =>
                     Status wijzigen
                 </label>
                 <Select
-                    :model-value="props.location.state"
+                    :model-value="props.profile.state"
                     :options="statusOptions"
                     :loading="isPending"
                     option-label="label"
@@ -96,11 +74,4 @@ const onStatusChange = async (event: SelectChangeEvent, hideMenu: () => void) =>
             </div>
         </template>
     </ActionMenu>
-
-    <LocationConfirmationDialog
-        v-model:visible="showRejectionDialog"
-        :location="location"
-        @click:confirm="onConfirmRejection"
-        @click:cancel="onCancelRejection">
-    </LocationConfirmationDialog>
 </template>

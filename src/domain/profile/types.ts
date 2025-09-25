@@ -2,6 +2,8 @@ import type { Authority } from '@/domain/authority';
 import type { Image } from '@/domain/image';
 import type { Institution } from '@/domain/institution';
 
+export type ProfileState = 'active' | 'disabled' | 'deleted';
+
 export type Profile = {
     id: number;
     avatarUrl: Image | null;
@@ -13,6 +15,7 @@ export type Profile = {
     authorities?: Authority[];
     createdAt: Date;
     isAdmin: boolean;
+    state: ProfileState;
 };
 
 export type ProfileStats = {
@@ -33,4 +36,5 @@ export type ProfileFilter = {
     page?: number;
     perPage?: number;
     isAdmin?: boolean;
+    state?: ProfileState | null;
 };

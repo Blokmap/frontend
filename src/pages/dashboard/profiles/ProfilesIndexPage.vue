@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import Paginator from 'primevue/paginator';
-import ProfileDataTable from '@/components/features/profile/ProfileDataTable.vue';
-import SearchField from '@/components/shared/filter/SearchField.vue';
+import ProfileTable from '@/components/features/profile/ProfileTable.vue';
+import SearchField from '@/components/shared/atoms/SearchField.vue';
 import { useDebounceFn } from '@vueuse/core';
 import { ref } from 'vue';
 // import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
-import { useProfiles } from '@/composables/data/useProfile';
+import { useProfiles, useProfileState } from '@/composables/data/useProfile';
+import { useToast } from '@/composables/store/useToast';
 import { abbreviateCount } from '@/utils/format';
-import type { Profile, ProfileFilter } from '@/domain/profile';
+import type { Profile, ProfileFilter, ProfileState } from '@/domain/profile';
 
 // const router = useRouter();
+const toast = useToast();
 
 const searchQuery = ref<string>('');
 
@@ -20,9 +22,19 @@ const filters = ref<ProfileFilter>({
     perPage: 25,
 });
 
-const { data: profiles, isFetching, isLoading } = useProfiles(filters);
+const { data: profiles, refetch, isFetching, isLoading } = useProfiles(filters);
+
+const {
+    mutateAsync: updateProfileState,
+    isPending: isUpdatingProfile,
+    variables: updateVariables,
+} = useProfileState();
 
 const { data: counts } = useAdminCounts();
+
+const isProfilePending = (profileId: number): boolean => {
+    return isUpdatingProfile.value && updateVariables.value?.profileId === profileId;
+};
 
 const onPageChange = (event: { page: number }): void => {
     filters.value.page = event.page + 1;
@@ -35,6 +47,18 @@ const onSearchChange = useDebounceFn(() => {
 
 const onProfileClick = (profile: Profile) => {
     console.log('Profile clicked:', profile);
+};
+
+const onChangeProfileStatus = async (profileId: number, status: ProfileState) => {
+    await updateProfileState({ profileId, state: status });
+    await refetch();
+
+    const statusLabel = status === 'disabled' ? 'geblokkeerd' : 'geactiveerd';
+    toast.add({
+        severity: 'success',
+        summary: 'Status Bijgewerkt',
+        detail: `Profiel werd succesvol ${statusLabel}!`,
+    });
 };
 </script>
 
@@ -61,11 +85,13 @@ const onProfileClick = (profile: Profile) => {
         </SearchField>
     </div>
 
-    <ProfileDataTable
+    <ProfileTable
         :profiles="profiles?.data"
         :loading="isLoading"
-        @click:profile="onProfileClick">
-    </ProfileDataTable>
+        :is-profile-pending="isProfilePending"
+        @click:profile="onProfileClick"
+        @change:status="onChangeProfileStatus">
+    </ProfileTable>
 
     <Paginator
         v-if="profiles?.data?.length"

@@ -10,8 +10,8 @@ import OpeningsTable from '@/components/features/location/openings/OpeningsTable
 import OpeningsTableSkeleton from '@/components/features/location/openings/OpeningsTableSkeleton.vue';
 import LocationMap from '@/components/features/map/LocationMap.vue';
 import LocationMapSkeleton from '@/components/features/map/LocationMapSkeleton.vue';
-import Gallery from '@/components/shared/image/Gallery.vue';
-import GallerySkeleton from '@/components/shared/image/GallerySkeleton.vue';
+import Gallery from '@/components/shared/organisms/image/Gallery.vue';
+import GallerySkeleton from '@/components/shared/organisms/image/GallerySkeleton.vue';
 import {
     faArrowRight,
     faCheckCircle,

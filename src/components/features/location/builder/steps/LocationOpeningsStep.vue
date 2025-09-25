@@ -5,7 +5,7 @@ import { useConfirm } from 'primevue/useconfirm';
 import OpeningTimeDialog from '@/components/features/location/builder/OpeningTimeDialog.vue';
 import OpeningTimeGroupDialog from '@/components/features/location/builder/OpeningTimeGroupDialog.vue';
 import OpeningTimesCalendar from '@/components/features/location/builder/OpeningTimesCalendar.vue';
-import CalendarControls from '@/components/shared/calendar/CalendarControls.vue';
+import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import { faRepeat, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref, watchEffect } from 'vue';

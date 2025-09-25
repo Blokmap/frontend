@@ -5,7 +5,7 @@ import Textarea from 'primevue/textarea';
 import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import AddressMap from '@/components/features/map/AddressMap.vue';
-import Callout from '@/components/shared/Callout.vue';
+import Callout from '@/components/shared/molecules/Callout.vue';
 import { faArrowRight, faEdit, faHome, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, nextTick, ref, useTemplateRef, watchEffect } from 'vue';

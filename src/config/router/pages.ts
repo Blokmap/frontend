@@ -31,6 +31,8 @@ export const DashboardAuthorityPage = () =>
 // Dashboard Institutions
 export const DashboardInstitutionsPage = () =>
     import('@/pages/dashboard/institutions/InstitutionsPage.vue');
+export const InstitutionIndexPage = () =>
+    import('@/pages/dashboard/institutions/InstitutionIndexPage.vue');
 export const DashboardInstitutionPage = () =>
     import('@/pages/dashboard/institutions/InstitutionPage.vue');
 

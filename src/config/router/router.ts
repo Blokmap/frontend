@@ -10,10 +10,10 @@ import {
     DashboardAuthoritiesPage,
     DashboardAuthorityPage,
     DashboardInstitutionPage,
-    DashboardInstitutionsPage,
     DashboardPage,
     DashboardReviewsPage,
     DashboardStatisticsPage,
+    InstitutionIndexPage,
     LocationDetailPage,
     LocationPage,
     LocationSubmitPage,
@@ -215,7 +215,7 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: '',
                         name: 'dashboard.institutions.index',
-                        component: DashboardInstitutionsPage,
+                        component: InstitutionIndexPage,
                         meta: {
                             title: 'Beheer Instellingen',
                             breadcrumbs: [

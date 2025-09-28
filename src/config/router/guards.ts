@@ -13,8 +13,6 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
 
     const authSettings = to.meta.auth;
 
-    console.log('Auth settings for route', to.name, authSettings);
-
     if (!authSettings || authSettings.required === false) {
         return;
     }

@@ -154,7 +154,7 @@
 
 .p-button-outlined.p-button-secondary {
     @apply enabled:hover:bg-secondary-50/50 enabled:active:bg-secondary-50;
-    @apply border-secondary-400 enabled:hover:border-secondary enabled:active:border-secondary;
+    @apply border-secondary-500 enabled:hover:border-secondary enabled:active:border-secondary;
     @apply text-secondary-500 enabled:hover:text-secondary enabled:active:text-secondary;
 }
 

@@ -1,6 +1,7 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import type { Institution, InstitutionFilter } from './types';
+import type { Paginated } from '../shared';
 
 /**
  * List institutions with optional filters.
@@ -10,12 +11,12 @@ import type { Institution, InstitutionFilter } from './types';
  */
 export async function listInstitutions(
     filters: Partial<InstitutionFilter> = {},
-): Promise<Institution[]> {
+): Promise<Paginated<Institution>> {
     const params = {
         ...filters,
     };
 
-    const response = await client.get<Institution[]>(endpoints.institutions.list, {
+    const response = await client.get<Paginated<Institution>>(endpoints.institutions.list, {
         params,
     });
 

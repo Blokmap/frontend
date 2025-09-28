@@ -1,32 +1,41 @@
 import { datesInRange } from '@/utils/date/date';
-import { timeToMinutes, validateTimeRange } from '@/utils/date/time';
+import { timeToMinutes, type Time } from '@/utils/date/time';
 import { WEEKDAY_DAYS } from './constants';
-import type { OpeningTime, OpeningTimeGroupRequest, OpeningTimeRequest } from './types';
+import type { OpeningTime, OpeningTimeRequest } from './types';
 import type { TimeSlot } from '@/domain/openings';
 
-export function getOpeningsFromGroup(group: OpeningTimeGroupRequest): OpeningTimeRequest[] {
-    const dates = datesInRange(group.startDate, group.endDate);
-    const selectedDays = group.type === 'daily' ? WEEKDAY_DAYS : group.selectedDays;
+/**
+ * Generates opening times based on a repetition configuration.
+ *
+ * @param group - The base opening time request with repetition config.
+ * @returns An array of generated opening time requests.
+ */
+export function getOpeningsFromRepetition(group: OpeningTimeRequest): OpeningTimeRequest[] {
+    if (!group.repetition) return [group];
 
-    const results = [];
+    const dates = datesInRange(group.day, group.repetition.endDate);
+    const selectedDays =
+        group.repetition.selectedDays.length > 0 ? group.repetition.selectedDays : WEEKDAY_DAYS;
+
+    const results: OpeningTimeRequest[] = [];
 
     for (const date of dates) {
         // we are europeans >:(
         const day = (date.getDay() + 6) % 7;
 
-        if (!selectedDays.includes(day)) continue;
-
-        for (const timeslot of group.timeSlots) {
-            const correctedTimes = validateTimeRange(timeslot.startTime, timeslot.endTime);
-            results.push({
-                startTime: correctedTimes.startTime,
-                endTime: correctedTimes.endTime,
-                day: date,
-                seatCount: timeslot.seatCount,
-                reservableFrom: null,
-                reservableUntil: null,
-            });
+        if (!selectedDays.includes(day)) {
+            continue;
         }
+
+        results.push({
+            sequenceNumber: group.sequenceNumber,
+            startTime: group.startTime,
+            endTime: group.endTime,
+            day: date,
+            seatCount: group.seatCount,
+            reservableFrom: null,
+            reservableUntil: null,
+        });
     }
 
     return results;
@@ -81,7 +90,6 @@ export function groupOpeningTimesByDay(openingTimes: OpeningTime[]): Map<string,
         grouped.get(dayKey)!.push(opening);
     });
 
-    // Sort times for each day
     grouped.forEach((times) => {
         times.sort((a, b) => {
             const aMinutes = a.startTime.hours * 60 + a.startTime.minutes;
@@ -105,4 +113,27 @@ export function getOpeningTimesForDay(
     day: Date,
 ): OpeningTime[] {
     return groupedTimes.get(day.toDateString()) || [];
+}
+
+/**
+ * Checks if two opening times overlap.
+ *
+ * @param a - The first opening time.
+ * @param b - The second opening time.
+ * @returns True if the opening times overlap, false otherwise.
+ */
+export function areOpeningTimesOverlapping(
+    a: { startTime: Time; endTime: Time; day: Date },
+    b: { startTime: Time; endTime: Time; day: Date },
+): boolean {
+    if (a.day.toDateString() !== b.day.toDateString()) {
+        return false;
+    }
+
+    const aStart = timeToMinutes(a.startTime);
+    const aEnd = timeToMinutes(a.endTime);
+    const bStart = timeToMinutes(b.startTime);
+    const bEnd = timeToMinutes(b.endTime);
+
+    return aStart < bEnd && bStart < aEnd;
 }

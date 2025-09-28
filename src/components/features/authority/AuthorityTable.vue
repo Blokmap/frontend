@@ -1,0 +1,63 @@
+<script lang="ts" setup>
+import AuthorityActionsMenu from '@/components/features/authority/AuthorityActionsMenu.vue';
+import Table from '@/components/shared/molecules/table/Table.vue';
+import TableCell from '@/components/shared/molecules/table/TableCell.vue';
+import TableHead from '@/components/shared/molecules/table/TableHead.vue';
+import type { Authority } from '@/domain/authority';
+
+const props = defineProps<{
+    authorities?: Authority[];
+    loading?: boolean;
+}>();
+
+const emit = defineEmits<{
+    'click:authority': [authority: Authority];
+}>();
+
+const onAuthorityClick = (authority: Authority) => {
+    emit('click:authority', authority);
+};
+</script>
+
+<template>
+    <Table :value="props.authorities" @click:row="onAuthorityClick">
+        <template #header>
+            <tr>
+                <TableHead>Autoriteit</TableHead>
+                <TableHead>Beschrijving</TableHead>
+                <TableHead>Leden</TableHead>
+                <TableHead>Locaties</TableHead>
+                <TableHead>Acties</TableHead>
+            </tr>
+        </template>
+
+        <template #row="{ data: authority }">
+            <TableCell>
+                <div class="flex items-center space-x-3">
+                    <div class="min-w-0 flex-1">
+                        <div class="truncate text-sm font-medium text-slate-900">
+                            {{ authority.name }}
+                        </div>
+                        <div class="truncate text-xs text-slate-500">ID: {{ authority.id }}</div>
+                    </div>
+                </div>
+            </TableCell>
+
+            <TableCell>
+                {{ authority.description || '-' }}
+            </TableCell>
+
+            <TableCell>
+                {{ authority.members?.length || 0 }}
+            </TableCell>
+
+            <TableCell>
+                {{ authority.locations?.length || 0 }}
+            </TableCell>
+
+            <TableCell>
+                <AuthorityActionsMenu :authority="authority" />
+            </TableCell>
+        </template>
+    </Table>
+</template>

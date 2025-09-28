@@ -128,29 +128,6 @@ export function addToTime(time: Time, amount: number, granularity: TimeGranulari
 }
 
 /**
- * Validates and corrects a time range to ensure end time is after start time.
- * If end time is before start time, it assumes the end time is on the next day.
- *
- * @param startTime - The start time.
- * @param endTime - The end time.
- * @returns A corrected time range.
- */
-export function validateTimeRange(startTime: Time, endTime: Time): TimeRange {
-    const startMinutes = timeToMinutes(startTime);
-    const endMinutes = timeToMinutes(endTime);
-
-    // If end time is before start time, assume it's the next day
-    if (endMinutes <= startMinutes) {
-        return {
-            startTime,
-            endTime: minutesToTime(endMinutes + 24 * 60), // Add 24 hours
-        };
-    }
-
-    return { startTime, endTime };
-}
-
-/**
  * Get the duration between two Time objects in minutes.
  *
  * @param startTime - The start time.

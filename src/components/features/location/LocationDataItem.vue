@@ -70,12 +70,12 @@ const onStatusChange = (locationId: number, status: LocationState) => {
 
             <!-- Description -->
             <p class="location-description">
-                {{ location.description?.[locale] || location.excerpt?.[locale] }}
+                {{ location.excerpt?.[locale] }}
             </p>
         </div>
 
         <!-- Action Button -->
-        <div class="flex items-center justify-center border-l border-slate-100 ps-4">
+        <div class="flex items-center justify-center self-stretch border-l border-slate-100 ps-4">
             <LocationActionsMenu
                 :location="location"
                 :is-pending="actionIsPending"

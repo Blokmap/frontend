@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Calendar from 'primevue/calendar';
+import Checkbox from 'primevue/checkbox';
 import Dialog from 'primevue/dialog';
 import InputNumber from 'primevue/inputnumber';
-import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrash, faRepeat, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import {
+    DEFAULT_OPENING_TIME_REQUEST,
+    DEFAULT_REPETITION_CONFIG,
+    type OpeningTimeRequest,
+} from '@/domain/openings';
 import { dateToTime, timeToDate } from '@/utils/date/time';
-import type { OpeningTimeRequest } from '@/domain/openings';
 
 const props = defineProps<{
-    openingTime: OpeningTimeRequest;
-    editingIndex: number | null;
+    openingTime: OpeningTimeRequest | null;
+    isEditing?: boolean;
     minDate?: Date;
     maxDate?: Date;
 }>();
@@ -25,53 +31,103 @@ const emit = defineEmits<{
     delete: [];
 }>();
 
-const localOpeningTime = ref<OpeningTimeRequest>({ ...props.openingTime });
+const { locale } = useI18n();
+
+const openingTime = ref<OpeningTimeRequest>(
+    props.openingTime ? { ...props.openingTime } : { ...DEFAULT_OPENING_TIME_REQUEST },
+);
+
+const isRepetitionEnabled = computed({
+    get: () => openingTime.value.repetition?.enabled || false,
+    set: (enabled: boolean) => {
+        if (enabled) {
+            if (!openingTime.value.repetition) {
+                openingTime.value.repetition = { ...DEFAULT_REPETITION_CONFIG, enabled: true };
+            } else {
+                openingTime.value.repetition.enabled = true;
+            }
+        } else {
+            if (openingTime.value.repetition) {
+                openingTime.value.repetition.enabled = false;
+            }
+        }
+    },
+});
+
+const weekDays = computed(() => {
+    return Array.from({ length: 7 }, (_, index) => {
+        const date = new Date(2024, 0, 1 + index);
+        const dayName = date.toLocaleDateString(locale.value, { weekday: 'short' });
+
+        return {
+            label: dayName.charAt(0).toUpperCase() + dayName.slice(1),
+            value: index,
+        };
+    });
+});
 
 const startTimeForInput = computed({
     get: () => {
-        return timeToDate(localOpeningTime.value.startTime);
+        return timeToDate(openingTime.value.startTime);
     },
     set: (timeOnlyDate: Date) => {
-        localOpeningTime.value.startTime = dateToTime(timeOnlyDate);
+        openingTime.value.startTime = dateToTime(timeOnlyDate);
     },
 });
 
 const endTimeForInput = computed({
     get: () => {
-        return timeToDate(localOpeningTime.value.endTime);
+        return timeToDate(openingTime.value.endTime);
     },
     set: (timeOnlyDate: Date) => {
-        localOpeningTime.value.endTime = dateToTime(timeOnlyDate);
+        openingTime.value.endTime = dateToTime(timeOnlyDate);
     },
 });
 
-// Computed property for the date input that updates the day field
 const dateForInput = computed({
     get: () => {
-        const day = localOpeningTime.value.day;
+        const day = openingTime.value.day;
         return day instanceof Date ? new Date(day) : new Date(day);
     },
     set: (newDate: Date) => {
-        localOpeningTime.value.day = new Date(newDate);
+        openingTime.value.day = new Date(newDate);
     },
 });
 
-const dialogTitle = computed(() =>
-    props.editingIndex !== null ? 'Openingstijd Bewerken' : 'Openingstijd Toevoegen',
-);
+function toggleDaySelection(dayIndex: number) {
+    if (!openingTime.value.repetition) {
+        openingTime.value.repetition = { ...DEFAULT_REPETITION_CONFIG, enabled: true };
+    }
 
-const buttonText = computed(() => (props.editingIndex !== null ? 'Bijwerken' : 'Toevoegen'));
+    const selectedDays = openingTime.value.repetition.selectedDays || [];
+    const index = selectedDays.indexOf(dayIndex);
 
+    if (index > -1) {
+        selectedDays.splice(index, 1);
+    } else {
+        selectedDays.push(dayIndex);
+    }
+
+    openingTime.value.repetition.selectedDays = [...selectedDays];
+}
+
+function isDaySelected(dayIndex: number) {
+    return openingTime.value.repetition?.selectedDays?.includes(dayIndex) || false;
+}
+
+// Watch for prop changes and update local state
 watch(
     () => props.openingTime,
     (newValue) => {
-        localOpeningTime.value = { ...newValue };
+        if (newValue) {
+            openingTime.value = { ...newValue };
+        }
     },
-    { deep: true },
+    { deep: true, immediate: true },
 );
 
 function handleSave(): void {
-    emit('save', localOpeningTime.value);
+    emit('save', openingTime.value);
 }
 
 function handleDelete(): void {
@@ -80,72 +136,134 @@ function handleDelete(): void {
 </script>
 
 <template>
-    <Dialog
-        v-model:visible="visible"
-        :header="dialogTitle"
-        :style="{ width: '500px' }"
-        :draggable="false"
-        :resizable="false"
-        modal>
-        <div class="space-y-4">
-            <div>
-                <label class="mb-2 block text-sm font-medium text-gray-700">Datum</label>
-                <Calendar
-                    v-model="dateForInput"
-                    :min-date="minDate"
-                    :max-date="maxDate"
-                    date-format="dd/mm/yy"
-                    class="w-full" />
+    <Dialog v-model:visible="visible" :style="{ width: '480px' }" modal>
+        <template #header>
+            <div class="flex items-center gap-2">
+                <FontAwesomeIcon :icon="faCalendarDays" class="text-primary-500" />
+                <span v-if="isEditing">Openingstijd Bewerken</span>
+                <span v-else>Openingstijd Toevoegen</span>
             </div>
+        </template>
 
-            <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-5">
+            <!-- Main Time Selection - Compact Grid -->
+            <div class="grid grid-cols-3 items-end gap-3">
                 <div>
-                    <label class="mb-2 block text-sm font-medium text-gray-700">Start Tijd</label>
+                    <label class="mb-1 block text-xs font-medium text-gray-600">Datum</label>
+                    <Calendar
+                        v-model="dateForInput"
+                        :min-date="minDate"
+                        :max-date="maxDate"
+                        date-format="dd/mm"
+                        class="w-full text-sm">
+                    </Calendar>
+                </div>
+                <div>
+                    <label class="mb-1 block text-xs font-medium text-gray-600">Van</label>
                     <Calendar
                         v-model="startTimeForInput"
                         show-time
                         time-only
                         hour-format="24"
-                        class="w-full" />
+                        class="w-full text-sm">
+                    </Calendar>
                 </div>
-
                 <div>
-                    <label class="mb-2 block text-sm font-medium text-gray-700">Eind Tijd</label>
+                    <label class="mb-1 block text-xs font-medium text-gray-600">Tot</label>
                     <Calendar
                         v-model="endTimeForInput"
                         show-time
                         time-only
                         hour-format="24"
-                        class="w-full" />
+                        class="w-full">
+                    </Calendar>
                 </div>
             </div>
 
-            <div>
-                <label class="mb-2 block text-sm font-medium text-gray-700">Aantal Stoelen</label>
-                <InputNumber v-model="localOpeningTime.seatCount" :min="1" class="w-full" />
+            <!-- Seats -->
+            <div class="space-y-1">
+                <label class="block text-sm font-medium text-gray-700">Stoelen</label>
+                <InputNumber v-model="openingTime.seatCount" :min="1" :max="999" class="w-full">
+                </InputNumber>
+            </div>
+
+            <!-- Repetition Toggle -->
+            <div class="space-y-3 rounded-lg border border-slate-200 bg-gray-50 p-4">
+                <div class="flex items-center gap-3">
+                    <Checkbox v-model="isRepetitionEnabled" binary input-id="repetition-enabled" />
+                    <label
+                        for="repetition-enabled"
+                        class="flex cursor-pointer items-center gap-2 text-sm font-medium">
+                        <FontAwesomeIcon :icon="faRepeat" class="text-primary-500" />
+                        Herhaling inschakelen
+                    </label>
+                </div>
+
+                <!-- Repetition Settings -->
+                <div v-if="isRepetitionEnabled" class="space-y-4 border-t border-gray-200 pt-2">
+                    <!-- Days Selection -->
+                    <div>
+                        <label class="mb-2 block text-xs font-medium text-gray-600">Dagen</label>
+                        <div class="flex gap-1">
+                            <button
+                                v-for="day in weekDays"
+                                :key="day.value"
+                                @click="toggleDaySelection(day.value)"
+                                :class="[
+                                    'day-button-compact',
+                                    { selected: isDaySelected(day.value) },
+                                ]">
+                                {{ day.label.substring(0, 2) }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- End Date -->
+                    <div>
+                        <label class="mb-1 block text-xs font-medium text-gray-600">
+                            Einddatum
+                        </label>
+                        <Calendar
+                            v-model="openingTime.repetition!.endDate"
+                            :min-date="dateForInput"
+                            date-format="dd/mm/yy"
+                            class="w-full text-sm">
+                        </Calendar>
+                    </div>
+                </div>
             </div>
         </div>
 
         <template #footer>
-            <div class="flex w-full justify-between">
-                <div>
-                    <Button
-                        v-if="editingIndex !== null"
-                        severity="danger"
-                        outlined
-                        size="small"
-                        @click="handleDelete">
-                        <FontAwesomeIcon :icon="faTrash" class="mr-2" />
-                        Verwijderen
-                    </Button>
-                </div>
-                <div class="flex gap-3">
-                    <Button size="small" @click="handleSave">
-                        <FontAwesomeIcon :icon="faPlus" class="mr-2" />
-                        {{ buttonText }}
-                    </Button>
-                </div>
+            <div class="flex w-full items-center justify-between gap-3">
+                <Button
+                    v-if="isEditing"
+                    severity="contrast"
+                    variant="outlined"
+                    @click="handleDelete">
+                    <FontAwesomeIcon :icon="faTrash" class="mr-2" />
+                    Verwijderen
+                </Button>
+                <div v-else></div>
+
+                <Button @click="handleSave" class="px-6">
+                    <FontAwesomeIcon :icon="faPlus" class="mr-2" />
+                    {{ isEditing ? 'Bijwerken' : 'Toevoegen' }}
+                </Button>
             </div>
         </template>
     </Dialog>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.day-button-compact {
+    @apply h-8 w-8 rounded text-xs font-medium transition-all duration-200;
+    @apply border border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50;
+
+    &.selected {
+        @apply bg-secondary-500 border-secondary-500 hover:bg-secondary-600 text-white;
+    }
+}
+</style>

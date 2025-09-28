@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Paginator from 'primevue/paginator';
 import ProfileTable from '@/components/features/profile/ProfileTable.vue';
+import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
 import { useDebounceFn } from '@vueuse/core';
 import { ref } from 'vue';
@@ -63,20 +64,22 @@ const onChangeProfileStatus = async (profileId: number, status: ProfileState) =>
 </script>
 
 <template>
-    <div class="flex items-end justify-between gap-3">
+    <div class="flex items-center justify-between gap-3">
         <div class="space-y-2">
             <h1 class="text-3xl font-bold">
                 Alle Profielen ({{ abbreviateCount(counts?.profileCount) ?? '...' }})
             </h1>
 
-            <p class="text-sm font-normal text-slate-700">
-                <template v-if="profiles?.total">
-                    {{ profiles?.data.length ?? '...' }} van {{ profiles?.total ?? '...' }}
-                    <template v-if="profiles?.truncated">+</template> resultaten getoond.
-                </template>
-                <template v-else> Geen profielen gevonden. </template>
-            </p>
+            <ResultSummary
+                :current-count="profiles?.data.length"
+                :total-count="profiles?.total"
+                :truncated="profiles?.truncated"
+                empty-message="Geen profielen gevonden.">
+            </ResultSummary>
         </div>
+    </div>
+
+    <div class="flex gap-3">
         <SearchField
             v-model="searchQuery"
             placeholder="Zoek door alle profielen..."

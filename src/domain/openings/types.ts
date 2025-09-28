@@ -15,21 +15,21 @@ export type OpeningTime = {
     updatedAt: Date;
 };
 
+export type OpeningRepetitionConfig = {
+    enabled: boolean;
+    selectedDays: number[]; // 1 = Monday, 7 = Sunday
+    endDate: Date;
+};
+
 export type OpeningTimeRequest = {
+    sequenceNumber: number | null;
     day: Date;
     startTime: Time;
     endTime: Time;
     seatCount: number | null;
     reservableFrom: Date | null;
     reservableUntil: Date | null;
-};
-
-export type OpeningTimeGroupRequest = {
-    type: 'daily' | 'weekly';
-    startDate: Date;
-    endDate: Date;
-    selectedDays: number[];
-    timeSlots: { startTime: Time; endTime: Time; seatCount: number }[];
+    repetition?: OpeningRepetitionConfig;
 };
 
 export type TimeCell = {

@@ -11,7 +11,6 @@ import {
     faMapLocationDot,
     faPlus,
     faSignOut,
-    faStar,
     faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -101,8 +100,8 @@ function isRouteActive(routeName: string): boolean {
                 </h4>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.institutions') }"
-                    :to="{ name: 'dashboard.institutions' }">
+                    :class="{ active: isRouteActive('dashboard.institutions.index') }"
+                    :to="{ name: 'dashboard.institutions.index' }">
                     <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Instituties</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
@@ -124,8 +123,8 @@ function isRouteActive(routeName: string): boolean {
                 </RouterLink>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.institutions') }"
-                    :to="{ name: 'dashboard.institutions' }">
+                    :class="{ active: isRouteActive('dashboard.institutions.index') }"
+                    :to="{ name: 'dashboard.institutions.index' }">
                     <FontAwesomeIcon :icon="faCity" />
                     <p>Instituties</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
@@ -151,9 +150,9 @@ function isRouteActive(routeName: string): boolean {
                     <FontAwesomeIcon :icon="faMapLocationDot" />
                     <p>Locaties</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
-                        ({{ abbreviateCount(counts.locationCount) }}
-                        <span v-if="counts.pendingLocationCount > 0" class="pending">
-                            <b>+</b>{{ abbreviateCount(counts.pendingLocationCount) }} </span
+                        ({{ abbreviateCount(counts.locationCount)
+                        }}<span v-if="counts.pendingLocationCount > 0" class="pending"
+                            ><b>+</b>{{ abbreviateCount(counts.pendingLocationCount) }}</span
                         >)
                     </span>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
@@ -167,15 +166,6 @@ function isRouteActive(routeName: string): boolean {
                     <span v-if="counts && !isLoadingCounts" class="count">
                         ({{ abbreviateCount(counts.profileCount) }})
                     </span>
-                    <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                </RouterLink>
-
-                <RouterLink
-                    class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.reviews') }"
-                    :to="{ name: 'dashboard.reviews' }">
-                    <FontAwesomeIcon :icon="faStar" />
-                    <p>Reviews</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </RouterLink>
             </div>
@@ -210,7 +200,7 @@ function isRouteActive(routeName: string): boolean {
         @apply flex-1 space-y-6 px-6 py-6;
 
         .sidebar-section {
-            @apply space-y-1;
+            @apply space-y-1.5;
 
             &:not(:last-child) {
                 @apply border-b border-slate-700 pb-6;

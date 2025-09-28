@@ -23,7 +23,7 @@ const toast = useToast();
 const router = useRouter();
 const route = useRoute();
 
-const { data: institutions, isLoading: isLoadingInstitutions } = useInstitutions();
+const { data: institutions, isLoading: isLoadingInstitutions } = useInstitutions({});
 
 const {
     mutate: login,
@@ -84,8 +84,8 @@ const filteredInstitutions = computed(() => {
         return [];
     }
 
-    return institutions.value.filter((institution) => {
-        const slug = institution.slug[locale.value]?.toLowerCase().trim() || '';
+    return institutions.value.data.filter((institution) => {
+        const slug = institution.slug?.toLowerCase().trim() || '';
         const name = institution.name[locale.value]?.toLowerCase().trim() || '';
         const filter = institutionFilter.value.toLowerCase();
         return slug.includes(filter) || name.includes(filter);

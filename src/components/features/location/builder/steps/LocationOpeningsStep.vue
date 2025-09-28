@@ -1,24 +1,22 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
 import ConfirmDialog from 'primevue/confirmdialog';
 import { useConfirm } from 'primevue/useconfirm';
 import OpeningTimeDialog from '@/components/features/location/builder/OpeningTimeDialog.vue';
-import OpeningTimeGroupDialog from '@/components/features/location/builder/OpeningTimeGroupDialog.vue';
 import OpeningTimesCalendar from '@/components/features/location/builder/OpeningTimesCalendar.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
-import { faRepeat, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref, watchEffect } from 'vue';
 import {
-    DEFAULT_OPENING_TIME_GROUP_REQUEST,
+    areOpeningTimesOverlapping,
     DEFAULT_OPENING_TIME_REQUEST,
-    type OpeningTimeGroupRequest,
+    DEFAULT_REPETITION_CONFIG,
+    getOpeningsFromRepetition,
     type OpeningTimeRequest,
-    getOpeningsFromGroup,
     type TimeCell,
 } from '@/domain/openings';
-import { addToTime, validateTimeRange } from '@/utils/date/time';
+import { addToTime } from '@/utils/date/time';
 import type { BuilderSubstep, LocationRequest } from '@/domain/location';
+
+type EditMode = 'add' | 'edit-single' | 'edit-group';
 
 const { form } = defineProps<{
     form: LocationRequest;
@@ -34,15 +32,13 @@ const substeps = defineModel<BuilderSubstep[]>('substeps', {
     required: true,
 });
 
-const confirm = useConfirm();
-
 const currentWeek = ref(new Date());
 const editingIndex = ref<number | null>(null);
+const editingSequenceNumber = ref<number | null>(null);
+const editMode = ref<EditMode>('add');
 const showAddDialog = ref(false);
-const showOpeningTimeGroupDialog = ref(false);
-
-const newOpeningTime = ref<OpeningTimeRequest>(DEFAULT_OPENING_TIME_REQUEST);
-const newOpeningTimeGroup = ref<OpeningTimeGroupRequest>(DEFAULT_OPENING_TIME_GROUP_REQUEST);
+const openingTime = ref<OpeningTimeRequest | null>(null);
+const confirm = useConfirm();
 
 watchEffect(() => {
     const times = openings.value;
@@ -62,19 +58,76 @@ watchEffect(() => {
 });
 
 function saveOpeningTime(openingTime: OpeningTimeRequest): void {
-    const correctedTimes = validateTimeRange(openingTime.startTime, openingTime.endTime);
-    openingTime.startTime = correctedTimes.startTime;
-    openingTime.endTime = correctedTimes.endTime;
+    let newOpeningTimes: OpeningTimeRequest[] = [];
 
-    if (editingIndex.value !== null) {
-        const newTimes = [...openings.value];
-        newTimes[editingIndex.value] = { ...openingTime };
-        openings.value = newTimes;
+    // Generate opening times (single or from repetition)
+    if (openingTime.repetition?.enabled) {
+        const repetitionOpeningTimes = getOpeningsFromRepetition(openingTime);
+        newOpeningTimes.push(...repetitionOpeningTimes);
     } else {
-        openings.value = [...openings.value, { ...openingTime }];
+        newOpeningTimes.push(openingTime);
+    }
+
+    switch (editMode.value) {
+        case 'add':
+            handleAddOpeningTimes(newOpeningTimes);
+            break;
+        case 'edit-single':
+            handleEditSingleOpeningTime(newOpeningTimes[0]);
+            break;
+        case 'edit-group':
+            handleEditGroupOpeningTimes(newOpeningTimes);
+            break;
     }
 
     closeDialog();
+}
+
+function handleAddOpeningTimes(newOpeningTimes: OpeningTimeRequest[]): void {
+    let currentOpenings = [...openings.value];
+
+    for (const time of newOpeningTimes) {
+        // Assign a new sequence number for new opening times
+        time.sequenceNumber = getNextSequenceNumber();
+
+        // Remove any overlapping times
+        currentOpenings = currentOpenings.filter(
+            (existing) => !areOpeningTimesOverlapping(existing, time),
+        );
+
+        currentOpenings.push(time);
+    }
+
+    openings.value = currentOpenings;
+}
+
+function handleEditSingleOpeningTime(updatedOpeningTime: OpeningTimeRequest): void {
+    if (editingIndex.value === null) return;
+
+    const updatedOpenings = [...openings.value];
+    updatedOpenings[editingIndex.value] = updatedOpeningTime;
+    openings.value = updatedOpenings;
+}
+
+function handleEditGroupOpeningTimes(newOpeningTimes: OpeningTimeRequest[]): void {
+    if (editingSequenceNumber.value === null) return;
+
+    // Remove all opening times with the same sequence number
+    const updatedOpenings = openings.value.filter(
+        (time) => time.sequenceNumber !== editingSequenceNumber.value,
+    );
+
+    // Add new opening times with the same sequence number
+    for (const time of newOpeningTimes) {
+        time.sequenceNumber = editingSequenceNumber.value;
+    }
+
+    openings.value = [...updatedOpenings, ...newOpeningTimes];
+}
+
+function getNextSequenceNumber(): number {
+    if (openings.value.length === 0) return 1;
+    return Math.max(...openings.value.map((time) => time.sequenceNumber || 0)) + 1;
 }
 
 function removeOpeningTime(index: number): void {
@@ -87,26 +140,114 @@ function onCalendarSlotClick(timeCell: TimeCell): void {
     const startTime = timeCell.startTime;
     const endTime = addToTime(startTime, 1, 'hours');
 
-    newOpeningTime.value = {
+    editMode.value = 'add';
+    editingIndex.value = null;
+    editingSequenceNumber.value = null;
+
+    openingTime.value = {
+        ...DEFAULT_OPENING_TIME_REQUEST,
         startTime,
         endTime,
         day: new Date(timeCell.day),
         seatCount: form.seatCount || 1,
-        reservableFrom: null,
-        reservableUntil: null,
+        sequenceNumber: 0, // Will be assigned in handleAddOpeningTimes
+        repetition: {
+            enabled: false, // Ensure repetition is disabled by default for new slots
+            selectedDays: [...DEFAULT_REPETITION_CONFIG.selectedDays],
+            endDate: new Date(DEFAULT_REPETITION_CONFIG.endDate),
+        },
     };
 
     showAddDialog.value = true;
 }
 
 function onEditSlot(index: number, slot: OpeningTimeRequest): void {
-    newOpeningTime.value = { ...slot };
+    // Check if this slot is part of a group (same sequence number)
+    const groupSlots = openings.value.filter(
+        (time) => (time.sequenceNumber === slot.sequenceNumber && time.sequenceNumber) || 0 > 0,
+    );
+
+    if (groupSlots.length > 1) {
+        // Ask user if they want to edit the entire group
+        confirm.require({
+            message: `Deze openingstijd is onderdeel van een groep van ${groupSlots.length} tijden. Wilt u de hele groep bewerken?`,
+            header: 'Groep Bewerken',
+            rejectProps: {
+                label: 'Alleen deze',
+                severity: 'secondary',
+                outlined: true,
+            },
+            acceptProps: {
+                label: 'Hele groep',
+                severity: 'primary',
+            },
+            accept: () => {
+                startGroupEdit(slot);
+            },
+            reject: () => {
+                startSingleEdit(index, slot);
+            },
+        });
+    } else {
+        startSingleEdit(index, slot);
+    }
+}
+
+function startSingleEdit(index: number, slot: OpeningTimeRequest): void {
+    editMode.value = 'edit-single';
     editingIndex.value = index;
+    editingSequenceNumber.value = null;
+    openingTime.value = { ...slot };
     showAddDialog.value = true;
 }
 
+function startGroupEdit(slot: OpeningTimeRequest): void {
+    editMode.value = 'edit-group';
+    editingIndex.value = null;
+    editingSequenceNumber.value = slot.sequenceNumber;
+
+    // For group editing, we want to show the base template with repetition enabled
+    // Find the earliest slot in the group to use as the base
+    const groupSlots = openings.value.filter((time) => time.sequenceNumber === slot.sequenceNumber);
+
+    const sortedSlots = groupSlots.sort((a, b) => a.day.getTime() - b.day.getTime());
+    const baseSlot = sortedSlots[0];
+
+    // Create a template with repetition enabled
+    openingTime.value = {
+        ...baseSlot,
+        repetition: {
+            enabled: true,
+            selectedDays: getSelectedDaysFromGroup(groupSlots),
+            endDate: sortedSlots[sortedSlots.length - 1].day,
+        },
+    };
+
+    showAddDialog.value = true;
+}
+
+function getSelectedDaysFromGroup(groupSlots: OpeningTimeRequest[]): number[] {
+    const selectedDays = new Set<number>();
+
+    groupSlots.forEach((slot) => {
+        // Convert to European day format (0 = Monday, 6 = Sunday)
+        const day = (slot.day.getDay() + 6) % 7;
+        selectedDays.add(day);
+    });
+
+    return Array.from(selectedDays).sort();
+}
+
 function onDragSlot(index: number, updatedSlot: OpeningTimeRequest): void {
-    console.log('Dragged slot:', updatedSlot);
+    // Check for overlaps with other times (excluding the one being dragged)
+    const otherTimes = openings.value.filter((_, i) => i !== index);
+    const hasOverlap = otherTimes.some((time) => areOpeningTimesOverlapping(time, updatedSlot));
+
+    if (hasOverlap) {
+        return;
+    }
+
+    // No overlap, safe to update
     const newTimes = [...openings.value];
     newTimes[index] = updatedSlot;
     openings.value = newTimes;
@@ -114,8 +255,10 @@ function onDragSlot(index: number, updatedSlot: OpeningTimeRequest): void {
 
 function closeDialog(): void {
     showAddDialog.value = false;
+    editMode.value = 'add';
     editingIndex.value = null;
-    newOpeningTime.value = DEFAULT_OPENING_TIME_REQUEST;
+    editingSequenceNumber.value = null;
+    // Don't reset openingTime here - let it be reset when opening the next dialog
 }
 
 function goToPreviousWeek(): void {
@@ -134,43 +277,63 @@ function goToToday(): void {
     currentWeek.value = new Date();
 }
 
-function handleDateSelect(date: any): void {
+function onDateSelect(date: any): void {
     if (date instanceof Date) {
         currentWeek.value = date;
     }
 }
 
-function saveOpeningGroup(openingTimeGroup: OpeningTimeGroupRequest): void {
-    const newOpenings = getOpeningsFromGroup(openingTimeGroup);
-    openings.value = [...openings.value, ...newOpenings];
-    showOpeningTimeGroupDialog.value = false;
-}
-
 function deleteFromDialog(): void {
-    if (editingIndex.value !== null) {
-        removeOpeningTime(editingIndex.value);
-        closeDialog();
+    switch (editMode.value) {
+        case 'edit-single':
+            if (editingIndex.value !== null) {
+                removeOpeningTime(editingIndex.value);
+                closeDialog();
+            }
+            break;
+
+        case 'edit-group':
+            if (editingSequenceNumber.value !== null) {
+                deleteGroup(editingSequenceNumber.value);
+            }
+            break;
+
+        default:
+            // Should not happen in delete mode, but handle gracefully
+            closeDialog();
+            break;
     }
 }
 
-function confirmClearAll(): void {
-    confirm.require({
-        message:
-            'Weet je zeker dat je alle openingstijden wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
-        header: 'Alle openingstijden verwijderen',
-        rejectProps: {
-            label: 'Annuleren',
-            severity: 'secondary',
-            outlined: true,
-        },
-        acceptProps: {
-            label: 'Verwijderen',
-            severity: 'danger',
-        },
-        accept: () => {
-            openings.value = [];
-        },
-    });
+function deleteGroup(sequenceNumber: number): void {
+    const groupSlots = openings.value.filter((time) => time.sequenceNumber === sequenceNumber);
+
+    if (groupSlots.length > 1) {
+        confirm.require({
+            message: `Wilt u alle ${groupSlots.length} openingstijden in deze groep verwijderen?`,
+            header: 'Groep Verwijderen',
+            icon: 'pi pi-exclamation-triangle',
+            rejectProps: {
+                label: 'Annuleren',
+                severity: 'secondary',
+                outlined: true,
+            },
+            acceptProps: {
+                label: 'Verwijder alles',
+                severity: 'danger',
+            },
+            accept: () => {
+                openings.value = openings.value.filter(
+                    (time) => time.sequenceNumber !== sequenceNumber,
+                );
+                closeDialog();
+            },
+        });
+    } else {
+        // Single item, delete directly
+        openings.value = openings.value.filter((time) => time.sequenceNumber !== sequenceNumber);
+        closeDialog();
+    }
 }
 </script>
 
@@ -184,7 +347,8 @@ function confirmClearAll(): void {
                 @click:previous-week="goToPreviousWeek"
                 @click:next-week="goToNextWeek"
                 @click:current-week="goToToday"
-                @select:date="handleDateSelect" />
+                @select:date="onDateSelect">
+            </CalendarControls>
 
             <div class="flex-1">
                 <OpeningTimesCalendar
@@ -193,7 +357,8 @@ function confirmClearAll(): void {
                     @select:slot="onCalendarSlotClick"
                     @edit:slot="onEditSlot"
                     @delete:slot="removeOpeningTime"
-                    @drag:slot="onDragSlot" />
+                    @drag:slot="onDragSlot">
+                </OpeningTimesCalendar>
             </div>
         </div>
 
@@ -202,48 +367,14 @@ function confirmClearAll(): void {
         </p>
     </div>
 
-    <!-- Sticky Bottom Action Bar -->
-    <div class="fixed right-0 bottom-0 left-0 z-30">
-        <div
-            class="mx-3 mb-3 rounded-lg border border-slate-200 bg-white/95 shadow-lg backdrop-blur-sm md:mx-6">
-            <div class="px-4 py-3">
-                <div class="flex items-center justify-between">
-                    <Button
-                        size="small"
-                        severity="secondary"
-                        outlined
-                        @click="showOpeningTimeGroupDialog = true">
-                        <FontAwesomeIcon :icon="faRepeat" class="mr-2" />
-                        Openingstijden groep
-                    </Button>
-
-                    <Button
-                        v-if="openings.length > 0"
-                        size="small"
-                        severity="danger"
-                        outlined
-                        @click="confirmClearAll">
-                        <FontAwesomeIcon :icon="faTrash" class="mr-2" />
-                        Alles wissen
-                    </Button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <OpeningTimeDialog
         v-model:visible="showAddDialog"
-        :opening-time="newOpeningTime"
-        :editing-index="editingIndex"
+        :opening-time="openingTime"
+        :is-editing="editMode !== 'add'"
         @save="saveOpeningTime"
         @delete="deleteFromDialog"
-        @close="closeDialog" />
-
-    <OpeningTimeGroupDialog
-        v-model:visible="showOpeningTimeGroupDialog"
-        :opening-time-group="newOpeningTimeGroup"
-        :default-seat-count="form.seatCount"
-        @apply="saveOpeningGroup" />
+        @close="closeDialog">
+    </OpeningTimeDialog>
 </template>
 
 <style scoped>

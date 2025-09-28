@@ -122,7 +122,8 @@ function goToToday(): void {
                     <FontAwesomeIcon
                         :icon="faChevronDown"
                         class="text-xs text-gray-400 transition-all duration-200"
-                        :class="{ 'rotate-180': showDatePicker }" />
+                        :class="{ 'rotate-180': showDatePicker }">
+                    </FontAwesomeIcon>
                 </button>
 
                 <!-- Date picker overlay -->

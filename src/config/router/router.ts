@@ -1,9 +1,11 @@
 import AuthLayout from '@/layouts/auth/AuthLayout.vue';
 import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
+import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
+import { AUTH_QUERY_KEYS } from '@/composables/data/useAuth';
 import { useToast } from '@/composables/store/useToast';
-import { pullRedirectUrl } from '@/domain/auth';
+import { getAuthProfile, pullRedirectUrl } from '@/domain/auth';
 import { authRouterGuard, breadcrumbRouterGuard, titleRouterGuard } from './guards';
 import {
     AuthPage,
@@ -203,14 +205,6 @@ const routes: RouteRecordRaw[] = [
             },
             {
                 path: 'institutions',
-                name: 'dashboard.institutions',
-                meta: {
-                    title: 'Beheer Instellingen',
-                    breadcrumbs: [
-                        { label: 'Dashboard', to: { name: 'dashboard' } },
-                        { label: 'Instituties', to: { name: 'dashboard.institutions.index' } },
-                    ],
-                },
                 children: [
                     {
                         path: '',
@@ -301,16 +295,33 @@ const routes: RouteRecordRaw[] = [
             {
                 path: 'auth/sso',
                 name: 'auth.sso',
-                redirect: () => {
+                component: AuthPage,
+                beforeEnter: async () => {
                     const toast = useToast();
+                    const client = useQueryClient();
 
-                    toast.add({
-                        severity: 'success',
-                        summary: 'Succesvol ingelogd',
-                        detail: 'Je bent succesvol ingelogd via je instelling!',
+                    const profile = await client.fetchQuery({
+                        queryKey: AUTH_QUERY_KEYS.profile(),
+                        queryFn: getAuthProfile,
                     });
 
-                    return pullRedirectUrl() || { name: 'profile' };
+                    if (profile) {
+                        toast.add({
+                            severity: 'success',
+                            summary: 'Succesvol ingelogd',
+                            detail: 'Je bent succesvol ingelogd via je instelling!',
+                        });
+
+                        return pullRedirectUrl() || { name: 'profile' };
+                    }
+
+                    toast.add({
+                        severity: 'error',
+                        summary: 'Inloggen mislukt',
+                        detail: 'Inloggen via je instelling is mislukt, probeer het opnieuw.',
+                    });
+
+                    return { name: 'auth' };
                 },
             },
             {

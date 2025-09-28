@@ -7,24 +7,13 @@ import { computed, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { getFlagImage } from '@/config/locale';
 
-interface Props {
-    modelValue?: string;
-}
-
-interface Emits {
-    (e: 'update:modelValue', value: string): void;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-    modelValue: 'nl',
-});
-
-const emit = defineEmits<Emits>();
+const language = defineModel<string>();
 
 const { t, locale, availableLocales } = useI18n();
+
 const popoverRef = useTemplateRef('popover');
 
-const currentLocale = computed(() => props.modelValue || locale.value);
+const currentLocale = computed(() => language.value || locale.value);
 
 function toggleLanguageSelector(event: MouseEvent): void {
     if (popoverRef.value) {
@@ -33,7 +22,7 @@ function toggleLanguageSelector(event: MouseEvent): void {
 }
 
 function handleLocaleChange(newLocale: string): void {
-    emit('update:modelValue', newLocale);
+    locale.value = newLocale;
     popoverRef.value?.hide();
 }
 </script>

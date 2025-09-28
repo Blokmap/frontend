@@ -11,7 +11,7 @@ export const useProgress = defineStore('progress', () => {
     }
 
     function finish() {
-        activeRequests.value = Math.max(0, activeRequests.value - 1);
+        activeRequests.value = 0;
     }
 
     return {

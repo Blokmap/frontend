@@ -7,6 +7,7 @@ import LocationOpeningsStep from '@/components/features/location/builder/steps/L
 import LocationSettingsStep from '@/components/features/location/builder/steps/LocationSettingsStep.vue';
 import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { isAxiosError } from 'axios';
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
@@ -137,7 +138,13 @@ async function submitLocation(): Promise<void> {
 
         router.push({ name: 'locations' });
     } catch (error) {
-        console.error('Error creating location:', error);
+        if (isAxiosError(error)) {
+            toast.add({
+                severity: 'error',
+                summary: 'Fout bij het aanmaken van de locatie',
+                detail: error.response?.data?.message || error.message,
+            });
+        }
 
         if (createdOpenings && locationId) {
             await deleteLocationOpenings(locationId);

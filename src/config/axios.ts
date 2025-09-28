@@ -1,10 +1,7 @@
 import axios, { AxiosError, HttpStatusCode } from 'axios';
 import { useRouter } from 'vue-router';
-import { useProgress } from '@/composables/store/useProgress';
 import { useToast } from '@/composables/store/useToast';
 import { MAPBOX_API_KEY, MAPBOX_URL } from '@/config';
-import { endpoints } from '@/config/endpoints';
-import { mockInstitutions } from '@/mock';
 
 export const mapBoxClient = axios.create({
     baseURL: MAPBOX_URL,
@@ -30,44 +27,12 @@ export const client = axios.create({
  */
 export function setupAxiosInterceptors(): void {
     const router = useRouter();
-    const progressStore = useProgress();
     const toast = useToast();
 
-    // Request interceptor to start progress
-    client.interceptors.request.use(
-        async (config) => {
-            progressStore.start();
-
-            if (config.url === endpoints.institutions.list && config.method === 'get') {
-                config.adapter = async () => {
-                    return {
-                        data: mockInstitutions,
-                        status: 200,
-                        statusText: 'OK',
-                        headers: {},
-                        config,
-                    };
-                };
-            }
-
-            return config;
-        },
-        (error) => {
-            progressStore.finish();
-            return Promise.reject(error);
-        },
-    );
-
-    // Response interceptor to finish progress and handle errors
+    // Response interceptor to handle errors
     client.interceptors.response.use(
-        async (response) => {
-            progressStore.finish();
-
-            return response;
-        },
+        (response) => response,
         (error: AxiosError) => {
-            progressStore.finish();
-
             if (error.status === HttpStatusCode.Unauthorized) {
                 router.push({
                     name: 'auth',
@@ -77,12 +42,14 @@ export function setupAxiosInterceptors(): void {
                 toast.add({
                     severity: 'error',
                     summary: 'Niet ingelogd',
-                    detail: 'Je moet ingelogd zijn om deze pagina te bekijken.',
+                    detail: 'Je moet ingelogd zijn om deze actie uit te voeren.',
                 });
             }
 
             if (error.status === HttpStatusCode.Forbidden) {
-                router.push({ name: 'dashboard' });
+                if (error.request.method === 'GET') {
+                    router.push({ name: 'dashboard' });
+                }
                 toast.add({
                     severity: 'error',
                     summary: 'Toegang geweigerd',
@@ -90,51 +57,7 @@ export function setupAxiosInterceptors(): void {
                 });
             }
 
-            if (error.status === HttpStatusCode.BadRequest) {
-                toast.add({
-                    severity: 'error',
-                    summary: 'Fout bij verwerken verzoek',
-                    detail: 'Er is een fout opgetreden bij het verwerken van je verzoek.',
-                });
-            }
-
-            if (error.status === HttpStatusCode.NotFound) {
-                const detail =
-                    error.request?.method === 'GET'
-                        ? 'De opgevraagde data werd niet gevonden.'
-                        : 'De opgevraagde actie kon niet worden voltooid.';
-
-                toast.add({
-                    severity: 'error',
-                    summary: 'Niet gevonden',
-                    detail,
-                });
-            }
-
-            return Promise.reject(error);
-        },
-    );
-
-    // Add interceptors for MapBox client as well
-    mapBoxClient.interceptors.request.use(
-        async (config) => {
-            progressStore.start();
-            return config;
-        },
-        (error) => {
-            progressStore.finish();
-            return Promise.reject(error);
-        },
-    );
-
-    mapBoxClient.interceptors.response.use(
-        async (response) => {
-            progressStore.finish();
-            return response;
-        },
-        (error) => {
-            progressStore.finish();
-            return Promise.reject(error);
+            return error;
         },
     );
 }

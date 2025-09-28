@@ -1,3 +1,4 @@
+import type { Pagination } from '../shared';
 import type { Authority } from '@/domain/authority';
 import type { Image } from '@/domain/image';
 import type { Institution } from '@/domain/institution';
@@ -31,10 +32,8 @@ export type ProfileRequest = {
     username?: string;
 };
 
-export type ProfileFilter = {
+export type ProfileFilter = Pagination & {
     query?: string;
-    page?: number;
-    perPage?: number;
     isAdmin?: boolean;
     state?: ProfileState | null;
 };

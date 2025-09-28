@@ -1,0 +1,63 @@
+<script lang="ts" setup>
+import ActionMenu from '@/components/shared/atoms/ActionMenu.vue';
+import { faUsers, faMapLocationDot, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import type { Authority } from '@/domain/authority';
+
+const props = defineProps<{
+    authority: Authority;
+    isPending?: boolean;
+}>();
+
+const actions = [
+    {
+        label: 'Leden bekijken',
+        icon: faUsers,
+        to: {
+            name: 'dashboard.authorities.detail',
+            params: { authorityId: props.authority.id },
+            hash: '#members',
+        },
+    },
+    {
+        label: 'Locaties bekijken',
+        icon: faMapLocationDot,
+        to: {
+            name: 'dashboard.locations.index',
+            query: { authorityId: props.authority.id },
+        },
+    },
+    {
+        label: 'Bewerken',
+        icon: faEdit,
+        to: {
+            name: 'dashboard.authorities.detail',
+            params: { authorityId: props.authority.id },
+        },
+    },
+];
+</script>
+
+<template>
+    <ActionMenu :is-pending="isPending">
+        <template #trigger="{ toggle }">
+            <slot name="trigger" :toggle="toggle">
+                <!-- Default trigger is provided by ActionMenu -->
+            </slot>
+        </template>
+
+        <template #content="{ hideMenu }">
+            <div class="space-y-1">
+                <RouterLink
+                    v-for="action in actions"
+                    :key="action.label"
+                    :to="action.to"
+                    class="flex w-full items-center gap-3 rounded-md px-2 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100"
+                    @click="hideMenu">
+                    <FontAwesomeIcon :icon="action.icon" class="text-slate-700" />
+                    <span>{{ action.label }}</span>
+                </RouterLink>
+            </div>
+        </template>
+    </ActionMenu>
+</template>

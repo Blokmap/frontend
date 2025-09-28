@@ -1,5 +1,5 @@
 <template>
-    <Badge :severity="severities[location.state]" class="w-[90px]" v-tooltip.top="'helalur'">
+    <Badge :severity="severities[location.state]" class="w-[90px]">
         <div class="flex w-full items-center justify-around gap-1">
             <FontAwesomeIcon :icon="icons[location.state]" />
             <span>{{ capitalize(location.state) }}</span>

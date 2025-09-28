@@ -27,6 +27,7 @@ const { locale } = useI18n();
 const { mutateAsync: geocodeAddress, isPending } = useForwardGeoSearch();
 
 const mapContainer = useTemplateRef('map-container');
+
 const currentLanguage = ref(locale.value);
 const mapZoom = ref<number>(18);
 
@@ -135,11 +136,8 @@ async function handleConfirmAddress(): Promise<void> {
                     <label for="name" class="mb-2 block text-sm font-medium text-gray-700">
                         Locatie naam *
                     </label>
-                    <InputText
-                        id="name"
-                        v-model="form.name"
-                        class="w-full"
-                        placeholder="De Krook" />
+                    <InputText id="name" v-model="form.name" class="w-full" placeholder="De Krook">
+                    </InputText>
                     <small class="mt-1 block text-gray-500">
                         Kies een herkenbare naam voor de locatie
                     </small>
@@ -157,7 +155,8 @@ async function handleConfirmAddress(): Promise<void> {
                         v-model="form.excerpt![currentLanguage]"
                         class="w-full"
                         placeholder="Stadsbibliotheek met zicht op het water"
-                        :maxlength="LOCATION_SETTINGS.MAX_EXCERPT_LENGTH" />
+                        :maxlength="LOCATION_SETTINGS.MAX_EXCERPT_LENGTH">
+                    </InputText>
                     <div class="mt-1 flex justify-between">
                         <small class="text-gray-500">
                             Omschrijf de locatie in maximaal 6 beschrijvende woorden
@@ -188,7 +187,8 @@ async function handleConfirmAddress(): Promise<void> {
                             class="w-full"
                             :maxlength="LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH"
                             rows="5"
-                            placeholder="De Krook is de stadsbibliotheek van Gent, de ideale plek om rustig te studeren tussen andere studenten, met zicht op de Leie." />
+                            placeholder="De Krook is de stadsbibliotheek van Gent, de ideale plek om rustig te studeren tussen andere studenten, met zicht op de Leie.">
+                        </Textarea>
                         <small class="mt-1 block text-gray-500">
                             {{ (form.description?.[currentLanguage] || '').length }}/{{
                                 LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH

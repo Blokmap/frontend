@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import Button from 'primevue/button';
 import Paginator from 'primevue/paginator';
 import LocationDataList from '@/components/features/location/LocationDataList.vue';
 import LocationStateDropdown from '@/components/features/location/forms/LocationStateSelect.vue';
+import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -70,29 +74,33 @@ const onChangeLocationStatus = async (locationId: number, status: LocationState)
 </script>
 
 <template>
-    <div class="flex items-end justify-between gap-3">
+    <div class="flex items-center justify-between gap-3">
         <div class="space-y-2">
             <h1 class="text-3xl font-bold">
                 Alle Locaties ({{ abbreviateCount(counts?.locationCount) ?? '...' }})
             </h1>
 
-            <p class="text-sm font-normal text-slate-700">
-                <template v-if="locations?.total">
-                    {{ locations?.data.length ?? '...' }} van {{ locations?.total ?? '...' }}
-                    <template v-if="locations?.truncated">+</template> resultaten getoond.
-                </template>
-                <template v-else> Geen locaties gevonden. </template>
-            </p>
+            <ResultSummary
+                :current-count="locations?.data.length"
+                :total-count="locations?.total"
+                :truncated="locations?.truncated"
+                empty-message="Geen locaties gevonden.">
+            </ResultSummary>
         </div>
+
+        <Button severity="secondary">
+            <FontAwesomeIcon :icon="faPlus" />
+            Nieuwe Locatie
+        </Button>
+    </div>
+
+    <div class="flex gap-3">
         <SearchField
             v-model="searchQuery"
             placeholder="Zoek door alle locaties..."
             :loading="isFetching"
             @input="onSearchChange">
         </SearchField>
-    </div>
-
-    <div class="flex gap-3">
         <LocationStateDropdown v-model:status="filters.state" />
     </div>
 

@@ -1,8 +1,10 @@
 import type { Image } from '@/domain/image';
 import type { Translation } from '@/domain/translation';
 
+export type InstitutionCategory = 'education' | 'organisation' | 'government';
+
 export type Institution = {
-    slug: Translation;
+    slug: string;
     name: Translation;
     logo: Image;
     email: string | null;
@@ -12,6 +14,7 @@ export type Institution = {
     city: string | null;
     province: string | null;
     country: string | null;
+    category: InstitutionCategory;
 };
 
 export type InstitutionFilter = {

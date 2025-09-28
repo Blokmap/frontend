@@ -10,12 +10,15 @@ import type { OpeningTime } from '@/domain/openings';
 
 const props = defineProps<{
     openingTimes?: OpeningTime[];
+    currentWeek?: Date;
+    isLoading?: boolean;
 }>();
 
 const weekDays = computed(() => {
     const days = [];
-    const current = startOfWeek();
-    const weekEnd = endOfWeek();
+    const referenceDate = props.currentWeek || new Date();
+    const current = startOfWeek(referenceDate);
+    const weekEnd = endOfWeek(referenceDate);
 
     while (current <= weekEnd) {
         days.push(new Date(current));
@@ -33,8 +36,22 @@ const openingTimesByDay = computed(() => {
 
 <template>
     <div>
+        <!-- Loading State -->
+        <template v-if="isLoading">
+            <div class="openings-table">
+                <div v-for="n in 7" :key="n" class="table-row-skeleton">
+                    <div class="flex-1 px-4 py-2.5">
+                        <div class="h-4 w-16 animate-pulse rounded bg-gray-200"></div>
+                    </div>
+                    <div class="flex-1 px-4 py-2.5 text-right">
+                        <div class="ml-auto h-4 w-20 animate-pulse rounded bg-gray-200"></div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
         <!-- Opening Hours Table -->
-        <template v-if="openingTimes && openingTimes.length > 0">
+        <template v-else-if="openingTimes && openingTimes.length > 0">
             <div class="openings-table">
                 <OpeningsTableDay
                     v-for="(day, index) in weekDays"
@@ -51,7 +68,7 @@ const openingTimesByDay = computed(() => {
             <div class="no-hours">
                 <FontAwesomeIcon :icon="faClock" class="mb-2 h-6 w-6 text-gray-400" />
                 <p class="mb-3 text-sm font-medium text-gray-600">
-                    Geen openingstijden beschikbaar
+                    Geen openingstijden beschikbaar voor deze week
                 </p>
                 <Button
                     link
@@ -73,5 +90,13 @@ const openingTimesByDay = computed(() => {
 
 .no-hours {
     @apply rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center;
+}
+
+.table-row-skeleton {
+    @apply relative flex items-center border-b border-gray-200 bg-white text-sm;
+
+    &::after {
+        @apply absolute top-0 bottom-0 left-1/2 border-l border-gray-200 content-[''];
+    }
 }
 </style>

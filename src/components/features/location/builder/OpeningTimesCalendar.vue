@@ -23,7 +23,6 @@ const emit = defineEmits<{
 
 const timeSlots = computed(() => openingTimesToTimeSlots(props.openingTimes));
 
-// Event handlers
 function handleSlotClick(timeCell: TimeCell): void {
     emit('select:slot', timeCell);
 }

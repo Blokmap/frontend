@@ -10,6 +10,7 @@ import OpeningsTable from '@/components/features/location/openings/OpeningsTable
 import OpeningsTableSkeleton from '@/components/features/location/openings/OpeningsTableSkeleton.vue';
 import LocationMap from '@/components/features/map/LocationMap.vue';
 import LocationMapSkeleton from '@/components/features/map/LocationMapSkeleton.vue';
+import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import Gallery from '@/components/shared/organisms/image/Gallery.vue';
 import GallerySkeleton from '@/components/shared/organisms/image/GallerySkeleton.vue';
 import {
@@ -19,16 +20,19 @@ import {
     faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import placeholder from '@/assets/img/placeholder/location-stock-2.jpg';
 import { useLocation } from '@/composables/data/useLocations';
+import { useOpeningTimes } from '@/composables/data/useOpeningTimes';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 
 const { locationId } = defineProps<{ locationId: string }>();
 
 const { locale } = useI18n();
 const { setPageTitle } = usePageTitleStore();
+
+const currentWeek = ref(new Date());
 
 const {
     data: location,
@@ -38,6 +42,35 @@ const {
     computed(() => +locationId),
     { includes: ['createdBy'] },
 );
+
+const {
+    data: openingTimes,
+    isPending: openingTimesIsPending,
+    isError: _openingTimesIsError,
+} = useOpeningTimes(
+    computed(() => +locationId),
+    currentWeek,
+);
+
+function handlePreviousWeek(): void {
+    const newDate = new Date(currentWeek.value);
+    newDate.setDate(newDate.getDate() - 7);
+    currentWeek.value = newDate;
+}
+
+function handleNextWeek(): void {
+    const newDate = new Date(currentWeek.value);
+    newDate.setDate(newDate.getDate() + 7);
+    currentWeek.value = newDate;
+}
+
+function handleCurrentWeek(): void {
+    currentWeek.value = new Date();
+}
+
+function handleDateSelect(date: Date): void {
+    currentWeek.value = date;
+}
 
 watch(
     location,
@@ -185,9 +218,18 @@ watch(
                             </h3>
 
                             <div class="my-6">
-                                <OpeningsTable
-                                    v-if="location"
-                                    :opening-times="location.openingTimes" />
+                                <div class="space-y-6" v-if="location">
+                                    <CalendarControls
+                                        :current-week="currentWeek"
+                                        @click:previous-week="handlePreviousWeek"
+                                        @click:next-week="handleNextWeek"
+                                        @click:current-week="handleCurrentWeek"
+                                        @select:date="handleDateSelect" />
+                                    <OpeningsTable
+                                        :opening-times="openingTimes"
+                                        :current-week="currentWeek"
+                                        :is-loading="openingTimesIsPending" />
+                                </div>
                                 <OpeningsTableSkeleton v-else-if="isPending" />
                             </div>
 

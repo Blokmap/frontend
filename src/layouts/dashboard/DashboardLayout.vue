@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import ProgressSpinner from 'primevue/progressspinner';
+import { watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import DashboardHeader from './DashboardHeader.vue';
 import DashboardSidebar from './DashboardSidebar.vue';
 
-const { data: profile } = useAuthProfile();
+const router = useRouter();
+const route = useRoute();
+
+const { data: profile, isLoading } = useAuthProfile();
+
+watch(isLoading, (isLoading) => {
+    if (!isLoading && !profile.value) {
+        router.push(route);
+    }
+});
 </script>
 
 <template>

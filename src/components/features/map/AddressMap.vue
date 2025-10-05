@@ -22,6 +22,10 @@ withDefaults(
     },
 );
 
+defineEmits<{
+    move: (center: LngLat, zoom: number) => void;
+}>();
+
 useMapBox(useTemplateRef('mapContainer'), {
     center,
     zoom,

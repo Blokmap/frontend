@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/vue-query';
 import { getAdminCounts, getAdminStats } from '@/domain/admin';
 import type { AdminCounts, AdminStats } from '@/domain/admin';
-import type { CompQuery, CompQueryOptions } from '@/domain/shared';
+import type { CompQuery, CompQueryOptions } from '@/types';
 import type { AxiosError } from 'axios';
 
 export const ADMIN_QUERY_KEYS = {

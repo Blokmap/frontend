@@ -37,7 +37,7 @@ import { faChartBar, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import type { LocationState } from '@/domain/location';
-import type { FilterOption } from '@/domain/shared/types/filter';
+import type { FilterOption } from '@/types/filter';
 
 const status = defineModel<LocationState | null>('status', {
     default: null,

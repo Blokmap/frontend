@@ -15,7 +15,7 @@ import type {
 import type { ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { OpeningTime, OpeningTimeRequest } from '@/domain/openings';
-import type { Paginated } from '@/domain/shared';
+import type { Paginated } from '@/types';
 
 export type LocationIncludes = 'images' | 'createdBy';
 

@@ -4,9 +4,14 @@ import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useToast } from '@/composables/store/useToast';
 import { pushRedirectUrl, getAuthProfile } from '@/domain/auth';
-import type { Breadcrumbs } from '@/domain/shared';
+import type { Breadcrumbs } from '@/types';
 import type { NavigationGuardReturn, RouteLocationNormalized } from 'vue-router';
 
+/**
+ * Guard that checks if the user is authenticated and has the required permissions.
+ *
+ * @param to Route to which we are navigating
+ */
 export async function authRouterGuard(to: RouteLocationNormalized): Promise<NavigationGuardReturn> {
     const client = useQueryClient();
     const toast = useToast();
@@ -45,6 +50,11 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
     }
 }
 
+/**
+ * Guard that configures the breadcrumb store based on the route meta.
+ *
+ * @param to Route to which we are navigating
+ */
 export async function breadcrumbRouterGuard(
     to: RouteLocationNormalized,
 ): Promise<NavigationGuardReturn> {
@@ -58,6 +68,11 @@ export async function breadcrumbRouterGuard(
     }
 }
 
+/**
+ * Guard that configures the page title store based on the route meta.
+ *
+ * @param to Route to which we are navigating
+ */
 export async function titleRouterGuard(
     to: RouteLocationNormalized,
 ): Promise<NavigationGuardReturn> {

@@ -6,7 +6,7 @@ import { stringToDate } from '@/utils/date/date';
 import { formatIncludes, transformPaginatedResponse } from '@/utils/service';
 import type { Profile, ProfileStats, ProfileFilter } from './types';
 import type { Reservation, ReservationIncludes } from '@/domain/reservation';
-import type { Paginated } from '@/domain/shared';
+import type { Paginated } from '@/types';
 
 /**
  * Parse a profile object from the API by converting string dates to Date objects

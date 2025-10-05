@@ -1,8 +1,8 @@
 import { datesInRange } from '@/utils/date/date';
 import { timeToMinutes, type Time } from '@/utils/date/time';
-import { WEEKDAY_DAYS } from './constants';
-import type { OpeningTime, OpeningTimeRequest } from './types';
-import type { TimeSlot } from '@/domain/openings';
+import { WEEKDAY_DAYS } from '../constants';
+import type { OpeningTime, OpeningTimeRequest } from '../types';
+import type { TimeSlot } from '@/domain/calendar';
 
 /**
  * Generates opening times based on a repetition configuration.
@@ -53,7 +53,6 @@ export function openingTimeToTimeSlot(
     index: number,
 ): TimeSlot<{ openingTime: OpeningTimeRequest; index: number }> {
     return {
-        id: `opening-time-${index}-${openingTime.day.getTime()}-${timeToMinutes(openingTime.startTime)}`,
         day: new Date(openingTime.day),
         startTime: openingTime.startTime,
         endTime: openingTime.endTime,

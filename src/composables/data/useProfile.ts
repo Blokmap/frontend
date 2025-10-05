@@ -12,7 +12,7 @@ import {
 } from '@/domain/profile';
 import type { Profile, ProfileStats, ProfileFilter, ProfileState } from '@/domain/profile';
 import type { Reservation } from '@/domain/reservation';
-import type { CompMutation, CompMutationOptions, CompQuery, Paginated } from '@/domain/shared';
+import type { CompMutation, CompMutationOptions, CompQuery, Paginated } from '@/types';
 import type { AxiosError } from 'axios';
 
 export function useProfileStats(

@@ -29,7 +29,7 @@ import type {
     CompQuery,
     CompQueryOptions,
     Paginated,
-} from '@/domain/shared';
+} from '@/types';
 
 /**
  * Composable to search for locations based on filters.

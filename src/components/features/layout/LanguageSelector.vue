@@ -22,7 +22,7 @@ function toggleLanguageSelector(event: MouseEvent): void {
 }
 
 function handleLocaleChange(newLocale: string): void {
-    locale.value = newLocale;
+    language.value = newLocale;
     popoverRef.value?.hide();
 }
 </script>

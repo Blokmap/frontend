@@ -1,7 +1,7 @@
-import type { Pagination } from '../shared';
 import type { Authority } from '@/domain/authority';
 import type { Image } from '@/domain/image';
 import type { Institution } from '@/domain/institution';
+import type { Pagination } from '@/types';
 
 export type ProfileState = 'active' | 'disabled' | 'deleted';
 

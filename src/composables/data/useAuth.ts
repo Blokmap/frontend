@@ -5,12 +5,7 @@ import { useToast } from '@/composables/store/useToast';
 import { getAuthProfile, login, logout, register } from '@/domain/auth';
 import type { LoginRequest, RegisterRequest } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
-import type {
-    CompMutation,
-    CompMutationOptions,
-    CompQuery,
-    CompQueryOptions,
-} from '@/domain/shared';
+import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { AxiosError } from 'axios';
 
 export const AUTH_QUERY_KEYS = {

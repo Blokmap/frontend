@@ -13,7 +13,7 @@ import { useLocationsSearch, useNearestLocation } from '@/composables/data/useLo
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useToast } from '@/composables/store/useToast';
 import { router } from '@/config/router';
-import { hasNextPage } from '@/domain/shared';
+import { hasNextPage } from '@/utils/pagination';
 import type { Location } from '@/domain/location';
 import type { LngLatBounds } from '@/domain/map';
 

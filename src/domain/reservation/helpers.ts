@@ -1,6 +1,6 @@
 import { isDateInRange, startOfDay } from '@/utils/date/date';
 import type { Reservation } from './types';
-import type { TimeSlot } from '@/domain/openings';
+import type { TimeSlot } from '@/domain/calendar';
 
 /**
  * Filter reservations by date range

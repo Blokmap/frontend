@@ -1,7 +1,7 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import type { Institution, InstitutionFilter } from './types';
-import type { Paginated } from '../shared';
+import type { Paginated } from '@/types';
 
 /**
  * List institutions with optional filters.

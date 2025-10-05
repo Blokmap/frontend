@@ -5,7 +5,7 @@ import { getRandomDelay, mapBoxClient } from '@/config/axios';
 import { mapboxEndpoints } from '@/config/endpoints';
 import { geocodeAddress } from '@/domain/map';
 import type { LngLat } from '@/domain/map';
-import type { CompMutation, CompQuery, CompQueryOptions } from '@/domain/shared';
+import type { CompMutation, CompQuery, CompQueryOptions } from '@/types';
 import type { AxiosError } from 'axios';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;

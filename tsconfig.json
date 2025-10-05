@@ -5,9 +5,8 @@
         "strict": true,
         "noImplicitAny": true,
         "forceConsistentCasingInFileNames": true,
-        "baseUrl": ".",
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": ["./src/*"]
         }
     },
     "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]

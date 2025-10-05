@@ -1,4 +1,4 @@
-import type { Profile } from '../profile';
+import type { Profile } from '@/domain/profile';
 import type { Time } from '@/utils/date/time';
 
 export type OpeningTime = {
@@ -17,31 +17,18 @@ export type OpeningTime = {
 
 export type OpeningRepetitionConfig = {
     enabled: boolean;
-    selectedDays: number[]; // 1 = Monday, 7 = Sunday
+    selectedDays: number[];
     endDate: Date;
 };
 
 export type OpeningTimeRequest = {
-    sequenceNumber: number | null;
     day: Date;
     startTime: Time;
     endTime: Time;
     seatCount: number | null;
     reservableFrom: Date | null;
     reservableUntil: Date | null;
+    sequenceNumber: number | null;
     repetition?: OpeningRepetitionConfig;
-};
-
-export type TimeCell = {
-    day: Date;
-    startTime: Time;
-    endTime: Time;
-};
-
-export type TimeSlot<T = any> = {
-    id?: string;
-    day: Date;
-    startTime: Time;
-    endTime: Time;
-    metadata?: T;
+    computed?: boolean;
 };

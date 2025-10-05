@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/vue-query';
 import { toValue, type MaybeRefOrGetter } from 'vue';
 import { listAuthorities, type Authority, type AuthorityFilter } from '@/domain/authority';
-import type { CompQuery, CompQueryOptions, Paginated } from '@/domain/shared';
+import type { CompQuery, CompQueryOptions, Paginated } from '@/types';
 
 /**
  * Composable to fetch a list of authorities.

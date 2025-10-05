@@ -3,7 +3,8 @@ import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
 import { computed } from 'vue';
 import { openingTimesToTimeSlots } from '@/domain/openings';
 import { timeToString } from '@/utils/date/time';
-import type { OpeningTimeRequest, TimeCell, TimeSlot } from '@/domain/openings';
+import type { TimeCell, TimeSlot } from '@/domain/calendar';
+import type { OpeningTimeRequest } from '@/domain/openings';
 import type { Time } from '@/utils/date/time';
 
 const props = defineProps<{
@@ -15,21 +16,20 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     'update:dateInWeek': [value: Date];
-    'select:slot': [timeCell: TimeCell];
-    'edit:slot': [index: number, slot: OpeningTimeRequest];
-    'delete:slot': [index: number];
+    'click:cell': [timeCell: TimeCell];
+    'click:slot': [index: number, slot: OpeningTimeRequest];
     'drag:slot': [index: number, slot: OpeningTimeRequest];
 }>();
 
 const timeSlots = computed(() => openingTimesToTimeSlots(props.openingTimes));
 
 function handleSlotClick(timeCell: TimeCell): void {
-    emit('select:slot', timeCell);
+    emit('click:cell', timeCell);
 }
 
 function handleEditSlot(slot: TimeSlot): void {
     if (slot.metadata) {
-        emit('edit:slot', slot.metadata.index, slot.metadata.openingTime);
+        emit('click:slot', slot.metadata.index, slot.metadata.openingTime);
     }
 }
 

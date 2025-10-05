@@ -20,19 +20,20 @@ import {
     faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import placeholder from '@/assets/img/placeholder/location-stock-2.jpg';
 import { useLocation } from '@/composables/data/useLocations';
 import { useOpeningTimes } from '@/composables/data/useOpeningTimes';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
+import { useCalendarControls } from '@/composables/useCalendarControls';
 
 const { locationId } = defineProps<{ locationId: string }>();
 
 const { locale } = useI18n();
 const { setPageTitle } = usePageTitleStore();
-
-const currentWeek = ref(new Date());
+const { currentWeek, goToCurrentWeek, goToNextWeek, goToPreviousWeek, goToWeek } =
+    useCalendarControls();
 
 const {
     data: location,
@@ -51,26 +52,6 @@ const {
     computed(() => +locationId),
     currentWeek,
 );
-
-function handlePreviousWeek(): void {
-    const newDate = new Date(currentWeek.value);
-    newDate.setDate(newDate.getDate() - 7);
-    currentWeek.value = newDate;
-}
-
-function handleNextWeek(): void {
-    const newDate = new Date(currentWeek.value);
-    newDate.setDate(newDate.getDate() + 7);
-    currentWeek.value = newDate;
-}
-
-function handleCurrentWeek(): void {
-    currentWeek.value = new Date();
-}
-
-function handleDateSelect(date: Date): void {
-    currentWeek.value = date;
-}
 
 watch(
     location,
@@ -221,14 +202,16 @@ watch(
                                 <div class="space-y-6" v-if="location">
                                     <CalendarControls
                                         :current-week="currentWeek"
-                                        @click:previous-week="handlePreviousWeek"
-                                        @click:next-week="handleNextWeek"
-                                        @click:current-week="handleCurrentWeek"
-                                        @select:date="handleDateSelect" />
+                                        @click:previous-week="goToPreviousWeek"
+                                        @click:next-week="goToNextWeek"
+                                        @click:current-week="goToCurrentWeek"
+                                        @select:date="goToWeek">
+                                    </CalendarControls>
                                     <OpeningsTable
                                         :opening-times="openingTimes"
                                         :current-week="currentWeek"
-                                        :is-loading="openingTimesIsPending" />
+                                        :is-loading="openingTimesIsPending">
+                                    </OpeningsTable>
                                 </div>
                                 <OpeningsTableSkeleton v-else-if="isPending" />
                             </div>

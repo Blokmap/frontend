@@ -17,9 +17,7 @@ import { dateToTime, timeToDate } from '@/utils/date/time';
 
 const props = defineProps<{
     openingTime: OpeningTimeRequest | null;
-    isEditing?: boolean;
-    minDate?: Date;
-    maxDate?: Date;
+    editMode: 'single' | 'recurring' | null;
 }>();
 
 const visible = defineModel<boolean>('visible', {
@@ -33,18 +31,18 @@ const emit = defineEmits<{
 
 const { locale } = useI18n();
 
-const openingTime = ref<OpeningTimeRequest>(
-    props.openingTime ? { ...props.openingTime } : { ...DEFAULT_OPENING_TIME_REQUEST },
-);
+const openingTime = ref<OpeningTimeRequest>(DEFAULT_OPENING_TIME_REQUEST);
 
 const isRepetitionEnabled = computed({
     get: () => openingTime.value.repetition?.enabled || false,
     set: (enabled: boolean) => {
         if (enabled) {
-            if (!openingTime.value.repetition) {
+            const repetition = openingTime.value.repetition;
+
+            if (!repetition) {
                 openingTime.value.repetition = { ...DEFAULT_REPETITION_CONFIG, enabled: true };
             } else {
-                openingTime.value.repetition.enabled = true;
+                repetition.enabled = true;
             }
         } else {
             if (openingTime.value.repetition) {
@@ -66,7 +64,7 @@ const weekDays = computed(() => {
     });
 });
 
-const startTimeForInput = computed({
+const startTime = computed({
     get: () => {
         return timeToDate(openingTime.value.startTime);
     },
@@ -75,7 +73,7 @@ const startTimeForInput = computed({
     },
 });
 
-const endTimeForInput = computed({
+const endTime = computed({
     get: () => {
         return timeToDate(openingTime.value.endTime);
     },
@@ -84,7 +82,7 @@ const endTimeForInput = computed({
     },
 });
 
-const dateForInput = computed({
+const date = computed({
     get: () => {
         const day = openingTime.value.day;
         return day instanceof Date ? new Date(day) : new Date(day);
@@ -94,7 +92,18 @@ const dateForInput = computed({
     },
 });
 
-function toggleDaySelection(dayIndex: number) {
+// Watch for prop changes and update local state
+watch(
+    () => props.openingTime,
+    (newValue) => {
+        if (newValue) {
+            openingTime.value = { ...newValue };
+        }
+    },
+    { deep: true, immediate: true },
+);
+
+function toggleDaySelection(dayIndex: number): void {
     if (!openingTime.value.repetition) {
         openingTime.value.repetition = { ...DEFAULT_REPETITION_CONFIG, enabled: true };
     }
@@ -111,20 +120,9 @@ function toggleDaySelection(dayIndex: number) {
     openingTime.value.repetition.selectedDays = [...selectedDays];
 }
 
-function isDaySelected(dayIndex: number) {
+function isDaySelected(dayIndex: number): boolean {
     return openingTime.value.repetition?.selectedDays?.includes(dayIndex) || false;
 }
-
-// Watch for prop changes and update local state
-watch(
-    () => props.openingTime,
-    (newValue) => {
-        if (newValue) {
-            openingTime.value = { ...newValue };
-        }
-    },
-    { deep: true, immediate: true },
-);
 
 function handleSave(): void {
     emit('save', openingTime.value);
@@ -140,7 +138,7 @@ function handleDelete(): void {
         <template #header>
             <div class="flex items-center gap-2">
                 <FontAwesomeIcon :icon="faCalendarDays" class="text-primary-500" />
-                <span v-if="isEditing">Openingstijd Bewerken</span>
+                <span v-if="editMode !== null">Openingstijd Bewerken</span>
                 <span v-else>Openingstijd Toevoegen</span>
             </div>
         </template>
@@ -150,18 +148,12 @@ function handleDelete(): void {
             <div class="grid grid-cols-3 items-end gap-3">
                 <div>
                     <label class="mb-1 block text-xs font-medium text-gray-600">Datum</label>
-                    <Calendar
-                        v-model="dateForInput"
-                        :min-date="minDate"
-                        :max-date="maxDate"
-                        date-format="dd/mm"
-                        class="w-full text-sm">
-                    </Calendar>
+                    <Calendar v-model="date" date-format="dd/mm" class="w-full text-sm"> </Calendar>
                 </div>
                 <div>
                     <label class="mb-1 block text-xs font-medium text-gray-600">Van</label>
                     <Calendar
-                        v-model="startTimeForInput"
+                        v-model="startTime"
                         show-time
                         time-only
                         hour-format="24"
@@ -170,12 +162,7 @@ function handleDelete(): void {
                 </div>
                 <div>
                     <label class="mb-1 block text-xs font-medium text-gray-600">Tot</label>
-                    <Calendar
-                        v-model="endTimeForInput"
-                        show-time
-                        time-only
-                        hour-format="24"
-                        class="w-full">
+                    <Calendar v-model="endTime" show-time time-only hour-format="24" class="w-full">
                     </Calendar>
                 </div>
             </div>
@@ -225,7 +212,7 @@ function handleDelete(): void {
                         </label>
                         <Calendar
                             v-model="openingTime.repetition!.endDate"
-                            :min-date="dateForInput"
+                            :min-date="date"
                             date-format="dd/mm/yy"
                             class="w-full text-sm">
                         </Calendar>
@@ -237,18 +224,17 @@ function handleDelete(): void {
         <template #footer>
             <div class="flex w-full items-center justify-between gap-3">
                 <Button
-                    v-if="isEditing"
+                    v-if="editMode !== null"
                     severity="contrast"
                     variant="outlined"
                     @click="handleDelete">
                     <FontAwesomeIcon :icon="faTrash" class="mr-2" />
                     Verwijderen
                 </Button>
-                <div v-else></div>
 
                 <Button @click="handleSave" class="px-6">
                     <FontAwesomeIcon :icon="faPlus" class="mr-2" />
-                    {{ isEditing ? 'Bijwerken' : 'Toevoegen' }}
+                    {{ editMode !== null ? 'Bijwerken' : 'Toevoegen' }}
                 </Button>
             </div>
         </template>

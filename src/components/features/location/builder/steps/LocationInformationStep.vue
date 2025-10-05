@@ -5,10 +5,15 @@ import Textarea from 'primevue/textarea';
 import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import AddressMap from '@/components/features/map/AddressMap.vue';
-import Callout from '@/components/shared/molecules/Callout.vue';
-import { faArrowRight, faEdit, faHome, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import {
+    faArrowRight,
+    faEdit,
+    faHome,
+    faSpinner,
+    faExclamationTriangle,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, nextTick, ref, useTemplateRef, watchEffect } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/store/useToast';
@@ -25,8 +30,6 @@ const toast = useToast();
 
 const { locale } = useI18n();
 const { mutateAsync: geocodeAddress, isPending } = useForwardGeoSearch();
-
-const mapContainer = useTemplateRef('map-container');
 
 const currentLanguage = ref(locale.value);
 const mapZoom = ref<number>(18);
@@ -90,16 +93,10 @@ async function handleConfirmAddress(): Promise<void> {
 
     try {
         const address = formatLocationAddress(form.value);
+        const geocode = await geocodeAddress(address);
 
-        mapCenter.value = await geocodeAddress(address);
         mapZoom.value = 18;
-
-        await nextTick();
-
-        mapContainer.value?.$el.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-        });
+        mapCenter.value = geocode;
     } catch {
         toast.add({
             severity: 'error',
@@ -203,22 +200,19 @@ async function handleConfirmAddress(): Promise<void> {
         <LocationBuilderCard :icon="faHome">
             <template #header>
                 <h3 class="text-xl font-semibold text-gray-900">Adres informatie</h3>
-                <p class="text-sm text-gray-600">Voer het adres van uw locatie in op de kaart</p>
+                <p class="text-sm text-gray-600">
+                    Voer het adres van uw locatie in op de kaart. Sleep de kaart om de locatie
+                    marker precies te positioneren.
+                </p>
             </template>
             <template #default>
-                <!-- Info callout -->
-                <Callout>
-                    Sleep de kaart om de locatie marker precies te positioneren. De marker toont de
-                    exacte locatie die zal worden opgeslagen.
-                </Callout>
-
                 <!-- Map with overlay address input -->
                 <div class="relative">
                     <AddressMap
+                        class="aspect-video h-full w-full rounded-lg"
                         ref="map-container"
                         v-model:center="mapCenter"
-                        v-model:zoom="mapZoom"
-                        class="aspect-video h-full w-full rounded-lg">
+                        v-model:zoom="mapZoom">
                     </AddressMap>
 
                     <!-- Address Input Overlay -->
@@ -227,9 +221,16 @@ async function handleConfirmAddress(): Promise<void> {
                             <div class="flex items-center justify-between">
                                 <h4 class="text-sm font-medium text-gray-900">Adres</h4>
                                 <button
-                                    :disabled="!canConfirmAddress || isPending"
                                     class="save-address-btn"
+                                    :disabled="!canConfirmAddress || isPending"
                                     @click="handleConfirmAddress">
+                                    <template v-if="!hasCoordinates">
+                                        <FontAwesomeIcon :icon="faExclamationTriangle" />
+                                        <span>Bevestigen op kaart</span>
+                                    </template>
+                                    <template v-else>
+                                        <span>Kaart resetten</span>
+                                    </template>
                                     <FontAwesomeIcon
                                         :icon="isPending ? faSpinner : faArrowRight"
                                         :spin="isPending"
@@ -298,6 +299,7 @@ async function handleConfirmAddress(): Promise<void> {
 }
 
 .save-address-btn {
-    @apply flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200;
+    @apply space-x-2 px-3 py-1 text-xs;
+    @apply bg-secondary-50 text-secondary-700 cursor-pointer rounded-full;
 }
 </style>

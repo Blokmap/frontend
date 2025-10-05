@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/vue-query';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
 import { getLocationOpeningTimes, type OpeningTime } from '@/domain/openings';
-import type { CompQuery } from '@/domain/shared';
+import type { CompQuery } from '@/types';
 import type { AxiosError } from 'axios';
 
 /**

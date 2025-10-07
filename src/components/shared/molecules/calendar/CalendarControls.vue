@@ -10,7 +10,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { startOfWeek } from '@/utils/date/date';
+import { startOfWeek } from '@/utils/date';
 
 const props = defineProps<{
     currentWeek: Date;

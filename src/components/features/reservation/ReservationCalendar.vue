@@ -6,8 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { formatLocationAddress } from '@/domain/location';
 import { ReservationState, reservationsToTimeSlots } from '@/domain/reservation';
-import { endOfWeek, startOfWeek } from '@/utils/date/date';
 import type { Reservation } from '@/domain/reservation';
+import { endOfWeek, startOfWeek } from '@/utils/date/date';
 
 const props = defineProps<{
     dateInWeek: Date;

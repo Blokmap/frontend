@@ -13,7 +13,7 @@ import {
     DEFAULT_REPETITION_CONFIG,
     type OpeningTimeRequest,
 } from '@/domain/openings';
-import { dateToTime, timeToDate } from '@/utils/date/time';
+import { dateToTime, timeToDate } from '@/utils/time';
 
 const props = defineProps<{
     openingTime: OpeningTimeRequest | null;
@@ -34,20 +34,12 @@ const { locale } = useI18n();
 const openingTime = ref<OpeningTimeRequest>(DEFAULT_OPENING_TIME_REQUEST);
 
 const isRepetitionEnabled = computed({
-    get: () => openingTime.value.repetition?.enabled || false,
+    get: () => !!openingTime.value.repetition,
     set: (enabled: boolean) => {
         if (enabled) {
-            const repetition = openingTime.value.repetition;
-
-            if (!repetition) {
-                openingTime.value.repetition = { ...DEFAULT_REPETITION_CONFIG, enabled: true };
-            } else {
-                repetition.enabled = true;
-            }
+            openingTime.value.repetition = { ...DEFAULT_REPETITION_CONFIG };
         } else {
-            if (openingTime.value.repetition) {
-                openingTime.value.repetition.enabled = false;
-            }
+            delete openingTime.value.repetition;
         }
     },
 });
@@ -92,7 +84,6 @@ const date = computed({
     },
 });
 
-// Watch for prop changes and update local state
 watch(
     () => props.openingTime,
     (newValue) => {
@@ -104,11 +95,11 @@ watch(
 );
 
 function toggleDaySelection(dayIndex: number): void {
-    if (!openingTime.value.repetition) {
-        openingTime.value.repetition = { ...DEFAULT_REPETITION_CONFIG, enabled: true };
-    }
+    const repetition = openingTime.value.repetition;
 
-    const selectedDays = openingTime.value.repetition.selectedDays || [];
+    if (!isRepetitionEnabled.value || !repetition) return;
+
+    const selectedDays = repetition.selectedDays || [];
     const index = selectedDays.indexOf(dayIndex);
 
     if (index > -1) {
@@ -117,18 +108,19 @@ function toggleDaySelection(dayIndex: number): void {
         selectedDays.push(dayIndex);
     }
 
-    openingTime.value.repetition.selectedDays = [...selectedDays];
+    repetition.selectedDays = [...selectedDays];
 }
 
 function isDaySelected(dayIndex: number): boolean {
-    return openingTime.value.repetition?.selectedDays?.includes(dayIndex) || false;
+    const repetition = openingTime.value.repetition;
+    return repetition?.selectedDays?.includes(dayIndex) || false;
 }
 
-function handleSave(): void {
+function onSaveClick(): void {
     emit('save', openingTime.value);
 }
 
-function handleDelete(): void {
+function onDeleteClick(): void {
     emit('delete');
 }
 </script>
@@ -227,12 +219,12 @@ function handleDelete(): void {
                     v-if="editMode !== null"
                     severity="contrast"
                     variant="outlined"
-                    @click="handleDelete">
+                    @click="onDeleteClick">
                     <FontAwesomeIcon :icon="faTrash" class="mr-2" />
                     Verwijderen
                 </Button>
 
-                <Button @click="handleSave" class="px-6">
+                <Button @click="onSaveClick" class="px-6">
                     <FontAwesomeIcon :icon="faPlus" class="mr-2" />
                     {{ editMode !== null ? 'Bijwerken' : 'Toevoegen' }}
                 </Button>

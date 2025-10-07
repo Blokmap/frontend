@@ -1,14 +1,4 @@
-export type Time = {
-    hours: number;
-    minutes: number;
-};
-
-export type TimeRange = {
-    startTime: Time;
-    endTime: Time;
-};
-
-export type TimeGranularity = 'hours' | 'minutes';
+import type { Time, TimeGranularity } from './types';
 
 /**
  * Converts a Time object to a string in HH:MM format.
@@ -167,3 +157,5 @@ export function isNight(time: Time): boolean {
 export function isMorning(time: Time): boolean {
     return time.hours >= 6 && time.hours < 12;
 }
+
+export * from './types';

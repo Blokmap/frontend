@@ -1,7 +1,7 @@
 import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { stringToTime } from '@/utils/date/time';
+import { stringToTime } from '@/utils/time';
 import type { OpeningTime } from './types';
 
 /**

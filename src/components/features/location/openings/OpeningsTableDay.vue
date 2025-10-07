@@ -2,8 +2,8 @@
 import { useI18n } from 'vue-i18n';
 import { getOpeningTimesForDay } from '@/domain/openings/helpers';
 import { timeToString } from '@/utils/date';
-import { formatDayName, isToday } from '@/utils/date/date';
 import type { OpeningTime } from '@/domain/openings';
+import { formatDayName, isToday } from '@/utils/date/date';
 
 defineProps<{
     day: Date;

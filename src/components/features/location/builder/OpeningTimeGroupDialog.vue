@@ -9,7 +9,7 @@ import { faCalendarPlus, faPlus, faTrash } from '@fortawesome/free-solid-svg-ico
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
 import { i18n } from '@/config/locale';
-import { dateToTime, timeToDate } from '@/utils/date/time';
+import { dateToTime, timeToDate } from '@/utils/time';
 import type { OpeningTimeGroupRequest, Time } from '@/domain/openings';
 
 const props = defineProps<{

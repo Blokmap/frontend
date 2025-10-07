@@ -1,4 +1,4 @@
-import type { Time } from '@/utils/date';
+import type { Time } from '@/utils/time';
 
 export type TimeCell = {
     day: Date;

@@ -2,9 +2,9 @@ import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { parseProfile } from '@/domain/profile';
-import { dateToString, stringToDate } from '@/utils/date/date';
-import { stringToTime, timeToString } from '@/utils/date/time';
+import { dateToString, stringToDate } from '@/utils/date';
 import { formatIncludes, transformPaginatedResponse } from '@/utils/service';
+import { stringToTime, timeToString } from '@/utils/time';
 import type {
     Location,
     LocationSearchFilter,

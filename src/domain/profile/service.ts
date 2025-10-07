@@ -2,7 +2,7 @@ import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { parseReservation } from '@/domain/reservation';
-import { stringToDate } from '@/utils/date/date';
+import { stringToDate } from '@/utils/date';
 import { formatIncludes, transformPaginatedResponse } from '@/utils/service';
 import type { Profile, ProfileStats, ProfileFilter } from './types';
 import type { Reservation, ReservationIncludes } from '@/domain/reservation';

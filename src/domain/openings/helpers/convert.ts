@@ -1,6 +1,6 @@
-import { datesInRange } from '@/utils/date/date';
-import { timeToMinutes, type Time } from '@/utils/date/time';
-import { WEEKDAY_DAYS } from '../constants';
+import { WEEKDAY_DAYS } from '@/domain/calendar/constants';
+import { datesInRange } from '@/utils/date';
+import { timeToMinutes, type Time } from '@/utils/time';
 import type { OpeningTime, OpeningTimeRequest } from '../types';
 import type { TimeSlot } from '@/domain/calendar';
 

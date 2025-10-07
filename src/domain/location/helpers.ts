@@ -1,5 +1,6 @@
 import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
-import { isEvening, isMorning, isNight, isWeekend } from '@/utils/date';
+import { isWeekend } from '@/utils/date';
+import { isEvening, isMorning, isNight } from '@/utils/time';
 import { GOOGLE_MAPS_DIRECTIONS_BASE_URL } from './constants';
 import type { Location, LocationAddress, LocationFeatures } from './types';
 

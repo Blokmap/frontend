@@ -1,11 +1,9 @@
+import { WEEKDAY_DAYS } from '@/domain/calendar/constants';
 import { addToDate } from '@/utils/date';
-import { createTime } from '@/utils/date/time';
+import { createTime } from '@/utils/time';
 import type { OpeningRepetitionConfig, OpeningTimeRequest } from './types';
 
-export const WEEKDAY_DAYS = [0, 1, 2, 3, 4];
-
 export const DEFAULT_REPETITION_CONFIG: OpeningRepetitionConfig = {
-    enabled: false,
     selectedDays: WEEKDAY_DAYS,
     endDate: addToDate(new Date(), 2, 'week'),
 };

@@ -2,10 +2,10 @@
 import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
 import { computed } from 'vue';
 import { openingTimesToTimeSlots } from '@/domain/openings';
-import { timeToString } from '@/utils/date/time';
+import { timeToString } from '@/utils/time';
 import type { TimeCell, TimeSlot } from '@/domain/calendar';
 import type { OpeningTimeRequest } from '@/domain/openings';
-import type { Time } from '@/utils/date/time';
+import type { Time } from '@/utils/time';
 
 const props = defineProps<{
     dateInWeek: Date;
@@ -23,17 +23,17 @@ const emit = defineEmits<{
 
 const timeSlots = computed(() => openingTimesToTimeSlots(props.openingTimes));
 
-function handleSlotClick(timeCell: TimeCell): void {
+function onCellClick(timeCell: TimeCell): void {
     emit('click:cell', timeCell);
 }
 
-function handleEditSlot(slot: TimeSlot): void {
+function onSlotClick(slot: TimeSlot): void {
     if (slot.metadata) {
         emit('click:slot', slot.metadata.index, slot.metadata.openingTime);
     }
 }
 
-function handleDragSlot(slot: TimeSlot, newStartTime: Time, newEndTime: Time, newDay?: Date): void {
+function onSlotDrag(slot: TimeSlot, newStartTime: Time, newEndTime: Time, newDay?: Date): void {
     if (!slot.metadata) return;
 
     const day = newDay || new Date(slot.metadata.openingTime.day);
@@ -56,11 +56,10 @@ function handleDragSlot(slot: TimeSlot, newStartTime: Time, newEndTime: Time, ne
         :enable-dragging="true"
         :time-interval="15"
         :min-slot-duration="15"
-        class="h-full"
-        @click:cell="handleSlotClick"
-        @drag:slot="handleDragSlot">
+        @click:cell="onCellClick"
+        @drag:slot="onSlotDrag">
         <template #time-slot="{ slot }">
-            <div class="opening-time-card" @click="handleEditSlot(slot)">
+            <div class="opening-time-card" @click="onSlotClick(slot)">
                 <div class="time-display">
                     <span class="time-text">
                         {{ timeToString(slot.startTime) }}-{{ timeToString(slot.endTime) }}

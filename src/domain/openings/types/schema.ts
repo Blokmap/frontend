@@ -1,5 +1,5 @@
 import type { Profile } from '@/domain/profile';
-import type { Time } from '@/utils/date/time';
+import type { Time } from '@/utils/time';
 
 export type OpeningTime = {
     id: number;
@@ -16,8 +16,9 @@ export type OpeningTime = {
 };
 
 export type OpeningRepetitionConfig = {
-    enabled: boolean;
+    // 1 (Monday) to 7 (Sunday)
     selectedDays: number[];
+    // The date until which the repetition is valid
     endDate: Date;
 };
 
@@ -30,5 +31,4 @@ export type OpeningTimeRequest = {
     reservableUntil: Date | null;
     sequenceNumber: number | null;
     repetition?: OpeningRepetitionConfig;
-    computed?: boolean;
 };

@@ -4,7 +4,6 @@ import OpeningTimeDialog from '@/components/features/location/builder/OpeningTim
 import OpeningTimesCalendar from '@/components/features/location/builder/OpeningTimesCalendar.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import { ref, watchEffect } from 'vue';
-import { useCalendarControls } from '@/composables/useCalendarControls';
 import { DEFAULT_OPENING_TIME_REQUEST, type OpeningTimeRequest } from '@/domain/openings';
 import type { TimeCell } from '@/domain/calendar';
 import type { BuilderSubstep, LocationRequest } from '@/domain/location';
@@ -23,10 +22,8 @@ const substeps = defineModel<BuilderSubstep[]>('substeps', {
     required: true,
 });
 
-const { currentWeek, goToCurrentWeek, goToNextWeek, goToPreviousWeek, goToWeek } =
-    useCalendarControls();
-
-const showOpeningDialog = ref(false);
+const currentWeek = ref<Date>(new Date());
+const showOpeningDialog = ref<boolean>(false);
 const openingTime = ref<OpeningTimeRequest | null>(null);
 const editMode = ref<'single' | 'recurring' | null>(null);
 
@@ -51,16 +48,19 @@ function saveOpeningTime(): void {}
 
 /**
  * Handles the user clicking on a cell in the calendar to add a new opening time.
- * Opens the dialog and resets the opening time to the default.
+ * @param cell The cell that was clicked, containing the day and time range.
  */
-function onClickCell({ day, startTime, endTime }: TimeCell): void {
-    showOpeningDialog.value = true;
+function onClickCell(cell: TimeCell): void {
+    const { day, startTime, endTime } = cell;
+
     openingTime.value = {
         ...DEFAULT_OPENING_TIME_REQUEST,
         day,
         startTime,
         endTime,
     };
+
+    showOpeningDialog.value = true;
 }
 
 function onEditSlot(): void {}
@@ -75,13 +75,7 @@ function closeDialog(): void {}
 
     <div class="space-y-4 pb-20">
         <div class="flex flex-col space-y-6 overflow-visible">
-            <CalendarControls
-                :current-week="currentWeek"
-                @click:previous-week="goToPreviousWeek"
-                @click:next-week="goToNextWeek"
-                @click:current-week="goToCurrentWeek"
-                @select:date="goToWeek">
-            </CalendarControls>
+            <CalendarControls v-model:date="currentWeek"> </CalendarControls>
 
             <div class="flex-1">
                 <OpeningTimesCalendar

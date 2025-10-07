@@ -16,8 +16,7 @@ export const DEFAULT_OPENING_TIME_REQUEST: OpeningTimeRequest = {
     seatCount: 10,
     reservableFrom: null,
     reservableUntil: null,
-    repetition: DEFAULT_REPETITION_CONFIG,
-} as const;
+};
 
 /** Number of pixels per hour in the calendar grid */
 export const PIXELS_PER_HOUR = 50;

@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
-import Calendar from 'primevue/calendar';
 import Checkbox from 'primevue/checkbox';
 import Dialog from 'primevue/dialog';
 import InputNumber from 'primevue/inputnumber';
+import DateInput from '@/components/shared/molecules/DateInput.vue';
+import TimeInput from '@/components/shared/molecules/TimeInput.vue';
 import { faPlus, faTrash, faRepeat, faCalendarDays } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { WEEK_DAYS } from '@/domain/calendar/constants';
 import {
     DEFAULT_OPENING_TIME_REQUEST,
     DEFAULT_REPETITION_CONFIG,
     type OpeningTimeRequest,
 } from '@/domain/openings';
+import { formatDayName } from '@/utils/date';
 import { dateToTime, timeToDate } from '@/utils/time';
 
 const props = defineProps<{
@@ -31,29 +34,21 @@ const emit = defineEmits<{
 
 const { locale } = useI18n();
 
-const openingTime = ref<OpeningTimeRequest>(DEFAULT_OPENING_TIME_REQUEST);
+const openingTime = ref<OpeningTimeRequest>({ ...DEFAULT_OPENING_TIME_REQUEST });
+
+watch(
+    () => props.openingTime,
+    (defaultOpeningTime: OpeningTimeRequest | null) => {
+        openingTime.value = { ...(defaultOpeningTime ?? DEFAULT_OPENING_TIME_REQUEST) };
+    },
+    { deep: true, immediate: true },
+);
 
 const isRepetitionEnabled = computed({
     get: () => !!openingTime.value.repetition,
     set: (enabled: boolean) => {
-        if (enabled) {
-            openingTime.value.repetition = { ...DEFAULT_REPETITION_CONFIG };
-        } else {
-            delete openingTime.value.repetition;
-        }
+        openingTime.value.repetition = enabled ? { ...DEFAULT_REPETITION_CONFIG } : undefined;
     },
-});
-
-const weekDays = computed(() => {
-    return Array.from({ length: 7 }, (_, index) => {
-        const date = new Date(2024, 0, 1 + index);
-        const dayName = date.toLocaleDateString(locale.value, { weekday: 'short' });
-
-        return {
-            label: dayName.charAt(0).toUpperCase() + dayName.slice(1),
-            value: index,
-        };
-    });
 });
 
 const startTime = computed({
@@ -74,30 +69,10 @@ const endTime = computed({
     },
 });
 
-const date = computed({
-    get: () => {
-        const day = openingTime.value.day;
-        return day instanceof Date ? new Date(day) : new Date(day);
-    },
-    set: (newDate: Date) => {
-        openingTime.value.day = new Date(newDate);
-    },
-});
-
-watch(
-    () => props.openingTime,
-    (newValue) => {
-        if (newValue) {
-            openingTime.value = { ...newValue };
-        }
-    },
-    { deep: true, immediate: true },
-);
-
 function toggleDaySelection(dayIndex: number): void {
     const repetition = openingTime.value.repetition;
 
-    if (!isRepetitionEnabled.value || !repetition) return;
+    if (!repetition) return;
 
     const selectedDays = repetition.selectedDays || [];
     const index = selectedDays.indexOf(dayIndex);
@@ -140,22 +115,15 @@ function onDeleteClick(): void {
             <div class="grid grid-cols-3 items-end gap-3">
                 <div>
                     <label class="mb-1 block text-xs font-medium text-gray-600">Datum</label>
-                    <Calendar v-model="date" date-format="dd/mm" class="w-full text-sm"> </Calendar>
+                    <DateInput v-model:date="openingTime.day" />
                 </div>
                 <div>
                     <label class="mb-1 block text-xs font-medium text-gray-600">Van</label>
-                    <Calendar
-                        v-model="startTime"
-                        show-time
-                        time-only
-                        hour-format="24"
-                        class="w-full text-sm">
-                    </Calendar>
+                    <TimeInput v-model="startTime" hour-format="24" />
                 </div>
                 <div>
                     <label class="mb-1 block text-xs font-medium text-gray-600">Tot</label>
-                    <Calendar v-model="endTime" show-time time-only hour-format="24" class="w-full">
-                    </Calendar>
+                    <TimeInput v-model="endTime" hour-format="24" />
                 </div>
             </div>
 
@@ -184,30 +152,22 @@ function onDeleteClick(): void {
                     <div>
                         <label class="mb-2 block text-xs font-medium text-gray-600">Dagen</label>
                         <div class="flex gap-1">
-                            <button
-                                v-for="day in weekDays"
-                                :key="day.value"
-                                @click="toggleDaySelection(day.value)"
-                                :class="[
-                                    'day-button-compact',
-                                    { selected: isDaySelected(day.value) },
-                                ]">
-                                {{ day.label.substring(0, 2) }}
-                            </button>
+                            <template v-for="day in WEEK_DAYS" :key="day">
+                                <button
+                                    :class="[{ selected: isDaySelected(day) }, 'day-btn']"
+                                    @click="toggleDaySelection(day)">
+                                    {{ formatDayName(day, 'narrow', locale) }}
+                                </button>
+                            </template>
                         </div>
                     </div>
 
                     <!-- End Date -->
-                    <div>
+                    <div v-if="openingTime.repetition">
                         <label class="mb-1 block text-xs font-medium text-gray-600">
                             Einddatum
                         </label>
-                        <Calendar
-                            v-model="openingTime.repetition!.endDate"
-                            :min-date="date"
-                            date-format="dd/mm/yy"
-                            class="w-full text-sm">
-                        </Calendar>
+                        <DateInput v-model:date="openingTime.repetition.endDate"></DateInput>
                     </div>
                 </div>
             </div>
@@ -236,8 +196,8 @@ function onDeleteClick(): void {
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.day-button-compact {
-    @apply h-8 w-8 rounded text-xs font-medium transition-all duration-200;
+.day-btn {
+    @apply h-6 w-6 rounded-full text-xs font-medium transition-all duration-200;
     @apply border border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50;
 
     &.selected {

@@ -2,14 +2,15 @@
 import Button from 'primevue/button';
 import { faSpinner, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useLocalStorage } from '@vueuse/core';
+import { storeToRefs } from 'pinia';
 import { useTemplateRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useMapBox } from '@/composables/useMapBox';
 import OpeningsTable from '../location/openings/OpeningsTable.vue';
 import Marker from './Marker.vue';
 import type { Location } from '@/domain/location';
-import type { LngLatBounds, MapOptions } from '@/domain/map';
+import type { LngLatBounds } from '@/domain/map';
 
 defineProps<{
     locations?: Location[];
@@ -26,8 +27,8 @@ const emit = defineEmits<{
 }>();
 
 const mapContainerRef = useTemplateRef('mapContainer');
-const config = useLocalStorage<MapOptions>('map', {});
-const map = useMapBox(mapContainerRef, config.value);
+const filters = storeToRefs(useLocationFilters());
+const map = useMapBox(mapContainerRef, filters.config.value);
 const router = useRouter();
 
 function handleMarkerClick(id: number): void {
@@ -50,8 +51,8 @@ watch(
     map.bounds,
     (newBounds) => {
         emit('update:bounds', newBounds);
-        config.value.center = map.center.value;
-        config.value.zoom = map.zoom.value;
+        filters.config.value.center = map.center.value;
+        filters.config.value.zoom = map.zoom.value;
     },
     { deep: true },
 );

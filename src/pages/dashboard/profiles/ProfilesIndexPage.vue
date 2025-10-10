@@ -6,13 +6,14 @@ import SearchField from '@/components/shared/atoms/SearchField.vue';
 import { useDebounceFn } from '@vueuse/core';
 import { ref } from 'vue';
 // import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useProfiles, useProfileState } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/store/useToast';
 import { abbreviateCount } from '@/utils/format';
 import type { Profile, ProfileFilter, ProfileState } from '@/domain/profile';
 
-// const router = useRouter();
+const router = useRouter();
 const toast = useToast();
 
 const searchQuery = ref<string>('');
@@ -46,11 +47,20 @@ const onSearchChange = useDebounceFn(() => {
     filters.value.page = 1;
 }, 300);
 
-const onProfileClick = (profile: Profile) => {
-    console.log('Profile clicked:', profile);
-};
+/**
+ * Handle clicking on a profile to view its details.
+ * @param profile The profile that was clicked.
+ */
+function onProfileClick(profile: Profile): void {
+    router.push({ name: 'profiles.detail', params: { profileId: profile.id } });
+}
 
-const onChangeProfileStatus = async (profileId: number, status: ProfileState) => {
+/**
+ * Handle changing the status of a profile (enable/disable).
+ * @param profileId The ID of the profile to update.
+ * @param status The new status to set.
+ */
+async function onChangeProfileStatus(profileId: number, status: ProfileState) {
     await updateProfileState({ profileId, state: status });
     await refetch();
 
@@ -60,7 +70,7 @@ const onChangeProfileStatus = async (profileId: number, status: ProfileState) =>
         summary: 'Status Bijgewerkt',
         detail: `Profiel werd succesvol ${statusLabel}!`,
     });
-};
+}
 </script>
 
 <template>

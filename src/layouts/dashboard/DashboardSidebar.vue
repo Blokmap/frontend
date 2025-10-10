@@ -62,8 +62,11 @@ function isRouteActive(routeName: string): boolean {
                 </h4>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.locations.index') }"
-                    :to="{ name: 'dashboard.locations.index' }">
+                    :class="{ active: isRouteActive('dashboard.profiles.locations') }"
+                    :to="{
+                        name: 'dashboard.profiles.locations',
+                        params: { profileId: profile.id },
+                    }">
                     <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Locaties</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />

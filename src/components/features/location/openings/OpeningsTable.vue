@@ -4,9 +4,9 @@ import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { groupOpeningTimesByDay } from '@/domain/openings/helpers';
+import { endOfWeek, startOfWeek } from '@/utils/date';
 import OpeningsTableDay from './OpeningsTableDay.vue';
 import type { OpeningTime } from '@/domain/openings';
-import { endOfWeek, startOfWeek } from '@/utils/date/date';
 
 const props = defineProps<{
     openingTimes?: OpeningTime[];

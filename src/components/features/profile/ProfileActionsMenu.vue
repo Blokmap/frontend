@@ -35,7 +35,7 @@ const navigationActions = [
     {
         label: 'Locaties bekijken',
         icon: faMapLocationDot,
-        to: { name: 'dashboard.locations.index', query: { profileId: props.profile.id } },
+        to: { name: 'dashboard.profiles.locations', params: { profileId: props.profile.id } },
     },
     {
         label: 'Autoriteiten bekijken',

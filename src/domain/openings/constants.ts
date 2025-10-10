@@ -1,9 +1,10 @@
 import { WEEKDAY_DAYS } from '@/domain/calendar/constants';
 import { addToDate } from '@/utils/date';
 import { createTime } from '@/utils/time';
-import type { OpeningRepetitionConfig, OpeningTimeRequest } from './types';
+import type { OpeningTimeRequest } from './types';
+import type { TimeSlotRepetition } from '../calendar';
 
-export const DEFAULT_REPETITION_CONFIG: OpeningRepetitionConfig = {
+export const DEFAULT_REPETITION_CONFIG: TimeSlotRepetition = {
     selectedDays: WEEKDAY_DAYS,
     endDate: addToDate(new Date(), 2, 'week'),
 };

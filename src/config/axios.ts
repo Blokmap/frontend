@@ -57,7 +57,7 @@ export function setupAxiosInterceptors(): void {
                 });
             }
 
-            return error;
+            throw error;
         },
     );
 }

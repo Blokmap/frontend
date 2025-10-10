@@ -8,11 +8,13 @@ withDefaults(
         loading?: boolean;
         emptyMessage?: string;
         isLocationPending?: (locationId: number) => boolean;
+        showStatusChange?: boolean;
     }>(),
     {
         loading: false,
         emptyMessage: 'No locations found',
         isLocationPending: () => false,
+        showStatusChange: true,
     },
 );
 
@@ -43,6 +45,7 @@ const onChangeState = (locationId: number, status: LocationState) => {
                     :key="location.id"
                     :location="location"
                     :action-is-pending="isLocationPending?.(location.id)"
+                    :show-status-change="showStatusChange"
                     @click="onLocationClick"
                     @change:state="onChangeState">
                 </LocationItem>

@@ -10,10 +10,16 @@ import LocationLanguagesList from './details/LocationLanguagesList.vue';
 import LocationStateBadge from './details/LocationStateBadge.vue';
 import type { Location, LocationState } from '@/domain/location';
 
-const props = defineProps<{
-    location: Location;
-    actionIsPending?: boolean;
-}>();
+const props = withDefaults(
+    defineProps<{
+        location: Location;
+        actionIsPending?: boolean;
+        showStatusChange?: boolean;
+    }>(),
+    {
+        showStatusChange: true,
+    },
+);
 
 const emit = defineEmits<{
     click: [location: Location];
@@ -79,6 +85,7 @@ const onStatusChange = (locationId: number, status: LocationState) => {
             <LocationActionsMenu
                 :location="location"
                 :is-pending="actionIsPending"
+                :show-status-change="showStatusChange"
                 @change:status="onStatusChange">
             </LocationActionsMenu>
         </div>

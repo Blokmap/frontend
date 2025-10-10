@@ -21,6 +21,8 @@ export const LocationsIndexPage = () =>
 
 // Dashboard Profiles
 export const ProfilesIndexPage = () => import('@/pages/dashboard/profiles/ProfilesIndexPage.vue');
+export const ProfileLocationsPage = () =>
+    import('@/pages/dashboard/profiles/ProfileLocationsPage.vue');
 
 // Dashboard Authorities
 export const DashboardAuthoritiesPage = () =>

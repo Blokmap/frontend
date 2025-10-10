@@ -19,8 +19,8 @@ import { formatDayName } from '@/utils/date';
 import { dateToTime, timeToDate } from '@/utils/time';
 
 const props = defineProps<{
-    openingTime: OpeningTimeRequest | null;
-    editMode: 'single' | 'recurring' | null;
+    openingTime?: OpeningTimeRequest | null;
+    isEditing?: boolean | null;
 }>();
 
 const visible = defineModel<boolean>('visible', {
@@ -29,7 +29,7 @@ const visible = defineModel<boolean>('visible', {
 
 const emit = defineEmits<{
     save: [openingTime: OpeningTimeRequest];
-    delete: [];
+    delete: [openingTime: OpeningTimeRequest];
 }>();
 
 const { locale } = useI18n();
@@ -38,8 +38,9 @@ const openingTime = ref<OpeningTimeRequest>({ ...DEFAULT_OPENING_TIME_REQUEST })
 
 watch(
     () => props.openingTime,
-    (defaultOpeningTime: OpeningTimeRequest | null) => {
-        openingTime.value = { ...(defaultOpeningTime ?? DEFAULT_OPENING_TIME_REQUEST) };
+    (opening?: OpeningTimeRequest | null) => {
+        const def = opening ?? DEFAULT_OPENING_TIME_REQUEST;
+        openingTime.value = { ...def };
     },
     { deep: true, immediate: true },
 );
@@ -96,7 +97,8 @@ function onSaveClick(): void {
 }
 
 function onDeleteClick(): void {
-    emit('delete');
+    if (!props.openingTime || !props.isEditing) return;
+    emit('delete', props.openingTime);
 }
 </script>
 
@@ -105,7 +107,7 @@ function onDeleteClick(): void {
         <template #header>
             <div class="flex items-center gap-2">
                 <FontAwesomeIcon :icon="faCalendarDays" class="text-primary-500" />
-                <span v-if="editMode !== null">Openingstijd Bewerken</span>
+                <span v-if="isEditing">Openingstijd Bewerken</span>
                 <span v-else>Openingstijd Toevoegen</span>
             </div>
         </template>
@@ -135,7 +137,7 @@ function onDeleteClick(): void {
             </div>
 
             <!-- Repetition Toggle -->
-            <div class="space-y-3 rounded-lg border border-slate-200 bg-gray-50 p-4">
+            <div class="repetition" v-if="!isEditing">
                 <div class="flex items-center gap-3">
                     <Checkbox v-model="isRepetitionEnabled" binary input-id="repetition-enabled" />
                     <label
@@ -175,18 +177,15 @@ function onDeleteClick(): void {
 
         <template #footer>
             <div class="flex w-full items-center justify-between gap-3">
-                <Button
-                    v-if="editMode !== null"
-                    severity="contrast"
-                    variant="outlined"
-                    @click="onDeleteClick">
+                <Button v-if="isEditing" severity="contrast" class="text-sm" @click="onDeleteClick">
                     <FontAwesomeIcon :icon="faTrash" class="mr-2" />
-                    Verwijderen
+                    <span v-if="isRepetitionEnabled">Verwijder Groep</span>
+                    <span v-else>Verwijderen</span>
                 </Button>
 
-                <Button @click="onSaveClick" class="px-6">
+                <Button @click="onSaveClick" class="ml-auto text-sm">
                     <FontAwesomeIcon :icon="faPlus" class="mr-2" />
-                    {{ editMode !== null ? 'Bijwerken' : 'Toevoegen' }}
+                    {{ isEditing ? 'Bijwerken' : 'Toevoegen' }}
                 </Button>
             </div>
         </template>
@@ -203,5 +202,9 @@ function onDeleteClick(): void {
     &.selected {
         @apply bg-secondary-500 border-secondary-500 hover:bg-secondary-600 text-white;
     }
+}
+
+.repetition {
+    @apply space-y-3 rounded-lg border border-slate-200 bg-gray-50 p-4;
 }
 </style>

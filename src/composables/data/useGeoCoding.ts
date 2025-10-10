@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getRandomDelay, mapBoxClient } from '@/config/axios';
+import { mapBoxClient } from '@/config/axios';
 import { mapboxEndpoints } from '@/config/endpoints';
 import { geocodeAddress } from '@/domain/map';
 import type { LngLat } from '@/domain/map';
@@ -91,7 +91,6 @@ export function useGeoSearch(
 export function useForwardGeoSearch(): CompMutation<string, LngLat> {
     const mutation = useMutation({
         mutationFn: async (address: string) => {
-            await getRandomDelay(500, 800);
             return geocodeAddress(address);
         },
     });

@@ -64,7 +64,6 @@ export type LocationRequest = {
     zip: string;
     city: string;
     country: string;
-    province: string;
     latitude: number;
     longitude: number;
 };

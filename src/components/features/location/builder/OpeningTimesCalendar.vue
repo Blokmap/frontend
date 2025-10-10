@@ -1,48 +1,47 @@
 <script setup lang="ts">
 import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
 import { computed } from 'vue';
-import { openingTimesToTimeSlots } from '@/domain/openings';
+import { openingsToTimeslots, type TimeCell, type TimeSlot } from '@/domain/calendar';
 import { timeToString } from '@/utils/time';
-import type { TimeCell, TimeSlot } from '@/domain/calendar';
 import type { OpeningTimeRequest } from '@/domain/openings';
 import type { Time } from '@/utils/time';
 
 const props = defineProps<{
-    dateInWeek: Date;
     openingTimes: OpeningTimeRequest[];
+    dateInWeek: Date;
     minDate?: Date;
     maxDate?: Date;
 }>();
 
 const emit = defineEmits<{
-    'update:dateInWeek': [value: Date];
     'click:cell': [timeCell: TimeCell];
-    'click:slot': [index: number, slot: OpeningTimeRequest];
-    'drag:slot': [index: number, slot: OpeningTimeRequest];
+    'click:slot': [slot: TimeSlot<OpeningTimeRequest>];
+    'drag:slot': [slot: TimeSlot<OpeningTimeRequest>, newSlot: TimeSlot];
 }>();
 
-const timeSlots = computed(() => openingTimesToTimeSlots(props.openingTimes));
+const timeSlots = computed(() => openingsToTimeslots(props.openingTimes));
 
 function onCellClick(timeCell: TimeCell): void {
     emit('click:cell', timeCell);
 }
 
-function onSlotClick(slot: TimeSlot): void {
-    if (slot.metadata) {
-        emit('click:slot', slot.metadata.index, slot.metadata.openingTime);
-    }
+function onSlotClick(slot: TimeSlot<OpeningTimeRequest>): void {
+    emit('click:slot', slot);
 }
 
-function onSlotDrag(slot: TimeSlot, newStartTime: Time, newEndTime: Time, newDay?: Date): void {
+function onSlotDrag(
+    slot: TimeSlot<OpeningTimeRequest>,
+    newStartTime: Time,
+    newEndTime: Time,
+    newDay: Date,
+): void {
     if (!slot.metadata) return;
 
-    const day = newDay || new Date(slot.metadata.openingTime.day);
-
-    emit('drag:slot', slot.metadata.index, {
-        ...slot.metadata.openingTime,
+    emit('drag:slot', slot, {
+        metadata: slot.metadata,
         startTime: newStartTime,
         endTime: newEndTime,
-        day,
+        day: newDay,
     });
 }
 </script>

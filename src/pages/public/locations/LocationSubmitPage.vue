@@ -1,56 +1,26 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
+import SubmissionDialog from '@/components/features/location/builder/LocationSubmissionDialog.vue';
 import LocationImagesStep from '@/components/features/location/builder/steps/LocationImagesStep.vue';
 import LocationInformationStep from '@/components/features/location/builder/steps/LocationInformationStep.vue';
-import LocationOpeningsStep from '@/components/features/location/builder/steps/LocationOpeningsStep.vue';
 import LocationSettingsStep from '@/components/features/location/builder/steps/LocationSettingsStep.vue';
 import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { isAxiosError } from 'axios';
-import { computed, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import {
-    useCreateLocation,
-    useCreateLocationImage,
-    useCreateLocationTimeslots,
-} from '@/composables/data/useLocations';
-import { useToast } from '@/composables/store/useToast';
+import { computed, ref } from 'vue';
 import { useLocalStorage } from '@/composables/useLocalStorage';
-import {
-    DEFAULT_LOCATION_REQUEST,
-    deleteLocation,
-    deleteLocationImages,
-    deleteLocationOpenings,
-} from '@/domain/location';
+import { DEFAULT_LOCATION_REQUEST } from '@/domain/location';
 import type { ImageRequest } from '@/domain/image';
 import type { BuilderStep, BuilderSubstep, LocationRequest } from '@/domain/location';
-import type { OpeningTimeRequest } from '@/domain/openings';
 
-const router = useRouter();
-const route = useRoute();
-const toast = useToast();
-
-const { mutateAsync: createLocation, isPending: isCreatingLocation } = useCreateLocation();
-const { mutateAsync: createImage, isPending: isCreatingImages } = useCreateLocationImage();
-const { mutateAsync: createOpenings, isPending: isCreatingOpenings } = useCreateLocationTimeslots();
-
-const isCreating = computed(
-    () => isCreatingLocation.value || isCreatingImages.value || isCreatingOpenings.value,
-);
+const imagesForm = ref<ImageRequest[]>([]);
 
 const locationForm = useLocalStorage<LocationRequest>('location-form', {
     defaults: DEFAULT_LOCATION_REQUEST,
 });
 
-const openingsForm = useLocalStorage<OpeningTimeRequest[]>('openings-form', {
-    defaults: [],
-    dateFields: ['day', 'reservableFrom', 'reservableUntil'],
-});
-
-const imagesForm = ref<ImageRequest[]>([]);
-
-const step = ref<BuilderStep>(route.query.step?.toString() || 'basics');
+const showSubmissionDialog = ref(false);
+const step = ref<BuilderStep>('basics');
 const substeps = ref<BuilderSubstep[]>([]);
 
 const steps: { id: string; label: string; desc: string }[] = [
@@ -69,95 +39,44 @@ const steps: { id: string; label: string; desc: string }[] = [
         label: 'Instellingen',
         desc: 'De instellingen van de locatie bepalen hoe men reservaties kan maken.',
     },
-    {
-        id: 'openings',
-        label: 'Openingstijden',
-        desc: 'Voeg de openingstijden toe. Geen zorgen, je kan deze op elk moment aanpassen!',
-    },
 ];
 
-const canGoNext = computed(() => substeps.value.every((substep) => substep.isCompleted));
-const canGoPrevious = computed(() => stepIndex.value > 0);
-const stepIndex = computed(() => steps.findIndex((curr) => curr.id === step.value));
-const progressPercentage = computed(() => Math.round(((stepIndex.value + 1) * 100) / steps.length));
-const isLastStep = computed(() => step.value === 'openings');
+const stepIndex = computed<number>(() => steps.findIndex((curr) => curr.id === step.value));
+const progress = computed<number>(() => Math.round(((stepIndex.value + 1) * 100) / steps.length));
 
-watch(
-    () => route.query.step,
-    (newStep) => {
-        if (steps.some((s) => s.id === newStep)) {
-            step.value = newStep?.toString() || 'basics';
-        }
-    },
-);
+const canGoNext = computed<boolean>(() => substeps.value.every((substep) => substep.isCompleted));
+const canGoPrevious = computed<boolean>(() => stepIndex.value > 0);
+const isLastStep = computed<boolean>(() => step.value === 'settings');
+const isCreating = computed<boolean>(() => showSubmissionDialog.value);
 
+/**
+ * Go to the next step in the wizard
+ * @return void
+ */
 function goNext(): void {
     if (canGoNext.value && stepIndex.value < steps.length - 1) {
         const nextStep = steps[stepIndex.value + 1].id;
-        router.push({ query: { step: nextStep } });
+        step.value = nextStep;
     }
 }
 
+/**
+ * Go to the previous step in the wizard
+ * @return void
+ */
 function goPrevious(): void {
     if (stepIndex.value > 0) {
         const prevStep = steps[stepIndex.value - 1].id;
-        router.push({ query: { step: prevStep } });
+        step.value = prevStep;
     }
 }
 
+/**
+ * Submit the location form, images and openings to the API
+ * @return Promise<void>
+ */
 async function submitLocation(): Promise<void> {
-    if (!canGoNext.value) return;
-
-    let locationId = null;
-    let createdLocation = false;
-    let createdImages = false;
-    let createdOpenings = false;
-
-    try {
-        const location = await createLocation(locationForm.value);
-        locationId = location.id;
-        createdLocation = true;
-
-        if (imagesForm.value.length > 0) {
-            await Promise.all(
-                imagesForm.value.map((image) => createImage({ locationId: location.id, image })),
-            );
-            createdImages = true;
-        }
-
-        if (openingsForm.value.length > 0) {
-            await createOpenings({ timeslots: openingsForm.value, locationId: location.id });
-            createdOpenings = true;
-        }
-
-        toast.add({
-            severity: 'success',
-            summary: 'Locatie succesvol aangemaakt',
-            detail: 'De locatie is succesvol aangemaakt en wacht op goedkeuring door een beheerder. We houden je op de hoogte!',
-        });
-
-        router.push({ name: 'locations' });
-    } catch (error) {
-        if (isAxiosError(error)) {
-            toast.add({
-                severity: 'error',
-                summary: 'Fout bij het aanmaken van de locatie',
-                detail: error.response?.data?.message || error.message,
-            });
-        }
-
-        if (createdOpenings && locationId) {
-            await deleteLocationOpenings(locationId);
-        }
-
-        if (createdImages && locationId) {
-            await deleteLocationImages(locationId);
-        }
-
-        if (createdLocation && locationId) {
-            await deleteLocation(locationId);
-        }
-    }
+    showSubmissionDialog.value = true;
 }
 </script>
 
@@ -185,7 +104,7 @@ async function submitLocation(): Promise<void> {
             </div>
 
             <div class="progressbar">
-                <div class="indicator" :style="{ width: progressPercentage + '%' }" />
+                <div class="indicator" :style="{ width: progress + '%' }" />
             </div>
 
             <div class="flex justify-between space-x-3">
@@ -233,15 +152,16 @@ async function submitLocation(): Promise<void> {
                 v-model:form="locationForm"
                 v-model:substeps="substeps">
             </LocationSettingsStep>
-
-            <LocationOpeningsStep
-                v-if="step === 'openings'"
-                v-model:openings="openingsForm"
-                v-model:substeps="substeps"
-                :form="locationForm">
-            </LocationOpeningsStep>
         </div>
     </div>
+    <Teleport to="body">
+        <SubmissionDialog
+            v-model:visible="showSubmissionDialog"
+            :can-submit="isLastStep && canGoNext"
+            :location="locationForm"
+            :images="imagesForm">
+        </SubmissionDialog>
+    </Teleport>
 </template>
 
 <style scoped>

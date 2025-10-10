@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { addToDate, endOfWeek, startOfWeek } from '@/utils/date';
-import DateInput from '../DateInput.vue';
+import DateInput from '../form/DateInput.vue';
 
 defineProps<{
     minDate?: Date;

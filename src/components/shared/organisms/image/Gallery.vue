@@ -13,13 +13,7 @@ const props = defineProps<{
 const isFullscreen = ref(false);
 const selectedImageIndex = ref(0);
 
-const primaryImage = computed(() => {
-    return props.images.find((img) => img.index === 0);
-});
-
-const secondaryImages = computed(() => {
-    return props.images.filter((img) => img.index !== 0);
-});
+const images = computed(() => [...props.images].sort((a, b) => a.index - b.index));
 
 const gridClasses = computed(() => {
     const count = props.images.length;
@@ -40,8 +34,8 @@ const imageLayout = computed(() => {
     }
 
     const layout = [];
-    const primary = primaryImage.value;
-    const secondary = secondaryImages.value;
+    const primary = images.value[0];
+    const secondary = images.value.slice(1);
 
     layout.push({
         image: primary,

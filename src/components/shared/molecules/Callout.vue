@@ -14,9 +14,11 @@ withDefaults(
         severity?: 'info' | 'warn' | 'error' | 'success';
         message?: string;
         icon?: IconDefinition;
+        showIcon?: boolean;
     }>(),
     {
         severity: 'info',
+        showIcon: true,
     },
 );
 
@@ -30,7 +32,7 @@ const icons = {
 
 <template>
     <Message :severity="severity">
-        <template #icon>
+        <template v-if="showIcon" #icon>
             <slot name="icon">
                 <FontAwesomeIcon class="text-xl" :icon="icon || icons[severity]" />
             </slot>

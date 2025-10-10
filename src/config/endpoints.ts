@@ -13,6 +13,7 @@ export const endpoints = {
     },
     profiles: {
         create: '/profiles',
+        read: '/profiles/{id}',
         update: '/profiles/{id}',
         delete: '/profiles/{id}',
         avatar: '/profiles/{id}/avatar',

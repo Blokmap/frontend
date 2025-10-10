@@ -59,7 +59,7 @@
 }
 
 .p-message-error {
-    @apply bg-red-50/95 text-red-600 shadow-[0px_4px_8px_0px_theme(colors.red.500/0.04)] outline-red-200 dark:bg-red-500/15 dark:text-red-500 dark:outline-red-700/35;
+    @apply bg-red-50/95 text-red-700 shadow-[0px_4px_8px_0px_theme(colors.red.500/0.04)] outline-red-200 dark:bg-red-500/15 dark:text-red-500 dark:outline-red-700/35;
 }
 
 .p-message-error .p-message-close-button {

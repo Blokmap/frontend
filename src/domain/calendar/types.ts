@@ -14,6 +14,20 @@ export type TimeSlot<T = any> = {
     metadata?: T;
 };
 
+export type TimeSlotRepetition = {
+    // 1 (Monday) to 7 (Sunday)
+    selectedDays: number[];
+    // The date until which the repetition is valid
+    endDate: Date;
+};
+
+export type TimeSlottable = {
+    day: Date;
+    startTime: Time;
+    endTime: Time;
+    repetition?: TimeSlotRepetition;
+};
+
 /**
  * Calendar drag interaction types
  */

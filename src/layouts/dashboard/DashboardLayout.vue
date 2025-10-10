@@ -43,7 +43,7 @@ watch(isLoading, (isLoading) => {
                 </header>
 
                 <main class="main" role="main">
-                    <RouterView />
+                    <RouterView :profile="profile" />
                 </main>
             </template>
         </div>

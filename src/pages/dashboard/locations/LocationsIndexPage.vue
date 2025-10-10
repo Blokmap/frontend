@@ -45,24 +45,41 @@ const {
 
 const { data: counts } = useAdminCounts();
 
-const isLocationPending = (locationId: number): boolean => {
-    return isUpdatingLocation.value && updateVariables.value?.locationId === locationId;
-};
-
-const onPageChange = (event: { page: number }): void => {
-    filters.value.page = event.page + 1;
-};
-
 const onSearchChange = useDebounceFn(() => {
     filters.value.query = searchQuery.value;
     filters.value.page = 1;
 }, 300);
 
-const onLocationClick = (location: Location) => {
-    router.push({ name: 'locations.detail', params: { locationId: location.id } });
-};
+/**
+ * Check if a location is currently being updated.
+ * @param locationId
+ */
+function isLocationPending(locationId: number): boolean {
+    return isUpdatingLocation.value && updateVariables.value?.locationId === locationId;
+}
 
-const onChangeLocationStatus = async (locationId: number, status: LocationState) => {
+/**
+ * Handle changing the page in the paginator.
+ * @param event The pagination event containing the new page number.
+ */
+function onPageChange(event: { page: number }): void {
+    filters.value.page = event.page + 1;
+}
+
+/**
+ * Handle clicking on a location to view its details.
+ * @param location The location that was clicked.
+ */
+function onLocationClick(location: Location) {
+    router.push({ name: 'locations.detail', params: { locationId: location.id } });
+}
+
+/**
+ * Handle changing the status of a location.
+ * @param locationId The ID of the location to update.
+ * @param status The new status to set.
+ */
+async function onChangeLocationStatus(locationId: number, status: LocationState) {
     await updateLocationState({ locationId, state: status });
     await refetch();
     toast.add({
@@ -70,7 +87,7 @@ const onChangeLocationStatus = async (locationId: number, status: LocationState)
         summary: 'Status Bijgewerkt',
         detail: 'Locatiestatus werd succesvol bijgewerkt!',
     });
-};
+}
 </script>
 
 <template>
@@ -88,10 +105,12 @@ const onChangeLocationStatus = async (locationId: number, status: LocationState)
             </ResultSummary>
         </div>
 
-        <Button severity="secondary">
-            <FontAwesomeIcon :icon="faPlus" />
-            Nieuwe Locatie
-        </Button>
+        <RouterLink :to="{ name: 'locations.submit' }">
+            <Button severity="secondary">
+                <FontAwesomeIcon :icon="faPlus" />
+                Nieuwe Locatie
+            </Button>
+        </RouterLink>
     </div>
 
     <div class="flex gap-3">

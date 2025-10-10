@@ -44,7 +44,7 @@ export function parseOpeningTime(openingTimeData: any): OpeningTime {
  * @param locationData - The raw location data from the API
  * @returns The parsed Location object with proper types
  */
-function parseLocation(locationData: any): Location {
+export function parseLocation(locationData: any): Location {
     const location = { ...locationData };
 
     location.createdAt = stringToDate(location.createdAt);

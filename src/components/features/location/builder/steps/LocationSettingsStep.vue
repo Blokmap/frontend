@@ -47,7 +47,8 @@ watchEffect(() => {
                         input-id="seatCount"
                         :min="1"
                         placeholder="Bijv. 50"
-                        class="w-full" />
+                        class="w-full">
+                    </InputNumber>
                     <p class="text-xs text-slate-500">
                         Het maximum aantal personen dat tegelijk kan reserveren in normale
                         omstandigheden
@@ -55,7 +56,8 @@ watchEffect(() => {
                             v-tooltip="
                                 'Je kan per openingstijd dit aantal overschrijven wanneer nodig.'
                             "
-                            :icon="faCircleQuestion" />
+                            :icon="faCircleQuestion">
+                        </FontAwesomeIcon>
                     </p>
                 </div>
 

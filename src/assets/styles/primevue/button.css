@@ -2,7 +2,7 @@
 
 .p-button {
     @apply relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden select-none;
-    @apply bg-primary enabled:hover:bg-primary-emphasis enabled:active:bg-primary-emphasis-alt text-primary-contrast;
+    @apply bg-primary-100 enabled:hover:bg-primary-200 enabled:active:bg-primary-300 text-primary-700;
     @apply rounded-xl px-4 py-2 font-medium;
     @apply transition-colors duration-200;
     @apply disabled:cursor-default;
@@ -87,9 +87,9 @@
 }
 
 .p-button-success {
-    @apply bg-green-500 enabled:hover:bg-green-600 enabled:active:bg-green-700;
+    @apply bg-green-100 enabled:hover:bg-green-600 enabled:active:bg-green-700;
     @apply border-green-500 enabled:hover:border-green-600 enabled:active:border-green-700;
-    @apply text-white enabled:hover:text-white enabled:active:text-white;
+    @apply text-green-700 enabled:hover:text-white enabled:active:text-white;
     @apply dark:bg-green-400 dark:enabled:hover:bg-green-300 dark:enabled:active:bg-green-200;
     @apply dark:border-green-400 dark:enabled:hover:border-green-300 dark:enabled:active:border-green-200;
     @apply dark:text-green-950 dark:enabled:hover:text-green-950 dark:enabled:active:text-green-950;
@@ -138,7 +138,7 @@
 }
 
 .p-button-contrast {
-    @apply bg-slate-200/80 enabled:hover:bg-slate-300/50 enabled:active:bg-slate-300/80;
+    @apply bg-slate-100 enabled:hover:bg-slate-200/50 enabled:active:bg-slate-200;
     @apply enabled:hover:border-surface-200 enabled:active:border-surface-300 border-gray-200;
     @apply text-surface-600 enabled:hover:text-surface-700 enabled:active:text-surface-800;
 }

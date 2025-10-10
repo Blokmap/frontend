@@ -4,6 +4,7 @@ import { endpoints } from '@/config/endpoints';
 import { parseReservation } from '@/domain/reservation';
 import { stringToDate } from '@/utils/date';
 import { formatIncludes, transformPaginatedResponse } from '@/utils/service';
+import { parseLocation } from '../location';
 import type { Profile, ProfileStats, ProfileFilter } from './types';
 import type { Reservation, ReservationIncludes } from '@/domain/reservation';
 import type { Paginated } from '@/types';
@@ -108,6 +109,18 @@ export async function deleteProfileAvatar(profileId: number): Promise<void> {
 }
 
 /**
+ * Fetch a profile by its ID.
+ *
+ * @param profileId - The ID of the profile to fetch.
+ * @returns A promise that resolves to the fetched profile.
+ */
+export async function readProfile(profileId: number): Promise<Profile> {
+    const url = endpoints.profiles.read.replace('{id}', String(profileId));
+    const response = await client.get<any>(url);
+    return parseProfile(response.data);
+}
+
+/**
  * List profiles with optional filters (admin endpoint).
  *
  * @param filters - The filters to apply when listing profiles.
@@ -152,4 +165,16 @@ export async function unblockProfile(profileId: number): Promise<Profile> {
         endpoints.profiles.unblock.replace('{id}', profileId.toString()),
     );
     return parseProfile(response.data);
+}
+
+/**
+ * Fetches the locations associated with a specific profile.
+ *
+ * @param profileId - The ID of the profile whose locations are to be fetched.
+ * @returns A promise that resolves to a paginated list of locations.
+ */
+export async function getProfileLocations(profileId: string | number) {
+    const endpoint = endpoints.profiles.locations.list.replace('{id}', profileId.toString());
+    const response = await client.get<Location[]>(endpoint);
+    return response.data.map(parseLocation);
 }

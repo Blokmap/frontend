@@ -70,7 +70,8 @@ const onStatusChange = (profileId: number, status: ProfileState) => {
                 <ProfileActionsMenu
                     :profile="profile"
                     :is-pending="props.isProfilePending?.(profile.id)"
-                    @change:status="onStatusChange" />
+                    @change:status="onStatusChange">
+                </ProfileActionsMenu>
             </TableCell>
         </template>
     </Table>

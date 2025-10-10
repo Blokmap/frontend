@@ -11,7 +11,11 @@ import type { Profile } from '@/domain/profile';
  */
 export async function getAuthProfile(): Promise<Profile | null> {
     const { data } = await client.get(endpoints.auth.current);
-    if (data === null) return null;
+
+    if (data === null) {
+        return null;
+    }
+
     return parseProfile(data);
 }
 

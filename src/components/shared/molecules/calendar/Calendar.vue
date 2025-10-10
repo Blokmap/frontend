@@ -33,7 +33,7 @@ const props = withDefaults(
 const emit = defineEmits<{
     'click:cell': [timeCell: TimeCell];
     'click:day': [day: Date];
-    'drag:slot': [slot: TimeSlot<T>, start: Time, end: Time, day?: Date];
+    'drag:slot': [slot: TimeSlot<T>, start: Time, end: Time, day: Date];
 }>();
 
 onMounted(() => {
@@ -174,6 +174,7 @@ function onMouseMove(event: MouseEvent): void {
 
         // Ensure minimum duration
         const minEndTime = addToTime(newStart, props.minSlotDuration, 'minutes');
+
         if (timeToMinutes(newEnd) < timeToMinutes(minEndTime)) {
             newEnd = minEndTime;
         }
@@ -184,7 +185,7 @@ function onMouseMove(event: MouseEvent): void {
         }
     }
 
-    emit('drag:slot', slot, slot.startTime, slot.endTime, newDay);
+    emit('drag:slot', slot, newStart, newEnd, newDay);
 }
 
 function onMouseUp(): void {
@@ -280,8 +281,8 @@ function onMouseUp(): void {
                             class="pointer-events-none absolute right-0 left-0 z-20"
                             :style="{ top: `${currentTimePosition}%` }">
                             <div class="flex items-center">
-                                <div class="-ml-1 h-2 w-2 rounded-full bg-red-500" />
-                                <div class="h-0.5 flex-1 bg-red-500" />
+                                <div class="-ml-1 h-2 w-2 rounded-full bg-red-500"></div>
+                                <div class="h-0.5 flex-1 bg-red-500"></div>
                             </div>
                         </div>
                     </div>
@@ -295,11 +296,9 @@ function onMouseUp(): void {
 @reference '@/assets/styles/main.css';
 
 .calendar-container {
-    @apply flex flex-col;
+    @apply flex max-h-[75vh] min-h-[500px] flex-col;
     @apply rounded-lg border border-gray-200 bg-white;
     @apply overflow-hidden;
-    min-height: 500px;
-    max-height: 75vh;
 }
 
 .calendar-scroll-container {

@@ -5,15 +5,17 @@ import Textarea from 'primevue/textarea';
 import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import AddressMap from '@/components/features/map/AddressMap.vue';
+import Callout from '@/components/shared/molecules/Callout.vue';
 import {
-    faArrowRight,
     faEdit,
     faHome,
     faSpinner,
     faExclamationTriangle,
+    faCheckCircle,
+    faChevronCircleRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref, watchEffect } from 'vue';
+import { computed, ref, watch, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/store/useToast';
@@ -29,15 +31,17 @@ const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
 const toast = useToast();
 
 const { locale } = useI18n();
-const { mutateAsync: geocodeAddress, isPending } = useForwardGeoSearch();
+const { mutateAsync: geocodeAddress, isPending: isPendingCoordinates } = useForwardGeoSearch();
 
-const currentLanguage = ref(locale.value);
 const mapZoom = ref<number>(18);
+const currentLanguage = ref(locale.value);
+const calculatedCoordinates = ref<LngLat | null>(null);
 
 const mapCenter = computed<LngLat>({
     get() {
-        if (form.value.longitude && form.value.latitude) {
-            return [form.value.longitude, form.value.latitude];
+        const { longitude, latitude } = form.value;
+        if (longitude && latitude) {
+            return [longitude, latitude];
         }
         return defaultMapOptions.center;
     },
@@ -47,12 +51,36 @@ const mapCenter = computed<LngLat>({
     },
 });
 
-const canConfirmAddress = computed(() => {
+const canCalculateCoordinates = computed(() => {
     return !!(form.value.street && form.value.number && form.value.zip && form.value.city);
 });
 
 const hasCoordinates = computed(() => {
     return !!(form.value.latitude && form.value.longitude);
+});
+
+const hasManuallyAdjusted = computed(() => {
+    if (!calculatedCoordinates.value || !hasCoordinates.value) return false;
+
+    const [calcLng, calcLat] = calculatedCoordinates.value;
+    const threshold = 0.00001; // ~1 meter precision
+
+    return (
+        Math.abs(form.value.longitude! - calcLng) > threshold ||
+        Math.abs(form.value.latitude! - calcLat) > threshold
+    );
+});
+
+const needsCoordinateCalculation = computed(() => {
+    if (!canCalculateCoordinates.value) return false;
+
+    // Need calculation if no coordinates at all
+    if (!hasCoordinates.value) return true;
+
+    // Need recalculation if address changed but coordinates weren't recalculated
+    if (!calculatedCoordinates.value) return true;
+
+    return false;
 });
 
 watchEffect(() => {
@@ -88,13 +116,14 @@ watchEffect(() => {
     ];
 });
 
-async function handleConfirmAddress(): Promise<void> {
-    if (!canConfirmAddress.value) return;
+async function calculateCoordinates(): Promise<void> {
+    if (!canCalculateCoordinates.value) return;
 
     try {
         const address = formatLocationAddress(form.value);
         const geocode = await geocodeAddress(address);
 
+        calculatedCoordinates.value = geocode;
         mapZoom.value = 18;
         mapCenter.value = geocode;
     } catch {
@@ -105,6 +134,21 @@ async function handleConfirmAddress(): Promise<void> {
         });
     }
 }
+
+function resetToCalculatedCoordinates(): void {
+    if (calculatedCoordinates.value) {
+        mapCenter.value = calculatedCoordinates.value;
+        mapZoom.value = 18;
+    }
+}
+
+// Clear calculated coordinates when address changes
+watch(
+    () => [form.value.street, form.value.number, form.value.zip, form.value.city],
+    () => {
+        calculatedCoordinates.value = null;
+    },
+);
 </script>
 
 <template>
@@ -220,23 +264,6 @@ async function handleConfirmAddress(): Promise<void> {
                         <div class="space-y-3 rounded-lg bg-white p-3 shadow-xs">
                             <div class="flex items-center justify-between">
                                 <h4 class="text-sm font-medium text-gray-900">Adres</h4>
-                                <button
-                                    class="save-address-btn"
-                                    :disabled="!canConfirmAddress || isPending"
-                                    @click="handleConfirmAddress">
-                                    <template v-if="!hasCoordinates">
-                                        <FontAwesomeIcon :icon="faExclamationTriangle" />
-                                        <span>Bevestigen op kaart</span>
-                                    </template>
-                                    <template v-else>
-                                        <span>Kaart resetten</span>
-                                    </template>
-                                    <FontAwesomeIcon
-                                        :icon="isPending ? faSpinner : faArrowRight"
-                                        :spin="isPending"
-                                        class="h-3 w-3">
-                                    </FontAwesomeIcon>
-                                </button>
                             </div>
 
                             <!-- Compact address input -->
@@ -246,15 +273,13 @@ async function handleConfirmAddress(): Promise<void> {
                                         v-model="form.street"
                                         placeholder="Straat"
                                         class="address-input"
-                                        :disabled="isPending"
-                                        @keyup.enter="handleConfirmAddress">
+                                        :disabled="isPendingCoordinates">
                                     </InputText>
                                     <InputText
                                         v-model="form.number"
                                         placeholder="Nr"
                                         class="address-input"
-                                        :disabled="isPending"
-                                        @keyup.enter="handleConfirmAddress">
+                                        :disabled="isPendingCoordinates">
                                     </InputText>
                                 </div>
 
@@ -263,17 +288,66 @@ async function handleConfirmAddress(): Promise<void> {
                                         v-model="form.zip"
                                         placeholder="Postcode"
                                         class="address-input"
-                                        :disabled="isPending"
-                                        @keyup.enter="handleConfirmAddress">
+                                        :disabled="isPendingCoordinates">
                                     </InputText>
                                     <InputText
                                         v-model="form.city"
                                         placeholder="Stad"
                                         class="address-input"
-                                        :disabled="isPending"
-                                        @keyup.enter="handleConfirmAddress">
+                                        :disabled="isPendingCoordinates">
                                     </InputText>
                                 </div>
+                            </div>
+
+                            <!-- Status indicator -->
+                            <div
+                                v-if="isPendingCoordinates"
+                                class="flex items-center space-x-2 text-xs text-gray-600">
+                                <FontAwesomeIcon :icon="faSpinner" spin class="h-3 w-3" />
+                                <span>Coördinaten berekenen...</span>
+                            </div>
+                            <div v-else-if="needsCoordinateCalculation" class="space-y-2">
+                                <Button
+                                    size="small"
+                                    class="w-full"
+                                    @click="calculateCoordinates"
+                                    :disabled="!canCalculateCoordinates">
+                                    <FontAwesomeIcon
+                                        :icon="faExclamationTriangle"
+                                        class="mr-2 h-3 w-3">
+                                    </FontAwesomeIcon>
+                                    <span>Bereken coördinaten</span>
+                                </Button>
+                                <p class="text-xs text-gray-500">
+                                    Klik om de locatie op de kaart te tonen
+                                </p>
+                            </div>
+                            <Callout
+                                v-else-if="hasCoordinates && hasManuallyAdjusted"
+                                :show-icon="false"
+                                @click="resetToCalculatedCoordinates">
+                                <div class="flex cursor-pointer items-center gap-2 text-xs">
+                                    <span>
+                                        Locatie werd verfijnd op de kaart. Klik hier om te resetten.
+                                    </span>
+                                    <FontAwesomeIcon :icon="faChevronCircleRight" />
+                                </div>
+                            </Callout>
+                            <Callout
+                                v-else-if="hasCoordinates && !hasManuallyAdjusted"
+                                :show-icon="false">
+                                <div class="flex items-center gap-2 text-xs">
+                                    <span> Sleep de marker om de positie te verfijnen. </span>
+                                    <FontAwesomeIcon :icon="faCheckCircle" />
+                                </div>
+                            </Callout>
+
+                            <!-- Coordinates display -->
+                            <div v-if="hasCoordinates" class="text-center">
+                                <p class="font-mono text-[10px] text-gray-400">
+                                    {{ form.latitude?.toFixed(6) }},
+                                    {{ form.longitude?.toFixed(6) }}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -296,10 +370,5 @@ async function handleConfirmAddress(): Promise<void> {
     &:last-child {
         @apply rounded-l-none;
     }
-}
-
-.save-address-btn {
-    @apply space-x-2 px-3 py-1 text-xs;
-    @apply bg-secondary-50 text-secondary-700 cursor-pointer rounded-full;
 }
 </style>

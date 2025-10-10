@@ -9,10 +9,19 @@ import {
     unblockProfile,
     updateProfile,
     updateProfileAvatar,
+    getProfileLocations,
+    readProfile,
 } from '@/domain/profile';
+import type { Location } from '@/domain/location';
 import type { Profile, ProfileStats, ProfileFilter, ProfileState } from '@/domain/profile';
 import type { Reservation } from '@/domain/reservation';
-import type { CompMutation, CompMutationOptions, CompQuery, Paginated } from '@/types';
+import type {
+    CompMutation,
+    CompMutationOptions,
+    CompQuery,
+    CompQueryOptions,
+    Paginated,
+} from '@/types';
 import type { AxiosError } from 'axios';
 
 export function useProfileStats(
@@ -45,6 +54,44 @@ export function useProfileReservations(
             const dateInWeek = toValue(inWeekOf);
             return getProfileReservations(profileIdValue, dateInWeek, ['location', 'openingTime']);
         },
+    });
+
+    return query;
+}
+
+export function useProfileLocations(profileId: MaybeRef<number | null>): CompQuery<Location[]> {
+    const enabled = computed(() => toValue(profileId) !== null);
+
+    const query = useQuery<Location[], AxiosError>({
+        queryKey: ['profile', 'locations', profileId],
+        enabled,
+        queryFn: () => getProfileLocations(toValue(profileId)!),
+    });
+
+    return query;
+}
+
+export function useProfile(
+    profileId: MaybeRef<number>,
+    options: CompQueryOptions = {},
+): CompQuery<Profile | null> {
+    const query = useQuery<Profile | null, AxiosError>({
+        ...options,
+        queryKey: ['profile', 'details', profileId],
+        queryFn: () => readProfile(toValue(profileId)),
+    });
+
+    return query;
+}
+
+export function useProfiles(
+    filters: MaybeRefOrGetter<Partial<ProfileFilter>>,
+    options: CompMutationOptions = {},
+): CompQuery<Paginated<Profile>> {
+    const query = useQuery<Paginated<Profile>, AxiosError>({
+        ...options,
+        queryKey: ['admin', 'profiles', filters],
+        queryFn: () => listProfiles(toValue(filters)),
     });
 
     return query;
@@ -97,19 +144,6 @@ export function useDeleteAvatar(options: CompMutationOptions = {}): CompMutation
     });
 
     return mutation;
-}
-
-export function useProfiles(
-    filters: MaybeRefOrGetter<Partial<ProfileFilter>>,
-    options: CompMutationOptions = {},
-): CompQuery<Paginated<Profile>> {
-    const query = useQuery<Paginated<Profile>, AxiosError>({
-        ...options,
-        queryKey: ['admin', 'profiles', filters],
-        queryFn: () => listProfiles(toValue(filters)),
-    });
-
-    return query;
 }
 
 type ProfileStateParams = {

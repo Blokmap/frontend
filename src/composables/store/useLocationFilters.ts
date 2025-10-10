@@ -1,11 +1,14 @@
+import { useLocalStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { LocationSearchFilter } from '@/domain/location';
+import type { MapOptions } from '@/domain/map';
 
 /**
  * Pinia store for managing location filters.
  */
 export const useLocationFilters = defineStore('locationFilters', () => {
+    const config = useLocalStorage<MapOptions>('map', {});
     const geoLocation = ref<GeoJSON.GeoJsonProperties | null>(null);
 
     const filters = ref<LocationSearchFilter>({
@@ -29,6 +32,7 @@ export const useLocationFilters = defineStore('locationFilters', () => {
 
     return {
         filters,
+        config,
         geoLocation,
         updateFilters,
     };

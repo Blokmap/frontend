@@ -24,6 +24,7 @@ import {
     ProfilePage,
     ProfilesIndexPage,
     ReservationsPage,
+    ProfileLocationsPage,
 } from './pages';
 
 const routes: RouteRecordRaw[] = [
@@ -257,6 +258,15 @@ const routes: RouteRecordRaw[] = [
                                 { label: 'Dashboard', to: { name: 'dashboard' } },
                                 { label: 'Profielen', to: { name: 'dashboard.profiles.index' } },
                             ],
+                        },
+                    },
+                    {
+                        path: ':profileId?/locations',
+                        name: 'dashboard.profiles.locations',
+                        props: true,
+                        component: ProfileLocationsPage,
+                        meta: {
+                            auth: { required: true },
                         },
                     },
                 ],

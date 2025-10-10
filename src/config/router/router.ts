@@ -267,6 +267,15 @@ const routes: RouteRecordRaw[] = [
                         component: ProfileLocationsPage,
                         meta: {
                             auth: { required: true },
+                            title: 'Locaties',
+                            breadcrumbs: [
+                                { label: 'Dashboard', to: { name: 'dashboard' } },
+                                { label: 'Profielen', to: { name: 'dashboard.profiles.index' } },
+                                {
+                                    label: 'Locaties',
+                                    to: { name: 'dashboard.profiles.locations' },
+                                },
+                            ],
                         },
                     },
                 ],

@@ -9,9 +9,9 @@ import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { useLocalStorage } from '@/composables/useLocalStorage';
-import { DEFAULT_LOCATION_REQUEST } from '@/domain/location';
+import { DEFAULT_LOCATION_REQUEST, type LocationRequest } from '@/domain/location';
+import type { BuilderStep, BuilderSubstep } from '@/components/features/location/builder';
 import type { ImageRequest } from '@/domain/image';
-import type { BuilderStep, BuilderSubstep, LocationRequest } from '@/domain/location';
 
 const imagesForm = ref<ImageRequest[]>([]);
 
@@ -23,7 +23,7 @@ const showSubmissionDialog = ref(false);
 const step = ref<BuilderStep>('basics');
 const substeps = ref<BuilderSubstep[]>([]);
 
-const steps: { id: string; label: string; desc: string }[] = [
+const steps: { id: BuilderStep; label: string; desc: string }[] = [
     {
         id: 'basics',
         label: 'Registreer nieuwe Blokspot',

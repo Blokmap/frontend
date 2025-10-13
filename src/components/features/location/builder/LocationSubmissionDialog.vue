@@ -9,8 +9,8 @@ import { isAxiosError } from 'axios';
 import { computed, ref, watchEffect } from 'vue';
 import { useCreateLocation, useCreateLocationImage } from '@/composables/data/useLocations';
 import { getImageRequestPreviewUrl, type ImageRequest } from '@/domain/image';
+import type { SubmissionStep } from '.';
 import type { LocationRequest } from '@/domain/location';
-import type { StepStatus } from '@/types/step';
 
 const props = defineProps<{
     canSubmit: boolean;
@@ -28,10 +28,10 @@ const { mutateAsync: createLocationImage } = useCreateLocationImage();
 const error = ref<string | null>(null);
 const locationId = ref<number | null>(null);
 
-const locationStatus = ref<StepStatus>('idle');
-const imagesStatus = ref<StepStatus>('idle');
+const locationStatus = ref<SubmissionStep>('idle');
+const imagesStatus = ref<SubmissionStep>('idle');
 
-const imagesStatuses = ref<Map<number, StepStatus>>(new Map());
+const imagesStatuses = ref<Map<number, SubmissionStep>>(new Map());
 
 const shouldStartSubmission = computed(() => {
     return props.canSubmit && visible.value && locationStatus.value === 'idle';
@@ -51,7 +51,7 @@ const allImagesCompleted = computed(() => {
  * Get the status of a specific image.
  * @param image The image to get the status for.
  */
-function getImageStatus(image: ImageRequest): StepStatus | undefined {
+function getImageStatus(image: ImageRequest): SubmissionStep | undefined {
     return imagesStatuses.value.get(image.index);
 }
 

@@ -23,8 +23,11 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
-import { useUpdateLocationImages } from '@/composables/data/useLocationImages';
-import { useReadLocation, useUpdateLocation } from '@/composables/data/useLocations';
+import {
+    useReadLocation,
+    useUpdateLocation,
+    useUpdateLocationImages,
+} from '@/composables/data/useLocations';
 import { useToast } from '@/composables/store/useToast';
 import { imageToRequest } from '@/domain/image';
 import { locationToRequest } from '@/domain/location';
@@ -73,7 +76,15 @@ const { mutateAsync: updateLocation, isPending: isUpdatingLocation } = useUpdate
     },
 });
 
-const { updateImages } = useUpdateLocationImages();
+const { mutateAsync: updateImages, isPending: isUpdatingImages } = useUpdateLocationImages({
+    onSuccess: () => {
+        toast.add({
+            severity: 'success',
+            summary: 'Opgeslagen',
+            detail: 'De afbeeldingen zijn succesvol bijgewerkt.',
+        });
+    },
+});
 
 const locationForm = ref<LocationRequest | null>(null);
 const imagesForm = ref<ImageRequest[]>([]);
@@ -81,7 +92,7 @@ const imagesForm = ref<ImageRequest[]>([]);
 const originalFormSnapshot = ref<string>('');
 const originalImagesSnapshot = ref<string>('');
 
-const isUpdating = computed(() => isUpdatingLocation.value);
+const isUpdating = computed(() => isUpdatingLocation.value || isUpdatingImages.value);
 
 const hasLocationChanges = computed(() => {
     const currentFormSnapshot = JSON.stringify(locationForm.value);

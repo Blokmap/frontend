@@ -282,6 +282,77 @@ export function useReorderLocationImages(
     return mutation;
 }
 
+export type UpdateLocationImagesParams = {
+    locationId: number;
+    originalImages: ImageRequest[];
+    currentImages: ImageRequest[];
+};
+
+/**
+ * Composable to handle bulk image operations:
+ * 1. Delete removed images
+ * 2. Create new images in parallel
+ * 3. Reorder existing images
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for updating location images.
+ */
+export function useUpdateLocationImages(
+    options: CompMutationOptions = {},
+): CompMutation<UpdateLocationImagesParams, void> {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific location query
+            queryClient.invalidateQueries({
+                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
+            });
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: async ({
+            locationId,
+            originalImages,
+            currentImages,
+        }: UpdateLocationImagesParams) => {
+            // Step 1: Delete removed images (those with id in original but not in current)
+            const currentImageIds = new Set(
+                currentImages.filter((img) => !!img.id).map((img) => img.id),
+            );
+
+            const imagesToDelete = originalImages
+                .filter((img) => img.id !== undefined && !currentImageIds.has(img.id))
+                .map((img) => img.id!);
+
+            await Promise.all(
+                imagesToDelete.map((imageId) => deleteLocationImage(locationId, imageId)),
+            );
+
+            // Step 2: Create new images in parallel (those without id)
+            // New images are created with the correct index already from ImageRequest
+            const newImages = currentImages.filter((img) => !img.id && img.file);
+
+            await Promise.all(newImages.map((img) => createLocationImage(locationId, img)));
+
+            // Step 3: Reorder ONLY existing images that weren't deleted
+            // New images were created with correct index, no need to reorder them
+            const reorders: ImageReorderRequest[] = currentImages
+                .filter((img) => !!img.id)
+                .map((img) => ({
+                    imageId: img.id!,
+                    index: img.index,
+                }));
+
+            if (reorders.length > 0) {
+                await reorderLocationImages(locationId, reorders);
+            }
+        },
+    });
+
+    return mutation;
+}
+
 export type CreateLocationTimeslotsParams = {
     locationId: number;
     timeslots: OpeningTimeRequest[];

@@ -2,9 +2,9 @@
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import SubmissionDialog from '@/components/features/location/builder/LocationSubmissionDialog.vue';
-import LocationImagesStep from '@/components/features/location/builder/steps/LocationImagesStep.vue';
-import LocationInformationStep from '@/components/features/location/builder/steps/LocationInformationStep.vue';
-import LocationSettingsStep from '@/components/features/location/builder/steps/LocationSettingsStep.vue';
+import LocationImagesBuilder from '@/components/features/location/builder/builders/LocationImagesBuilder.vue';
+import LocationInformationBuilder from '@/components/features/location/builder/builders/LocationInformationBuilder.vue';
+import LocationSettingsBuilder from '@/components/features/location/builder/builders/LocationSettingsBuilder.vue';
 import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
@@ -135,23 +135,23 @@ async function submitLocation(): Promise<void> {
             </div>
         </div>
         <div class="w-full md:w-5/7">
-            <LocationInformationStep
+            <LocationInformationBuilder
                 v-if="step === 'basics'"
                 v-model="locationForm"
                 v-model:substeps="substeps">
-            </LocationInformationStep>
+            </LocationInformationBuilder>
 
-            <LocationImagesStep
+            <LocationImagesBuilder
                 v-if="step === 'images'"
                 v-model="imagesForm"
                 v-model:substeps="substeps">
-            </LocationImagesStep>
+            </LocationImagesBuilder>
 
-            <LocationSettingsStep
+            <LocationSettingsBuilder
                 v-if="step === 'settings'"
                 v-model:form="locationForm"
                 v-model:substeps="substeps">
-            </LocationSettingsStep>
+            </LocationSettingsBuilder>
         </div>
     </div>
     <Teleport to="body">

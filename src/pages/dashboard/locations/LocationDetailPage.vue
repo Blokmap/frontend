@@ -5,9 +5,10 @@ import TabList from 'primevue/tablist';
 import TabPanel from 'primevue/tabpanel';
 import TabPanels from 'primevue/tabpanels';
 import Tabs from 'primevue/tabs';
-import LocationImagesStep from '@/components/features/location/builder/steps/LocationImagesStep.vue';
-import LocationInformationStep from '@/components/features/location/builder/steps/LocationInformationStep.vue';
-import LocationSettingsStep from '@/components/features/location/builder/steps/LocationSettingsStep.vue';
+import LocationImagesBuilder from '@/components/features/location/builder/builders/LocationImagesBuilder.vue';
+import LocationInformationBuilder from '@/components/features/location/builder/builders/LocationInformationBuilder.vue';
+import LocationOpeningBuilder from '@/components/features/location/builder/builders/LocationOpeningBuilder.vue';
+import LocationSettingsBuilder from '@/components/features/location/builder/builders/LocationSettingsBuilder.vue';
 import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
 import DashboardNotFound from '@/components/shared/molecules/DashboardNotFound.vue';
 import {
@@ -223,19 +224,31 @@ async function saveChanges(): Promise<void> {
             <TabPanels>
                 <TabPanel value="info">
                     <div class="tab-content">
-                        <LocationInformationStep v-if="locationForm" v-model="locationForm" />
+                        <LocationInformationBuilder v-if="locationForm" v-model="locationForm" />
+                    </div>
+                </TabPanel>
+
+                <TabPanel value="reservations">
+                    <div class="tab-content">
+                        <!-- TODO: Add reservations view -->
+                    </div>
+                </TabPanel>
+
+                <TabPanel value="openings">
+                    <div class="tab-content">
+                        <LocationOpeningBuilder :location-id="locationId" />
                     </div>
                 </TabPanel>
 
                 <TabPanel value="images">
                     <div class="tab-content">
-                        <LocationImagesStep v-model="imagesForm" />
+                        <LocationImagesBuilder v-model="imagesForm" />
                     </div>
                 </TabPanel>
 
                 <TabPanel value="settings">
                     <div class="tab-content">
-                        <LocationSettingsStep v-if="locationForm" v-model:form="locationForm" />
+                        <LocationSettingsBuilder v-if="locationForm" v-model:form="locationForm" />
                     </div>
                 </TabPanel>
             </TabPanels>

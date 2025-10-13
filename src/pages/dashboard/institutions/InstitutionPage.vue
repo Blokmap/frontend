@@ -1,12 +1,27 @@
+<script setup lang="ts">
+import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
+import DashboardNotFound from '@/components/shared/molecules/DashboardNotFound.vue';
+
+// TODO: Add institution loading logic
+const isLoading = false;
+const notFound = false;
+</script>
+
 <template>
-    <div class="institution-page">
+    <!-- Loading State -->
+    <DashboardLoading v-if="isLoading" />
+
+    <!-- Not Found State -->
+    <DashboardNotFound
+        v-else-if="notFound"
+        title="Institutie Niet Gevonden"
+        message="De institutie die je zoekt bestaat niet of je hebt geen toegang." />
+
+    <!-- Content -->
+    <div v-else class="institution-page">
         <h1>Institution Details</h1>
     </div>
 </template>
-
-<script setup lang="ts">
-// Add any necessary setup code here
-</script>
 
 <style scoped>
 /* Add component-specific styles here */

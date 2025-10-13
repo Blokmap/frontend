@@ -26,7 +26,7 @@ const onInstitutionClick = (institution: Institution) => {
     <Table :value="props.institutions" @click:row="onInstitutionClick">
         <template #header>
             <tr>
-                <TableHead>Instelling</TableHead>
+                <TableHead>Institutie</TableHead>
                 <TableHead>E-mailadres</TableHead>
                 <TableHead>Telefoon</TableHead>
                 <TableHead>Locatie</TableHead>

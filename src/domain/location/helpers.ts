@@ -2,7 +2,7 @@ import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import { isWeekend } from '@/utils/date';
 import { isEvening, isMorning, isNight } from '@/utils/time';
 import { GOOGLE_MAPS_DIRECTIONS_BASE_URL } from './constants';
-import type { Location, LocationAddress, LocationFeatures } from './types';
+import type { Location, LocationAddress, LocationFeatures, LocationRequest } from './types';
 
 /**
  * Returns a random placeholder image URL for locations.
@@ -12,6 +12,30 @@ import type { Location, LocationAddress, LocationFeatures } from './types';
  */
 export function getLocationPlaceholderImage(_location: Location): string {
     return placeholder;
+}
+
+/**
+ * Converts a Location to a LocationRequest for editing.
+ *
+ * @param location - The location object to convert.
+ * @returns A LocationRequest object suitable for forms.
+ */
+export function locationToRequest(location: Location): LocationRequest {
+    return {
+        name: location.name,
+        description: location.description,
+        excerpt: location.excerpt,
+        seatCount: location.seatCount,
+        isReservable: location.isReservable,
+        isVisible: location.isVisible,
+        street: location.street,
+        number: location.number,
+        zip: location.zip,
+        city: location.city,
+        country: location.country,
+        latitude: location.latitude,
+        longitude: location.longitude,
+    };
 }
 
 /**

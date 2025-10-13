@@ -138,21 +138,10 @@ const routes: RouteRecordRaw[] = [
                         },
                     },
                     {
-                        path: ':locationId',
+                        path: ':locationId/:tab?',
                         name: 'dashboard.locations.detail',
                         component: LocationDetailPage,
-                        meta: {
-                            title: 'Beheer Locatie',
-                            breadcrumbs: [
-                                { label: 'Dashboard', to: { name: 'dashboard' } },
-                                { label: 'Locaties', to: { name: 'dashboard.locations.index' } },
-                                {
-                                    label: 'Locatie Details',
-                                    to: { name: 'dashboard.locations.detail' },
-                                },
-                            ],
-                        },
-                        // Note: breadcrumbs should be updated dynamically by the component to include location name
+                        props: true,
                     },
                 ],
             },
@@ -212,11 +201,11 @@ const routes: RouteRecordRaw[] = [
                         name: 'dashboard.institutions.index',
                         component: InstitutionIndexPage,
                         meta: {
-                            title: 'Beheer Instellingen',
+                            title: 'Beheer Instituties',
                             breadcrumbs: [
                                 { label: 'Dashboard', to: { name: 'dashboard' } },
                                 {
-                                    label: 'Instellingen',
+                                    label: 'Instituties',
                                     to: { name: 'dashboard.institutions.index' },
                                 },
                             ],
@@ -227,7 +216,7 @@ const routes: RouteRecordRaw[] = [
                         name: 'dashboard.institutions.detail',
                         component: DashboardInstitutionPage,
                         meta: {
-                            title: 'Beheer Instelling',
+                            title: 'Beheer Institutie',
                             breadcrumbs: [
                                 { label: 'Dashboard', to: { name: 'dashboard' } },
                                 {

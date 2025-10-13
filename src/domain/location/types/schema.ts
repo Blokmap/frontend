@@ -58,7 +58,6 @@ export type LocationRequest = {
     seatCount: number;
     isReservable: boolean;
     isVisible: boolean;
-    reservationBlockSize: number;
     street: string;
     number: string;
     zip: string;

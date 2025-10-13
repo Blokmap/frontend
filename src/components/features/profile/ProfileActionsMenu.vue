@@ -97,7 +97,7 @@ const onStatusChange = async (event: SelectChangeEvent, hideMenu: () => void) =>
                         v-for="action in navigationActions"
                         :key="action.label"
                         :to="action.to"
-                        class="flex w-full items-center gap-3 rounded-md px-2 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100"
+                        class="navigation-link"
                         @click="hideMenu">
                         <FontAwesomeIcon :icon="action.icon" class="text-slate-700" />
                         <span>{{ action.label }}</span>
@@ -107,3 +107,12 @@ const onStatusChange = async (event: SelectChangeEvent, hideMenu: () => void) =>
         </template>
     </ActionMenu>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.navigation-link {
+    @apply flex w-full items-center gap-3 px-2 py-1;
+    @apply rounded-md text-sm text-slate-700 transition-colors hover:bg-slate-100;
+}
+</style>

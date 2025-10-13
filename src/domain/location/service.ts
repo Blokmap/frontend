@@ -214,7 +214,7 @@ export async function createLocationImage(
  * @returns {Promise<Location>} A promise that resolves to the updated location.
  */
 export async function updateLocation(id: number, locationData: LocationRequest): Promise<Location> {
-    const response = await client.put(
+    const response = await client.patch(
         endpoints.locations.update.replace('{id}', id.toString()),
         locationData,
     );

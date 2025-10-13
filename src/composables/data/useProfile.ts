@@ -24,6 +24,12 @@ import type {
 } from '@/types';
 import type { AxiosError } from 'axios';
 
+/**
+ * Composable to fetch statistics for a specific profile.
+ *
+ * @param profileId - The ID of the profile to fetch statistics for.
+ * @returns The query object containing profile statistics and their state.
+ */
 export function useProfileStats(
     profileId: MaybeRefOrGetter<number | null>,
 ): CompQuery<ProfileStats> {
@@ -40,6 +46,13 @@ export function useProfileStats(
     return query;
 }
 
+/**
+ * Composable to fetch reservations for a specific profile within a given week.
+ *
+ * @param profileId - The ID of the profile to fetch reservations for.
+ * @param inWeekOf - The date within the week for which to fetch reservations.
+ * @returns The query object containing profile reservations and their state.
+ */
 export function useProfileReservations(
     profileId: MaybeRef<number | null>,
     inWeekOf: MaybeRefOrGetter<Date> = new Date(),
@@ -59,6 +72,12 @@ export function useProfileReservations(
     return query;
 }
 
+/**
+ * Composable to fetch locations associated with a specific profile.
+ *
+ * @param profileId - The ID of the profile to fetch locations for.
+ * @returns The query object containing profile locations and their state.
+ */
 export function useProfileLocations(profileId: MaybeRef<number | null>): CompQuery<Location[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 
@@ -71,6 +90,13 @@ export function useProfileLocations(profileId: MaybeRef<number | null>): CompQue
     return query;
 }
 
+/**
+ * Composable to fetch a single profile by its ID.
+ *
+ * @param profileId - The ID of the profile to fetch.
+ * @param options - Additional options for the query.
+ * @returns The query object containing the profile data and its state.
+ */
 export function useProfile(
     profileId: MaybeRef<number>,
     options: CompQueryOptions = {},
@@ -84,6 +110,13 @@ export function useProfile(
     return query;
 }
 
+/**
+ * Composable to fetch a list of profiles with filters.
+ *
+ * @param filters - The filters to apply when fetching profiles.
+ * @param options - Additional options for the query.
+ * @returns The query object containing the list of profiles and their state.
+ */
 export function useProfiles(
     filters: MaybeRefOrGetter<Partial<ProfileFilter>>,
     options: CompMutationOptions = {},
@@ -102,6 +135,12 @@ export type UpdateAvatarParams = {
     file: File;
 };
 
+/**
+ * Composable to handle updating a profile's avatar image.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for updating a profile avatar.
+ */
 export function useUpdateAvatar(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateAvatarParams> {
@@ -120,6 +159,12 @@ export type UpdateProfileParams = {
     profileData: Partial<Profile>;
 };
 
+/**
+ * Composable to handle updating profile data.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for updating a profile.
+ */
 export function useUpdateProfile(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateProfileParams> {
@@ -137,6 +182,12 @@ export function useUpdateProfile(
     return mutation;
 }
 
+/**
+ * Composable to handle deleting a profile's avatar.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for deleting a profile avatar.
+ */
 export function useDeleteAvatar(options: CompMutationOptions = {}): CompMutation<number> {
     const mutation = useMutation({
         ...options,
@@ -151,6 +202,12 @@ type ProfileStateParams = {
     state: ProfileState;
 };
 
+/**
+ * Composable to handle changing a profile's state (active or disabled).
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for updating a profile's state.
+ */
 export function useProfileState(
     options: CompMutationOptions = {},
 ): CompMutation<ProfileStateParams, Profile> {

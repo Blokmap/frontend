@@ -1,4 +1,4 @@
-import { keepPreviousData, useMutation, useQuery } from '@tanstack/vue-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
@@ -19,6 +19,8 @@ import {
     listLocations,
     type LocationState,
     pendLocation,
+    deleteLocation,
+    updateLocation,
 } from '@/domain/location';
 import type { ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
@@ -30,6 +32,10 @@ import type {
     CompQueryOptions,
     Paginated,
 } from '@/types';
+
+export const LOCATION_QUERY_KEYS = {
+    read: (id: MaybeRef<number>) => ['location', toValue(id)],
+} as const;
 
 /**
  * Composable to search for locations based on filters.
@@ -98,7 +104,7 @@ export function useLocation(
 ): CompQuery<Location> {
     const query = useQuery({
         ...options,
-        queryKey: ['location', id],
+        queryKey: LOCATION_QUERY_KEYS.read(id),
         queryFn: () => {
             const locationId = toValue(id);
             const includes = options.includes ?? [];
@@ -109,6 +115,12 @@ export function useLocation(
     return query;
 }
 
+/**
+ * Composable to find the nearest location to a given coordinate.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for finding the nearest location.
+ */
 export function useNearestLocation(
     options: CompMutationOptions = {},
 ): CompMutation<LngLat, NearestLocation> {
@@ -137,11 +149,43 @@ export function useCreateLocation(
     return mutation;
 }
 
+export type UpdateLocationParams = {
+    locationId: number;
+    data: LocationRequest;
+};
+
+export function useUpdateLocation(
+    options: CompMutationOptions = {},
+): CompMutation<UpdateLocationParams, Location> {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            queryClient.invalidateQueries({
+                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
+            });
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: ({ locationId, data }: UpdateLocationParams) => {
+            return updateLocation(locationId, data);
+        },
+    });
+
+    return mutation;
+}
+
 export type CreateLocationImageParams = {
     locationId: number;
     image: ImageRequest;
 };
 
+/**
+ * Composable to handle adding an image to a location.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for creating a location image.
+ */
 export function useCreateLocationImage(
     options: CompMutationOptions = {},
 ): CompMutation<CreateLocationImageParams> {
@@ -160,6 +204,12 @@ export type CreateLocationTimeslotsParams = {
     timeslots: OpeningTimeRequest[];
 };
 
+/**
+ * Composable to handle creating opening time slots for a location.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for creating location timeslots.
+ */
 export function useCreateLocationTimeslots(
     options: CompMutationOptions = {},
 ): CompMutation<CreateLocationTimeslotsParams> {
@@ -173,6 +223,12 @@ export function useCreateLocationTimeslots(
     return mutation;
 }
 
+/**
+ * Composable to handle approving a location.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for approving a location.
+ */
 export function useApproveLocation(
     options: CompMutationOptions = {},
 ): CompMutation<number, Location> {
@@ -184,6 +240,12 @@ export function useApproveLocation(
     return mutation;
 }
 
+/**
+ * Composable to handle rejecting a location.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for rejecting a location.
+ */
 export function useRejectLocation(
     options: CompMutationOptions = {},
 ): CompMutation<number, Location> {
@@ -195,12 +257,33 @@ export function useRejectLocation(
     return mutation;
 }
 
+/**
+ * Handle the deletion of a location.
+ *
+ * @param options - Mutation options.
+ * @returns The mutation object for deleting a location.
+ */
+export function useDeleteLocation(options: CompMutationOptions = {}): CompMutation<number, void> {
+    const mutation = useMutation({
+        ...options,
+        mutationFn: deleteLocation,
+    });
+
+    return mutation;
+}
+
 type LocationStateParams = {
     locationId: number;
     state: LocationState;
     reason?: string | null;
 };
 
+/**
+ * Composable to handle changing a location's state (approved, rejected, or pending).
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for updating a location's state.
+ */
 export function useLocationState(
     options: CompMutationOptions = {},
 ): CompMutation<LocationStateParams, Location> {

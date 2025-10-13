@@ -1,12 +1,19 @@
+<script setup lang="ts">
+import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
+
+// TODO: Add institutions loading logic
+const isLoading = false;
+</script>
+
 <template>
-    <div class="institutions-page">
+    <!-- Loading State -->
+    <DashboardLoading v-if="isLoading" />
+
+    <!-- Content -->
+    <div v-else class="institutions-page">
         <h1>Institutions</h1>
     </div>
 </template>
-
-<script setup lang="ts">
-// Add any necessary setup code here
-</script>
 
 <style scoped>
 /* Add component-specific styles here */

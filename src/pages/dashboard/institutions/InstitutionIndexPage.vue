@@ -4,6 +4,7 @@ import Paginator from 'primevue/paginator';
 import InstitutionTable from '@/components/features/institution/InstitutionTable.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
+import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';
@@ -42,43 +43,49 @@ const onCreateInstitution = () => {
 </script>
 
 <template>
-    <div class="flex items-center justify-between gap-3">
-        <div class="space-y-2">
-            <h1 class="text-3xl font-bold">
-                Alle Instituties ({{ abbreviateCount(counts?.institutionCount) ?? '...' }})
-            </h1>
-            <ResultSummary
-                :current-count="institutions?.data.length"
-                :total-count="institutions?.total"
-                :truncated="institutions?.truncated"
-                empty-message="Geen instituties gevonden.">
-            </ResultSummary>
+    <!-- Loading State -->
+    <DashboardLoading v-if="isLoading" />
+
+    <!-- Content -->
+    <template v-else>
+        <div class="flex items-center justify-between gap-3">
+            <div class="space-y-2">
+                <h1 class="text-3xl font-bold">
+                    Alle Instituties ({{ abbreviateCount(counts?.institutionCount) ?? '...' }})
+                </h1>
+                <ResultSummary
+                    :current-count="institutions?.data.length"
+                    :total-count="institutions?.total"
+                    :truncated="institutions?.truncated"
+                    empty-message="Geen instituties gevonden.">
+                </ResultSummary>
+            </div>
+            <Button severity="secondary" @click="onCreateInstitution">
+                <FontAwesomeIcon :icon="faPlus" />
+                Nieuwe Institutie
+            </Button>
         </div>
-        <Button severity="secondary" @click="onCreateInstitution">
-            <FontAwesomeIcon :icon="faPlus" />
-            Nieuwe Institutie
-        </Button>
-    </div>
 
-    <div class="flex gap-3">
-        <SearchField
-            v-model="searchQuery"
-            placeholder="Zoek door alle instellingen..."
-            :loading="isFetching"
-            @input="onSearchChange">
-        </SearchField>
-    </div>
+        <div class="flex gap-3">
+            <SearchField
+                v-model="searchQuery"
+                placeholder="Zoek door alle instellingen..."
+                :loading="isFetching"
+                @input="onSearchChange">
+            </SearchField>
+        </div>
 
-    <InstitutionTable
-        :institutions="institutions?.data"
-        :loading="isLoading"
-        @click:institution="onInstitutionClick">
-    </InstitutionTable>
+        <InstitutionTable
+            :institutions="institutions?.data"
+            :loading="isLoading"
+            @click:institution="onInstitutionClick">
+        </InstitutionTable>
 
-    <Paginator
-        v-if="institutions?.data.length"
-        :total-records="counts?.institutionCount ?? 0"
-        :rows="institutions.perPage"
-        @page="onPageChange">
-    </Paginator>
+        <Paginator
+            v-if="institutions?.data.length"
+            :total-records="counts?.institutionCount ?? 0"
+            :rows="institutions.perPage"
+            @page="onPageChange">
+        </Paginator>
+    </template>
 </template>

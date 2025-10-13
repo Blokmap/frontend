@@ -31,7 +31,10 @@ export function setupAxiosInterceptors(): void {
 
     // Response interceptor to handle errors
     client.interceptors.response.use(
-        (response) => response,
+        async (response) => {
+            //await getRandomDelay(1000, 2000);
+            return response;
+        },
         (error: AxiosError) => {
             if (error.status === HttpStatusCode.Unauthorized) {
                 router.push({

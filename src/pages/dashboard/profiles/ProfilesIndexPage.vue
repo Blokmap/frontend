@@ -3,6 +3,7 @@ import Paginator from 'primevue/paginator';
 import ProfileTable from '@/components/features/profile/ProfileTable.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
+import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
 import { useDebounceFn } from '@vueuse/core';
 import { ref } from 'vue';
 // import { useRouter } from 'vue-router';
@@ -74,43 +75,49 @@ async function onChangeProfileStatus(profileId: number, status: ProfileState) {
 </script>
 
 <template>
-    <div class="flex items-center justify-between gap-3">
-        <div class="space-y-2">
-            <h1 class="text-3xl font-bold">
-                Alle Profielen ({{ abbreviateCount(counts?.profileCount) ?? '...' }})
-            </h1>
+    <!-- Loading State -->
+    <DashboardLoading v-if="isLoading" />
 
-            <ResultSummary
-                :current-count="profiles?.data.length"
-                :total-count="profiles?.total"
-                :truncated="profiles?.truncated"
-                empty-message="Geen profielen gevonden.">
-            </ResultSummary>
+    <!-- Content -->
+    <template v-else>
+        <div class="flex items-center justify-between gap-3">
+            <div class="space-y-2">
+                <h1 class="text-3xl font-bold">
+                    Alle Profielen ({{ abbreviateCount(counts?.profileCount) ?? '...' }})
+                </h1>
+
+                <ResultSummary
+                    :current-count="profiles?.data.length"
+                    :total-count="profiles?.total"
+                    :truncated="profiles?.truncated"
+                    empty-message="Geen profielen gevonden.">
+                </ResultSummary>
+            </div>
         </div>
-    </div>
 
-    <div class="flex gap-3">
-        <SearchField
-            v-model="searchQuery"
-            placeholder="Zoek door alle profielen..."
-            :loading="isFetching"
-            @input="onSearchChange">
-        </SearchField>
-    </div>
+        <div class="flex gap-3">
+            <SearchField
+                v-model="searchQuery"
+                placeholder="Zoek door alle profielen..."
+                :loading="isFetching"
+                @input="onSearchChange">
+            </SearchField>
+        </div>
 
-    <ProfileTable
-        :profiles="profiles?.data"
-        :loading="isLoading"
-        :is-profile-pending="isProfilePending"
-        @click:profile="onProfileClick"
-        @change:status="onChangeProfileStatus">
-    </ProfileTable>
+        <ProfileTable
+            :profiles="profiles?.data"
+            :loading="isLoading"
+            :is-profile-pending="isProfilePending"
+            @click:profile="onProfileClick"
+            @change:status="onChangeProfileStatus">
+        </ProfileTable>
 
-    <Paginator
-        v-if="profiles?.data?.length"
-        :first="profiles.perPage * (profiles.page - 1)"
-        :rows="profiles.perPage"
-        :total-records="profiles.total"
-        @page="onPageChange">
-    </Paginator>
+        <Paginator
+            v-if="profiles?.data?.length"
+            :first="profiles.perPage * (profiles.page - 1)"
+            :rows="profiles.perPage"
+            :total-records="profiles.total"
+            @page="onPageChange">
+        </Paginator>
+    </template>
 </template>

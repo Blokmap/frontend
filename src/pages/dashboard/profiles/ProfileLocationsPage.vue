@@ -1,16 +1,18 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
-import ProgressSpinner from 'primevue/progressspinner';
+import LocationDataItem from '@/components/features/location/LocationDataItem.vue';
 import LocationDataList from '@/components/features/location/LocationDataList.vue';
-import NotFound from '@/components/shared/atoms/NotFound.vue';
+import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
+import DashboardNotFound from '@/components/shared/molecules/DashboardNotFound.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { computed, watchEffect } from 'vue';
+import { useRoute } from 'vue-router';
 import { useLocationState } from '@/composables/data/useLocations';
 import { useProfile, useProfileLocations } from '@/composables/data/useProfile';
+import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
 import { useToast } from '@/composables/store/useToast';
-import type { Location, LocationState } from '@/domain/location';
+import type { LocationState } from '@/domain/location';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -18,18 +20,19 @@ const props = defineProps<{
 }>();
 
 const route = useRoute();
-const router = useRouter();
 const toast = useToast();
 
+const breadcrumbs = useBreadcrumbStore();
+
 const profileId = computed(() => +route.params.profileId || props.profile.id);
-const shouldFetchProfile = computed(() => profileId.value !== props.profile.id);
+const isExtProfile = computed(() => profileId.value !== props.profile.id);
 
 const {
     data: fetchedProfile,
     isLoading: isProfileLoading,
     isError: isProfileError,
 } = useProfile(profileId, {
-    enabled: shouldFetchProfile,
+    enabled: isExtProfile,
 });
 
 const { data: locations, refetch, isLoading } = useProfileLocations(profileId);
@@ -44,9 +47,10 @@ const {
     },
 });
 
-const currentProfile = computed(() => (!shouldFetchProfile ? props.profile : fetchedProfile.value));
-const isLoadingProfile = computed(() => shouldFetchProfile.value && isProfileLoading.value);
-const showNotFound = computed(() => shouldFetchProfile.value && isProfileError.value);
+const currentProfile = computed(() => (!isExtProfile.value ? props.profile : fetchedProfile.value));
+const isLoadingProfile = computed(() => isExtProfile.value && isProfileLoading.value);
+const showNotFound = computed(() => isExtProfile.value && isProfileError.value);
+const isInitialLoading = computed(() => isLoadingProfile.value || isLoading.value);
 
 /**
  * Check if a location is currently being updated.
@@ -54,14 +58,6 @@ const showNotFound = computed(() => shouldFetchProfile.value && isProfileError.v
  */
 function isLocationPending(locationId: number): boolean {
     return isUpdatingLocation.value && updateVariables.value?.locationId === locationId;
-}
-
-/**
- * Handle clicking on a location to view its details.
- * @param location The location that was clicked.
- */
-function onLocationClick(location: Location): void {
-    router.push({ name: 'locations.detail', params: { locationId: location.id } });
 }
 
 /**
@@ -78,20 +74,39 @@ async function onChangeLocationStatus(locationId: number, status: LocationState)
         detail: 'Locatiestatus werd succesvol bijgewerkt!',
     });
 }
+
+watchEffect(() => {
+    if (isExtProfile.value) {
+        breadcrumbs.setBreadcrumbs([
+            { label: 'Dashboard', to: { name: 'dashboard' } },
+            { label: 'Gebruikers', to: { name: 'profile' } },
+            {
+                label: 'Locaties',
+                to: {
+                    name: 'dashboard.profiles.locations',
+                    params: { profileId: profileId.value },
+                },
+            },
+        ]);
+    } else {
+        breadcrumbs.setBreadcrumbs([
+            { label: 'Dashboard', to: { name: 'dashboard' } },
+            { label: 'Mijn Profiel', to: { name: 'profile' } },
+            { label: 'Locaties', to: { name: 'dashboard.profiles.locations' } },
+        ]);
+    }
+});
 </script>
 
 <template>
     <!-- Loading State -->
-    <div v-if="isLoadingProfile" class="flex items-center justify-center py-12">
-        <ProgressSpinner />
-    </div>
+    <DashboardLoading v-if="isInitialLoading" />
 
     <!-- Not Found State -->
-    <NotFound
+    <DashboardNotFound
         v-else-if="showNotFound"
         title="Profiel Niet Gevonden"
-        message="Het profiel dat je zoekt bestaat niet of je hebt geen toegang.">
-    </NotFound>
+        message="Het profiel dat je zoekt bestaat niet of je hebt geen toegang." />
 
     <!-- Content -->
     <template v-else>
@@ -112,12 +127,15 @@ async function onChangeLocationStatus(locationId: number, status: LocationState)
             </RouterLink>
         </div>
 
-        <LocationDataList
-            :locations="locations"
-            :loading="isLoading"
-            :is-location-pending="isLocationPending"
-            @click:location="onLocationClick"
-            @change:state="onChangeLocationStatus">
+        <LocationDataList :locations="locations" :loading="false">
+            <template #item="{ location }">
+                <LocationDataItem
+                    :location="location"
+                    :action-is-pending="isLocationPending(location.id)"
+                    :show-status-change="true"
+                    @change:state="onChangeLocationStatus">
+                </LocationDataItem>
+            </template>
         </LocationDataList>
     </template>
 </template>

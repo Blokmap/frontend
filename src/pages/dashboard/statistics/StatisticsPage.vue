@@ -1,5 +1,16 @@
+<script setup lang="ts">
+import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
+
+// TODO: Add statistics loading logic
+const isLoading = false;
+</script>
+
 <template>
-    <div class="container mx-auto py-8">
+    <!-- Loading State -->
+    <DashboardLoading v-if="isLoading" />
+
+    <!-- Content -->
+    <div v-else class="container mx-auto py-8">
         <div class="mb-8">
             <h1 class="mb-4 text-3xl font-bold text-gray-900">Statistieken</h1>
             <p class="text-gray-600">Overzicht van platform statistieken en analyses.</p>
@@ -18,7 +29,3 @@
         </div>
     </div>
 </template>
-
-<script setup lang="ts">
-// Statistics page component
-</script>

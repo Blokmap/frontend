@@ -1,12 +1,19 @@
+<script setup lang="ts">
+import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
+
+// TODO: Add authorities loading logic
+const isLoading = false;
+</script>
+
 <template>
-    <div class="authorities-page">
+    <!-- Loading State -->
+    <DashboardLoading v-if="isLoading" />
+
+    <!-- Content -->
+    <div v-else class="authorities-page">
         <h1>Authorities</h1>
     </div>
 </template>
-
-<script setup lang="ts">
-// Add any necessary setup code here
-</script>
 
 <style scoped>
 /* Add component-specific styles here */

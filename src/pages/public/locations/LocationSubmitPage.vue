@@ -36,7 +36,7 @@ const steps: { id: string; label: string; desc: string }[] = [
     },
     {
         id: 'settings',
-        label: 'Instellingen',
+        label: 'Instituties',
         desc: 'De instellingen van de locatie bepalen hoe men reservaties kan maken.',
     },
 ];

@@ -1,54 +1,33 @@
 <script lang="ts" setup>
-import LocationItem from './LocationDataItem.vue';
-import type { Location, LocationState } from '@/domain/location';
+import type { Location } from '@/domain/location';
 
 withDefaults(
     defineProps<{
         locations?: Location[];
         loading?: boolean;
         emptyMessage?: string;
-        isLocationPending?: (locationId: number) => boolean;
-        showStatusChange?: boolean;
     }>(),
     {
         loading: false,
         emptyMessage: 'No locations found',
-        isLocationPending: () => false,
-        showStatusChange: true,
     },
 );
-
-const emit = defineEmits<{
-    'click:location': [location: Location];
-    'change:state': [locationId: number, status: LocationState];
-}>();
-
-const onLocationClick = (location: Location) => {
-    emit('click:location', location);
-};
-
-const onChangeState = (locationId: number, status: LocationState) => {
-    emit('change:state', locationId, status);
-};
 </script>
 
 <template>
     <div class="location-data-list">
-        <div class="space-y-4">
+        <div class="flex flex-col gap-4">
             <!-- Show skeleton items when loading -->
             <template v-if="loading"> </template>
 
             <!-- Show actual locations when not loading -->
             <template v-else>
-                <LocationItem
+                <slot
                     v-for="location in locations"
                     :key="location.id"
                     :location="location"
-                    :action-is-pending="isLocationPending?.(location.id)"
-                    :show-status-change="showStatusChange"
-                    @click="onLocationClick"
-                    @change:state="onChangeState">
-                </LocationItem>
+                    name="item">
+                </slot>
             </template>
         </div>
     </div>

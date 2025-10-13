@@ -25,6 +25,11 @@ const defaultGeoSearchOptions: Partial<GeoSearchFilter> = {
     limit: 5,
 };
 
+export const GEO_QUERY_KEYS = {
+    search: (filters: MaybeRef<GeoSearchFilter | undefined>, locale: MaybeRef<string>) =>
+        ['geosearch', filters, locale] as const,
+} as const;
+
 /**
  * A composable function to perform a location search using Mapbox's geocoding API.
  *
@@ -32,7 +37,7 @@ const defaultGeoSearchOptions: Partial<GeoSearchFilter> = {
  * @param options - CompQueryOptions for query configuration (enabled, etc.)
  * @returns An object containing the search results and their state.
  */
-export function useGeoSearch(
+export function useSearchGeoLocations(
     filters?: MaybeRef<GeoSearchFilter>,
     options: CompQueryOptions = {},
 ): CompQuery<GeoJSON.GeoJsonProperties[]> {
@@ -40,7 +45,7 @@ export function useGeoSearch(
 
     const query = useQuery<GeoJSON.GeoJsonProperties[], AxiosError>({
         ...options,
-        queryKey: ['geosearch', filters, locale],
+        queryKey: GEO_QUERY_KEYS.search(filters, locale),
         retry: false,
         queryFn: async () => {
             const params = toValue(filters);
@@ -88,7 +93,7 @@ export function useGeoSearch(
  * A composable function to perform forward geocoding using Mapbox's geocoding API.
  * Returns coordinates for a given address string.
  */
-export function useForwardGeoSearch(): CompMutation<string, LngLat> {
+export function useGeocodeAddress(): CompMutation<string, LngLat> {
     const mutation = useMutation({
         mutationFn: async (address: string) => {
             return geocodeAddress(address);

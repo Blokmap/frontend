@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, ref, useTemplateRef, watch } from 'vue';
-import { useLocationsSearch, useNearestLocation } from '@/composables/data/useLocations';
+import { useSearchLocations, useNearestLocation } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useToast } from '@/composables/store/useToast';
 import { router } from '@/config/router';
@@ -24,7 +24,7 @@ const toast = useToast();
 
 const { geoLocation } = storeToRefs(filterStore);
 
-const { data: locations, isPending: locationsIsPending } = useLocationsSearch(filterStore.filters, {
+const { data: locations, isPending: locationsIsPending } = useSearchLocations(filterStore.filters, {
     enabled: computed(() => !!filterStore.filters.bounds),
 });
 

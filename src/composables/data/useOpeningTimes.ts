@@ -4,6 +4,11 @@ import { getLocationOpeningTimes, type OpeningTime } from '@/domain/openings';
 import type { CompQuery } from '@/types';
 import type { AxiosError } from 'axios';
 
+export const OPENING_TIME_QUERY_KEYS = {
+    read: (locationId: MaybeRef<number | null>, dateInWeek: MaybeRefOrGetter<Date>) =>
+        ['location', 'opening-times', locationId, dateInWeek] as const,
+} as const;
+
 /**
  * Composable to fetch opening times for a specific location within a given week.
  *
@@ -11,14 +16,14 @@ import type { AxiosError } from 'axios';
  * @param dateInWeek - The date within the week for which to fetch opening times.
  * @returns An object containing the opening times and their state.
  */
-export function useOpeningTimes(
+export function useReadOpeningTimes(
     locationId: MaybeRef<number | null>,
     dateInWeek: MaybeRefOrGetter<Date> = new Date(),
 ): CompQuery<OpeningTime[]> {
     const enabled = computed(() => toValue(locationId) !== null);
 
     const query = useQuery<OpeningTime[], AxiosError>({
-        queryKey: ['location', 'opening-times', locationId, dateInWeek],
+        queryKey: OPENING_TIME_QUERY_KEYS.read(locationId, dateInWeek),
         enabled,
         queryFn: () => {
             const locationIdValue = toValue(locationId)!;

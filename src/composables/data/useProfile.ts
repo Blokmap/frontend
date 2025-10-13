@@ -24,18 +24,28 @@ import type {
 } from '@/types';
 import type { AxiosError } from 'axios';
 
+export const PROFILE_QUERY_KEYS = {
+    read: (profileId: MaybeRef<number>) => ['profile', 'details', profileId] as const,
+    list: (filters: MaybeRefOrGetter<Partial<ProfileFilter>>) =>
+        ['admin', 'profiles', filters] as const,
+    stats: (profileId: MaybeRefOrGetter<number | null>) => ['profile', 'stats', profileId] as const,
+    reservations: (profileId: MaybeRef<number | null>, inWeekOf: MaybeRefOrGetter<Date>) =>
+        ['profile', 'reservations', profileId, inWeekOf] as const,
+    locations: (profileId: MaybeRef<number | null>) => ['profile', 'locations', profileId] as const,
+} as const;
+
 /**
  * Composable to fetch statistics for a specific profile.
  *
  * @param profileId - The ID of the profile to fetch statistics for.
  * @returns The query object containing profile statistics and their state.
  */
-export function useProfileStats(
+export function useReadProfileStats(
     profileId: MaybeRefOrGetter<number | null>,
 ): CompQuery<ProfileStats> {
     const enabled = computed(() => toValue(profileId) !== null);
     const query = useQuery<ProfileStats, AxiosError>({
-        queryKey: ['profile', 'stats', profileId],
+        queryKey: PROFILE_QUERY_KEYS.stats(profileId),
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
             return getProfileStats(profileIdValue);
@@ -53,14 +63,14 @@ export function useProfileStats(
  * @param inWeekOf - The date within the week for which to fetch reservations.
  * @returns The query object containing profile reservations and their state.
  */
-export function useProfileReservations(
+export function useReadProfileReservations(
     profileId: MaybeRef<number | null>,
     inWeekOf: MaybeRefOrGetter<Date> = new Date(),
 ): CompQuery<Reservation[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 
     const query = useQuery<Reservation[], AxiosError>({
-        queryKey: ['profile', 'reservations', profileId, inWeekOf],
+        queryKey: PROFILE_QUERY_KEYS.reservations(profileId, inWeekOf),
         enabled,
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
@@ -78,11 +88,11 @@ export function useProfileReservations(
  * @param profileId - The ID of the profile to fetch locations for.
  * @returns The query object containing profile locations and their state.
  */
-export function useProfileLocations(profileId: MaybeRef<number | null>): CompQuery<Location[]> {
+export function useReadProfileLocations(profileId: MaybeRef<number | null>): CompQuery<Location[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 
     const query = useQuery<Location[], AxiosError>({
-        queryKey: ['profile', 'locations', profileId],
+        queryKey: PROFILE_QUERY_KEYS.locations(profileId),
         enabled,
         queryFn: () => getProfileLocations(toValue(profileId)!),
     });
@@ -97,13 +107,13 @@ export function useProfileLocations(profileId: MaybeRef<number | null>): CompQue
  * @param options - Additional options for the query.
  * @returns The query object containing the profile data and its state.
  */
-export function useProfile(
+export function useReadProfile(
     profileId: MaybeRef<number>,
     options: CompQueryOptions = {},
 ): CompQuery<Profile | null> {
     const query = useQuery<Profile | null, AxiosError>({
         ...options,
-        queryKey: ['profile', 'details', profileId],
+        queryKey: PROFILE_QUERY_KEYS.read(profileId),
         queryFn: () => readProfile(toValue(profileId)),
     });
 
@@ -117,13 +127,13 @@ export function useProfile(
  * @param options - Additional options for the query.
  * @returns The query object containing the list of profiles and their state.
  */
-export function useProfiles(
+export function useReadProfiles(
     filters: MaybeRefOrGetter<Partial<ProfileFilter>>,
     options: CompMutationOptions = {},
 ): CompQuery<Paginated<Profile>> {
     const query = useQuery<Paginated<Profile>, AxiosError>({
         ...options,
-        queryKey: ['admin', 'profiles', filters],
+        queryKey: PROFILE_QUERY_KEYS.list(filters),
         queryFn: () => listProfiles(toValue(filters)),
     });
 
@@ -141,11 +151,20 @@ export type UpdateAvatarParams = {
  * @param options - Additional options for the mutation.
  * @returns The mutation object for updating a profile avatar.
  */
-export function useUpdateAvatar(
+export function useUpdateProfileAvatar(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateAvatarParams> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific profile query
+            queryClient.invalidateQueries({
+                queryKey: PROFILE_QUERY_KEYS.read(variables.profileId),
+            });
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: async ({ profileId, file }: UpdateAvatarParams) => {
             await updateProfileAvatar(profileId, file);
         },
@@ -168,13 +187,19 @@ export type UpdateProfileParams = {
 export function useUpdateProfile(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateProfileParams> {
-    const client = useQueryClient();
+    const queryClient = useQueryClient();
 
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate all profile detail queries
+            queryClient.invalidateQueries({ queryKey: ['profile', 'details'] });
+            // Invalidate the profile list
+            queryClient.invalidateQueries({ queryKey: ['admin', 'profiles'] });
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: async ({ profileId, profileData }: UpdateProfileParams) => {
             const profile = await updateProfile(profileId, profileData);
-            client.invalidateQueries({ queryKey: ['profile', 'details'] });
             return profile;
         },
     });
@@ -188,9 +213,18 @@ export function useUpdateProfile(
  * @param options - Additional options for the mutation.
  * @returns The mutation object for deleting a profile avatar.
  */
-export function useDeleteAvatar(options: CompMutationOptions = {}): CompMutation<number> {
+export function useDeleteProfileAvatar(options: CompMutationOptions = {}): CompMutation<number> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific profile query
+            queryClient.invalidateQueries({
+                queryKey: PROFILE_QUERY_KEYS.read(variables),
+            });
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: deleteProfileAvatar,
     });
 
@@ -208,11 +242,24 @@ type ProfileStateParams = {
  * @param options - Additional options for the mutation.
  * @returns The mutation object for updating a profile's state.
  */
-export function useProfileState(
+export function useUpdateProfileState(
     options: CompMutationOptions = {},
 ): CompMutation<ProfileStateParams, Profile> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific profile query
+            queryClient.invalidateQueries({
+                queryKey: PROFILE_QUERY_KEYS.read(variables.profileId),
+            });
+            // Invalidate the profile list
+            queryClient.invalidateQueries({
+                queryKey: ['admin', 'profiles'],
+            });
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: ({ profileId, state }: ProfileStateParams) => {
             if (state === 'disabled') {
                 return blockProfile(profileId);

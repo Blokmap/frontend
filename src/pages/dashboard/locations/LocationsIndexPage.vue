@@ -12,7 +12,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';
 import { ref } from 'vue';
 import { useAdminCounts } from '@/composables/data/useAdmin';
-import { useDeleteLocation, useLocations, useLocationState } from '@/composables/data/useLocations';
+import {
+    useDeleteLocation,
+    useReadLocations,
+    useLocationState,
+} from '@/composables/data/useLocations';
 import { useToast } from '@/composables/store/useToast';
 import { abbreviateCount } from '@/utils/format';
 import type { LocationFilter, LocationState } from '@/domain/location';
@@ -33,7 +37,7 @@ const {
     refetch,
     isFetching,
     isLoading,
-} = useLocations(filters, {
+} = useReadLocations(filters, {
     includes: ['images', 'createdBy'],
 });
 

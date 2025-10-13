@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import { useLocationState } from '@/composables/data/useLocations';
-import { useProfile, useProfileLocations } from '@/composables/data/useProfile';
+import { useReadProfile, useReadProfileLocations } from '@/composables/data/useProfile';
 import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
 import { useToast } from '@/composables/store/useToast';
 import type { LocationState } from '@/domain/location';
@@ -31,11 +31,11 @@ const {
     data: fetchedProfile,
     isLoading: isProfileLoading,
     isError: isProfileError,
-} = useProfile(profileId, {
+} = useReadProfile(profileId, {
     enabled: isExtProfile,
 });
 
-const { data: locations, refetch, isLoading } = useProfileLocations(profileId);
+const { data: locations, refetch, isLoading } = useReadProfileLocations(profileId);
 
 const {
     mutateAsync: updateLocationState,

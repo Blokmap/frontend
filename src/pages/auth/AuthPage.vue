@@ -13,7 +13,7 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
-import { useInstitutions } from '@/composables/data/useInstitutions';
+import { useReadInstitutions } from '@/composables/data/useInstitutions';
 import { useToast } from '@/composables/store/useToast';
 import { endpoints } from '@/config/endpoints';
 import { authIdentityProviders, pullRedirectUrl } from '@/domain/auth';
@@ -23,7 +23,7 @@ const toast = useToast();
 const router = useRouter();
 const route = useRoute();
 
-const { data: institutions, isLoading: isLoadingInstitutions } = useInstitutions({});
+const { data: institutions, isLoading: isLoadingInstitutions } = useReadInstitutions({});
 
 const {
     mutate: login,

@@ -16,13 +16,14 @@ import {
     faImages,
     faList,
     faSave,
+    faSpinner,
     faUsers,
     faWarning,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
-import { useLocation, useUpdateLocation } from '@/composables/data/useLocations';
+import { useReadLocation, useUpdateLocation } from '@/composables/data/useLocations';
 import { useToast } from '@/composables/store/useToast';
 import { imageToRequest } from '@/domain/image';
 import { locationToRequest } from '@/domain/location';
@@ -54,14 +55,14 @@ const {
     data: location,
     isLoading,
     error,
-} = useLocation(
+} = useReadLocation(
     computed(() => +props.locationId),
     {
         includes: ['images'],
     },
 );
 
-const { mutateAsync: updateLocation } = useUpdateLocation({
+const { mutateAsync: updateLocation, isPending: isUpdatingLocation } = useUpdateLocation({
     onSuccess: () => {
         toast.add({
             severity: 'success',
@@ -76,6 +77,8 @@ const imagesForm = ref<ImageRequest[]>([]);
 
 const originalFormSnapshot = ref<string>('');
 const originalImagesSnapshot = ref<string>('');
+
+const isUpdating = computed(() => isUpdatingLocation.value);
 
 const hasChanges = computed(() => {
     const currentFormSnapshot = JSON.stringify(locationForm.value);
@@ -223,8 +226,13 @@ async function saveChanges(): Promise<void> {
                         <Button text @click="resetChanges" class="text-slate-100 hover:underline">
                             Ongedaan maken
                         </Button>
-                        <Button @click="saveChanges">
-                            <FontAwesomeIcon :icon="faSave" class="mr-2" />
+                        <Button @click="saveChanges" :loading="isUpdating">
+                            <FontAwesomeIcon
+                                v-if="isUpdating"
+                                :icon="faSpinner"
+                                spin
+                                class="mr-2" />
+                            <FontAwesomeIcon :icon="faSave" class="mr-2" v-else />
                             Opslaan
                         </Button>
                     </div>

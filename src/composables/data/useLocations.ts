@@ -34,7 +34,11 @@ import type {
 } from '@/types';
 
 export const LOCATION_QUERY_KEYS = {
-    read: (id: MaybeRef<number>) => ['location', toValue(id)],
+    read: (id: MaybeRef<number>) => ['location', toValue(id)] as const,
+    list: (filters: MaybeRef<LocationFilter | undefined>, locale: MaybeRef<string>) =>
+        ['locations', filters, locale] as const,
+    search: (filters: MaybeRef<LocationSearchFilter | undefined>, locale: MaybeRef<string>) =>
+        ['locations', 'search', filters, locale] as const,
 } as const;
 
 /**
@@ -44,7 +48,7 @@ export const LOCATION_QUERY_KEYS = {
  * @param options - Additional options for the query, such as initial data or query configuration.
  * @returns An object containing the search results and their state.
  */
-export function useLocationsSearch(
+export function useSearchLocations(
     filters?: MaybeRef<LocationSearchFilter>,
     options: CompQueryOptions<LocationIncludes> = {},
 ): CompQuery<Paginated<Location>> {
@@ -52,7 +56,7 @@ export function useLocationsSearch(
 
     const query = useQuery({
         ...options,
-        queryKey: ['locations', 'search', filters, locale],
+        queryKey: LOCATION_QUERY_KEYS.search(filters, locale),
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const params = toValue(filters);
@@ -71,7 +75,7 @@ export function useLocationsSearch(
  * @param options - Additional options for the query, such as initial data or query configuration.
  * @returns An object containing the list of locations and their state.
  */
-export function useLocations(
+export function useReadLocations(
     filters?: MaybeRef<LocationFilter>,
     options: CompQueryOptions<LocationIncludes> = {},
 ): CompQuery<Paginated<Location>> {
@@ -79,7 +83,7 @@ export function useLocations(
 
     const query = useQuery({
         ...options,
-        queryKey: ['locations', filters, locale],
+        queryKey: LOCATION_QUERY_KEYS.list(filters, locale),
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const params = toValue(filters);
@@ -98,7 +102,7 @@ export function useLocations(
  * @param id - The ID of the location to fetch.
  * @returns An object containing the location and its state.
  */
-export function useLocation(
+export function useReadLocation(
     id: MaybeRef<number>,
     options: CompQueryOptions<LocationIncludes> = {},
 ): CompQuery<Location> {
@@ -141,8 +145,17 @@ export function useNearestLocation(
 export function useCreateLocation(
     options: CompMutationOptions = {},
 ): CompMutation<LocationRequest, Location> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate all location lists
+            queryClient.invalidateQueries({
+                queryKey: ['locations'],
+            });
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: createLocation,
     });
 
@@ -162,8 +175,13 @@ export function useUpdateLocation(
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
+            // Invalidate the specific location query
             queryClient.invalidateQueries({
                 queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
+            });
+            // Invalidate all location lists
+            queryClient.invalidateQueries({
+                queryKey: ['locations'],
             });
             options.onSuccess?.(data, variables, context);
         },
@@ -189,8 +207,17 @@ export type CreateLocationImageParams = {
 export function useCreateLocationImage(
     options: CompMutationOptions = {},
 ): CompMutation<CreateLocationImageParams> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific location query
+            queryClient.invalidateQueries({
+                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
+            });
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: ({ locationId, image }: CreateLocationImageParams) => {
             return createLocationImage(locationId, image);
         },
@@ -213,8 +240,17 @@ export type CreateLocationTimeslotsParams = {
 export function useCreateLocationTimeslots(
     options: CompMutationOptions = {},
 ): CompMutation<CreateLocationTimeslotsParams> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific location query
+            queryClient.invalidateQueries({
+                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
+            });
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: ({ locationId, timeslots }: CreateLocationTimeslotsParams) => {
             return createLocationOpenings(locationId, timeslots);
         },
@@ -232,8 +268,21 @@ export function useCreateLocationTimeslots(
 export function useApproveLocation(
     options: CompMutationOptions = {},
 ): CompMutation<number, Location> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific location query
+            queryClient.invalidateQueries({
+                queryKey: LOCATION_QUERY_KEYS.read(variables),
+            });
+            // Invalidate all location lists
+            queryClient.invalidateQueries({
+                queryKey: ['locations'],
+            });
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: approveLocation,
     });
 
@@ -249,8 +298,21 @@ export function useApproveLocation(
 export function useRejectLocation(
     options: CompMutationOptions = {},
 ): CompMutation<number, Location> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific location query
+            queryClient.invalidateQueries({
+                queryKey: LOCATION_QUERY_KEYS.read(variables),
+            });
+            // Invalidate all location lists
+            queryClient.invalidateQueries({
+                queryKey: ['locations'],
+            });
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: rejectLocation,
     });
 
@@ -264,8 +326,21 @@ export function useRejectLocation(
  * @returns The mutation object for deleting a location.
  */
 export function useDeleteLocation(options: CompMutationOptions = {}): CompMutation<number, void> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific location query
+            queryClient.invalidateQueries({
+                queryKey: LOCATION_QUERY_KEYS.read(variables),
+            });
+            // Invalidate all location lists
+            queryClient.invalidateQueries({
+                queryKey: ['locations'],
+            });
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: deleteLocation,
     });
 
@@ -287,8 +362,21 @@ type LocationStateParams = {
 export function useLocationState(
     options: CompMutationOptions = {},
 ): CompMutation<LocationStateParams, Location> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific location query
+            queryClient.invalidateQueries({
+                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
+            });
+            // Invalidate all location lists
+            queryClient.invalidateQueries({
+                queryKey: ['locations'],
+            });
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: ({ locationId, state, reason }: LocationStateParams) => {
             if (state === 'approved') {
                 return approveLocation(locationId);

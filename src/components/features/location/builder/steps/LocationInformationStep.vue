@@ -17,7 +17,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useForwardGeoSearch } from '@/composables/data/useGeoCoding';
+import { useGeocodeAddress } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/store/useToast';
 import { LOCATION_SETTINGS, formatLocationAddress } from '@/domain/location';
 import { defaultMapOptions } from '@/domain/map';
@@ -31,7 +31,7 @@ const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
 const toast = useToast();
 
 const { locale } = useI18n();
-const { mutateAsync: geocodeAddress, isPending: isPendingCoordinates } = useForwardGeoSearch();
+const { mutateAsync: geocodeAddress, isPending: isPendingCoordinates } = useGeocodeAddress();
 
 const mapZoom = ref<number>(18);
 const currentLanguage = ref(locale.value);

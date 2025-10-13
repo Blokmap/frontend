@@ -23,7 +23,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
-import { useProfileReservations, useProfileStats } from '@/composables/data/useProfile';
+import { useReadProfileReservations, useReadProfileStats } from '@/composables/data/useProfile';
 import { useProfileScan } from '@/composables/useProfileScan';
 
 const router = useRouter();
@@ -34,13 +34,13 @@ const {
     isLoading: reservationsIsLoading,
     isPending: reservationsIsPending,
     data: reservations,
-} = useProfileReservations(profileId);
+} = useReadProfileReservations(profileId);
 
 const {
     isLoading: profileStatsIsLoading,
     isPending: profileStatsIsPending,
     data: profileStatsData,
-} = useProfileStats(profileId);
+} = useReadProfileStats(profileId);
 
 const { currentCodeUrl, toggleScanMode } = useProfileScan();
 

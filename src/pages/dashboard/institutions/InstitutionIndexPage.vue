@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';
 import { ref } from 'vue';
 import { useAdminCounts } from '@/composables/data/useAdmin';
-import { useInstitutions } from '@/composables/data/useInstitutions';
+import { useReadInstitutions } from '@/composables/data/useInstitutions';
 import { abbreviateCount } from '@/utils/format';
 import type { Institution, InstitutionFilter } from '@/domain/institution';
 
@@ -22,7 +22,7 @@ const filters = ref<InstitutionFilter>({
     perPage: 25,
 });
 
-const { data: institutions, isFetching, isLoading } = useInstitutions(filters);
+const { data: institutions, isFetching, isLoading } = useReadInstitutions(filters);
 const { data: counts } = useAdminCounts();
 
 const onSearchChange = useDebounceFn(() => {

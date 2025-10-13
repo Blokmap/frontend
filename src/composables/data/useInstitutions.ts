@@ -3,18 +3,23 @@ import { toValue, type MaybeRefOrGetter } from 'vue';
 import { listInstitutions, type Institution, type InstitutionFilter } from '@/domain/institution';
 import type { CompQuery, CompQueryOptions, Paginated } from '@/types';
 
+export const INSTITUTION_QUERY_KEYS = {
+    list: (filters: MaybeRefOrGetter<Partial<InstitutionFilter>>) =>
+        ['institutions', filters] as const,
+} as const;
+
 /**
  * Composable to fetch a list of institutions.
  *
  * @returns An object containing the institutions and their state.
  */
-export function useInstitutions(
+export function useReadInstitutions(
     filters: MaybeRefOrGetter<Partial<InstitutionFilter>>,
     options: CompQueryOptions = {},
 ): CompQuery<Paginated<Institution>> {
     const institutions = useQuery({
         ...options,
-        queryKey: ['institutions', filters],
+        queryKey: INSTITUTION_QUERY_KEYS.list(filters),
         queryFn: () => listInstitutions(toValue(filters)),
     });
 

@@ -67,6 +67,13 @@ export default [
             'vue/component-name-in-template-casing': ['error', 'PascalCase'],
             'vue/require-default-prop': 'off',
 
+            // Import validation
+            'import/no-unresolved': 'error',
+            'import/named': 'error',
+            'import/default': 'error',
+            'import/namespace': 'error',
+
+            // Import ordering
             'import/order': [
                 'error',
                 {

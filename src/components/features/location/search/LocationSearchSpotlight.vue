@@ -88,8 +88,8 @@ import { useDebounce } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { useGeoSearch } from '@/composables/data/useGeoCoding';
-import { useLocationsSearch } from '@/composables/data/useLocations';
+import { useSearchGeoLocations } from '@/composables/data/useGeoCoding';
+import { useSearchLocations } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import type { Location } from '@/domain/location';
 import type { GeoJsonProperties } from 'geojson';
@@ -106,14 +106,14 @@ const debouncedSearch = useDebounce(search, 500);
 const router = useRouter();
 const filters = storeToRefs(useLocationFilters());
 
-const { data: locations, isFetching: isFetchingLocations } = useLocationsSearch(
+const { data: locations, isFetching: isFetchingLocations } = useSearchLocations(
     computed(() => ({ query: debouncedSearch.value, perPage: 5 })),
     {
         enabled: computed(() => debouncedSearch.value.length >= 2),
     },
 );
 
-const { data: geolocations, isFetching: isFetchingGeolocations } = useGeoSearch(
+const { data: geolocations, isFetching: isFetchingGeolocations } = useSearchGeoLocations(
     computed(() => ({ search: debouncedSearch.value, limit: 5 })),
     {
         enabled: computed(() => debouncedSearch.value.length >= 2),

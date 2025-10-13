@@ -23,8 +23,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import placeholder from '@/assets/img/placeholder/location-stock-2.jpg';
-import { useLocation } from '@/composables/data/useLocations';
-import { useOpeningTimes } from '@/composables/data/useOpeningTimes';
+import { useReadLocation } from '@/composables/data/useLocations';
+import { useReadOpeningTimes } from '@/composables/data/useOpeningTimes';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 
 const { locationId } = defineProps<{ locationId: string }>();
@@ -38,7 +38,7 @@ const {
     data: location,
     isPending,
     isError,
-} = useLocation(
+} = useReadLocation(
     computed(() => +locationId),
     { includes: ['createdBy'] },
 );
@@ -47,7 +47,7 @@ const {
     data: openingTimes,
     isPending: openingTimesIsPending,
     isError: _openingTimesIsError,
-} = useOpeningTimes(
+} = useReadOpeningTimes(
     computed(() => +locationId),
     currentWeek,
 );

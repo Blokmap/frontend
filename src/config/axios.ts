@@ -53,11 +53,20 @@ export function setupAxiosInterceptors(): void {
                 if (error.request.method === 'GET') {
                     router.push({ name: 'dashboard' });
                 }
-                toast.add({
-                    severity: 'error',
-                    summary: 'Toegang geweigerd',
-                    detail: 'Je hebt geen toegang tot deze actie of pagina.',
-                });
+
+                if (error.request.method !== 'GET') {
+                    toast.add({
+                        severity: 'error',
+                        summary: 'Toegang geweigerd',
+                        detail: 'Je hebt geen toegang tot deze actie of pagina.',
+                    });
+                } else {
+                    toast.add({
+                        severity: 'error',
+                        summary: 'Toegang geweigerd',
+                        detail: 'Je hebt geen toegang tot deze data.',
+                    });
+                }
             }
 
             throw error;

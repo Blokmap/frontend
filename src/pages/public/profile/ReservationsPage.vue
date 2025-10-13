@@ -5,7 +5,7 @@ import { formatDate } from '@vueuse/core';
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
-import { useProfileReservations } from '@/composables/data/useProfile';
+import { useReadProfileReservations } from '@/composables/data/useProfile';
 
 const router = useRouter();
 const route = useRoute();
@@ -18,7 +18,7 @@ const dateInWeek = computed(() => {
     return isNaN(date.getTime()) ? new Date() : date;
 });
 
-const { data: reservations } = useProfileReservations(profileId, dateInWeek);
+const { data: reservations } = useReadProfileReservations(profileId, dateInWeek);
 
 function handleDateInWeekUpdate(newDate: Date): void {
     const dateString = formatDate(newDate, 'YYYY-MM-DD');
@@ -28,23 +28,6 @@ function handleDateInWeekUpdate(newDate: Date): void {
             inWeekOf: dateString,
         },
     });
-}
-
-// Calendar navigation functions
-function goToPreviousWeek(): void {
-    const newDate = new Date(dateInWeek.value);
-    newDate.setDate(newDate.getDate() - 7);
-    handleDateInWeekUpdate(newDate);
-}
-
-function goToNextWeek(): void {
-    const newDate = new Date(dateInWeek.value);
-    newDate.setDate(newDate.getDate() + 7);
-    handleDateInWeekUpdate(newDate);
-}
-
-function goToToday(): void {
-    handleDateInWeekUpdate(new Date());
 }
 
 function handleDateSelect(date: any): void {
@@ -57,12 +40,8 @@ function handleDateSelect(date: any): void {
 <template>
     <div class="space-y-6">
         <div class="flex h-full flex-col space-y-6">
-            <CalendarControls
-                :current-week="dateInWeek"
-                @click:previous-week="goToPreviousWeek"
-                @click:next-week="goToNextWeek"
-                @click:current-week="goToToday"
-                @select:date="handleDateSelect" />
+            <CalendarControls :date="dateInWeek" @update:date="handleDateSelect">
+            </CalendarControls>
 
             <div class="flex-1 overflow-hidden">
                 <ReservationCalendar

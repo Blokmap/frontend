@@ -9,7 +9,7 @@ import { ref } from 'vue';
 // import { useRouter } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
-import { useProfiles, useProfileState } from '@/composables/data/useProfile';
+import { useReadProfiles, useUpdateProfileState } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/store/useToast';
 import { abbreviateCount } from '@/utils/format';
 import type { Profile, ProfileFilter, ProfileState } from '@/domain/profile';
@@ -25,13 +25,13 @@ const filters = ref<ProfileFilter>({
     perPage: 25,
 });
 
-const { data: profiles, refetch, isFetching, isLoading } = useProfiles(filters);
+const { data: profiles, refetch, isFetching, isLoading } = useReadProfiles(filters);
 
 const {
     mutateAsync: updateProfileState,
     isPending: isUpdatingProfile,
     variables: updateVariables,
-} = useProfileState();
+} = useUpdateProfileState();
 
 const { data: counts } = useAdminCounts();
 

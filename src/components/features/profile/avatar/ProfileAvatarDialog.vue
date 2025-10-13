@@ -5,7 +5,7 @@ import { faClose, faImagePortrait, faTrash } from '@fortawesome/free-solid-svg-i
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useQueryClient } from '@tanstack/vue-query';
 import { ref } from 'vue';
-import { useDeleteAvatar, useUpdateAvatar } from '@/composables/data/useProfile';
+import { useDeleteProfileAvatar, useUpdateProfileAvatar } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/store/useToast';
 import ProfileAvatar from './ProfileAvatar.vue';
 import type { Profile } from '@/domain/profile';
@@ -16,7 +16,7 @@ const visible = defineModel<boolean>('visible', { default: false });
 const messages = useToast();
 const client = useQueryClient();
 
-const { mutate: updateAvatar, isPending: isUpdating } = useUpdateAvatar({
+const { mutate: updateAvatar, isPending: isUpdating } = useUpdateProfileAvatar({
     onSuccess: () => {
         client.invalidateQueries({ queryKey: ['profile'] });
         visible.value = false;
@@ -28,7 +28,7 @@ const { mutate: updateAvatar, isPending: isUpdating } = useUpdateAvatar({
     },
 });
 
-const { mutate: deleteAvatar, isPending: isDeleting } = useDeleteAvatar({
+const { mutate: deleteAvatar, isPending: isDeleting } = useDeleteProfileAvatar({
     onSuccess: () => {
         client.invalidateQueries({ queryKey: ['profile'] });
         visible.value = false;

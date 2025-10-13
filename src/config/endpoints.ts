@@ -101,6 +101,8 @@ export const endpoints = {
             createOne: '/locations/{id}/images',
             deleteOne: '/locations/{id}/images/{imageId}',
             deleteAll: '/locations/{id}/images',
+            reorder: '/locations/{id}/images/reorder',
+            read: '/locations/{id}/images',
         },
     },
     tags: {

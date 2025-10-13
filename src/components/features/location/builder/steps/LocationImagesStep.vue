@@ -20,19 +20,19 @@ import type { ImageRequest } from '@/domain/image';
 const images = defineModel<ImageRequest[]>({ required: true, default: () => [] });
 const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
 
-const showAddDialog = ref(false);
 const urlInput = ref('');
 const draggedImage = ref<ImageRequest | null>(null);
+
+const showAddDialog = ref(false);
 const isDragging = ref(false);
 
 const canAddMore = computed(() => images.value.length < LOCATION_SETTINGS.MAX_IMAGES);
-
-const primaryImage = computed(() => images.value.find((img) => img.index === 0));
 
 const sortedImages = computed(() =>
     [...images.value].sort((a, b) => (a.index ?? 0) - (b.index ?? 0)),
 );
 
+const primaryImage = computed(() => images.value.find((img) => img.index === 0));
 const secondaryImages = computed(() => sortedImages.value.filter((img) => img.index !== 0));
 
 onMounted(() => {

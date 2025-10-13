@@ -23,6 +23,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUpdateLocationImages } from '@/composables/data/useLocationImages';
 import { useReadLocation, useUpdateLocation } from '@/composables/data/useLocations';
 import { useToast } from '@/composables/store/useToast';
 import { imageToRequest } from '@/domain/image';
@@ -72,6 +73,8 @@ const { mutateAsync: updateLocation, isPending: isUpdatingLocation } = useUpdate
     },
 });
 
+const { updateImages } = useUpdateLocationImages();
+
 const locationForm = ref<LocationRequest | null>(null);
 const imagesForm = ref<ImageRequest[]>([]);
 
@@ -80,14 +83,18 @@ const originalImagesSnapshot = ref<string>('');
 
 const isUpdating = computed(() => isUpdatingLocation.value);
 
-const hasChanges = computed(() => {
+const hasLocationChanges = computed(() => {
     const currentFormSnapshot = JSON.stringify(locationForm.value);
-    const currentImagesSnapshot = JSON.stringify(imagesForm.value);
+    return currentFormSnapshot !== originalFormSnapshot.value;
+});
 
-    return (
-        currentFormSnapshot !== originalFormSnapshot.value ||
-        currentImagesSnapshot !== originalImagesSnapshot.value
-    );
+const hasImagesChanges = computed(() => {
+    const currentImagesSnapshot = JSON.stringify(imagesForm.value);
+    return currentImagesSnapshot !== originalImagesSnapshot.value;
+});
+
+const hasChanges = computed(() => {
+    return hasLocationChanges.value || hasImagesChanges.value;
 });
 
 watchEffect(() => {
@@ -124,16 +131,25 @@ async function saveChanges(): Promise<void> {
     if (!locationForm.value) return;
 
     try {
-        await updateLocation({
-            locationId: +props.locationId,
-            data: locationForm.value,
-        });
-
-        // Update snapshots after successful save
-        if (locationForm.value) {
-            originalFormSnapshot.value = JSON.stringify(locationForm.value);
+        if (hasLocationChanges.value) {
+            await updateLocation({
+                locationId: +props.locationId,
+                data: locationForm.value,
+            });
         }
 
+        if (hasImagesChanges.value) {
+            const originalImages = JSON.parse(originalImagesSnapshot.value);
+
+            await updateImages({
+                locationId: +props.locationId,
+                originalImages,
+                currentImages: imagesForm.value,
+            });
+        }
+
+        // Update snapshots after successful save
+        originalFormSnapshot.value = JSON.stringify(locationForm.value);
         originalImagesSnapshot.value = JSON.stringify(imagesForm.value);
     } catch {
         toast.add({

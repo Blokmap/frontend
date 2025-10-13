@@ -9,6 +9,7 @@ import type { Image, ImageRequest } from './types';
  */
 export function imageToRequest(image: Image, index: number): ImageRequest {
     return {
+        id: image.id,
         imageUrl: image.url,
         tempUrl: image.url,
         isPrimary: index === 0,

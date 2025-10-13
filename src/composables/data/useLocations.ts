@@ -21,8 +21,10 @@ import {
     pendLocation,
     deleteLocation,
     updateLocation,
+    deleteLocationImage,
+    reorderLocationImages,
 } from '@/domain/location';
-import type { ImageRequest } from '@/domain/image';
+import type { ImageReorderRequest, ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { OpeningTimeRequest } from '@/domain/openings';
 import type {
@@ -220,6 +222,60 @@ export function useCreateLocationImage(
         },
         mutationFn: ({ locationId, image }: CreateLocationImageParams) => {
             return createLocationImage(locationId, image);
+        },
+    });
+
+    return mutation;
+}
+
+export type DeleteLocationImageParams = {
+    locationId: number;
+    imageId: number;
+};
+
+export function useDeleteLocationImage(
+    options: CompMutationOptions = {},
+): CompMutation<DeleteLocationImageParams, void> {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific location query
+            queryClient.invalidateQueries({
+                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
+            });
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: ({ locationId, imageId }: DeleteLocationImageParams) => {
+            return deleteLocationImage(locationId, imageId);
+        },
+    });
+
+    return mutation;
+}
+
+export type ReorderLocationImagesParams = {
+    locationId: number;
+    reorders: ImageReorderRequest[];
+};
+
+export function useReorderLocationImages(
+    options: CompMutationOptions = {},
+): CompMutation<ReorderLocationImagesParams, void> {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific location query
+            queryClient.invalidateQueries({
+                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
+            });
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: async ({ locationId, reorders }: ReorderLocationImagesParams) => {
+            return reorderLocationImages(locationId, reorders);
         },
     });
 

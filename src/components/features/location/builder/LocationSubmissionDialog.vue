@@ -178,7 +178,11 @@ watchEffect(async () => {
             </Step>
         </Steps>
         <template #footer>
-            <RouterLink :to="{ name: 'dashboard.profiles.locations' }">
+            <RouterLink
+                :to="{
+                    name: 'dashboard.locations.detail',
+                    params: { locationId, tab: 'openings' },
+                }">
                 <Button v-if="locationStatus === 'completed' && imagesStatus !== 'loading'">
                     Openingstijden toevoegen <FontAwesomeIcon :icon="faArrowRight" />
                 </Button>

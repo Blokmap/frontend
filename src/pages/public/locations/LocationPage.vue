@@ -17,6 +17,7 @@ import GallerySkeleton from '@/components/shared/organisms/image/GallerySkeleton
 import {
     faArrowRight,
     faCheckCircle,
+    faEdit,
     faLocationDot,
     faUsers,
 } from '@fortawesome/free-solid-svg-icons';
@@ -41,7 +42,7 @@ const router = useRouter();
 
 const currentWeek = ref<Date>(new Date());
 
-const { profileId } = useAuthProfile();
+const { profileId, data: profile } = useAuthProfile();
 
 const {
     data: location,
@@ -139,12 +140,25 @@ function onDialogClose(): void {
             <!-- Hero Section -->
             <div class="space-y-3">
                 <!-- Title and Quick Info -->
-                <h1 class="text-3xl font-semibold text-gray-900">
-                    <template v-if="location">
-                        {{ location.name }}
-                    </template>
-                    <Skeleton v-else-if="isPending" height="36px" width="400px" />
-                </h1>
+                <div class="flex items-center justify-between gap-3">
+                    <h1 class="text-3xl font-semibold text-gray-900">
+                        <template v-if="location">
+                            {{ location.name }}
+                        </template>
+                        <Skeleton v-else-if="isPending" height="36px" width="400px" />
+                    </h1>
+                    <RouterLink
+                        :to="{
+                            name: 'dashboard.locations.detail',
+                            params: { locationId },
+                        }"
+                        v-if="profile?.isAdmin">
+                        <Button severity="contrast">
+                            <span>Bewerken</span>
+                            <FontAwesomeIcon :icon="faEdit" />
+                        </Button>
+                    </RouterLink>
+                </div>
 
                 <!-- Tags -->
                 <div class="flex items-center gap-3" v-if="location">
@@ -279,7 +293,7 @@ function onDialogClose(): void {
                                 </Button>
                                 <Button
                                     class="w-full"
-                                    severity="secondary"
+                                    severity="contrast"
                                     @click="onLoginClick"
                                     v-else>
                                     Inloggen om te reserveren

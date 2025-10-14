@@ -11,12 +11,12 @@ const MAX_RETRIES = 3;
  * @returns A boolean indicating whether the query should be retried.
  */
 function retryQuery(failureCount: number, error: any): boolean {
-    console.log(error);
-    // Do not retry if the error is a 404 (Not Found)
     if (error?.status === HttpStatusCode.NotFound) return false;
-    // Do not retry if the maximum number of retries has been reached
+    if (error?.status === HttpStatusCode.Unauthorized) return false;
+    if (error?.status === HttpStatusCode.Forbidden) return false;
+
     if (failureCount > MAX_RETRIES) return false;
-    // Otherwise, retry the query
+
     return true;
 }
 

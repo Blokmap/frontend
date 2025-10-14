@@ -28,19 +28,21 @@ const visible = defineModel<boolean>('visible', {
 });
 
 const emit = defineEmits<{
-    save: [openingTime: OpeningTimeRequest];
-    delete: [openingTime: OpeningTimeRequest];
+    save: [openingTime: OpeningTimeRequest, applyToSequence: boolean];
+    delete: [openingTime: OpeningTimeRequest, applyToSequence?: boolean];
 }>();
 
 const { locale } = useI18n();
 
 const openingTime = ref<OpeningTimeRequest>({ ...DEFAULT_OPENING_TIME_REQUEST });
+const applyToSequence = ref<boolean>(false);
 
 watch(
     () => props.openingTime,
     (opening?: OpeningTimeRequest | null) => {
         const def = opening ?? DEFAULT_OPENING_TIME_REQUEST;
         openingTime.value = { ...def };
+        applyToSequence.value = false;
     },
     { deep: true, immediate: true },
 );
@@ -70,6 +72,12 @@ const endTime = computed({
     },
 });
 
+/**
+ *
+ * Toggles the selection of a day in the repetition config
+ *
+ * @param dayIndex - The index of the day to toggle (0 = Sunday, 6 = Saturday)
+ */
 function toggleDaySelection(dayIndex: number): void {
     const repetition = openingTime.value.repetition;
 
@@ -87,18 +95,31 @@ function toggleDaySelection(dayIndex: number): void {
     repetition.selectedDays = [...selectedDays];
 }
 
+/**
+ * Checks if a day is selected in the repetition config
+ *
+ * @param dayIndex - The index of the day to check (0 = Sunday, 6 = Saturday)
+ * @returns True if the day is selected, false otherwise
+ */
 function isDaySelected(dayIndex: number): boolean {
     const repetition = openingTime.value.repetition;
     return repetition?.selectedDays?.includes(dayIndex) || false;
 }
 
+/**
+ * Handles saving the opening time (create or update)
+ */
 function onSaveClick(): void {
-    emit('save', openingTime.value);
+    const payload = { ...openingTime.value };
+    emit('save', payload, applyToSequence.value);
 }
 
+/**
+ * Handles deleting the opening time
+ */
 function onDeleteClick(): void {
     if (!props.openingTime || !props.isEditing) return;
-    emit('delete', props.openingTime);
+    emit('delete', props.openingTime, applyToSequence.value);
 }
 </script>
 
@@ -136,7 +157,7 @@ function onDeleteClick(): void {
                 </InputNumber>
             </div>
 
-            <!-- Repetition Toggle -->
+            <!-- Repetition Toggle (for creating new) -->
             <div class="repetition" v-if="!isEditing">
                 <div class="flex items-center gap-3">
                     <Checkbox v-model="isRepetitionEnabled" binary input-id="repetition-enabled" />
@@ -173,13 +194,26 @@ function onDeleteClick(): void {
                     </div>
                 </div>
             </div>
+
+            <!-- Apply to Sequence (for editing existing sequence) -->
+            <div class="repetition" v-if="openingTime.sequenceId">
+                <div class="flex items-center gap-3">
+                    <Checkbox v-model="applyToSequence" binary input-id="apply-to-sequence" />
+                    <label
+                        for="apply-to-sequence"
+                        class="flex cursor-pointer items-center gap-2 text-sm font-medium">
+                        <FontAwesomeIcon :icon="faRepeat" class="text-primary-500" />
+                        Wijzigingen toepassen op hele groep
+                    </label>
+                </div>
+            </div>
         </div>
 
         <template #footer>
             <div class="flex w-full items-center justify-between gap-3">
                 <Button v-if="isEditing" severity="contrast" class="text-sm" @click="onDeleteClick">
                     <FontAwesomeIcon :icon="faTrash" class="mr-2" />
-                    <span v-if="isRepetitionEnabled">Verwijder Groep</span>
+                    <span v-if="applyToSequence">Verwijder Groep</span>
                     <span v-else>Verwijderen</span>
                 </Button>
 

@@ -10,7 +10,6 @@ export const DEFAULT_REPETITION_CONFIG: TimeSlotRepetition = {
 };
 
 export const DEFAULT_OPENING_TIME_REQUEST: OpeningTimeRequest = {
-    sequenceNumber: 0,
     startTime: createTime(8, 0),
     endTime: createTime(10, 0),
     day: new Date(),

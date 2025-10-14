@@ -29,7 +29,7 @@ export function getOpeningsFromRepetition(group: OpeningTimeRequest): OpeningTim
         }
 
         results.push({
-            sequenceNumber: group.sequenceNumber,
+            sequenceId: group.sequenceId,
             startTime: group.startTime,
             endTime: group.endTime,
             day: date,
@@ -105,4 +105,23 @@ export function isOverlapping(
     const bEnd = timeToMinutes(b.endTime);
 
     return aStart < bEnd && bStart < aEnd;
+}
+
+/**
+ * Converts an OpeningTime to an OpeningTimeRequest.
+ *
+ * @param opening - The opening time to convert.
+ * @returns The corresponding opening time request.
+ */
+export function openingToRequest(opening: OpeningTime): OpeningTimeRequest {
+    return {
+        id: opening.id,
+        day: opening.day,
+        startTime: opening.startTime,
+        endTime: opening.endTime,
+        seatCount: opening.seatCount,
+        reservableFrom: opening.reservableFrom,
+        reservableUntil: opening.reservableUntil,
+        sequenceId: opening.sequenceId,
+    };
 }

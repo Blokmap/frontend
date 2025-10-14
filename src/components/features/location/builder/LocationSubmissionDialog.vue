@@ -37,6 +37,12 @@ const shouldStartSubmission = computed(() => {
     return props.canSubmit && visible.value && locationStatus.value === 'idle';
 });
 
+const isFinished = computed(() => {
+    return (
+        locationStatus.value === 'completed' && imagesStatus.value !== 'loading' && locationId.value
+    );
+});
+
 const allImagesCompleted = computed(() => {
     if (props.images.length === 0) return true;
 
@@ -179,13 +185,12 @@ watchEffect(async () => {
         </Steps>
         <template #footer>
             <RouterLink
+                v-if="isFinished"
                 :to="{
                     name: 'dashboard.locations.detail',
                     params: { locationId, tab: 'openings' },
                 }">
-                <Button v-if="locationStatus === 'completed' && imagesStatus !== 'loading'">
-                    Openingstijden toevoegen <FontAwesomeIcon :icon="faArrowRight" />
-                </Button>
+                <Button> Openingstijden toevoegen <FontAwesomeIcon :icon="faArrowRight" /> </Button>
             </RouterLink>
         </template>
     </Dialog>

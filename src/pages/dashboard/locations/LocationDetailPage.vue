@@ -29,9 +29,15 @@ import {
     useUpdateLocation,
     useUpdateLocationImages,
 } from '@/composables/data/useLocations';
+import {
+    useCreateOpeningTimes,
+    useDeleteOpeningTime,
+    useUpdateOpeningTime,
+} from '@/composables/data/useOpeningTimes';
 import { useToast } from '@/composables/store/useToast';
 import { imageToRequest } from '@/domain/image';
 import { locationToRequest } from '@/domain/location';
+import { openingToRequest, type OpeningTimeRequest } from '@/domain/openings';
 import type { ImageRequest } from '@/domain/image';
 import type { LocationRequest } from '@/domain/location';
 
@@ -87,13 +93,73 @@ const { mutateAsync: updateImages, isPending: isUpdatingImages } = useUpdateLoca
     },
 });
 
+const { mutateAsync: createOpeningTimes, isPending: isCreatingOpeningTimes } =
+    useCreateOpeningTimes({
+        onSuccess: () => {
+            toast.add({
+                severity: 'success',
+                summary: 'Openingstijd toegevoegd',
+                detail: 'De openingstijd is succesvol toegevoegd.',
+            });
+        },
+        onError: () => {
+            toast.add({
+                severity: 'error',
+                summary: 'Fout bij toevoegen',
+                detail: 'Er is iets misgegaan bij het toevoegen van de openingstijd.',
+            });
+        },
+    });
+
+const { mutateAsync: updateOpeningTime, isPending: isUpdatingOpeningTime } = useUpdateOpeningTime({
+    onSuccess: () => {
+        toast.add({
+            severity: 'success',
+            summary: 'Openingstijd bijgewerkt',
+            detail: 'De openingstijd is succesvol bijgewerkt.',
+        });
+    },
+    onError: () => {
+        toast.add({
+            severity: 'error',
+            summary: 'Fout bij bijwerken',
+            detail: 'Er is iets misgegaan bij het bijwerken van de openingstijd.',
+        });
+    },
+});
+
+const { mutateAsync: deleteOpeningTime, isPending: isDeletingOpeningTime } = useDeleteOpeningTime({
+    onSuccess: () => {
+        toast.add({
+            severity: 'success',
+            summary: 'Openingstijd verwijderd',
+            detail: 'De openingstijd is succesvol verwijderd.',
+        });
+    },
+    onError: () => {
+        toast.add({
+            severity: 'error',
+            summary: 'Fout bij verwijderen',
+            detail: 'Er is iets misgegaan bij het verwijderen van de openingstijd.',
+        });
+    },
+});
+
 const locationForm = ref<LocationRequest | null>(null);
 const imagesForm = ref<ImageRequest[]>([]);
+const openingsForm = ref<OpeningTimeRequest[]>([]);
 
 const originalFormSnapshot = ref<string>('');
 const originalImagesSnapshot = ref<string>('');
 
-const isUpdating = computed(() => isUpdatingLocation.value || isUpdatingImages.value);
+const isUpdating = computed(
+    () =>
+        isUpdatingLocation.value ||
+        isUpdatingImages.value ||
+        isCreatingOpeningTimes.value ||
+        isUpdatingOpeningTime.value ||
+        isDeletingOpeningTime.value,
+);
 
 const hasLocationChanges = computed(() => {
     const currentFormSnapshot = JSON.stringify(locationForm.value);
@@ -121,6 +187,10 @@ watchEffect(() => {
     const mappedImages = (location.value.images || []).map(imageToRequest);
     imagesForm.value = mappedImages;
     originalImagesSnapshot.value = JSON.stringify(mappedImages);
+
+    // Map openings to form format
+    const mappedOpenings = (location.value.openingTimes || []).map(openingToRequest);
+    openingsForm.value = mappedOpenings;
 });
 
 /**
@@ -170,6 +240,47 @@ async function saveChanges(): Promise<void> {
             detail: 'Er is iets misgegaan bij het opslaan van de wijzigingen.',
         });
     }
+}
+
+/**
+ * Handles creation of a new opening time
+ */
+async function onCreateOpeningTime(openingTime: OpeningTimeRequest): Promise<void> {
+    try {
+        await createOpeningTimes({
+            locationId: +props.locationId,
+            openings: [openingTime],
+        });
+    } catch {
+        // Error is ond by onError callback
+    }
+}
+
+/**
+ * Handles updating an existing opening time
+ */
+async function onUpdateOpeningTime(
+    openingTimeId: number,
+    openingTime: OpeningTimeRequest,
+    sequence?: boolean,
+): Promise<void> {
+    updateOpeningTime({
+        locationId: +props.locationId,
+        openingTimeId,
+        opening: openingTime,
+        sequence,
+    });
+}
+
+/**
+ * Handles deletion of an opening time
+ */
+async function onDeleteOpeningTime(openingTimeId: number, sequence?: boolean): Promise<void> {
+    deleteOpeningTime({
+        locationId: +props.locationId,
+        openingTimeId,
+        sequence,
+    });
 }
 </script>
 
@@ -236,7 +347,12 @@ async function saveChanges(): Promise<void> {
 
                 <TabPanel value="openings">
                     <div class="tab-content">
-                        <LocationOpeningBuilder :location-id="locationId" />
+                        <LocationOpeningBuilder
+                            :opening-times="openingsForm"
+                            @create="onCreateOpeningTime"
+                            @update="onUpdateOpeningTime"
+                            @delete="onDeleteOpeningTime">
+                        </LocationOpeningBuilder>
                     </div>
                 </TabPanel>
 

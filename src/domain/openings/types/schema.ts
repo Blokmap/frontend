@@ -14,15 +14,17 @@ export type OpeningTime = {
     updatedBy?: Profile | null;
     createdAt: Date;
     updatedAt: Date;
+    sequenceId: string | null;
 };
 
 export type OpeningTimeRequest = {
+    id?: number;
+    sequenceId?: string | null;
     day: Date;
     startTime: Time;
     endTime: Time;
     seatCount: number | null;
     reservableFrom: Date | null;
     reservableUntil: Date | null;
-    sequenceNumber: number | null;
     repetition?: TimeSlotRepetition;
 };

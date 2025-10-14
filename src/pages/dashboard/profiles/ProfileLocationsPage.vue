@@ -7,7 +7,6 @@ import DashboardNotFound from '@/components/shared/molecules/DashboardNotFound.v
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, watchEffect } from 'vue';
-import { useRoute } from 'vue-router';
 import { useLocationState } from '@/composables/data/useLocations';
 import { useReadProfile, useReadProfileLocations } from '@/composables/data/useProfile';
 import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
@@ -17,14 +16,14 @@ import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
     profile: Profile;
+    profileId: string;
 }>();
 
-const route = useRoute();
 const toast = useToast();
 
 const breadcrumbs = useBreadcrumbStore();
 
-const profileId = computed(() => +route.params.profileId || props.profile.id);
+const profileId = computed(() => +props.profileId || props.profile.id);
 const isExtProfile = computed(() => profileId.value !== props.profile.id);
 
 const {

@@ -9,7 +9,13 @@ import { DEFAULT_OPENING_TIME_REQUEST, type OpeningTimeRequest } from '@/domain/
 import type { TimeCell, TimeSlot } from '@/domain/calendar';
 
 defineProps<{
-    locationId: string;
+    openingTimes: OpeningTimeRequest[];
+}>();
+
+const emit = defineEmits<{
+    create: [openingTime: OpeningTimeRequest];
+    update: [id: number, openingTime: OpeningTimeRequest, sequence?: boolean];
+    delete: [id: number, sequence?: boolean];
 }>();
 
 const router = useRouter();
@@ -27,10 +33,6 @@ const dateInWeek = computed(() => {
     return new Date();
 });
 
-// Mock opening times data - replace with actual data fetching
-const openingTimes = ref<OpeningTimeRequest[]>([]);
-
-// Dialog state
 const showDialog = ref(false);
 const editingOpeningTime = ref<OpeningTimeRequest | null>(null);
 const isEditing = ref(false);
@@ -71,6 +73,7 @@ function onCreateClick(timeCell?: TimeCell): void {
     } else {
         editingOpeningTime.value = { ...DEFAULT_OPENING_TIME_REQUEST };
     }
+
     isEditing.value = false;
     showDialog.value = true;
 }
@@ -90,33 +93,40 @@ function onEditClick(slot: TimeSlot<OpeningTimeRequest>): void {
  * Handles drag event to update opening time
  */
 function onDragSlot(originalSlot: TimeSlot<OpeningTimeRequest>, newSlot: TimeSlot): void {
-    console.log('Drag opening time:', {
-        original: originalSlot,
-        new: newSlot,
-    });
-    // TODO: Implement actual update logic
+    const openingTimeId = originalSlot.metadata?.id;
+
+    if (!openingTimeId || !originalSlot.metadata) return;
+
+    const updatedOpeningTime: OpeningTimeRequest = {
+        ...originalSlot.metadata,
+        day: newSlot.day,
+        startTime: newSlot.startTime,
+        endTime: newSlot.endTime,
+    };
+
+    emit('update', openingTimeId, updatedOpeningTime);
 }
 
 /**
  * Handles saving (create/update) an opening time
  */
-function onSave(openingTime: OpeningTimeRequest): void {
+function onSave(openingTime: OpeningTimeRequest, sequence?: boolean): void {
     if (isEditing.value) {
-        console.log('Update opening time:', openingTime);
-        // TODO: Implement actual update logic
+        if (!openingTime.id) return;
+        emit('update', openingTime.id, openingTime, sequence);
     } else {
-        console.log('Create opening time:', openingTime);
-        // TODO: Implement actual create logic
+        emit('create', openingTime);
     }
+
     showDialog.value = false;
 }
 
 /**
  * Handles deletion of an opening time
  */
-function onDelete(openingTime: OpeningTimeRequest): void {
-    console.log('Delete opening time:', openingTime);
-    // TODO: Implement actual delete logic
+function onDelete(openingTime: OpeningTimeRequest, sequence?: boolean): void {
+    if (!openingTime.id) return;
+    emit('delete', openingTime.id, sequence);
     showDialog.value = false;
 }
 

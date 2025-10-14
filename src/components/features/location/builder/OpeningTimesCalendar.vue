@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
 import { computed } from 'vue';
-import { openingsToTimeslots, type TimeCell, type TimeSlot } from '@/domain/calendar';
+import { openingRequestsToTimeSlots, type TimeCell, type TimeSlot } from '@/domain/calendar';
 import { timeToString } from '@/utils/time';
 import type { OpeningTimeRequest } from '@/domain/openings';
 import type { Time } from '@/utils/time';
@@ -19,7 +19,7 @@ const emit = defineEmits<{
     'drag:slot': [slot: TimeSlot<OpeningTimeRequest>, newSlot: TimeSlot];
 }>();
 
-const timeSlots = computed(() => openingsToTimeslots(props.openingTimes));
+const timeSlots = computed(() => openingRequestsToTimeSlots(props.openingTimes));
 
 function onCellClick(timeCell: TimeCell): void {
     emit('click:cell', timeCell);

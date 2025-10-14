@@ -77,18 +77,13 @@ const routes: RouteRecordRaw[] = [
                         },
                     },
                     {
-                        path: ':locationId',
+                        path: ':locationId/:reservation?',
                         name: 'locations.detail',
                         props: true,
                         component: LocationPage,
                         meta: {
                             title: 'Locatie Details',
-                            breadcrumbs: [
-                                { label: 'Locaties', to: { name: 'locations' } },
-                                { label: 'Locatie Details', to: { name: 'locations.detail' } },
-                            ],
                         },
-                        // Note: breadcrumbs should be updated dynamically by the component to include location name
                     },
                 ],
             },

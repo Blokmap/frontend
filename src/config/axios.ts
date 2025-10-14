@@ -39,7 +39,6 @@ export function setupAxiosInterceptors(): void {
             if (error.status === HttpStatusCode.Unauthorized) {
                 router.push({
                     name: 'auth',
-                    params: { action: 'login' },
                     query: { redirect: window.location.pathname },
                 });
                 toast.add({

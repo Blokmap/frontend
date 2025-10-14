@@ -296,7 +296,7 @@ function onMouseUp(): void {
 @reference '@/assets/styles/main.css';
 
 .calendar-container {
-    @apply flex max-h-[75vh] min-h-[500px] flex-col;
+    @apply flex max-h-[80vh] min-h-[500px] flex-col;
     @apply rounded-lg border border-gray-200 bg-white;
     @apply overflow-hidden;
 }

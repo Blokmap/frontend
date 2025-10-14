@@ -1,6 +1,5 @@
-import { isDateInRange, startOfDay } from '@/utils/date';
+import { isDateInRange } from '@/utils/date';
 import type { Reservation } from './types';
-import type { TimeSlot } from '@/domain/calendar';
 
 /**
  * Filter reservations by date range
@@ -19,44 +18,4 @@ export function filterReservationsByDateRange(
         const reservationDate = reservation.day;
         return isDateInRange(reservationDate, startDate, endDate);
     });
-}
-
-/**
- * Convert a reservation to a calendar time slot
- *
- * @param reservation - The reservation to convert.
- * @returns A TimeSlot object representing the reservation.
- */
-export function reservationToTimeSlot(reservation: Reservation): TimeSlot<Reservation> {
-    return {
-        id: `reservation-${reservation.id}`,
-        day: startOfDay(reservation.day),
-        startTime: reservation.startTime,
-        endTime: reservation.endTime,
-        metadata: reservation,
-    };
-}
-
-/**
- * Convert multiple reservations to time slots, optionally filtered by date range
- *
- * @param reservations - Array of reservations to convert.
- * @param startDate - Start date of the range.
- * @param endDate - End date of the range.
- * @returns Array of TimeSlot objects representing the reservations.
- */
-export function reservationsToTimeSlots(
-    reservations?: Reservation[],
-    startDate?: Date,
-    endDate?: Date,
-): TimeSlot<Reservation>[] {
-    if (!reservations) return [];
-
-    let filteredReservations = reservations;
-
-    if (startDate && endDate) {
-        filteredReservations = filterReservationsByDateRange(reservations, startDate, endDate);
-    }
-
-    return filteredReservations.map(reservationToTimeSlot);
 }

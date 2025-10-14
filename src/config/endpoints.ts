@@ -70,10 +70,9 @@ export const endpoints = {
             deleteAll: '/locations/{id}/opening-times',
             listAll: '/locations/{id}/opening-times',
             reservations: {
-                createMany: '/locations/{id}/opening-times/{openingTimeId}/reservations',
-                deleteOne:
-                    '/locations/{id}/opening-times/{openingTimeId}/reservations/{reservationId}',
-                listAll: '/locations/{id}/opening-times/{openingTimeId}/reservations',
+                create: '/locations/{id}/opening-times/{openingTimeId}/reservations',
+                delete: '/locations/{id}/opening-times/{openingTimeId}/reservations/{reservationId}',
+                read: '/locations/{id}/opening-times/{openingTimeId}/reservations',
             },
         },
         members: {

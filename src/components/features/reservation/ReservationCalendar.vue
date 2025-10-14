@@ -4,8 +4,9 @@ import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
 import { faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
+import { reservationsToTimeSlots } from '@/domain/calendar/helpers';
 import { formatLocationAddress } from '@/domain/location';
-import { ReservationState, reservationsToTimeSlots } from '@/domain/reservation';
+import { ReservationState } from '@/domain/reservation';
 import { endOfWeek, startOfWeek } from '@/utils/date';
 import type { Reservation } from '@/domain/reservation';
 

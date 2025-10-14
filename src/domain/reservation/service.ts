@@ -1,7 +1,7 @@
 import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { stringToTime, timeToString } from '@/utils/time';
+import { stringToTime, timeToString, type Time } from '@/utils/time';
 import type { Reservation } from './types';
 
 export type ReservationIncludes = 'profile' | 'location' | 'openingTime' | 'confirmedBy';
@@ -61,4 +61,54 @@ export async function getLocationReservations(
     const response = await client.get(endpoint, { params });
 
     return response.data.map(parseReservation);
+}
+
+/**
+ * Create a reservation for a specific opening time.
+ *
+ * @param locationId - The ID of the location.
+ * @param openingTimeId - The ID of the opening time.
+ * @param startTime - The start time of the reservation.
+ * @param endTime - The end time of the reservation.
+ * @returns A promise that resolves to the created reservation.
+ */
+export async function createReservation(
+    locationId: number,
+    openingTimeId: number,
+    startTime: Time,
+    endTime: Time,
+): Promise<Reservation> {
+    const endpoint = endpoints.locations.openingTimes.reservations.create
+        .replace('{id}', locationId.toString())
+        .replace('{openingTimeId}', openingTimeId.toString());
+
+    const body = {
+        startTime: timeToString(startTime),
+        endTime: timeToString(endTime),
+    };
+
+    const response = await client.post(endpoint, body);
+
+    return parseReservation(response.data);
+}
+
+/**
+ * Delete a reservation.
+ *
+ * @param locationId - The ID of the location.
+ * @param openingTimeId - The ID of the opening time.
+ * @param reservationId - The ID of the reservation to delete.
+ * @returns A promise that resolves when the reservation is deleted.
+ */
+export async function deleteReservation(
+    locationId: number,
+    openingTimeId: number,
+    reservationId: number,
+): Promise<void> {
+    const endpoint = endpoints.locations.openingTimes.reservations.delete
+        .replace('{id}', locationId.toString())
+        .replace('{openingTimeId}', openingTimeId.toString())
+        .replace('{reservationId}', reservationId.toString());
+
+    await client.delete(endpoint);
 }

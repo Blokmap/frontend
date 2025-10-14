@@ -10,6 +10,7 @@ import OpeningsTable from '@/components/features/location/openings/OpeningsTable
 import OpeningsTableSkeleton from '@/components/features/location/openings/OpeningsTableSkeleton.vue';
 import LocationMap from '@/components/features/map/LocationMap.vue';
 import LocationMapSkeleton from '@/components/features/map/LocationMapSkeleton.vue';
+import ReservationBuilderDialog from '@/components/features/reservation/ReservationBuilderDialog.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import Gallery from '@/components/shared/organisms/image/Gallery.vue';
 import GallerySkeleton from '@/components/shared/organisms/image/GallerySkeleton.vue';
@@ -22,17 +23,25 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute, useRouter } from 'vue-router';
 import placeholder from '@/assets/img/placeholder/location-stock-2.jpg';
+import { useAuthProfile } from '@/composables/data/useAuth';
 import { useReadLocation } from '@/composables/data/useLocations';
 import { useReadOpeningTimes } from '@/composables/data/useOpeningTimes';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
+import { pushRedirectUrl } from '@/domain/auth';
 
-const { locationId } = defineProps<{ locationId: string }>();
+const { locationId, reservation } = defineProps<{ locationId: string; reservation: string }>();
 
 const { locale } = useI18n();
 const { setPageTitle } = usePageTitleStore();
 
+const route = useRoute();
+const router = useRouter();
+
 const currentWeek = ref<Date>(new Date());
+
+const { profileId } = useAuthProfile();
 
 const {
     data: location,
@@ -52,6 +61,8 @@ const {
     currentWeek,
 );
 
+const showReservationDialog = computed<boolean>(() => reservation === 'reservation');
+
 watch(
     location,
     (newLocation) => {
@@ -61,6 +72,57 @@ watch(
     },
     { immediate: true },
 );
+
+// Initialize currentWeek from query parameter if present
+watch(
+    () => route.query.week,
+    (weekParam) => {
+        if (weekParam && typeof weekParam === 'string') {
+            const date = new Date(weekParam);
+            if (!isNaN(date.getTime())) {
+                currentWeek.value = date;
+            }
+        }
+    },
+    { immediate: true },
+);
+
+/**
+ * Navigate to the same location page but with the reservation query parameter set
+ * to open the reservation dialog.
+ */
+function onReserveClick(): void {
+    const reservation = 'reservation';
+
+    router.push({
+        name: 'locations.detail',
+        params: { locationId, reservation },
+    });
+}
+
+/**
+ * Navigate to the login page, storing the current location page as redirect URL
+ */
+function onLoginClick(): void {
+    const route = router.resolve({
+        name: 'locations.detail',
+        params: { locationId, reservation: 'reservation' },
+    });
+
+    pushRedirectUrl(route.fullPath);
+
+    router.push({ name: 'auth' });
+}
+
+/**
+ * Close the reservation dialog by unsetting the query parameter
+ */
+function onDialogClose(): void {
+    router.push({
+        name: 'locations.detail',
+        params: { locationId },
+    });
+}
 </script>
 
 <template>
@@ -211,8 +273,16 @@ watch(
 
                             <!-- Action Button or No Reservation Needed -->
                             <template v-if="location?.isReservable">
-                                <Button class="w-full">
+                                <Button class="w-full" @click="onReserveClick" v-if="profileId">
                                     Plek Reserveren
+                                    <FontAwesomeIcon :icon="faArrowRight" />
+                                </Button>
+                                <Button
+                                    class="w-full"
+                                    severity="secondary"
+                                    @click="onLoginClick"
+                                    v-else>
+                                    Inloggen om te reserveren
                                     <FontAwesomeIcon :icon="faArrowRight" />
                                 </Button>
                             </template>
@@ -224,5 +294,14 @@ watch(
                 </div>
             </div>
         </div>
+
+        <!-- Reservation Builder Dialog -->
+        <ReservationBuilderDialog
+            v-if="location"
+            v-model:date="currentWeek"
+            :location="location"
+            :visible="showReservationDialog"
+            @update:visible="onDialogClose">
+        </ReservationBuilderDialog>
     </template>
 </template>

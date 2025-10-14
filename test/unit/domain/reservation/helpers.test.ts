@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import {
-    filterReservationsByDateRange,
-    reservationToTimeSlot,
-    reservationsToTimeSlots,
-} from '@/domain/reservation';
+import { filterReservationsByDateRange } from '@/domain/reservation';
 import { createMockReservation } from '../../mocks';
+import { reservationsToTimeSlots, reservationToTimeSlot } from '@/domain/calendar';
 
 describe('reservation helpers', () => {
     describe('filterReservationsByDateRange', () => {

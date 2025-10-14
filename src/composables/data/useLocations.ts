@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { type MaybeRef, toValue } from 'vue';
+import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
     createLocation,
@@ -24,11 +24,13 @@ import {
     deleteLocationImage,
     reorderLocationImages,
 } from '@/domain/location';
+import { getLocationReservations, type Reservation } from '@/domain/reservation';
 import type { ImageReorderRequest, ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { OpeningTimeRequest } from '@/domain/openings';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
+import type { AxiosError } from 'axios';
 
 export const LOCATION_QUERY_KEYS = {
     read: (id: MaybeRef<number>) => ['location', toValue(id)] as const,
@@ -36,6 +38,8 @@ export const LOCATION_QUERY_KEYS = {
         ['locations', filters, locale] as const,
     search: (filters: MaybeRef<LocationSearchFilter | undefined>, locale: MaybeRef<string>) =>
         ['locations', 'search', filters, locale] as const,
+    reservations: (locationId: MaybeRef<number | null>, dateInWeek: MaybeRefOrGetter<Date>) =>
+        ['location', 'reservations', locationId, dateInWeek] as const,
 } as const;
 
 /**
@@ -513,4 +517,30 @@ export function useLocationState(
     });
 
     return mutation;
+}
+
+/**
+ * Composable to fetch reservations for a specific location within a given week.
+ *
+ * @param locationId - The ID of the location to fetch reservations for.
+ * @param dateInWeek - The date within the week for which to fetch reservations.
+ * @returns The query object containing location reservations and their state.
+ */
+export function useReadLocationReservations(
+    locationId: MaybeRef<number | null>,
+    dateInWeek: MaybeRefOrGetter<Date> = new Date(),
+): CompQuery<Reservation[]> {
+    const enabled = computed(() => toValue(locationId) !== null);
+
+    const query = useQuery<Reservation[], AxiosError>({
+        queryKey: LOCATION_QUERY_KEYS.reservations(locationId, dateInWeek),
+        enabled,
+        queryFn: () => {
+            const locationIdValue = toValue(locationId)!;
+            const dateInWeekValue = toValue(dateInWeek);
+            return getLocationReservations(locationIdValue, dateInWeekValue);
+        },
+    });
+
+    return query;
 }

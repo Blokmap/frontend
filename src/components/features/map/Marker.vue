@@ -97,7 +97,7 @@ function updatePopoverPosition() {
         </div>
 
         <!-- Popover with slot for custom content -->
-        <Popover ref="popover" class="min-w-[300px]">
+        <Popover ref="popover" class="min-w-[350px]">
             <slot name="popover"></slot>
         </Popover>
     </Teleport>

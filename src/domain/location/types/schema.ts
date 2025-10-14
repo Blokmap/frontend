@@ -1,7 +1,7 @@
 import type { Image } from '@/domain/image';
 import type { OpeningTime } from '@/domain/openings';
 import type { Profile } from '@/domain/profile';
-import type { CreateTranslationRequest, Translation } from '@/domain/translation';
+import type { TranslationRequest, Translation } from '@/domain/translation';
 
 export type LocationAddress = {
     street: string;
@@ -53,8 +53,8 @@ export type Location = {
 
 export type LocationRequest = {
     name: string;
-    description: CreateTranslationRequest;
-    excerpt: CreateTranslationRequest;
+    description: TranslationRequest;
+    excerpt: TranslationRequest;
     seatCount: number;
     isReservable: boolean;
     isVisible: boolean;

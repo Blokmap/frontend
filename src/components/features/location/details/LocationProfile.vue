@@ -1,6 +1,7 @@
 <script lang="ts" setup>
+import Button from 'primevue/button';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
-import { faStar, faUserCheck } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faEnvelope, faStar, faUserCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
 import type { Profile } from '@/domain/profile';
@@ -43,14 +44,14 @@ const { locale } = useI18n();
                     </div>
                 </div>
                 <div class="flex gap-3">
-                    <button
-                        class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
-                        Contact opnemen
-                    </button>
-                    <button
-                        class="bg-primary-600 hover:bg-primary-700 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors">
-                        Toon profiel
-                    </button>
+                    <Button severity="contrast">
+                        <FontAwesomeIcon :icon="faEnvelope" />
+                        <span>Contact Opnemen</span>
+                    </Button>
+                    <Button>
+                        <span>Toon profiel</span>
+                        <FontAwesomeIcon :icon="faArrowRight" />
+                    </Button>
                 </div>
             </div>
         </div>

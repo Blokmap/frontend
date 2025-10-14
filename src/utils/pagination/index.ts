@@ -1,5 +1,7 @@
 import type { Paginated } from './types';
 
+export * from './types';
+
 /**
  * Check if there are more pages available in a paginated result
  *
@@ -29,5 +31,3 @@ export function hasPreviousPage<T>(paginated: Paginated<T>): boolean {
 export function getTotalPages<T>(paginated: Paginated<T>): number {
     return Math.ceil(paginated.total / paginated.perPage);
 }
-
-export * from './types';

@@ -1,6 +1,7 @@
 import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import { isWeekend } from '@/utils/date';
 import { isEvening, isMorning, isNight } from '@/utils/time';
+import { translationToRequest } from '../translation/helpers';
 import { GOOGLE_MAPS_DIRECTIONS_BASE_URL } from './constants';
 import type { Location, LocationAddress, LocationFeatures, LocationRequest } from './types';
 
@@ -23,8 +24,8 @@ export function getLocationPlaceholderImage(_location: Location): string {
 export function locationToRequest(location: Location): LocationRequest {
     return {
         name: location.name,
-        description: { ...location.description },
-        excerpt: { ...location.excerpt },
+        description: translationToRequest(location.description),
+        excerpt: translationToRequest(location.excerpt),
         seatCount: location.seatCount,
         isReservable: location.isReservable,
         isVisible: location.isVisible,

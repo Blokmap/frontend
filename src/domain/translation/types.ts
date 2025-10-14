@@ -3,6 +3,7 @@ export type Translation = {
     [key: string]: string | null | undefined;
 };
 
-export type CreateTranslationRequest = {
+export type TranslationRequest = {
+    id?: string;
     [key: string]: string | null | undefined;
 };

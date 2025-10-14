@@ -1,6 +1,6 @@
 import type { LocationState } from './schema';
 import type { LngLat, LngLatBounds } from '../../map';
-import type { Pagination } from '@/types';
+import type { Pagination } from '@/utils/pagination';
 
 export type LocationFilter = Pagination & {
     query?: string | null;

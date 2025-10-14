@@ -27,13 +27,8 @@ import {
 import type { ImageReorderRequest, ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { OpeningTimeRequest } from '@/domain/openings';
-import type {
-    CompMutation,
-    CompMutationOptions,
-    CompQuery,
-    CompQueryOptions,
-    Paginated,
-} from '@/types';
+import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
+import type { Paginated } from '@/utils/pagination';
 
 export const LOCATION_QUERY_KEYS = {
     read: (id: MaybeRef<number>) => ['location', toValue(id)] as const,

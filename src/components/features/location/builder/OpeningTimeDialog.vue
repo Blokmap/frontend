@@ -153,8 +153,7 @@ function onDeleteClick(): void {
             <!-- Seats -->
             <div class="space-y-1">
                 <label class="block text-sm font-medium text-gray-700">Stoelen</label>
-                <InputNumber v-model="openingTime.seatCount" :min="1" :max="999" class="w-full">
-                </InputNumber>
+                <InputNumber v-model="openingTime.seatCount" :min="1" class="w-full" />
             </div>
 
             <!-- Repetition Toggle (for creating new) -->

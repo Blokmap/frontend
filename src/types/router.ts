@@ -1,5 +1,5 @@
-import type { Breadcrumbs } from './breadcrumb';
 import type { AuthSettings } from '@/domain/auth';
+import type { Breadcrumbs } from '@/utils/breadcrumb';
 
 export interface RouteMeta {
     auth?: AuthSettings;

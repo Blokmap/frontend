@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/vue-query';
 import { toValue, type MaybeRefOrGetter } from 'vue';
 import { listInstitutions, type Institution, type InstitutionFilter } from '@/domain/institution';
-import type { CompQuery, CompQueryOptions, Paginated } from '@/types';
+import type { CompQuery, CompQueryOptions } from '@/types';
+import type { Paginated } from '@/utils/pagination';
 
 export const INSTITUTION_QUERY_KEYS = {
     list: (filters: MaybeRefOrGetter<Partial<InstitutionFilter>>) =>

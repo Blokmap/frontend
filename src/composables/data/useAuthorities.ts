@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/vue-query';
 import { toValue, type MaybeRefOrGetter } from 'vue';
 import { listAuthorities, type Authority, type AuthorityFilter } from '@/domain/authority';
-import type { CompQuery, CompQueryOptions, Paginated } from '@/types';
+import type { CompQuery, CompQueryOptions } from '@/types';
+import type { Paginated } from '@/utils/pagination';
 
 export const AUTHORITY_QUERY_KEYS = {
     list: (filters: MaybeRefOrGetter<Partial<AuthorityFilter>>) =>

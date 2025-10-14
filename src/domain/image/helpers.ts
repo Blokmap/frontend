@@ -13,7 +13,7 @@ export function imageToRequest(image: Image, index: number): ImageRequest {
         imageUrl: image.url,
         tempUrl: image.url,
         isPrimary: index === 0,
-        index: index,
+        index,
     };
 }
 

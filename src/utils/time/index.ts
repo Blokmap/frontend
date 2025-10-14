@@ -26,7 +26,7 @@ export function timeToString(
  * @param timeString - The time string in HH:MM format.
  * @returns A Time object.
  */
-export function stringToTime(timeString?: string): Time | null | undefined {
+export function stringToTime(timeString?: string | null): Time | null | undefined {
     if (timeString === undefined) return undefined;
     if (timeString === null) return null;
     const [hours, minutes] = timeString.split(':').map(Number);

@@ -15,13 +15,8 @@ import {
 import type { Location } from '@/domain/location';
 import type { Profile, ProfileStats, ProfileFilter, ProfileState } from '@/domain/profile';
 import type { Reservation } from '@/domain/reservation';
-import type {
-    CompMutation,
-    CompMutationOptions,
-    CompQuery,
-    CompQueryOptions,
-    Paginated,
-} from '@/types';
+import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
+import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
 
 export const PROFILE_QUERY_KEYS = {

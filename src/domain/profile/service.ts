@@ -7,7 +7,7 @@ import { formatIncludes, transformPaginatedResponse } from '@/utils/service';
 import { parseLocation } from '../location';
 import type { Profile, ProfileStats, ProfileFilter } from './types';
 import type { Reservation, ReservationIncludes } from '@/domain/reservation';
-import type { Paginated } from '@/types';
+import type { Paginated } from '@/utils/pagination';
 
 /**
  * Parse a profile object from the API by converting string dates to Date objects

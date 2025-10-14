@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { Breadcrumbs } from '@/types';
+import type { Breadcrumbs } from '@/utils/breadcrumb';
 
 export const useBreadcrumbStore = defineStore('breadcrumbs', () => {
     const breadcrumbs = ref<Breadcrumbs>([]);

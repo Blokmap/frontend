@@ -1,7 +1,7 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import type { Authority, AuthorityFilter } from './types';
-import type { Paginated } from '@/types';
+import type { Paginated } from '@/utils/pagination';
 
 /**
  * List authorities with optional filters.

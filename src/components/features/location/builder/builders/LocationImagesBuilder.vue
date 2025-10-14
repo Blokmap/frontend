@@ -14,7 +14,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, onMounted, ref, watchEffect } from 'vue';
-import { type BuilderSubstep, LOCATION_SETTINGS } from '@/domain/location';
+import {
+    MAX_IMAGE_SIZE,
+    SUPPORTED_IMAGE_FORMAT_NAES,
+    SUPPORTED_IMAGE_FORMATS,
+} from '@/domain/image/constants';
+import { LOCATION_SETTINGS } from '@/domain/location';
+import type { BuilderSubstep } from '@/components/features/location/builder';
 import type { ImageRequest } from '@/domain/image';
 
 const images = defineModel<ImageRequest[]>({ required: true, default: () => [] });
@@ -331,7 +337,7 @@ function onTouchEnd(): void {
                 </div>
                 <FileUpload
                     mode="basic"
-                    accept="image/png,image/jpeg,image/webp,image/jpg"
+                    :accept="SUPPORTED_IMAGE_FORMATS.join(',')"
                     :multiple="true"
                     :auto="true"
                     choose-label="Selecteer bestanden"
@@ -342,8 +348,8 @@ function onTouchEnd(): void {
                     </template>
                 </FileUpload>
                 <div class="text-xs text-gray-500">
-                    JPG, PNG, GIF • Max. 10MB per bestand • Tot
-                    {{ LOCATION_SETTINGS.MAX_IMAGES - images.length }} bestanden
+                    {{ SUPPORTED_IMAGE_FORMAT_NAES.join(', ') }} • Max. {{ MAX_IMAGE_SIZE }} per
+                    bestand • Tot {{ LOCATION_SETTINGS.MAX_IMAGES - images.length }} bestanden
                 </div>
             </div>
 

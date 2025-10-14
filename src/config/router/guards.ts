@@ -4,7 +4,7 @@ import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useToast } from '@/composables/store/useToast';
 import { pushRedirectUrl, getAuthProfile } from '@/domain/auth';
-import type { Breadcrumbs } from '@/types';
+import type { Breadcrumbs } from '@/utils/breadcrumb';
 import type { NavigationGuardReturn, RouteLocationNormalized } from 'vue-router';
 
 /**

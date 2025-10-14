@@ -1,7 +1,7 @@
 import type { Authority } from '@/domain/authority';
 import type { Image } from '@/domain/image';
 import type { Institution } from '@/domain/institution';
-import type { Pagination } from '@/types';
+import type { Pagination } from '@/utils/pagination';
 
 export type ProfileState = 'active' | 'disabled' | 'deleted';
 
@@ -9,8 +9,8 @@ export type Profile = {
     id: number;
     avatarUrl: Image | null;
     username: string;
-    firstName: string;
-    lastName: string;
+    firstName: string | null;
+    lastName: string | null;
     email: string;
     institution?: Institution | null;
     authorities?: Authority[];

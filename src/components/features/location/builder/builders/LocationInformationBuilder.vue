@@ -21,7 +21,8 @@ import { useGeocodeAddress } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/store/useToast';
 import { LOCATION_SETTINGS, formatLocationAddress } from '@/domain/location';
 import { defaultMapOptions } from '@/domain/map';
-import type { BuilderSubstep, LocationRequest } from '@/domain/location';
+import type { BuilderSubstep } from '..';
+import type { LocationRequest } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 
 const form = defineModel<LocationRequest>({ required: true });

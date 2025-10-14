@@ -93,25 +93,24 @@ const { mutateAsync: updateImages, isPending: isUpdatingImages } = useUpdateLoca
     },
 });
 
-const { mutateAsync: createOpeningTimes, isPending: isCreatingOpeningTimes } =
-    useCreateOpeningTimes({
-        onSuccess: () => {
-            toast.add({
-                severity: 'success',
-                summary: 'Openingstijd toegevoegd',
-                detail: 'De openingstijd is succesvol toegevoegd.',
-            });
-        },
-        onError: () => {
-            toast.add({
-                severity: 'error',
-                summary: 'Fout bij toevoegen',
-                detail: 'Er is iets misgegaan bij het toevoegen van de openingstijd.',
-            });
-        },
-    });
+const { mutateAsync: createOpeningTimes } = useCreateOpeningTimes({
+    onSuccess: () => {
+        toast.add({
+            severity: 'success',
+            summary: 'Openingstijd toegevoegd',
+            detail: 'De openingstijd is succesvol toegevoegd.',
+        });
+    },
+    onError: () => {
+        toast.add({
+            severity: 'error',
+            summary: 'Fout bij toevoegen',
+            detail: 'Er is iets misgegaan bij het toevoegen van de openingstijd.',
+        });
+    },
+});
 
-const { mutateAsync: updateOpeningTime, isPending: isUpdatingOpeningTime } = useUpdateOpeningTime({
+const { mutateAsync: updateOpeningTime } = useUpdateOpeningTime({
     onSuccess: () => {
         toast.add({
             severity: 'success',
@@ -128,7 +127,7 @@ const { mutateAsync: updateOpeningTime, isPending: isUpdatingOpeningTime } = use
     },
 });
 
-const { mutateAsync: deleteOpeningTime, isPending: isDeletingOpeningTime } = useDeleteOpeningTime({
+const { mutateAsync: deleteOpeningTime } = useDeleteOpeningTime({
     onSuccess: () => {
         toast.add({
             severity: 'success',
@@ -152,16 +151,10 @@ const openingsForm = ref<OpeningTimeRequest[]>([]);
 const originalFormSnapshot = ref<string>('');
 const originalImagesSnapshot = ref<string>('');
 
-const isUpdating = computed(
-    () =>
-        isUpdatingLocation.value ||
-        isUpdatingImages.value ||
-        isCreatingOpeningTimes.value ||
-        isUpdatingOpeningTime.value ||
-        isDeletingOpeningTime.value,
-);
+const isUpdating = computed(() => isUpdatingLocation.value || isUpdatingImages.value);
 
 const hasLocationChanges = computed(() => {
+    console.log(locationForm.value);
     const currentFormSnapshot = JSON.stringify(locationForm.value);
     return currentFormSnapshot !== originalFormSnapshot.value;
 });

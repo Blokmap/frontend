@@ -23,8 +23,8 @@ export function getLocationPlaceholderImage(_location: Location): string {
 export function locationToRequest(location: Location): LocationRequest {
     return {
         name: location.name,
-        description: location.description,
-        excerpt: location.excerpt,
+        description: { ...location.description },
+        excerpt: { ...location.excerpt },
         seatCount: location.seatCount,
         isReservable: location.isReservable,
         isVisible: location.isVisible,

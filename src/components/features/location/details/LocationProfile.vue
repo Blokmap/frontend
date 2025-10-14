@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
-import { faArrowRight, faEnvelope, faStar, faUserCheck } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
 import type { Profile } from '@/domain/profile';
@@ -31,18 +31,6 @@ const { locale } = useI18n();
                     }}
                 </p>
 
-                <div class="flex items-center gap-4 text-sm">
-                    <div class="flex items-center gap-1">
-                        <FontAwesomeIcon :icon="faStar" class="h-4 w-4 text-amber-400" />
-                        <span class="font-medium">4.95</span>
-                        <span class="text-gray-500">· 127 beoordelingen</span>
-                    </div>
-
-                    <div v-if="profile.isAdmin" class="flex items-center gap-1">
-                        <FontAwesomeIcon :icon="faUserCheck" class="text-primary h-4 w-4" />
-                        <span class="text-gray-600">Geverifieerd lid</span>
-                    </div>
-                </div>
                 <div class="flex gap-3">
                     <Button severity="contrast">
                         <FontAwesomeIcon :icon="faEnvelope" />

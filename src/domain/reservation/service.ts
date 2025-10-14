@@ -1,10 +1,16 @@
 import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
+import { formatIncludes } from '@/utils/service';
 import { stringToTime, timeToString, type Time } from '@/utils/time';
 import type { Reservation } from './types';
 
 export type ReservationIncludes = 'profile' | 'location' | 'openingTime' | 'confirmedBy';
+
+export type ReservationFilters = {
+    date?: Date;
+    state?: Reservation['state'];
+};
 
 /**
  * Parse a reservation object. Used to ensure that API responses
@@ -50,17 +56,24 @@ export function serializeReservation(reservation: Reservation): any {
 export async function getLocationReservations(
     locationId: number,
     dateOfWeek?: Date,
+    selectedDate?: Date,
+    includes?: ReservationIncludes[],
 ): Promise<Reservation[]> {
     const endpoint = endpoints.locations.reservations.list.replace('{id}', locationId.toString());
-    const params: Record<string, any> = {};
+
+    const params: Record<string, any> = { ...formatIncludes(includes) };
 
     if (dateOfWeek !== undefined) {
-        params.date = formatDate(dateOfWeek, 'YYYY-MM-DD');
+        params.dateOfWeek = formatDate(dateOfWeek, 'YYYY-MM-DD');
     }
 
-    const response = await client.get(endpoint, { params });
+    if (selectedDate !== undefined) {
+        params.date = formatDate(selectedDate, 'YYYY-MM-DD');
+    }
 
-    return response.data.map(parseReservation);
+    const { data } = await client.get(endpoint, { params });
+
+    return data.map(parseReservation);
 }
 
 /**
@@ -111,4 +124,24 @@ export async function deleteReservation(
         .replace('{reservationId}', reservationId.toString());
 
     await client.delete(endpoint);
+}
+
+/**
+ * Confirm a reservation.
+ *
+ * @param locationId - The ID of the location.
+ * @param reservationId - The ID of the reservation to confirm.
+ * @returns A promise that resolves to the confirmed reservation.
+ */
+export async function confirmReservation(
+    locationId: number,
+    reservationId: number,
+): Promise<Reservation> {
+    const endpoint = endpoints.locations.reservations.confirm
+        .replace('{id}', locationId.toString())
+        .replace('{reservationId}', reservationId.toString());
+
+    const response = await client.post(endpoint);
+
+    return parseReservation(response.data);
 }

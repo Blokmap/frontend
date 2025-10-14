@@ -14,8 +14,16 @@ export const AuthPage = () => import('@/pages/auth/AuthPage.vue');
 export const DashboardPage = () => import('@/pages/dashboard/DashboardPage.vue');
 
 // Dashboard Locations
-export const LocationDetailPage = () =>
-    import('@/pages/dashboard/locations/LocationDetailPage.vue');
+export const LocationDetailLayout = () => import('@/layouts/dashboard/LocationDetailLayout.vue');
+export const LocationInfoPage = () => import('@/pages/dashboard/locations/LocationInfoPage.vue');
+export const LocationReservationsPage = () =>
+    import('@/pages/dashboard/locations/LocationReservationsPage.vue');
+export const LocationOpeningsPage = () =>
+    import('@/pages/dashboard/locations/LocationOpeningsPage.vue');
+export const LocationImagesPage = () =>
+    import('@/pages/dashboard/locations/LocationImagesPage.vue');
+export const LocationSettingsPage = () =>
+    import('@/pages/dashboard/locations/LocationSettingsPage.vue');
 export const LocationsIndexPage = () =>
     import('@/pages/dashboard/locations/LocationsIndexPage.vue');
 

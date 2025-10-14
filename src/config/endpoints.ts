@@ -85,6 +85,7 @@ export const endpoints = {
         },
         reservations: {
             list: '/locations/{id}/reservations',
+            confirm: '/locations/{id}/reservations/{reservationId}/confirm',
         },
         reviews: {
             list: '/locations/{id}/reviews',

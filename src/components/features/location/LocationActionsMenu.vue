@@ -162,7 +162,7 @@ watch(
                     <RouterLink
                         class="navigation-link"
                         :to="{
-                            name: 'dashboard.locations.detail',
+                            name: 'dashboard.locations.detail.info',
                             params: { locationId: props.location.id },
                         }">
                         <FontAwesomeIcon :icon="faEdit" class="text-slate-700" />

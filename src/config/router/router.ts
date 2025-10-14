@@ -16,7 +16,12 @@ import {
     DashboardReviewsPage,
     DashboardStatisticsPage,
     InstitutionIndexPage,
-    LocationDetailPage,
+    LocationDetailLayout,
+    LocationImagesPage,
+    LocationInfoPage,
+    LocationOpeningsPage,
+    LocationReservationsPage,
+    LocationSettingsPage,
     LocationPage,
     LocationSubmitPage,
     LocationsIndexPage,
@@ -133,10 +138,120 @@ const routes: RouteRecordRaw[] = [
                         },
                     },
                     {
-                        path: ':locationId/:tab?',
-                        name: 'dashboard.locations.detail',
-                        component: LocationDetailPage,
+                        path: ':locationId',
+                        component: LocationDetailLayout,
                         props: true,
+                        children: [
+                            {
+                                path: '',
+                                redirect: { name: 'dashboard.locations.detail.info' },
+                            },
+                            {
+                                path: 'info',
+                                name: 'dashboard.locations.detail.info',
+                                component: LocationInfoPage,
+                                props: true,
+                                meta: {
+                                    auth: { admin: true },
+                                    title: 'Locatie Informatie',
+                                    breadcrumbs: [
+                                        { label: 'Dashboard', to: { name: 'dashboard' } },
+                                        {
+                                            label: 'Locaties',
+                                            to: { name: 'dashboard.locations.index' },
+                                        },
+                                        {
+                                            label: 'Details',
+                                            to: { name: 'dashboard.locations.detail.info' },
+                                        },
+                                    ],
+                                },
+                            },
+                            {
+                                path: 'reservations',
+                                name: 'dashboard.locations.detail.reservations',
+                                component: LocationReservationsPage,
+                                props: true,
+                                meta: {
+                                    auth: { admin: true },
+                                    title: 'Locatie Reservaties',
+                                    breadcrumbs: [
+                                        { label: 'Dashboard', to: { name: 'dashboard' } },
+                                        {
+                                            label: 'Locaties',
+                                            to: { name: 'dashboard.locations.index' },
+                                        },
+                                        {
+                                            label: 'Reservaties',
+                                            to: { name: 'dashboard.locations.detail.reservations' },
+                                        },
+                                    ],
+                                },
+                            },
+                            {
+                                path: 'openings',
+                                name: 'dashboard.locations.detail.openings',
+                                component: LocationOpeningsPage,
+                                props: true,
+                                meta: {
+                                    auth: { admin: true },
+                                    title: 'Locatie Openingstijden',
+                                    breadcrumbs: [
+                                        { label: 'Dashboard', to: { name: 'dashboard' } },
+                                        {
+                                            label: 'Locaties',
+                                            to: { name: 'dashboard.locations.index' },
+                                        },
+                                        {
+                                            label: 'Openingstijden',
+                                            to: { name: 'dashboard.locations.detail.openings' },
+                                        },
+                                    ],
+                                },
+                            },
+                            {
+                                path: 'images',
+                                name: 'dashboard.locations.detail.images',
+                                component: LocationImagesPage,
+                                props: true,
+                                meta: {
+                                    auth: { admin: true },
+                                    title: 'Locatie Afbeeldingen',
+                                    breadcrumbs: [
+                                        { label: 'Dashboard', to: { name: 'dashboard' } },
+                                        {
+                                            label: 'Locaties',
+                                            to: { name: 'dashboard.locations.index' },
+                                        },
+                                        {
+                                            label: 'Afbeeldingen',
+                                            to: { name: 'dashboard.locations.detail.images' },
+                                        },
+                                    ],
+                                },
+                            },
+                            {
+                                path: 'settings',
+                                name: 'dashboard.locations.detail.settings',
+                                component: LocationSettingsPage,
+                                props: true,
+                                meta: {
+                                    auth: { admin: true },
+                                    title: 'Locatie Instellingen',
+                                    breadcrumbs: [
+                                        { label: 'Dashboard', to: { name: 'dashboard' } },
+                                        {
+                                            label: 'Locaties',
+                                            to: { name: 'dashboard.locations.index' },
+                                        },
+                                        {
+                                            label: 'Instellingen',
+                                            to: { name: 'dashboard.locations.detail.settings' },
+                                        },
+                                    ],
+                                },
+                            },
+                        ],
                     },
                 ],
             },

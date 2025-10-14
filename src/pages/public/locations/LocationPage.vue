@@ -4,8 +4,6 @@ import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton';
 import AddressCard from '@/components/features/location/details/LocationAddressCard.vue';
 import LocationFeatures from '@/components/features/location/details/LocationFeatures.vue';
-import ProfileSection from '@/components/features/location/details/LocationProfile.vue';
-import ProfileSectionSkeleton from '@/components/features/location/details/LocationProfileSkeleton.vue';
 import OpeningsTable from '@/components/features/location/openings/OpeningsTable.vue';
 import OpeningsTableSkeleton from '@/components/features/location/openings/OpeningsTableSkeleton.vue';
 import LocationMap from '@/components/features/map/LocationMap.vue';
@@ -149,7 +147,7 @@ function onDialogClose(): void {
                     </h1>
                     <RouterLink
                         :to="{
-                            name: 'dashboard.locations.detail',
+                            name: 'dashboard.locations.detail.info',
                             params: { locationId },
                         }"
                         v-if="profile?.isAdmin">
@@ -225,7 +223,7 @@ function onDialogClose(): void {
                     </div>
 
                     <!-- Host Section -->
-                    <div
+                    <!-- <div
                         class="space-y-6 border-b border-gray-200 pb-8"
                         v-if="isPending || location?.createdBy">
                         <h2 class="text-2xl font-semibold text-gray-900">
@@ -234,7 +232,7 @@ function onDialogClose(): void {
                         </h2>
                         <ProfileSection v-if="location?.createdBy" :profile="location.createdBy" />
                         <ProfileSectionSkeleton v-else-if="isPending" />
-                    </div>
+                    </div> -->
 
                     <!-- Location Section -->
                     <div class="space-y-6">

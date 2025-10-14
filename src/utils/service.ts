@@ -6,8 +6,10 @@ import type { Paginated } from '@/utils/pagination';
  * @param includes - Array of strings representing the includes to format.
  * @returns {Record<string, boolean>} - A record with the included properties set to true.
  */
-export function formatIncludes(includes: string[]): Record<string, boolean> {
+export function formatIncludes(includes?: string[] | null): Record<string, boolean> {
     const acc = {} as Record<string, boolean>;
+
+    if (!includes) return acc;
 
     return includes.reduce((acc, include) => {
         acc[include] = true;

@@ -1,8 +1,20 @@
-import { useMutation, useQueryClient } from '@tanstack/vue-query';
-import { createReservation, deleteReservation } from '@/domain/reservation';
-import type { Reservation } from '@/domain/reservation';
-import type { CompMutation, CompMutationOptions } from '@/types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { toValue, type MaybeRef } from 'vue';
+import {
+    confirmReservation,
+    createReservation,
+    deleteReservation,
+    getLocationReservations,
+} from '@/domain/reservation';
+import type { Reservation, ReservationIncludes } from '@/domain/reservation';
+import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Time } from '@/utils/time';
+
+export const RESERVATION_QUERY_KEYS = {
+    locationReservations: (locationId: MaybeRef<number>, date?: MaybeRef<Date>) =>
+        ['location', 'reservations', locationId, date] as const,
+    profileReservations: () => ['profile', 'reservations'] as const,
+} as const;
 
 export type CreateReservationParams = {
     locationId: number;
@@ -33,7 +45,7 @@ export function useCreateReservation(
         onSuccess: (data, variables, context) => {
             // Invalidate profile reservations queries
             queryClient.invalidateQueries({
-                queryKey: ['profile', 'reservations'],
+                queryKey: RESERVATION_QUERY_KEYS.profileReservations(),
             });
 
             options.onSuccess?.(data, variables, context);
@@ -63,18 +75,84 @@ export function useDeleteReservation(
         onSuccess: (data, variables, context) => {
             // Invalidate location reservations queries
             queryClient.invalidateQueries({
-                queryKey: ['location', 'reservations', variables.locationId],
+                queryKey: ['location', 'reservations'],
             });
 
             // Invalidate profile reservations queries
             queryClient.invalidateQueries({
-                queryKey: ['profile', 'reservations'],
+                queryKey: RESERVATION_QUERY_KEYS.profileReservations(),
             });
 
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: ({ locationId, openingTimeId, reservationId }: DeleteReservationParams) => {
             return deleteReservation(locationId, openingTimeId, reservationId);
+        },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to fetch reservations for a specific location on a given date.
+ *
+ * @param locationId - The location ID.
+ * @param date - Optional date to filter reservations.
+ * @param options - Additional options for the query.
+ * @returns The query object for fetching location reservations.
+ */
+export function useReadLocationReservations(
+    locationId: MaybeRef<number>,
+    date?: MaybeRef<Date>,
+    options: CompQueryOptions = {},
+): CompQuery<Reservation[]> {
+    const query = useQuery({
+        ...options,
+        queryKey: RESERVATION_QUERY_KEYS.locationReservations(locationId, date),
+        queryFn: () => {
+            const locationIdValue = toValue(locationId);
+            const dateValue = toValue(date);
+            const includes: ReservationIncludes[] = ['profile'];
+            return getLocationReservations(locationIdValue, undefined, dateValue, includes);
+        },
+    });
+
+    return query;
+}
+
+export type ConfirmReservationParams = {
+    locationId: number;
+    reservationId: number;
+};
+
+/**
+ * Composable to handle confirming a reservation.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for confirming a reservation.
+ */
+export function useConfirmReservation(
+    options: CompMutationOptions = {},
+): CompMutation<ConfirmReservationParams, Reservation> {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate location reservations queries
+            queryClient.invalidateQueries({
+                queryKey: ['location', 'reservations'],
+            });
+
+            // Invalidate profile reservations queries
+            queryClient.invalidateQueries({
+                queryKey: RESERVATION_QUERY_KEYS.profileReservations(),
+            });
+
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: ({ locationId, reservationId }: ConfirmReservationParams) => {
+            return confirmReservation(locationId, reservationId);
         },
     });
 

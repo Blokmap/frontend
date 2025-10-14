@@ -157,7 +157,7 @@ export function createMockReservation(overrides?: Partial<Reservation>): Reserva
         day: new Date('2024-01-15'),
         startTime: { hours: 9, minutes: 0 },
         endTime: { hours: 17, minutes: 0 },
-        profile: createMockProfile(),
+        createdBy: createMockProfile(),
         location: createMockLocation(),
         openingTime: undefined,
         confirmedAt: null,

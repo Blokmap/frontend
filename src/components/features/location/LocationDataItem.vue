@@ -64,7 +64,7 @@ function onDelete(locationId: number): void {
  */
 function navigateToDetail(): void {
     router.push({
-        name: 'dashboard.locations.detail',
+        name: 'dashboard.locations.detail.info',
         params: { locationId: props.location.id },
     });
 }

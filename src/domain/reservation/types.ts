@@ -17,7 +17,7 @@ export type Reservation = {
     startTime: Time;
     endTime: Time;
     day: Date;
-    profile?: Profile;
+    createdBy?: Profile;
     location?: Location;
     openingTime?: OpeningTime;
     confirmedAt: Date | null;

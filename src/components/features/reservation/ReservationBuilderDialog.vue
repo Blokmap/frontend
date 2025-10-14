@@ -225,20 +225,17 @@ watch(currentWeek, (newWeek) => {
 
         <!-- Legend -->
         <template #footer>
-            <div class="flex w-full items-center justify-between gap-6 rounded-lg bg-gray-50 p-4">
-                <div class="flex items-center gap-6">
-                    <div class="flex items-center gap-2">
-                        <div class="h-4 w-4 rounded border-l-4 border-slate-400 bg-slate-100"></div>
-                        <span class="text-sm text-gray-700">Beschikbaar</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div
-                            class="border-primary-500 bg-primary-100 h-4 w-4 rounded border-l-4"></div>
-                        <span class="text-sm text-gray-700">Jouw reservering</span>
-                    </div>
+            <div class="mr-auto flex items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <div class="h-4 w-4 rounded border-l-4 border-slate-400 bg-slate-100"></div>
+                    <span class="text-sm text-gray-700">Beschikbaar</span>
                 </div>
-                <Button severity="contrast" text @click="visible = false">Sluiten</Button>
+                <div class="flex items-center gap-2">
+                    <div class="border-primary-500 bg-primary-100 h-4 w-4 rounded border-l-4"></div>
+                    <span class="text-sm text-gray-700">Jouw reservering</span>
+                </div>
             </div>
+            <Button severity="contrast" text @click="visible = false">Sluiten</Button>
         </template>
     </Dialog>
 </template>

@@ -159,22 +159,13 @@ watch(currentWeek, (newWeek) => {
 </script>
 
 <template>
-    <Dialog
-        v-model:visible="visible"
-        modal
-        :draggable="false"
-        :closable="true"
-        class="w-full max-w-7xl">
+    <Dialog v-model:visible="visible" modal :closable="false" class="w-full max-w-[1440px]">
         <template #header>
-            <h2 class="text-xl font-semibold text-gray-900">
-                Reserveer een spot voor {{ props.location.name }}
-            </h2>
+            <!-- Calendar Controls -->
+            <CalendarControls class="w-full" v-model:date="currentWeek" />
         </template>
 
         <div class="space-y-6">
-            <!-- Calendar Controls -->
-            <CalendarControls v-model:date="currentWeek" />
-
             <!-- Loading State -->
             <div v-if="isLoading" class="flex items-center justify-center py-12">
                 <ProgressSpinner />
@@ -234,15 +225,19 @@ watch(currentWeek, (newWeek) => {
 
         <!-- Legend -->
         <template #footer>
-            <div class="flex w-full items-center gap-6 rounded-lg bg-gray-50 p-4">
-                <div class="flex items-center gap-2">
-                    <div class="h-4 w-4 rounded border-l-4 border-slate-400 bg-slate-200"></div>
-                    <span class="text-sm text-gray-700">Beschikbaar</span>
+            <div class="flex w-full items-center justify-between gap-6 rounded-lg bg-gray-50 p-4">
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <div class="h-4 w-4 rounded border-l-4 border-slate-400 bg-slate-100"></div>
+                        <span class="text-sm text-gray-700">Beschikbaar</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="border-primary-500 bg-primary-100 h-4 w-4 rounded border-l-4"></div>
+                        <span class="text-sm text-gray-700">Jouw reservering</span>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <div class="h-4 w-4 rounded border-l-4 border-green-500 bg-green-100"></div>
-                    <span class="text-sm text-gray-700">Jouw reservering</span>
-                </div>
+                <Button severity="contrast" text @click="visible = false">Sluiten</Button>
             </div>
         </template>
     </Dialog>
@@ -256,11 +251,6 @@ watch(currentWeek, (newWeek) => {
     @apply flex justify-center;
     @apply p-2;
     @apply cursor-pointer;
-    @apply border-1 border-transparent;
-
-    &:hover {
-        @apply border-slate-400;
-    }
 
     .time-display {
         @apply text-slate-700;

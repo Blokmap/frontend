@@ -35,7 +35,7 @@ jobs:
             uses: ./.github/actions/common
 
           - name: Run unit tests
-            run: npm run test:unit
+            run: npm run test:unit -- --no-cache
 
     e2e-tests:
         runs-on: self-hosted

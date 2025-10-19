@@ -30,6 +30,8 @@ export default defineConfig({
     test: {
         include: ['test/unit/**/*.{test,spec}.ts'],
         environment: 'jsdom',
+        globals: true,
+        pool: 'threads',
     },
     server: {
         host: true,

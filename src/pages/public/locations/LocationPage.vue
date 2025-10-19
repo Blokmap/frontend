@@ -253,7 +253,12 @@ function onDialogClose(): void {
 
                         <!-- Map -->
                         <div class="h-[400px] overflow-hidden rounded-xl border border-slate-200">
-                            <LocationMap v-if="location" :location="location" />
+                            <LocationMap
+                                v-if="location"
+                                :center="[location.longitude, location.latitude]"
+                                :zoom="17"
+                                :interactive="false"
+                                :geo-location-control="false" />
                             <LocationMapSkeleton v-else-if="isPending" />
                         </div>
                     </div>

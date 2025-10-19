@@ -1,28 +1,44 @@
 <script setup lang="ts">
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, useTemplateRef } from 'vue';
+import { useTemplateRef } from 'vue';
 import { useMapBox } from '@/composables/useMapBox';
-import type { Location } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 
-const props = defineProps<{
-    location: Location;
-}>();
+const props = withDefaults(
+    defineProps<{
+        interactive?: boolean;
+        geoLocationControl?: boolean;
+        autoGeolocation?: boolean;
+    }>(),
+    {
+        interactive: true,
+        geoLocationControl: true,
+        autoGeolocation: false,
+    },
+);
+
+const center = defineModel<LngLat>('center', {
+    default: () => [4.3517, 50.8503],
+});
+
+const zoom = defineModel<number>('zoom', {
+    default: 18,
+});
 
 const mapContainer = useTemplateRef('mapContainer');
-const mapCenter = computed((): LngLat => [props.location.longitude, props.location.latitude]);
 
 useMapBox(mapContainer, {
-    center: mapCenter.value,
-    zoom: 17,
-    geoLocationControl: false,
-    interactive: false,
+    center,
+    zoom,
+    geoLocationControl: props.geoLocationControl,
+    interactive: props.interactive,
+    autoGeolocation: props.autoGeolocation,
 });
 </script>
 
 <template>
-    <div ref="mapContainer" class="map">
+    <div ref="mapContainer" class="map relative h-full w-full rounded-lg">
         <FontAwesomeIcon class="crosshair" :icon="faLocationDot" />
     </div>
 </template>

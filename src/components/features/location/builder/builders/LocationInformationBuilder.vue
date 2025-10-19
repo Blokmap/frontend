@@ -3,7 +3,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
-import AddressMap from '@/components/features/map/AddressMap.vue';
+import LocationMap from '@/components/features/map/LocationMap.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
 import LanguageSelector from '@/components/shared/molecules/LanguageSelector.vue';
 import {
@@ -253,12 +253,12 @@ watch(
             <template #default>
                 <!-- Map with overlay address input -->
                 <div class="relative">
-                    <AddressMap
+                    <LocationMap
                         class="aspect-video h-full w-full rounded-lg"
                         ref="map-container"
                         v-model:center="mapCenter"
                         v-model:zoom="mapZoom">
-                    </AddressMap>
+                    </LocationMap>
 
                     <!-- Address Input Overlay -->
                     <div class="absolute top-3 left-3 z-10 w-64">

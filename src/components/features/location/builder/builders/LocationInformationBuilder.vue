@@ -47,8 +47,10 @@ const mapCenter = computed<LngLat>({
         return defaultMapOptions.center;
     },
     set([lng, lat]: LngLat) {
-        form.value.longitude = lng;
-        form.value.latitude = lat;
+        // Round to 6 decimal places (~11cm precision) to
+        // prevent micro-changes from triggering form updates
+        form.value.longitude = Number(lng.toFixed(6));
+        form.value.latitude = Number(lat.toFixed(6));
     },
 });
 

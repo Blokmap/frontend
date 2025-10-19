@@ -1,9 +1,21 @@
 <script setup lang="ts">
 import gsap from 'gsap';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+
+const { variant } = withDefaults(defineProps<{ variant?: 'light' | 'dark' }>(), {
+    variant: 'light',
+});
 
 const logoRef = ref<HTMLElement | null>(null);
 const textRef = ref<HTMLElement | null>(null);
+
+const variantClasses = computed(() => {
+    if (variant === 'dark') {
+        return 'bg-slate-900 text-slate-200';
+    }
+
+    return 'bg-primary-50 text-primary-500';
+});
 
 onMounted(async () => {
     const letters = textRef.value?.querySelectorAll('span') ?? [];
@@ -43,7 +55,7 @@ function handleHoverOut() {
 
 <template>
     <div class="relative" @mouseenter="handleHoverIn" @mouseleave="handleHoverOut">
-        <div ref="logoRef" class="logo">
+        <div ref="logoRef" class="logo" :class="variantClasses">
             <span class="letters" ref="textRef">
                 <span v-for="(char, i) in 'Blokmap'" :key="i">{{ char }}</span>
             </span>
@@ -56,13 +68,12 @@ function handleHoverOut() {
 
 .logo {
     font-family: 'Armageda';
-    @apply flex w-fit items-center px-2 py-1;
-    @apply bg-primary-100 text-primary-500 rounded-lg;
-    @apply cursor-pointer text-4xl font-black tracking-tight uppercase select-none;
+    @apply flex w-fit items-center rounded-lg px-2 py-1;
+    @apply cursor-pointer text-3xl font-black tracking-tight uppercase select-none;
     @apply transition-shadow duration-200;
 
     .letters {
-        @apply translate-y-1.5;
+        @apply translate-y-1;
     }
 }
 </style>

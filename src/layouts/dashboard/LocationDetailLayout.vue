@@ -33,11 +33,12 @@ const props = defineProps<{
 const toast = useToast();
 const router = useRouter();
 const route = useRoute();
+
 const editingStore = useLocationEditing();
 
 // Determine active tab from route name
 const activeTab = computed<string>(() => {
-    const routeName = route.name as string;
+    const routeName = route.name?.toString() || '';
     if (routeName.includes('reservations')) return 'reservations';
     if (routeName.includes('openings')) return 'openings';
     if (routeName.includes('images')) return 'images';
@@ -201,8 +202,10 @@ function navigateToTab(tab: string): void {
         <div class="tab-content">
             <RouterView />
         </div>
+    </div>
 
-        <!-- Sticky Save Bar -->
+    <!-- Sticky Save Bar (teleported outside to prevent layout shift) -->
+    <Teleport to="body">
         <Transition name="slide-up">
             <div v-if="editingStore.hasChanges" class="save-bar">
                 <div class="save-bar__content">
@@ -230,7 +233,7 @@ function navigateToTab(tab: string): void {
                 </div>
             </div>
         </Transition>
-    </div>
+    </Teleport>
 </template>
 
 <style scoped>

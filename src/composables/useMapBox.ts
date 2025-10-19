@@ -68,32 +68,33 @@ export function useMapBox<T>(
 
         // Listeners //
 
-        const updateCenter = () => {
+        const syncMapState = () => {
+            // Update center
             const mapCenter = newMap.getCenter();
             center.value = [mapCenter.lng, mapCenter.lat];
-        };
 
-        const updateBounds = () => {
+            // Update zoom
+            zoom.value = newMap.getZoom();
+
+            // Update bounds
             const mapBounds = newMap.getBounds();
-            if (!mapBounds) return;
-
-            const sw = mapBounds.getSouthWest();
-            const ne = mapBounds.getNorthEast();
-            bounds.value = [
-                [sw.lng, sw.lat],
-                [ne.lng, ne.lat],
-            ];
+            if (mapBounds) {
+                const sw = mapBounds.getSouthWest();
+                const ne = mapBounds.getNorthEast();
+                bounds.value = [
+                    [sw.lng, sw.lat],
+                    [ne.lng, ne.lat],
+                ];
+            }
         };
 
         newMap.on('move', () => {
             isMoving.value = true;
-            updateCenter();
-            updateBounds();
+            syncMapState();
         });
 
         newMap.on('zoom', () => {
             isZooming.value = true;
-            zoom.value = newMap.getZoom();
         });
 
         newMap.on('moveend', () => {
@@ -106,7 +107,7 @@ export function useMapBox<T>(
 
         newMap.once('load', () => {
             isLoaded.value = true;
-            updateBounds();
+            syncMapState();
         });
 
         // Geolocation configuration //
@@ -164,19 +165,25 @@ export function useMapBox<T>(
         map.value?.setMaxBounds(bounds);
     });
 
+    // Sync external changes to the map
+    // Skip if map is currently moving/zooming to prevent circular updates
     watch(
         center,
         (newCenter) => {
             if (!map.value || !isLoaded.value || isMoving.value) return;
             map.value.setCenter(newCenter);
         },
-        { deep: true },
+        { flush: 'sync' },
     );
 
-    watch(zoom, (newZoom) => {
-        if (!map.value || !isLoaded.value || isZooming.value) return;
-        map.value.setZoom(newZoom);
-    });
+    watch(
+        zoom,
+        (newZoom) => {
+            if (!map.value || !isLoaded.value || isZooming.value) return;
+            map.value.setZoom(newZoom);
+        },
+        { flush: 'sync' },
+    );
 
     /**
      * Adds a marker to the map.

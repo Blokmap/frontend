@@ -12,7 +12,6 @@ import { computed, ref, useTemplateRef, watch } from 'vue';
 import { useSearchLocations, useNearestLocation } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useToast } from '@/composables/store/useToast';
-import { router } from '@/config/router';
 import { hasNextPage } from '@/utils/pagination';
 import type { Location } from '@/domain/location';
 import type { LngLatBounds } from '@/domain/map';
@@ -83,16 +82,9 @@ function handlePageChange(event: { page: number }): void {
     filterStore.updateFilters({ page: event.page + 1 });
 }
 
-function handleMarkerClick(id: number): void {
-    const location = locations.value?.data.find((loc) => loc.id === id);
-
-    if (!location) return;
-
-    if (hoveredLocation.value?.id === location.id) {
-        router.push({ name: 'locations.detail', params: { locationId: location.id } });
-    } else {
-        hoveredLocation.value = location;
-    }
+function handleMarkerClick(_id: number): void {
+    // Marker will handle showing its own popover on click
+    // No additional action needed here
 }
 
 function handleNearestClick(): void {

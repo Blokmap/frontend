@@ -68,32 +68,32 @@ export function useMapBox<T>(
 
         // Listeners //
 
-        newMap.on('move', async () => {
-            isMoving.value = true;
-
-            const mapBounds = newMap.getBounds();
+        const updateCenter = () => {
             const mapCenter = newMap.getCenter();
+            center.value = [mapCenter.lng, mapCenter.lat];
+        };
 
-            if (mapCenter) {
-                center.value = [mapCenter.lng, mapCenter.lat];
-            }
+        const updateBounds = () => {
+            const mapBounds = newMap.getBounds();
+            if (!mapBounds) return;
 
-            if (mapBounds) {
-                bounds.value = [
-                    [mapBounds.getSouthWest().lng, mapBounds.getSouthWest().lat],
-                    [mapBounds.getNorthEast().lng, mapBounds.getNorthEast().lat],
-                ];
-            }
+            const sw = mapBounds.getSouthWest();
+            const ne = mapBounds.getNorthEast();
+            bounds.value = [
+                [sw.lng, sw.lat],
+                [ne.lng, ne.lat],
+            ];
+        };
+
+        newMap.on('move', () => {
+            isMoving.value = true;
+            updateCenter();
+            updateBounds();
         });
 
-        newMap.on('zoom', async () => {
+        newMap.on('zoom', () => {
             isZooming.value = true;
-
-            const mapZoom = newMap.getZoom();
-
-            if (mapZoom) {
-                zoom.value = mapZoom;
-            }
+            zoom.value = newMap.getZoom();
         });
 
         newMap.on('moveend', () => {
@@ -106,15 +106,7 @@ export function useMapBox<T>(
 
         newMap.once('load', () => {
             isLoaded.value = true;
-
-            const mapBounds = newMap.getBounds();
-
-            if (mapBounds) {
-                bounds.value = [
-                    [mapBounds.getSouthWest().lng, mapBounds.getSouthWest().lat],
-                    [mapBounds.getNorthEast().lng, mapBounds.getNorthEast().lat],
-                ];
-            }
+            updateBounds();
         });
 
         // Geolocation configuration //
@@ -175,30 +167,15 @@ export function useMapBox<T>(
     watch(
         center,
         (newCenter) => {
-            if (!map.value || !isLoaded.value) return;
-
-            const currentCenter = map.value.getCenter();
-            const tolerance = 0.000001;
-
-            if (
-                Math.abs(currentCenter.lng - newCenter[0]) > tolerance ||
-                Math.abs(currentCenter.lat - newCenter[1]) > tolerance
-            ) {
-                map.value.setCenter(newCenter);
-            }
+            if (!map.value || !isLoaded.value || isMoving.value) return;
+            map.value.setCenter(newCenter);
         },
         { deep: true },
     );
 
     watch(zoom, (newZoom) => {
-        if (!map.value || !isLoaded.value) return;
-
-        const currentZoom = map.value.getZoom();
-        const tolerance = 0.01;
-
-        if (Math.abs(currentZoom - newZoom) > tolerance) {
-            map.value.setZoom(newZoom);
-        }
+        if (!map.value || !isLoaded.value || isZooming.value) return;
+        map.value.setZoom(newZoom);
     });
 
     /**

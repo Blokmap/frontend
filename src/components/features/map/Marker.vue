@@ -22,19 +22,6 @@ const markerRef = useTemplateRef('root');
 const popoverRef = useTemplateRef<any>('popover');
 const isShowingPopover = ref(false);
 
-watch(
-    () => props.active,
-    (active) => {
-        if (active) {
-            isShowingPopover.value = true;
-            popoverRef?.value?.show(new Event('mouse'), markerRef.value);
-        } else {
-            isShowingPopover.value = false;
-            popoverRef?.value?.hide();
-        }
-    },
-);
-
 watch(() => props.map?.bounds.value, updatePopoverPosition);
 
 onMounted(() => {
@@ -65,14 +52,24 @@ onUnmounted(() => {
     props.map?.removeMarker(props.id);
 });
 
-function handleMouseEnter(event: MouseEvent) {
-    isShowingPopover.value = true;
-    popoverRef?.value?.show(event);
+function handleClick(event: MouseEvent) {
+    emit('click');
+
+    // Toggle popover on click
+    if (isShowingPopover.value) {
+        popoverRef?.value?.hide();
+        isShowingPopover.value = false;
+    } else {
+        popoverRef?.value?.show(event, markerRef.value);
+        isShowingPopover.value = true;
+    }
+}
+
+function handleMouseEnter() {
     emit('mouseenter');
 }
 
 function handleMouseLeave() {
-    // Don't hide popover on mouse leave - it should stay visible
     emit('mouseleave');
 }
 
@@ -86,7 +83,7 @@ function updatePopoverPosition() {
     <Teleport to="body">
         <div
             ref="root"
-            @click.stop="emit('click')"
+            @click.stop="handleClick"
             @mouseenter="handleMouseEnter"
             @mouseleave="handleMouseLeave">
             <Transition name="bounce-scale" appear>
@@ -107,10 +104,10 @@ function updatePopoverPosition() {
 @reference '@/assets/styles/main.css';
 
 .marker {
-    @apply flex h-6 w-9 cursor-pointer items-center justify-center rounded-full bg-slate-800 transition-transform duration-200 hover:scale-110;
+    @apply flex h-6 w-9 cursor-pointer items-center justify-center rounded-full bg-slate-800 transition-all duration-200 hover:scale-110;
 
     &.active {
-        @apply scale-110;
+        @apply scale-115;
     }
 }
 </style>

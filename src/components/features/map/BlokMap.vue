@@ -7,7 +7,7 @@ import { storeToRefs } from 'pinia';
 import { useTemplateRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import { useLeaflet } from '@/composables/useLeaflet';
+import { useMapBox } from '@/composables/useMapBox';
 import Marker from './Marker.vue';
 import type { Location } from '@/domain/location';
 import type { LngLatBounds } from '@/domain/map';
@@ -26,10 +26,12 @@ const emit = defineEmits<{
     (e: 'update:bounds', bounds: LngLatBounds): void;
 }>();
 
-const mapContainerRef = useTemplateRef('mapContainer');
-const filters = storeToRefs(useLocationFilters());
-const map = useLeaflet(mapContainerRef, filters.config.value);
 const router = useRouter();
+
+const filters = storeToRefs(useLocationFilters());
+
+const mapContainerRef = useTemplateRef('mapContainer');
+const map = useMapBox(mapContainerRef, filters.config.value);
 
 function onMarkerClick(id: number): void {
     emit('click:marker', id);
@@ -39,7 +41,9 @@ function onMarkerMouseEnter(location: Location) {
     hoveredLocation.value = location;
 }
 
-function onMarkerMouseLeave() {}
+function onMarkerMouseLeave() {
+    hoveredLocation.value = null;
+}
 
 function onLocationDetailClick(locationId: number): void {
     router.push({ name: 'locations.detail', params: { locationId } });

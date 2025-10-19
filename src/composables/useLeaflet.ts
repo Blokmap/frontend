@@ -70,19 +70,11 @@ export function useLeaflet<T>(
 
         // Add vector tile layer using OpenStreetMap
         // You can replace this with other vector tile providers like Mapbox, Maptiler, etc.
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution:
-                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 19,
-        }).addTo(newMap);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.pbf').addTo(newMap);
 
         // Add zoom control in top-right corner
         if (options.interactive) {
-            L.control
-                .zoom({
-                    position: 'topright',
-                })
-                .addTo(newMap);
+            L.control.zoom().addTo(newMap);
         }
 
         // Listeners //
@@ -141,76 +133,6 @@ export function useLeaflet<T>(
                 ];
             }
         });
-
-        // Geolocation configuration //
-
-        if (options.geoLocationControl) {
-            // Add a simple geolocation button
-            const GeolocateControl = L.Control.extend({
-                options: {
-                    position: 'topright',
-                },
-
-                onAdd: function () {
-                    const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-                    const button = L.DomUtil.create('a', 'leaflet-control-geolocate', container);
-
-                    button.innerHTML = '📍';
-                    button.href = '#';
-                    button.title = 'Find my location';
-                    button.style.fontSize = '20px';
-                    button.style.lineHeight = '30px';
-                    button.style.width = '30px';
-                    button.style.height = '30px';
-                    button.style.textAlign = 'center';
-
-                    L.DomEvent.on(button, 'click', (e: Event) => {
-                        L.DomEvent.preventDefault(e);
-                        L.DomEvent.stopPropagation(e);
-
-                        if (navigator.geolocation) {
-                            navigator.geolocation.getCurrentPosition(
-                                (position) => {
-                                    const { longitude, latitude } = position.coords;
-                                    newMap.flyTo([latitude, longitude], 17, {
-                                        duration: 1.5,
-                                    });
-                                },
-                                (error) => {
-                                    console.error('Geolocation error:', error);
-                                },
-                                {
-                                    enableHighAccuracy: true,
-                                },
-                            );
-                        }
-                    });
-
-                    return container;
-                },
-            });
-
-            newMap.addControl(new GeolocateControl());
-
-            if (options.autoGeolocation && navigator.geolocation) {
-                newMap.whenReady(() => {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            const { longitude, latitude } = position.coords;
-                            newMap.flyTo([latitude, longitude], 17, {
-                                duration: 1.5,
-                            });
-                        },
-                        (error) => {
-                            console.error('Auto-geolocation error:', error);
-                        },
-                        {
-                            enableHighAccuracy: true,
-                        },
-                    );
-                });
-            }
-        }
 
         map.value = newMap;
     });

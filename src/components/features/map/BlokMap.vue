@@ -33,18 +33,32 @@ const filters = storeToRefs(useLocationFilters());
 const mapContainerRef = useTemplateRef('mapContainer');
 const map = useMapBox(mapContainerRef, filters.config.value);
 
+/**
+ * Handle marker click event.
+ * @param id - Location ID
+ */
 function onMarkerClick(id: number): void {
     emit('click:marker', id);
 }
 
+/**
+ * Handle marker mouse enter event.
+ * @param location - Location data
+ */
 function onMarkerMouseEnter(location: Location) {
     hoveredLocation.value = location;
 }
-
+/**
+ * Handle marker mouse leave event.
+ */
 function onMarkerMouseLeave() {
     hoveredLocation.value = null;
 }
 
+/**
+ * Navigate to location detail page.
+ * @param locationId - Location ID
+ */
 function onLocationDetailClick(locationId: number): void {
     router.push({ name: 'locations.detail', params: { locationId } });
 }
@@ -55,6 +69,7 @@ watch(
         emit('update:bounds', newBounds);
         filters.config.value.center = map.center.value;
         filters.config.value.zoom = map.zoom.value;
+        filters.config.value.bounds = newBounds;
     },
     { deep: true },
 );

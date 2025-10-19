@@ -2,20 +2,20 @@ import { useLocalStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { LocationSearchFilter } from '@/domain/location';
-import type { MapOptions } from '@/domain/map';
+import type { LngLatBounds, MapOptions } from '@/domain/map';
 
 /**
  * Pinia store for managing location filters.
  */
 export const useLocationFilters = defineStore('locationFilters', () => {
-    const config = useLocalStorage<MapOptions>('map', {});
+    const config = useLocalStorage<MapOptions & { bounds?: LngLatBounds | null }>('map', {});
     const geoLocation = ref<GeoJSON.GeoJsonProperties | null>(null);
 
     const filters = ref<LocationSearchFilter>({
         query: null,
         isReservable: null,
         openOn: null,
-        bounds: null,
+        bounds: config.value.bounds,
         center: null,
         perPage: 12,
     });

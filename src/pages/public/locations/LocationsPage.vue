@@ -46,20 +46,15 @@ const mapRef = useTemplateRef('map');
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
 
-const isLoading = computed(() => {
-    return locationsIsPending.value;
-});
-
 watch(locations, (locations) => {
     if (!locations || !locations.data.length) return;
     previousLocationCount.value = locations.data.length;
 });
 
 watch(
-    geoLocation,
-    (geoLocation) => {
+    [geoLocation, () => mapRef.value?.map.isLoaded],
+    ([geoLocation, isLoaded]) => {
         try {
-            const isLoaded = mapRef.value?.map.isLoaded;
             if (isLoaded && geoLocation) {
                 mapRef.value?.map.flyTo([
                     geoLocation.coordinates.longitude,
@@ -73,21 +68,27 @@ watch(
     { deep: true, immediate: true },
 );
 
-const handleBoundsChange = useDebounceFn(async (bounds: LngLatBounds | null) => {
+/**
+ * Handles bounds change events from the map.
+ * @param bounds - The new bounds of the map.
+ */
+const onBoundsChange = useDebounceFn(async (bounds: LngLatBounds | null) => {
     filterStore.updateFilters({ bounds, page: 1 });
 }, 400);
 
-function handlePageChange(event: { page: number }): void {
+/**
+ * Handles page change events from the paginator.
+ * @param event - The pagination event containing the new page number.
+ */
+function onPageChange(event: { page: number }): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     filterStore.updateFilters({ page: event.page + 1 });
 }
 
-function handleMarkerClick(_id: number): void {
-    // Marker will handle showing its own popover on click
-    // No additional action needed here
-}
-
-function handleNearestClick(): void {
+/**
+ * Flies the map to the nearest location based on the current center.
+ */
+function onNearestClick(): void {
     const center = mapRef.value?.map.center.value;
     if (!center) return;
     flyToNearestLocation(center);
@@ -97,7 +98,7 @@ function handleNearestClick(): void {
 <template>
     <div class="flex w-full flex-col items-stretch gap-6 md:flex-row">
         <div class="flex w-full flex-col space-y-6 md:w-1/2">
-            <div v-if="isLoading" class="mt-2">
+            <div v-if="locationsIsPending" class="mt-2">
                 <Skeleton height="2rem" />
                 <Skeleton class="mt-3" height="1rem" />
             </div>
@@ -132,7 +133,7 @@ function handleNearestClick(): void {
 
                 <template v-if="!locations?.data?.length">
                     <p class="text-slate-600">Probeer je zoekcriteria of filters aan te passen.</p>
-                    <p class="cursor-pointer text-slate-600 underline" @click="handleNearestClick">
+                    <p class="cursor-pointer text-slate-600 underline" @click="onNearestClick">
                         Vlieg naar dichtstbijzijnde Blokspot
                         <FontAwesomeIcon :icon="faArrowRight" v-if="!isFlyingToNearestLocation" />
                         <FontAwesomeIcon :icon="faSpinner" spin v-else />
@@ -141,7 +142,7 @@ function handleNearestClick(): void {
             </div>
 
             <div class="grid grid-cols-2 gap-4 xl:grid-cols-3">
-                <template v-if="isLoading">
+                <template v-if="locationsIsPending">
                     <LocationCardSkeleton v-for="n in previousLocationCount" :key="n">
                     </LocationCardSkeleton>
                 </template>
@@ -166,7 +167,7 @@ function handleNearestClick(): void {
                 :first="locations.perPage * (locations.page - 1)"
                 :rows="locations.perPage"
                 :total-records="locations.total"
-                @page="handlePageChange">
+                @page="onPageChange">
             </Paginator>
         </div>
         <div class="flex md:w-1/2">
@@ -176,9 +177,8 @@ function handleNearestClick(): void {
                     v-model:hovered-location="hoveredLocation"
                     class="border-1 border-slate-200"
                     :locations="locations?.data"
-                    :is-loading="isLoading"
-                    @update:bounds="handleBoundsChange"
-                    @click:marker="handleMarkerClick">
+                    :is-loading="locationsIsPending"
+                    @update:bounds="onBoundsChange">
                 </BlokMap>
             </div>
         </div>

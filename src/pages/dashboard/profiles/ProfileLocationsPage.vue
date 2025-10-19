@@ -2,8 +2,8 @@
 import Button from 'primevue/button';
 import LocationDataItem from '@/components/features/location/LocationDataItem.vue';
 import LocationDataList from '@/components/features/location/LocationDataList.vue';
-import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
-import DashboardNotFound from '@/components/shared/molecules/DashboardNotFound.vue';
+import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
+import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, watchEffect } from 'vue';

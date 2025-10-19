@@ -1,24 +1,9 @@
 <script setup lang="ts">
-import { faGraduationCap } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import gsap from 'gsap';
-import { computed, onMounted, ref } from 'vue';
-
-const props = withDefaults(
-    defineProps<{
-        light?: boolean;
-    }>(),
-    {
-        light: false,
-    },
-);
+import { onMounted, ref } from 'vue';
 
 const logoRef = ref<HTMLElement | null>(null);
 const textRef = ref<HTMLElement | null>(null);
-
-const colorClasses = computed(() => {
-    return props.light ? 'text-primary-300' : 'text-primary-500';
-});
 
 onMounted(async () => {
     const letters = textRef.value?.querySelectorAll('span') ?? [];
@@ -58,9 +43,8 @@ function handleHoverOut() {
 
 <template>
     <div class="relative" @mouseenter="handleHoverIn" @mouseleave="handleHoverOut">
-        <div ref="logoRef" class="logo" :class="colorClasses">
-            <FontAwesomeIcon :icon="faGraduationCap" class="mr-1" />
-            <span ref="textRef">
+        <div ref="logoRef" class="logo">
+            <span class="letters" ref="textRef">
                 <span v-for="(char, i) in 'Blokmap'" :key="i">{{ char }}</span>
             </span>
         </div>
@@ -71,8 +55,14 @@ function handleHoverOut() {
 @reference '@/assets/styles/main.css';
 
 .logo {
-    @apply flex w-fit items-center rounded-full;
+    font-family: 'Armageda';
+    @apply flex w-fit items-center px-2 py-1;
+    @apply bg-primary-100 text-primary-500 rounded-lg;
+    @apply cursor-pointer text-4xl font-black tracking-tight uppercase select-none;
     @apply transition-shadow duration-200;
-    @apply cursor-pointer text-2xl font-bold tracking-wide select-none;
+
+    .letters {
+        @apply translate-y-1.5;
+    }
 }
 </style>

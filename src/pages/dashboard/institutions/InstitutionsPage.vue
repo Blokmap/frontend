@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
+import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 
 // TODO: Add institutions loading logic
 const isLoading = false;

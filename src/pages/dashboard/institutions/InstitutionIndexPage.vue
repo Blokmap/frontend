@@ -4,7 +4,7 @@ import Paginator from 'primevue/paginator';
 import InstitutionTable from '@/components/features/institution/InstitutionTable.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
-import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
+import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';

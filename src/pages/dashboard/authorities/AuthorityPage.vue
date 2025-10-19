@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
-import DashboardNotFound from '@/components/shared/molecules/DashboardNotFound.vue';
+import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
+import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
 
 // TODO: Add authority loading logic
 const isLoading = false;

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import LocationSearch from '@/components/features/location/search/LocationSearchButton.vue';
 import Logo from '@/components/shared/atoms/Logo.vue';
-import LanguageSelector from '@/components/shared/layout/LanguageSelector.vue';
-import MenuButton from '@/components/shared/layout/MenuButton.vue';
+import LanguageSelector from '@/components/shared/molecules/LanguageSelector.vue';
+import MenuButton from '@/components/shared/organisms/MenuButton.vue';
 import { useLocalStorage } from '@vueuse/core';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -24,7 +24,8 @@ function onEscapeClick(event: KeyboardEvent): void {
     isExpandedSearch.value = false;
 }
 
-function onLocaleChange(newLocale: string): void {
+function onLocaleChange(newLocale?: string | null): void {
+    if (!newLocale) return;
     locale.value = newLocale;
     rememberedLocale.value = newLocale;
 }

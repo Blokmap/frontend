@@ -3,7 +3,7 @@ import Paginator from 'primevue/paginator';
 import ProfileTable from '@/components/features/profile/ProfileTable.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
-import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
+import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import { useDebounceFn } from '@vueuse/core';
 import { ref } from 'vue';
 // import { useRouter } from 'vue-router';

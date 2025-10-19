@@ -3,8 +3,8 @@ import Button from 'primevue/button';
 import Tab from 'primevue/tab';
 import TabList from 'primevue/tablist';
 import Tabs from 'primevue/tabs';
-import DashboardLoading from '@/components/shared/molecules/DashboardLoading.vue';
-import DashboardNotFound from '@/components/shared/molecules/DashboardNotFound.vue';
+import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
+import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
 import {
     faCalendar,
     faCog,

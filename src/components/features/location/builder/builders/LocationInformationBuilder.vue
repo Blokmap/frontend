@@ -4,8 +4,8 @@ import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import AddressMap from '@/components/features/map/AddressMap.vue';
-import LanguageSelector from '@/components/shared/layout/LanguageSelector.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
+import LanguageSelector from '@/components/shared/molecules/LanguageSelector.vue';
 import {
     faEdit,
     faHome,

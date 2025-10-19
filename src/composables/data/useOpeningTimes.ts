@@ -1,13 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
 import {
-    getLocationOpeningTimes,
+    readOpeningTimes,
     createOpeningTimes,
     updateOpeningTime,
     deleteOpeningTime,
-    deleteAllOpeningTimes,
+    deleteOpeningTimes,
     type OpeningTime,
     type OpeningTimeRequest,
+    type OpeningTimeFilter,
 } from '@/domain/openings';
 import { LOCATION_QUERY_KEYS } from './useLocations';
 import type { CompMutation, CompMutationOptions, CompQuery } from '@/types';
@@ -15,30 +16,30 @@ import type { AxiosError } from 'axios';
 
 export const OPENING_TIME_QUERY_KEYS = {
     all: (locationId: MaybeRef<number>) => ['location', 'opening-times', locationId] as const,
-    read: (locationId: MaybeRef<number | null>, dateInWeek: MaybeRefOrGetter<Date>) =>
-        ['location', 'opening-times', locationId, dateInWeek] as const,
+    read: (locationId: MaybeRef<number | null>, filters: MaybeRefOrGetter<OpeningTimeFilter>) =>
+        ['location', 'opening-times', locationId, filters] as const,
 } as const;
 
 /**
  * Composable to fetch opening times for a specific location within a given week.
  *
  * @param locationId - The ID of the location to fetch opening times for.
- * @param dateInWeek - The date within the week for which to fetch opening times.
+ * @param filters - The filters to apply when fetching opening times.
  * @returns An object containing the opening times and their state.
  */
 export function useReadOpeningTimes(
     locationId: MaybeRef<number | null>,
-    dateInWeek: MaybeRefOrGetter<Date> = new Date(),
+    filters: MaybeRefOrGetter<OpeningTimeFilter> = {},
 ): CompQuery<OpeningTime[]> {
     const enabled = computed(() => toValue(locationId) !== null);
 
     const query = useQuery<OpeningTime[], AxiosError>({
-        queryKey: OPENING_TIME_QUERY_KEYS.read(locationId, dateInWeek),
+        queryKey: OPENING_TIME_QUERY_KEYS.read(locationId, filters),
         enabled,
         queryFn: () => {
             const locationIdValue = toValue(locationId)!;
-            const dateInWeekValue = toValue(dateInWeek);
-            return getLocationOpeningTimes(locationIdValue, dateInWeekValue);
+            const filtersValue = toValue(filters);
+            return readOpeningTimes(locationIdValue, filtersValue);
         },
     });
 
@@ -185,7 +186,7 @@ export function useDeleteAllOpeningTimes(
             });
             options.onSuccess?.(data, variables, context);
         },
-        mutationFn: deleteAllOpeningTimes,
+        mutationFn: deleteOpeningTimes,
     });
 
     return mutation;

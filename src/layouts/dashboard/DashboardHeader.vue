@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
+import LanguageSelector from '@/components/shared/layout/LanguageSelector.vue';
 import Breadcrumbs from '@/components/shared/organisms/Breadcrumbs.vue';
 import { useI18n } from 'vue-i18n';
 

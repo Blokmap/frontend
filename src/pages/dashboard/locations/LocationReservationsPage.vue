@@ -25,7 +25,7 @@ const pendingConfirmations = ref<Set<number>>(new Set());
 // Fetch reservations for the selected date
 const { data: reservations, isLoading } = useReadLocationReservations(
     computed(() => +props.locationId),
-    selectedDate,
+    computed(() => ({ selectedDate: selectedDate.value })),
 );
 
 // Mutation for confirming a single reservation

@@ -4,15 +4,15 @@ import {
     confirmReservation,
     createReservation,
     deleteReservation,
-    getLocationReservations,
+    readLocationReservations,
 } from '@/domain/reservation';
-import type { Reservation, ReservationIncludes } from '@/domain/reservation';
+import type { Reservation, ReservationIncludes, ReservationFilter } from '@/domain/reservation';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Time } from '@/utils/time';
 
 export const RESERVATION_QUERY_KEYS = {
-    locationReservations: (locationId: MaybeRef<number>, date?: MaybeRef<Date>) =>
-        ['location', 'reservations', locationId, date] as const,
+    locationReservations: (locationId: MaybeRef<number>, filters?: MaybeRef<ReservationFilter>) =>
+        ['location', 'reservations', locationId, filters] as const,
     profileReservations: () => ['profile', 'reservations'] as const,
 } as const;
 
@@ -97,23 +97,23 @@ export function useDeleteReservation(
  * Composable to fetch reservations for a specific location on a given date.
  *
  * @param locationId - The location ID.
- * @param date - Optional date to filter reservations.
+ * @param filters - Optional filters to apply when fetching reservations.
  * @param options - Additional options for the query.
  * @returns The query object for fetching location reservations.
  */
 export function useReadLocationReservations(
     locationId: MaybeRef<number>,
-    date?: MaybeRef<Date>,
+    filters?: MaybeRef<ReservationFilter>,
     options: CompQueryOptions = {},
 ): CompQuery<Reservation[]> {
     const query = useQuery({
         ...options,
-        queryKey: RESERVATION_QUERY_KEYS.locationReservations(locationId, date),
+        queryKey: RESERVATION_QUERY_KEYS.locationReservations(locationId, filters),
         queryFn: () => {
             const locationIdValue = toValue(locationId);
-            const dateValue = toValue(date);
+            const filtersValue = toValue(filters);
             const includes: ReservationIncludes[] = ['profile'];
-            return getLocationReservations(locationIdValue, undefined, dateValue, includes);
+            return readLocationReservations(locationIdValue, filtersValue, includes);
         },
     });
 

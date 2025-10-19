@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/vue-query';
-import { getAdminCounts, getAdminStats } from '@/domain/admin';
+import { readAdminCounts, readAdminStats } from '@/domain/admin';
 import type { AdminCounts, AdminStats } from '@/domain/admin';
 import type { CompQuery, CompQueryOptions } from '@/types';
 import type { AxiosError } from 'axios';
@@ -19,7 +19,7 @@ export function useAdminCounts(options: CompQueryOptions = {}): CompQuery<AdminC
     const query = useQuery<AdminCounts, AxiosError>({
         ...options,
         queryKey: ADMIN_QUERY_KEYS.counts(),
-        queryFn: getAdminCounts,
+        queryFn: readAdminCounts,
         staleTime: 60 * 60 * 1000, // 60 minutes
     });
 
@@ -36,7 +36,7 @@ export function useAdminStats(options: CompQueryOptions = {}): CompQuery<AdminSt
     const query = useQuery<AdminStats, AxiosError>({
         ...options,
         queryKey: ADMIN_QUERY_KEYS.stats(),
-        queryFn: getAdminStats,
+        queryFn: readAdminStats,
     });
 
     return query;

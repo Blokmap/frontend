@@ -1,3 +1,6 @@
+import { formatDate } from '@vueuse/core';
+import { dateToString } from './date';
+import { timeToString } from './time';
 import type { Paginated } from '@/utils/pagination';
 
 /**
@@ -6,15 +9,69 @@ import type { Paginated } from '@/utils/pagination';
  * @param includes - Array of strings representing the includes to format.
  * @returns {Record<string, boolean>} - A record with the included properties set to true.
  */
-export function formatIncludes(includes?: string[] | null): Record<string, boolean> {
-    const acc = {} as Record<string, boolean>;
+export function formatIncludes(includes: string[] | null = []): Record<string, boolean> {
+    const acc: Record<string, boolean> = {};
 
-    if (!includes) return acc;
-
-    return includes.reduce((acc, include) => {
+    for (const include of includes ?? []) {
         acc[include] = true;
-        return acc;
-    }, acc);
+    }
+
+    return acc;
+}
+
+/**
+ * Formats a request object by converting Date objects to strings.
+ *
+ * @param data - The request data object to format.
+ * @param dateOnlyOverrides - Array of keys that should be formatted as date-only (YYYY-MM-DD) instead of date-time.
+ * @returns {Record<string, any>} - The formatted request data object.
+ */
+export function formatRequest<T extends Record<string, any>>(
+    data: T,
+    dateOnlyOverrides: (keyof T)[] = [],
+): Record<string, any> {
+    const result: Record<string, any> = { ...data };
+
+    for (const key in result) {
+        const value = result[key];
+
+        if (value === null || value === undefined) {
+            delete result[key];
+            continue;
+        }
+
+        if (value instanceof Date) {
+            if (dateOnlyOverrides.includes(key)) {
+                result[key] = formatDate(value, 'YYYY-MM-DD');
+            } else {
+                result[key] = dateToString(value);
+            }
+        }
+
+        if (typeof value === 'object' && 'hours' in value && 'minutes' in value) {
+            result[key] = timeToString(value);
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Creates a FormData request from a given data object.
+ *
+ * @param data - The data object to convert to FormData.
+ * @returns {FormData} - The resulting FormData object.
+ */
+export function createFormDataRequest(data: Record<string, any>): FormData {
+    const form = new FormData();
+    const formatted = formatRequest(data);
+
+    for (const key in formatted) {
+        const value = formatted[key];
+        form.append(key, value);
+    }
+
+    return form;
 }
 
 /**

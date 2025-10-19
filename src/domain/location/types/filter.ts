@@ -5,6 +5,7 @@ import type { Pagination } from '@/utils/pagination';
 export type LocationFilter = Pagination & {
     query?: string | null;
     state?: LocationState | null;
+    language?: string | null;
 };
 
 export type LocationSearchFilter = Pagination & {
@@ -15,4 +16,5 @@ export type LocationSearchFilter = Pagination & {
         coords: LngLat;
         radius?: number | null;
     } | null;
+    language?: string | null;
 };

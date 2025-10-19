@@ -1,8 +1,10 @@
 import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
+import { formatFilters } from '@/utils/filter';
+import { formatRequest } from '@/utils/service';
 import { stringToTime, timeToString } from '@/utils/time';
-import type { OpeningTime, OpeningTimeRequest } from './types';
+import type { OpeningTime, OpeningTimeRequest, OpeningTimeFilter } from './types';
 
 /**
  * Parse an opening time object from the API response.
@@ -36,23 +38,21 @@ export function parseOpeningTime(openingTimeData: any): OpeningTime {
  * Fetch opening times for a specific location and date range.
  *
  * @param locationId - The ID of the location to fetch opening times for.
- * @param dateInWeek - The date within the week for which to fetch opening times.
+ * @param filters - The filters to apply when fetching opening times.
  * @returns A promise that resolves to an array of opening times.
  */
-export async function getLocationOpeningTimes(
+export async function readOpeningTimes(
     locationId: number,
-    dateInWeek?: Date,
+    filters: Partial<OpeningTimeFilter> = {},
 ): Promise<OpeningTime[]> {
     const endpoint = endpoints.locations.openingTimes.listAll.replace(
         '{id}',
         locationId.toString(),
     );
 
-    const params: Record<string, any> = {};
-
-    if (dateInWeek !== undefined) {
-        params.inWeekOf = formatDate(dateInWeek, 'YYYY-MM-DD');
-    }
+    const params: Record<string, any> = {
+        ...formatFilters(filters, ['inWeekOf']),
+    };
 
     const response = await client.get(endpoint, { params });
 
@@ -70,33 +70,7 @@ export async function createOpeningTimes(
     locationId: number,
     openings: OpeningTimeRequest[],
 ): Promise<OpeningTime[]> {
-    const formatted = openings.map((opening) => {
-        const day = formatDate(opening.day, 'YYYY-MM-DD');
-
-        const reservableFrom = opening.reservableFrom
-            ? formatDate(opening.reservableFrom, 'YYYY-MM-DDTHH:mm:ss')
-            : null;
-
-        const reservableUntil = opening.reservableUntil
-            ? formatDate(opening.reservableUntil, 'YYYY-MM-DDTHH:mm:ss')
-            : null;
-
-        const endDate = opening.repetition?.endDate
-            ? formatDate(opening.repetition.endDate, 'YYYY-MM-DD')
-            : null;
-
-        const repetition = opening.repetition ? { ...opening.repetition, endDate } : null;
-
-        return {
-            ...opening,
-            repetition,
-            day,
-            startTime: timeToString(opening.startTime),
-            endTime: timeToString(opening.endTime),
-            reservableFrom,
-            reservableUntil,
-        };
-    });
+    const formatted = openings.map((opening) => formatRequest(opening, ['day', 'endTime']));
 
     const endpoint = endpoints.locations.openingTimes.createMany.replace(
         '{id}',
@@ -177,7 +151,7 @@ export async function deleteOpeningTime(
  * @param locationId - The ID of the location to delete opening times for.
  * @returns A promise that resolves when the deletion is complete.
  */
-export async function deleteAllOpeningTimes(locationId: number): Promise<void> {
+export async function deleteOpeningTimes(locationId: number): Promise<void> {
     const endpoint = endpoints.locations.openingTimes.deleteAll.replace(
         '{id}',
         locationId.toString(),

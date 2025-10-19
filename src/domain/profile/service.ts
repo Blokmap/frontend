@@ -1,12 +1,12 @@
-import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { parseReservation } from '@/domain/reservation';
 import { stringToDate } from '@/utils/date';
-import { formatIncludes, transformPaginatedResponse } from '@/utils/service';
+import { formatFilters } from '@/utils/filter';
+import { createFormDataRequest, formatIncludes, transformPaginatedResponse } from '@/utils/service';
 import { parseLocation } from '../location';
 import type { Profile, ProfileStats, ProfileFilter } from './types';
-import type { Reservation, ReservationIncludes } from '@/domain/reservation';
+import type { Reservation, ReservationFilter, ReservationIncludes } from '@/domain/reservation';
 import type { Paginated } from '@/utils/pagination';
 
 /**
@@ -28,7 +28,7 @@ export function parseProfile(profileData: any | null): Profile {
  * @param profileId - The ID of the profile to fetch statistics for.
  * @returns A promise that resolves to the profile statistics.
  */
-export async function getProfileStats(profileId: number): Promise<ProfileStats> {
+export async function readProfileStats(profileId: number): Promise<ProfileStats> {
     const url = endpoints.profiles.stats.replace('{id}', String(profileId));
     const response = await client.get<ProfileStats>(url);
     return response.data;
@@ -38,24 +38,20 @@ export async function getProfileStats(profileId: number): Promise<ProfileStats> 
  * Get reservations for a specific profile on a given date.
  *
  * @param {number} profileId - The ID of the profile to fetch reservations for.
- * @param {Date} [dateOfWeek] - The date for which to fetch reservations. Defaults to today.
+ * @param {ReservationFilter} filter - The filters to apply when fetching reservations.
  * @returns {Promise<Reservation[]>} A promise that resolves to an array of reservations.
  */
-export async function getProfileReservations(
+export async function readProfileReservations(
     profileId: number,
-    dateOfWeek?: Date,
+    filter: Partial<ReservationFilter> = {},
     includes: ReservationIncludes[] = [],
 ): Promise<Reservation[]> {
     const endpoint = endpoints.profiles.reservations.list.replace('{id}', profileId.toString());
 
     const params: Record<string, any> = {
-        profile: true,
+        ...formatFilters(filter, ['inWeekOf']),
         ...formatIncludes(includes),
     };
-
-    if (dateOfWeek !== undefined) {
-        params.inWeekOf = formatDate(dateOfWeek, 'YYYY-MM-DD');
-    }
 
     const response = await client.get(endpoint, { params });
 
@@ -71,10 +67,9 @@ export async function getProfileReservations(
  */
 export async function updateProfileAvatar(profileId: number, file: File): Promise<void> {
     const url = endpoints.profiles.avatar.replace('{id}', String(profileId));
-    const formData = new FormData();
-    formData.append('image', file);
+    const data = createFormDataRequest({ image: file });
 
-    await client.post(url, formData, {
+    await client.post(url, data, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -173,7 +168,7 @@ export async function unblockProfile(profileId: number): Promise<Profile> {
  * @param profileId - The ID of the profile whose locations are to be fetched.
  * @returns A promise that resolves to a paginated list of locations.
  */
-export async function getProfileLocations(profileId: string | number) {
+export async function readProfileLocations(profileId: string | number) {
     const endpoint = endpoints.profiles.locations.list.replace('{id}', profileId.toString());
     const response = await client.get<Location[]>(endpoint);
     return response.data.map(parseLocation);

@@ -3,13 +3,13 @@ import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
 import {
     blockProfile,
     deleteProfileAvatar,
-    getProfileReservations,
-    getProfileStats,
+    readProfileReservations,
+    readProfileStats,
     listProfiles,
     unblockProfile,
     updateProfile,
     updateProfileAvatar,
-    getProfileLocations,
+    readProfileLocations,
     readProfile,
 } from '@/domain/profile';
 import type { Location } from '@/domain/location';
@@ -43,7 +43,7 @@ export function useReadProfileStats(
         queryKey: PROFILE_QUERY_KEYS.stats(profileId),
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
-            return getProfileStats(profileIdValue);
+            return readProfileStats(profileIdValue);
         },
         enabled,
     });
@@ -70,7 +70,11 @@ export function useReadProfileReservations(
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
             const dateInWeek = toValue(inWeekOf);
-            return getProfileReservations(profileIdValue, dateInWeek, ['location', 'openingTime']);
+
+            return readProfileReservations(profileIdValue, { inWeekOf: dateInWeek }, [
+                'location',
+                'openingTime',
+            ]);
         },
     });
 
@@ -89,7 +93,7 @@ export function useReadProfileLocations(profileId: MaybeRef<number | null>): Com
     const query = useQuery<Location[], AxiosError>({
         queryKey: PROFILE_QUERY_KEYS.locations(profileId),
         enabled,
-        queryFn: () => getProfileLocations(toValue(profileId)!),
+        queryFn: () => readProfileLocations(toValue(profileId)!),
     });
 
     return query;

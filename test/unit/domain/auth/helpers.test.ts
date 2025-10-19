@@ -39,8 +39,7 @@ describe('auth helpers', () => {
         });
 
         it('should be idempotent - second call returns null', () => {
-            const url = '/dashboard/profile';
-            localStorage.setItem('redirectAfterLogin', url);
+            pushRedirectUrl('/some-url');
             pullRedirectUrl();
             expect(pullRedirectUrl()).toBeNull();
         });

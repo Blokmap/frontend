@@ -1,10 +1,10 @@
-import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
+import { parseOpeningTime } from '@/domain/openings';
 import { parseProfile } from '@/domain/profile';
-import { dateToString, stringToDate } from '@/utils/date';
-import { formatIncludes, transformPaginatedResponse } from '@/utils/service';
-import { stringToTime, timeToString } from '@/utils/time';
+import { stringToDate } from '@/utils/date';
+import { formatFilters, formatLocationSearchFilters } from '@/utils/filter';
+import { createFormDataRequest, formatIncludes, transformPaginatedResponse } from '@/utils/service';
 import type {
     Location,
     LocationSearchFilter,
@@ -14,29 +14,9 @@ import type {
 } from './types';
 import type { Image, ImageReorderRequest, ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
-import type { OpeningTime, OpeningTimeRequest } from '@/domain/openings';
 import type { Paginated } from '@/utils/pagination';
 
 export type LocationIncludes = 'images' | 'createdBy';
-
-/**
- * Parse an opening time object from the API by converting string times to Time objects
- *
- * @param openingTimeData - The raw opening time data from the API
- * @returns The parsed OpeningTime object with proper types
- */
-export function parseOpeningTime(openingTimeData: any): OpeningTime {
-    return {
-        ...openingTimeData,
-        startTime: stringToTime(openingTimeData.startTime),
-        endTime: stringToTime(openingTimeData.endTime),
-        day: stringToDate(openingTimeData.day),
-        reservableFrom: stringToDate(openingTimeData.reservableFrom),
-        reservableUntil: stringToDate(openingTimeData.reservableUntil),
-        createdAt: stringToDate(openingTimeData.createdAt),
-        updatedAt: stringToDate(openingTimeData.updatedAt),
-    };
-}
 
 /**
  * Parse location data from the API by converting string times to Time objects
@@ -69,42 +49,12 @@ export function parseLocation(locationData: any): Location {
  * Search for locations based on filters.
  *
  * @param {LocationSearchFilter} [filters] - The filters to apply when searching for locations.
- * @param {string} [locale] - The locale to use for the search.
  * @returns {Promise<Paginated<Location>>} A promise that resolves to a paginated list of locations.
  */
 export async function searchLocations(
     filters?: Partial<LocationSearchFilter>,
-    language?: string,
 ): Promise<Paginated<Location>> {
-    const [southWest, northEast] = filters?.bounds ?? [];
-    const northEastLng = northEast?.[0];
-    const northEastLat = northEast?.[1];
-    const southWestLng = southWest?.[0];
-    const southWestLat = southWest?.[1];
-
-    const centerLng = filters?.center?.coords?.[0];
-    const centerLat = filters?.center?.coords?.[1];
-    const distance = filters?.center?.radius;
-
-    const query = filters?.query || null;
-    const page = filters?.page;
-    const perPage = filters?.perPage;
-    const openOnDay = dateToString(filters?.openOn);
-
-    const params = {
-        northEastLng,
-        northEastLat,
-        southWestLng,
-        southWestLat,
-        centerLng,
-        centerLat,
-        distance,
-        query,
-        page,
-        perPage,
-        openOnDay,
-        language,
-    };
+    const params = formatLocationSearchFilters(filters ?? {});
 
     const response = await client.get(endpoints.locations.search, {
         params,
@@ -114,19 +64,20 @@ export async function searchLocations(
     return response.data;
 }
 
-export async function listLocations(
+/**
+ * List locations with filters and includes.
+ *
+ * @param {LocationFilter} [filters] - The filters to apply when listing locations.
+ * @param {LocationIncludes[]} includes - The related data to include in the response.
+ * @returns {Promise<Paginated<Location>>} A promise that resolves to a paginated list of locations.
+ */
+export async function readLocations(
     filters: Partial<LocationFilter> = {},
-    language: string,
-    includes: LocationIncludes[],
+    includes: LocationIncludes[] = [],
 ): Promise<Paginated<Location>> {
-    const query = filters.query || null;
-    const load = formatIncludes(includes);
-
     const params = {
-        ...filters,
-        ...load,
-        query,
-        language,
+        ...formatFilters(filters),
+        ...formatIncludes(includes),
     };
 
     const response = await client.get(endpoints.admin.locations.list, {
@@ -158,7 +109,10 @@ export async function readLocationImages(locationId: number): Promise<Image[]> {
  * @param {LocationIncludes[]} includes - The related data to include in the response.
  * @returns {Promise<Location>} A promise that resolves to the location data.
  */
-export async function getLocationById(id: number, includes: LocationIncludes[]): Promise<Location> {
+export async function readLocation(
+    id: number,
+    includes: LocationIncludes[] = [],
+): Promise<Location> {
     const params = formatIncludes(includes);
 
     const response = await client.get(endpoints.locations.read.replace('{id}', id.toString()), {
@@ -173,7 +127,7 @@ export async function getLocationById(id: number, includes: LocationIncludes[]):
  * @param {LngLat} center - The center point to find the nearest location to.
  * @returns {Promise<NearestLocation>} A promise that resolves to the nearest location data.
  */
-export async function getNearestLocation(center: LngLat): Promise<NearestLocation> {
+export async function readNearestLocation(center: LngLat): Promise<NearestLocation> {
     const response = await client.get(endpoints.locations.nearest, {
         params: {
             centerLng: center[0],
@@ -206,19 +160,16 @@ export async function createLocationImage(
     locationId: number,
     image: ImageRequest,
 ): Promise<Location> {
-    const formData = new FormData();
+    const endpoint = endpoints.locations.images.createOne.replace('{id}', locationId.toString());
 
-    if (image.file) {
-        formData.append('image', image.file);
-        formData.append('index', image.index.toString());
-    }
+    const request = createFormDataRequest({
+        image: image.file,
+        index: image.index,
+    });
 
-    const response = await client.post(
-        endpoints.locations.images.createOne.replace('{id}', locationId.toString()),
-        formData,
-    );
+    const { data } = await client.post(endpoint, request);
 
-    return parseLocation(response.data);
+    return parseLocation(data);
 }
 
 /**
@@ -229,11 +180,12 @@ export async function createLocationImage(
  * @returns {Promise<Location>} A promise that resolves to the updated location.
  */
 export async function updateLocation(id: number, locationData: LocationRequest): Promise<Location> {
-    const response = await client.patch(
+    const { data } = await client.patch(
         endpoints.locations.update.replace('{id}', id.toString()),
         locationData,
     );
-    return parseLocation(response.data);
+
+    return parseLocation(data);
 }
 
 /**
@@ -244,35 +196,6 @@ export async function updateLocation(id: number, locationData: LocationRequest):
  */
 export async function deleteLocation(id: number): Promise<void> {
     await client.delete(endpoints.locations.delete.replace('{id}', id.toString()));
-}
-
-/**
- * Create time slots for a location.
- *
- * @param {number} locationId - The ID of the location to create time slots for.
- * @param {OpeningTimeRequest[]} openings - The opening times to create as time slots.
- * @returns {Promise<Location>} A promise that resolves to the updated location with new time slots.
- */
-export async function createLocationOpenings(
-    locationId: number,
-    openings: OpeningTimeRequest[],
-): Promise<Location> {
-    const formatted = openings.map((opening) => {
-        const day = formatDate(opening.day, 'YYYY-MM-DD');
-        return {
-            ...opening,
-            day,
-            startTime: timeToString(opening.startTime),
-            endTime: timeToString(opening.endTime),
-        };
-    });
-
-    const response = await client.post(
-        endpoints.locations.openingTimes.createMany.replace('{id}', locationId.toString()),
-        formatted,
-    );
-
-    return parseLocation(response.data);
 }
 
 /**
@@ -306,8 +229,9 @@ export async function deleteLocationImages(locationId: number): Promise<void> {
  * @returns {Promise<Location>} A promise that resolves to the approved location.
  */
 export async function approveLocation(id: number): Promise<Location> {
-    const response = await client.post(endpoints.locations.approve.replace('{id}', id.toString()));
-    return parseLocation(response.data);
+    const { data } = await client.post(endpoints.locations.approve.replace('{id}', id.toString()));
+
+    return parseLocation(data);
 }
 
 /**
@@ -318,10 +242,11 @@ export async function approveLocation(id: number): Promise<Location> {
  * @returns {Promise<Location>} A promise that resolves to the rejected location.
  */
 export async function rejectLocation(id: number, reason?: string | null): Promise<Location> {
-    const response = await client.post(endpoints.locations.reject.replace('{id}', id.toString()), {
+    const { data } = await client.post(endpoints.locations.reject.replace('{id}', id.toString()), {
         reason,
     });
-    return parseLocation(response.data);
+
+    return parseLocation(data);
 }
 
 /**
@@ -331,8 +256,8 @@ export async function rejectLocation(id: number, reason?: string | null): Promis
  * @returns {Promise<Location>} A promise that resolves to the pended location.
  */
 export async function pendLocation(id: number): Promise<Location> {
-    const response = await client.post(endpoints.locations.pend.replace('{id}', id.toString()));
-    return parseLocation(response.data);
+    const { data } = await client.post(endpoints.locations.pend.replace('{id}', id.toString()));
+    return parseLocation(data);
 }
 
 /**

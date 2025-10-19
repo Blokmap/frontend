@@ -1,16 +1,12 @@
 import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
+import { formatFilters } from '@/utils/filter';
 import { formatIncludes } from '@/utils/service';
 import { stringToTime, timeToString, type Time } from '@/utils/time';
-import type { Reservation } from './types';
+import type { Reservation, ReservationFilter } from './types';
 
 export type ReservationIncludes = 'profile' | 'location' | 'openingTime' | 'confirmedBy';
-
-export type ReservationFilters = {
-    date?: Date;
-    state?: Reservation['state'];
-};
 
 /**
  * Parse a reservation object. Used to ensure that API responses
@@ -47,33 +43,28 @@ export function serializeReservation(reservation: Reservation): any {
 }
 
 /**
- * Get reservations for a specific location on a given date.
+ * Get reservations for a specific location.
  *
- * @param {number} locationId - The ID of the location to fetch reservations for.
- * @param {Date} [dateOfWeek] - The date for which to fetch reservations. Defaults to today.
- * @returns {Promise<Reservation[]>} A promise that resolves to an array of reservations.
+ * @param locationId - The ID of the location to fetch reservations for.
+ * @param filters - The filters to apply when fetching reservations.
+ * @param includes - The related data to include in the response.
+ * @returns A promise that resolves to an array of reservations.
  */
-export async function getLocationReservations(
+export async function readLocationReservations(
     locationId: number,
-    dateOfWeek?: Date,
-    selectedDate?: Date,
-    includes?: ReservationIncludes[],
+    filters: Partial<ReservationFilter> = {},
+    includes: ReservationIncludes[] = [],
 ): Promise<Reservation[]> {
     const endpoint = endpoints.locations.reservations.list.replace('{id}', locationId.toString());
 
-    const params: Record<string, any> = { ...formatIncludes(includes) };
+    const params: Record<string, any> = {
+        ...formatFilters(filters, ['inWeekOf']),
+        ...formatIncludes(includes),
+    };
 
-    if (dateOfWeek !== undefined) {
-        params.dateOfWeek = formatDate(dateOfWeek, 'YYYY-MM-DD');
-    }
+    const response = await client.get(endpoint, { params });
 
-    if (selectedDate !== undefined) {
-        params.date = formatDate(selectedDate, 'YYYY-MM-DD');
-    }
-
-    const { data } = await client.get(endpoint, { params });
-
-    return data.map(parseReservation);
+    return response.data.map(parseReservation);
 }
 
 /**

@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 import { AUTH_QUERY_KEYS } from '@/composables/data/useAuth';
 import { useToast } from '@/composables/store/useToast';
-import { getAuthProfile, pullRedirectUrl } from '@/domain/auth';
+import { readAuthProfile, pullRedirectUrl } from '@/domain/auth';
 import { authRouterGuard, breadcrumbRouterGuard, titleRouterGuard } from './guards';
 import {
     AuthPage,
@@ -420,7 +420,7 @@ const routes: RouteRecordRaw[] = [
 
                     const profile = await client.fetchQuery({
                         queryKey: AUTH_QUERY_KEYS.profile(),
-                        queryFn: getAuthProfile,
+                        queryFn: readAuthProfile,
                     });
 
                     if (profile) {

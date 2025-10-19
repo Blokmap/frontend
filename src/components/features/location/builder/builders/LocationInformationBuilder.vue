@@ -2,9 +2,9 @@
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
-import LanguageSelector from '@/components/features/layout/LanguageSelector.vue';
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import AddressMap from '@/components/features/map/AddressMap.vue';
+import LanguageSelector from '@/components/shared/layout/LanguageSelector.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
 import {
     faEdit,

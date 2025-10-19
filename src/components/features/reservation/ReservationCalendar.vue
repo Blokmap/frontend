@@ -11,12 +11,12 @@ import { endOfWeek, startOfWeek } from '@/utils/date';
 import type { Reservation } from '@/domain/reservation';
 
 const props = defineProps<{
-    dateInWeek: Date;
+    inWeekOf: Date;
     reservations?: Reservation[];
 }>();
 
-const weekStart = computed(() => startOfWeek(props.dateInWeek));
-const weekEnd = computed(() => endOfWeek(props.dateInWeek));
+const weekStart = computed(() => startOfWeek(props.inWeekOf));
+const weekEnd = computed(() => endOfWeek(props.inWeekOf));
 
 const reservationTimeSlots = computed(() =>
     reservationsToTimeSlots(props.reservations, weekStart.value, weekEnd.value),
@@ -25,7 +25,7 @@ const reservationTimeSlots = computed(() =>
 
 <template>
     <Calendar
-        :current-week="dateInWeek"
+        :current-week="inWeekOf"
         :time-slots="reservationTimeSlots"
         :enable-dragging="false"
         :time-interval="15"

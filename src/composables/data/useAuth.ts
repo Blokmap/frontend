@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from '@/composables/store/useToast';
-import { getAuthProfile, login, logout, register } from '@/domain/auth';
+import { readAuthProfile, login, logout, register } from '@/domain/auth';
 import type { LoginRequest, RegisterRequest } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
@@ -25,7 +25,7 @@ export function useAuthProfile(
         queryKey: AUTH_QUERY_KEYS.profile(),
         refetchInterval: 60000,
         retry: false,
-        queryFn: getAuthProfile,
+        queryFn: readAuthProfile,
     });
 
     const profileId = computed(() => query.data.value?.id ?? null);

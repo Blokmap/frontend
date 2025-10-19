@@ -4,9 +4,8 @@ import { useI18n } from 'vue-i18n';
 import {
     createLocation,
     createLocationImage,
-    createLocationOpenings,
-    getLocationById,
-    getNearestLocation,
+    readLocation,
+    readNearestLocation,
     searchLocations,
     type LocationIncludes,
     type Location,
@@ -16,7 +15,7 @@ import {
     approveLocation,
     rejectLocation,
     type LocationFilter,
-    listLocations,
+    readLocations,
     type LocationState,
     pendLocation,
     deleteLocation,
@@ -24,22 +23,21 @@ import {
     deleteLocationImage,
     reorderLocationImages,
 } from '@/domain/location';
-import { getLocationReservations, type Reservation } from '@/domain/reservation';
+import { readLocationReservations, type Reservation } from '@/domain/reservation';
 import type { ImageReorderRequest, ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
-import type { OpeningTimeRequest } from '@/domain/openings';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
 
 export const LOCATION_QUERY_KEYS = {
-    read: (id: MaybeRef<number>) => ['location', toValue(id)] as const,
+    read: (id: MaybeRef<number>) => ['location', id] as const,
     list: (filters: MaybeRef<LocationFilter | undefined>, locale: MaybeRef<string>) =>
         ['locations', filters, locale] as const,
     search: (filters: MaybeRef<LocationSearchFilter | undefined>, locale: MaybeRef<string>) =>
         ['locations', 'search', filters, locale] as const,
-    reservations: (locationId: MaybeRef<number | null>, dateInWeek: MaybeRefOrGetter<Date>) =>
-        ['location', 'reservations', locationId, dateInWeek] as const,
+    reservations: (locationId: MaybeRef<number | null>, inWeekOf: MaybeRefOrGetter<Date>) =>
+        ['location', 'reservations', locationId, inWeekOf] as const,
 } as const;
 
 /**
@@ -62,7 +60,11 @@ export function useSearchLocations(
         queryFn: async () => {
             const params = toValue(filters);
             const language = toValue(locale);
-            return await searchLocations(params, language);
+
+            return await searchLocations({
+                ...params,
+                language,
+            });
         },
     });
 
@@ -87,10 +89,10 @@ export function useReadLocations(
         queryKey: LOCATION_QUERY_KEYS.list(filters, locale),
         placeholderData: keepPreviousData,
         queryFn: async () => {
-            const params = toValue(filters);
+            const filtersValue = toValue(filters);
             const language = toValue(locale);
             const includes = options.includes ?? [];
-            return await listLocations(params, language, includes);
+            return await readLocations({ ...filtersValue, language }, includes);
         },
     });
 
@@ -113,7 +115,7 @@ export function useReadLocation(
         queryFn: () => {
             const locationId = toValue(id);
             const includes = options.includes ?? [];
-            return getLocationById(locationId, includes);
+            return readLocation(locationId, includes);
         },
     });
 
@@ -131,7 +133,7 @@ export function useNearestLocation(
 ): CompMutation<LngLat, NearestLocation> {
     const mutation = useMutation({
         ...options,
-        mutationFn: getNearestLocation,
+        mutationFn: readNearestLocation,
     });
 
     return mutation;
@@ -352,39 +354,6 @@ export function useUpdateLocationImages(
     return mutation;
 }
 
-export type CreateLocationTimeslotsParams = {
-    locationId: number;
-    timeslots: OpeningTimeRequest[];
-};
-
-/**
- * Composable to handle creating opening time slots for a location.
- *
- * @param options - Additional options for the mutation.
- * @returns The mutation object for creating location timeslots.
- */
-export function useCreateLocationTimeslots(
-    options: CompMutationOptions = {},
-): CompMutation<CreateLocationTimeslotsParams> {
-    const queryClient = useQueryClient();
-
-    const mutation = useMutation({
-        ...options,
-        onSuccess: (data, variables, context) => {
-            // Invalidate the specific location query
-            queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
-            });
-            options.onSuccess?.(data, variables, context);
-        },
-        mutationFn: ({ locationId, timeslots }: CreateLocationTimeslotsParams) => {
-            return createLocationOpenings(locationId, timeslots);
-        },
-    });
-
-    return mutation;
-}
-
 /**
  * Composable to handle approving a location.
  *
@@ -523,22 +492,22 @@ export function useLocationState(
  * Composable to fetch reservations for a specific location within a given week.
  *
  * @param locationId - The ID of the location to fetch reservations for.
- * @param dateInWeek - The date within the week for which to fetch reservations.
+ * @param inWeekOf - The date within the week for which to fetch reservations.
  * @returns The query object containing location reservations and their state.
  */
 export function useReadLocationReservations(
     locationId: MaybeRef<number | null>,
-    dateInWeek: MaybeRefOrGetter<Date> = new Date(),
+    inWeekOf: MaybeRefOrGetter<Date> = new Date(),
 ): CompQuery<Reservation[]> {
     const enabled = computed(() => toValue(locationId) !== null);
 
     const query = useQuery<Reservation[], AxiosError>({
-        queryKey: LOCATION_QUERY_KEYS.reservations(locationId, dateInWeek),
+        queryKey: LOCATION_QUERY_KEYS.reservations(locationId, inWeekOf),
         enabled,
         queryFn: () => {
             const locationIdValue = toValue(locationId)!;
-            const dateInWeekValue = toValue(dateInWeek);
-            return getLocationReservations(locationIdValue, dateInWeekValue);
+            const inWeekOfValue = toValue(inWeekOf);
+            return readLocationReservations(locationIdValue, { inWeekOf: inWeekOfValue });
         },
     });
 

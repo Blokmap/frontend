@@ -7,7 +7,7 @@ import type { AdminCounts, AdminStats } from './types';
  *
  * @returns A promise that resolves to admin counts data.
  */
-export async function getAdminCounts(): Promise<AdminCounts> {
+export async function readAdminCounts(): Promise<AdminCounts> {
     const response = await client.get<AdminCounts>(endpoints.admin.counts);
     return response.data;
 }
@@ -17,7 +17,7 @@ export async function getAdminCounts(): Promise<AdminCounts> {
  *
  * @returns A promise that resolves to admin statistics data.
  */
-export async function getAdminStats(): Promise<AdminStats> {
+export async function readAdminStats(): Promise<AdminStats> {
     const response = await client.get<AdminStats>(endpoints.admin.stats);
     return response.data;
 }

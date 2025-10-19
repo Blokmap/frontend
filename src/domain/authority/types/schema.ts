@@ -10,9 +10,3 @@ export type Authority = {
     members?: Profile[];
     locations?: Location[];
 };
-
-export type AuthorityFilter = {
-    query?: string;
-    page?: number;
-    perPage?: number;
-};

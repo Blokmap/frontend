@@ -4,10 +4,10 @@ import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton';
 import AddressCard from '@/components/features/location/details/LocationAddressCard.vue';
 import LocationFeatures from '@/components/features/location/details/LocationFeatures.vue';
-import OpeningsTable from '@/components/features/location/openings/OpeningsTable.vue';
-import OpeningsTableSkeleton from '@/components/features/location/openings/OpeningsTableSkeleton.vue';
 import LocationMap from '@/components/features/map/LocationMap.vue';
 import LocationMapSkeleton from '@/components/features/map/LocationMapSkeleton.vue';
+import OpeningsTable from '@/components/features/openings/OpeningsTable.vue';
+import OpeningsTableSkeleton from '@/components/features/openings/OpeningsTableSkeleton.vue';
 import ReservationBuilderDialog from '@/components/features/reservation/ReservationBuilderDialog.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import Gallery from '@/components/shared/organisms/image/Gallery.vue';
@@ -57,7 +57,7 @@ const {
     isError: _openingTimesIsError,
 } = useReadOpeningTimes(
     computed(() => +locationId),
-    currentWeek,
+    computed(() => ({ inWeekOf: currentWeek.value })),
 );
 
 const showReservationDialog = computed<boolean>(() => reservation === 'reservation');

@@ -9,7 +9,7 @@ import type { Profile } from '@/domain/profile';
  *
  * @returns The authenticated user's profile or null if not authenticated.
  */
-export async function getAuthProfile(): Promise<Profile | null> {
+export async function readAuthProfile(): Promise<Profile | null> {
     const { data } = await client.get(endpoints.auth.current);
 
     if (data === null) {

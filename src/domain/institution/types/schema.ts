@@ -16,9 +16,3 @@ export type Institution = {
     country: string | null;
     category: InstitutionCategory;
 };
-
-export type InstitutionFilter = {
-    query?: string;
-    page?: number;
-    perPage?: number;
-};

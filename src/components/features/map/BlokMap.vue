@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
+import OpeningsTable from '@/components/features/openings/OpeningsTable.vue';
 import { faSpinner, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { storeToRefs } from 'pinia';
@@ -7,7 +8,6 @@ import { useTemplateRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useMapBox } from '@/composables/useMapBox';
-import OpeningsTable from '../location/openings/OpeningsTable.vue';
 import Marker from './Marker.vue';
 import type { Location } from '@/domain/location';
 import type { LngLatBounds } from '@/domain/map';

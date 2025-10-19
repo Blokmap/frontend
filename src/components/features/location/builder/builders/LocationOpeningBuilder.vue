@@ -22,7 +22,7 @@ const router = useRouter();
 const route = useRoute();
 
 // Calendar state
-const dateInWeek = computed(() => {
+const inWeekOf = computed(() => {
     const dateParam = route.query.inWeekOf?.toString();
     if (dateParam) {
         const date = new Date(dateParam);
@@ -141,12 +141,12 @@ function onCellClick(timeCell: TimeCell): void {
 <template>
     <div class="space-y-6">
         <!-- Calendar controls -->
-        <CalendarControls :date="dateInWeek" @update:date="onDateSelect" />
+        <CalendarControls :date="inWeekOf" @update:date="onDateSelect" />
 
         <!-- Calendar view -->
         <OpeningTimesCalendar
             :opening-times="openingTimes"
-            :date-in-week="dateInWeek"
+            :date-in-week="inWeekOf"
             @click:cell="onCellClick"
             @click:slot="onEditClick"
             @drag:slot="onDragSlot">

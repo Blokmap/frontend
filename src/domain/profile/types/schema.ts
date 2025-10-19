@@ -1,7 +1,6 @@
 import type { Authority } from '@/domain/authority';
 import type { Image } from '@/domain/image';
 import type { Institution } from '@/domain/institution';
-import type { Pagination } from '@/utils/pagination';
 
 export type ProfileState = 'active' | 'disabled' | 'deleted';
 
@@ -30,10 +29,4 @@ export type ProfileRequest = {
     firstName?: string;
     lastName?: string;
     username?: string;
-};
-
-export type ProfileFilter = Pagination & {
-    query?: string;
-    isAdmin?: boolean;
-    state?: ProfileState | null;
 };

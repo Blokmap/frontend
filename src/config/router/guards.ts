@@ -3,7 +3,7 @@ import { AUTH_QUERY_KEYS } from '@/composables/data/useAuth';
 import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useToast } from '@/composables/store/useToast';
-import { pushRedirectUrl, getAuthProfile } from '@/domain/auth';
+import { pushRedirectUrl, readAuthProfile } from '@/domain/auth';
 import type { Breadcrumbs } from '@/utils/breadcrumb';
 import type { NavigationGuardReturn, RouteLocationNormalized } from 'vue-router';
 
@@ -24,7 +24,7 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
 
     const profile = await client.fetchQuery({
         queryKey: AUTH_QUERY_KEYS.profile(),
-        queryFn: getAuthProfile,
+        queryFn: readAuthProfile,
     });
 
     if (profile === null) {

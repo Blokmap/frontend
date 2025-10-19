@@ -8,7 +8,7 @@ import type { Time } from '@/utils/time';
 
 const props = defineProps<{
     openingTimes: OpeningTimeRequest[];
-    dateInWeek: Date;
+    inWeekOf: Date;
     minDate?: Date;
     maxDate?: Date;
 }>();
@@ -48,7 +48,7 @@ function onSlotDrag(
 
 <template>
     <Calendar
-        :current-week="dateInWeek"
+        :current-week="inWeekOf"
         :time-slots="timeSlots"
         :min-date="minDate"
         :max-date="maxDate"

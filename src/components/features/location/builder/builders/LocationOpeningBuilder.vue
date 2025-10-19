@@ -21,15 +21,17 @@ const emit = defineEmits<{
 const router = useRouter();
 const route = useRoute();
 
-// Calendar state
 const inWeekOf = computed(() => {
     const dateParam = route.query.inWeekOf?.toString();
+
     if (dateParam) {
         const date = new Date(dateParam);
+
         if (!isNaN(date.getTime())) {
             return date;
         }
     }
+
     return new Date();
 });
 
@@ -146,7 +148,7 @@ function onCellClick(timeCell: TimeCell): void {
         <!-- Calendar view -->
         <OpeningTimesCalendar
             :opening-times="openingTimes"
-            :date-in-week="inWeekOf"
+            :in-week-of="inWeekOf"
             @click:cell="onCellClick"
             @click:slot="onEditClick"
             @drag:slot="onDragSlot">

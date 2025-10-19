@@ -1,35 +1,30 @@
-import mapboxgl from 'mapbox-gl';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { type Ref, isRef, onActivated, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { defaultMapOptions } from '@/domain/map';
 import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/domain/map';
 
-const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
-
 /**
- * Composable to create a MapBox map instance.
+ * Composable to create a Leaflet map instance with vectorized tiles.
  *
  * @param container - A reference to the HTML element that will contain the map.
  * @param options - Optional configuration options for the map.
  * @returns - An object containing the map instance.
  */
-export function useMapBox<T>(
+export function useLeaflet<T>(
     container: Ref<HTMLElement | null>,
     options: MapOptions = defaultMapOptions,
 ): MapAdapter<T> {
-    const { locale } = useI18n();
-
     // Merge default options with provided options
-    // This allows for overriding default values while keeping the defaults intact.
     options = {
         ...defaultMapOptions,
         ...options,
     };
 
-    // Bypass deep type inference issues with mapbox-gl types
-    // by explictely casting the correct types.
-    const markers = new Map<T, mapboxgl.Marker>() as Map<T, mapboxgl.Marker>;
-    const map = ref(null) as Ref<mapboxgl.Map | null>;
+    // Bypass deep type inference issues with leaflet types
+    // by explicitly casting the correct types.
+    const markers = new Map<T, L.Marker>() as Map<T, L.Marker>;
+    const map = ref(null) as Ref<L.Map | null>;
 
     const markerCount = ref(0);
     const isLoaded = ref(false);
@@ -55,24 +50,48 @@ export function useMapBox<T>(
 
         // Configuration //
 
-        const newMap = new mapboxgl.Map({
-            accessToken: MAPBOX_ACCESS_TOKEN,
-            language: locale.value,
-            container: container.value,
-            style: options.style,
-            center: center.value,
-            maxBounds: maxBounds.value,
+        const newMap = L.map(container.value, {
+            center: [center.value[1], center.value[0]], // Leaflet uses [lat, lng]
             zoom: zoom.value,
-            interactive: options.interactive,
+            maxBounds: maxBounds.value
+                ? [
+                      [maxBounds.value[0][1], maxBounds.value[0][0]],
+                      [maxBounds.value[1][1], maxBounds.value[1][0]],
+                  ]
+                : undefined,
+            zoomControl: false,
+            dragging: options.interactive,
+            touchZoom: options.interactive,
+            scrollWheelZoom: options.interactive,
+            doubleClickZoom: options.interactive,
+            boxZoom: options.interactive,
+            keyboard: options.interactive,
         });
+
+        // Add vector tile layer using OpenStreetMap
+        // You can replace this with other vector tile providers like Mapbox, Maptiler, etc.
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution:
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
+        }).addTo(newMap);
+
+        // Add zoom control in top-right corner
+        if (options.interactive) {
+            L.control
+                .zoom({
+                    position: 'topright',
+                })
+                .addTo(newMap);
+        }
 
         // Listeners //
 
-        newMap.on('move', async () => {
+        newMap.on('move', () => {
             isMoving.value = true;
 
-            const mapBounds = newMap.getBounds();
             const mapCenter = newMap.getCenter();
+            const mapBounds = newMap.getBounds();
 
             if (mapCenter) {
                 center.value = [mapCenter.lng, mapCenter.lat];
@@ -86,11 +105,9 @@ export function useMapBox<T>(
             }
         });
 
-        newMap.on('zoom', async () => {
+        newMap.on('zoom', () => {
             isZooming.value = true;
-
             const mapZoom = newMap.getZoom();
-
             if (mapZoom) {
                 zoom.value = mapZoom;
             }
@@ -104,11 +121,19 @@ export function useMapBox<T>(
             isZooming.value = false;
         });
 
-        newMap.once('load', () => {
+        newMap.on('dragstart', () => {
+            isDragging.value = true;
+        });
+
+        newMap.on('dragend', () => {
+            isDragging.value = false;
+        });
+
+        // Map loaded event
+        newMap.whenReady(() => {
             isLoaded.value = true;
 
             const mapBounds = newMap.getBounds();
-
             if (mapBounds) {
                 bounds.value = [
                     [mapBounds.getSouthWest().lng, mapBounds.getSouthWest().lat],
@@ -120,28 +145,69 @@ export function useMapBox<T>(
         // Geolocation configuration //
 
         if (options.geoLocationControl) {
-            const geoLocateControl = new mapboxgl.GeolocateControl({
-                positionOptions: { enableHighAccuracy: true },
+            // Add a simple geolocation button
+            const GeolocateControl = L.Control.extend({
+                options: {
+                    position: 'topright',
+                },
+
+                onAdd: function () {
+                    const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+                    const button = L.DomUtil.create('a', 'leaflet-control-geolocate', container);
+
+                    button.innerHTML = '📍';
+                    button.href = '#';
+                    button.title = 'Find my location';
+                    button.style.fontSize = '20px';
+                    button.style.lineHeight = '30px';
+                    button.style.width = '30px';
+                    button.style.height = '30px';
+                    button.style.textAlign = 'center';
+
+                    L.DomEvent.on(button, 'click', (e: Event) => {
+                        L.DomEvent.preventDefault(e);
+                        L.DomEvent.stopPropagation(e);
+
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(
+                                (position) => {
+                                    const { longitude, latitude } = position.coords;
+                                    newMap.flyTo([latitude, longitude], 17, {
+                                        duration: 1.5,
+                                    });
+                                },
+                                (error) => {
+                                    console.error('Geolocation error:', error);
+                                },
+                                {
+                                    enableHighAccuracy: true,
+                                },
+                            );
+                        }
+                    });
+
+                    return container;
+                },
             });
 
-            newMap.addControl(geoLocateControl);
+            newMap.addControl(new GeolocateControl());
 
-            geoLocateControl.on('geolocate', (position) => {
-                const { longitude, latitude } = position.coords;
-
-                newMap.flyTo({
-                    center: [longitude, latitude],
-                    zoom: 17,
-                    duration: 1500,
-                    essential: true,
-                });
-            });
-
-            if (options.autoGeolocation) {
-                newMap.once('load', () => {
-                    if (options.autoGeolocation) {
-                        geoLocateControl.trigger();
-                    }
+            if (options.autoGeolocation && navigator.geolocation) {
+                newMap.whenReady(() => {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const { longitude, latitude } = position.coords;
+                            newMap.flyTo([latitude, longitude], 17, {
+                                duration: 1.5,
+                            });
+                        },
+                        (error) => {
+                            console.error('Auto-geolocation error:', error);
+                        },
+                        {
+                            enableHighAccuracy: true,
+                        },
+                    );
                 });
             }
         }
@@ -152,7 +218,7 @@ export function useMapBox<T>(
     onActivated(() => {
         if (map.value) {
             try {
-                map.value?.resize();
+                map.value?.invalidateSize();
             } catch (error) {
                 console.warn('Map resize on activation failed:', error);
             }
@@ -163,13 +229,13 @@ export function useMapBox<T>(
         map.value?.remove();
     });
 
-    // Update the max bounds if the prop changes
     watch(maxBounds, (newBounds) => {
-        const bounds = newBounds ?? [
-            [-180, -90],
-            [180, 90],
-        ];
-        map.value?.setMaxBounds(bounds);
+        if (newBounds && map.value) {
+            map.value.setMaxBounds([
+                [newBounds[0][1], newBounds[0][0]],
+                [newBounds[1][1], newBounds[1][0]],
+            ]);
+        }
     });
 
     watch(
@@ -184,7 +250,7 @@ export function useMapBox<T>(
                 Math.abs(currentCenter.lng - newCenter[0]) > tolerance ||
                 Math.abs(currentCenter.lat - newCenter[1]) > tolerance
             ) {
-                map.value.setCenter(newCenter);
+                map.value.setView([newCenter[1], newCenter[0]], map.value.getZoom());
             }
         },
         { deep: true },
@@ -213,8 +279,16 @@ export function useMapBox<T>(
         }
 
         const { id, coord, el } = marker;
-        const mbMarker = new mapboxgl.Marker(el).setLngLat(coord).addTo(map.value);
-        markers.set(id, mbMarker);
+        const leafletMarker = L.marker([coord[1], coord[0]], {
+            icon: L.divIcon({
+                html: el,
+                className: 'custom-marker',
+                iconSize: [40, 40],
+                iconAnchor: [20, 40],
+            }),
+        }).addTo(map.value);
+
+        markers.set(id, leafletMarker);
         markerCount.value = markers.size;
     }
 
@@ -224,9 +298,12 @@ export function useMapBox<T>(
      * @param id - The identifier of the marker to remove.
      */
     function removeMarker(id: T): void {
-        markers.get(id)?.remove();
-        markers.delete(id);
-        markerCount.value = markers.size;
+        const marker = markers.get(id);
+        if (marker) {
+            marker.remove();
+            markers.delete(id);
+            markerCount.value = markers.size;
+        }
     }
 
     /**
@@ -267,15 +344,16 @@ export function useMapBox<T>(
                 return reject(error);
             }
 
-            const sw = new mapboxgl.LngLat(bounds[0][0], bounds[0][1]);
-            const ne = new mapboxgl.LngLat(bounds[1][0], bounds[1][1]);
-            const mapBounds = new mapboxgl.LngLatBounds(sw, ne);
+            const leafletBounds = L.latLngBounds(
+                [bounds[0][1], bounds[0][0]],
+                [bounds[1][1], bounds[1][0]],
+            );
 
             map.value.once('moveend', () => resolve());
 
-            map.value.fitBounds(mapBounds, {
-                padding: { top: 20, bottom: 20, left: 20, right: 20 },
-                duration: 1000,
+            map.value.flyToBounds(leafletBounds, {
+                padding: [20, 20],
+                duration: 1,
             });
         });
     }
@@ -296,11 +374,8 @@ export function useMapBox<T>(
 
             map.value.once('moveend', () => resolve());
 
-            map.value.flyTo({
-                center: lngLat,
-                zoom,
-                duration: 2000,
-                essential: true,
+            map.value.flyTo([lngLat[1], lngLat[0]], zoom, {
+                duration: 2,
             });
         });
     }

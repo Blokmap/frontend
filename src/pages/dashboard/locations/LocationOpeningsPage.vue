@@ -73,8 +73,6 @@ const openingsForm = ref<OpeningTimeRequest[]>([]);
 
 watchEffect(() => {
     if (!editingStore.location) return;
-
-    // Map openings to form format
     const mappedOpenings = (editingStore.location.openingTimes || []).map(openingToRequest);
     openingsForm.value = mappedOpenings;
 });

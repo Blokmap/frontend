@@ -70,7 +70,15 @@ export async function createOpeningTimes(
     locationId: number,
     openings: OpeningTimeRequest[],
 ): Promise<OpeningTime[]> {
-    const formatted = openings.map((opening) => formatRequest(opening, ['day', 'endTime']));
+    const formatted = openings.map((opening) => {
+        const result = formatRequest(opening, ['day']);
+
+        if (opening.repetition) {
+            result.repetition = formatRequest(opening.repetition, ['endDate']);
+        }
+
+        return result;
+    });
 
     const endpoint = endpoints.locations.openingTimes.createMany.replace(
         '{id}',

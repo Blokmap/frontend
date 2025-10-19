@@ -152,7 +152,6 @@ const routes: RouteRecordRaw[] = [
                                 component: LocationInfoPage,
                                 props: true,
                                 meta: {
-                                    auth: { admin: true },
                                     title: 'Locatie Informatie',
                                     breadcrumbs: [
                                         { label: 'Dashboard', to: { name: 'dashboard' } },
@@ -173,7 +172,6 @@ const routes: RouteRecordRaw[] = [
                                 component: LocationReservationsPage,
                                 props: true,
                                 meta: {
-                                    auth: { admin: true },
                                     title: 'Locatie Reservaties',
                                     breadcrumbs: [
                                         { label: 'Dashboard', to: { name: 'dashboard' } },
@@ -194,7 +192,6 @@ const routes: RouteRecordRaw[] = [
                                 component: LocationOpeningsPage,
                                 props: true,
                                 meta: {
-                                    auth: { admin: true },
                                     title: 'Locatie Openingstijden',
                                     breadcrumbs: [
                                         { label: 'Dashboard', to: { name: 'dashboard' } },
@@ -215,7 +212,6 @@ const routes: RouteRecordRaw[] = [
                                 component: LocationImagesPage,
                                 props: true,
                                 meta: {
-                                    auth: { admin: true },
                                     title: 'Locatie Afbeeldingen',
                                     breadcrumbs: [
                                         { label: 'Dashboard', to: { name: 'dashboard' } },
@@ -236,7 +232,6 @@ const routes: RouteRecordRaw[] = [
                                 component: LocationSettingsPage,
                                 props: true,
                                 meta: {
-                                    auth: { admin: true },
                                     title: 'Locatie Instellingen',
                                     breadcrumbs: [
                                         { label: 'Dashboard', to: { name: 'dashboard' } },

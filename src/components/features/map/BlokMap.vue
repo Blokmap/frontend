@@ -7,7 +7,7 @@ import { storeToRefs } from 'pinia';
 import { useTemplateRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import { useMapBox } from '@/composables/useMapBox';
+import { useLeaflet } from '@/composables/useLeaflet';
 import Marker from './Marker.vue';
 import type { Location } from '@/domain/location';
 import type { LngLatBounds } from '@/domain/map';
@@ -28,22 +28,20 @@ const emit = defineEmits<{
 
 const mapContainerRef = useTemplateRef('mapContainer');
 const filters = storeToRefs(useLocationFilters());
-const map = useMapBox(mapContainerRef, filters.config.value);
+const map = useLeaflet(mapContainerRef, filters.config.value);
 const router = useRouter();
 
-function handleMarkerClick(id: number): void {
+function onMarkerClick(id: number): void {
     emit('click:marker', id);
 }
 
-function handleMarkerMouseEnter(location: Location) {
+function onMarkerMouseEnter(location: Location) {
     hoveredLocation.value = location;
 }
 
-function handleMarkerMouseLeave() {
-    // Don't hide popover on marker hover out - let it stay visible
-}
+function onMarkerMouseLeave() {}
 
-function handleLocationDetailClick(locationId: number): void {
+function onLocationDetailClick(locationId: number): void {
     router.push({ name: 'locations.detail', params: { locationId } });
 }
 
@@ -74,9 +72,9 @@ defineExpose({ map });
                 :position="[location.longitude, location.latitude]"
                 :map="map"
                 :active="location.id === hoveredLocation?.id"
-                @click="handleMarkerClick(location.id)"
-                @mouseenter="handleMarkerMouseEnter(location)"
-                @mouseleave="handleMarkerMouseLeave">
+                @click="onMarkerClick(location.id)"
+                @mouseenter="onMarkerMouseEnter(location)"
+                @mouseleave="onMarkerMouseLeave">
                 <template #popover>
                     <div class="w-full space-y-2 p-1">
                         <p class="text-lg font-semibold">
@@ -92,10 +90,7 @@ defineExpose({ map });
                         </OpeningsTable>
 
                         <div class="flex justify-end">
-                            <Button
-                                @click="handleLocationDetailClick(location.id)"
-                                size="small"
-                                text>
+                            <Button @click="onLocationDetailClick(location.id)" size="small" text>
                                 Meer Informatie
                                 <FontAwesomeIcon :icon="faArrowRight" class="ml-2" />
                             </Button>

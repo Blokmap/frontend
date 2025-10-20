@@ -47,6 +47,10 @@ export function useMapBox<T>(
         [180, 90],
     ]);
 
+    // Ignore functions to prevent watcher callbacks during map events
+    let ignoreNextCenterUpdate = false;
+    let ignoreNextZoomUpdate = false;
+
     onMounted(() => {
         if (container.value === null) {
             console.error('Map container is not defined, cannot initialize map');
@@ -68,37 +72,33 @@ export function useMapBox<T>(
 
         // Listeners //
 
-        const syncMapState = () => {
-            // Update center
-            const mapCenter = newMap.getCenter();
-            center.value = [mapCenter.lng, mapCenter.lat];
-
-            // Update zoom
-            zoom.value = newMap.getZoom();
-
-            // Update bounds
-            const mapBounds = newMap.getBounds();
-            if (mapBounds) {
-                const sw = mapBounds.getSouthWest();
-                const ne = mapBounds.getNorthEast();
-                bounds.value = [
-                    [sw.lng, sw.lat],
-                    [ne.lng, ne.lat],
-                ];
-            }
-        };
-
         newMap.on('move', () => {
             isMoving.value = true;
-            syncMapState();
-        });
 
-        newMap.on('zoom', () => {
-            isZooming.value = true;
+            const mapZoom = newMap.getZoom();
+            const mapCenter = newMap.getCenter();
+            const mapBounds = newMap.getBounds();
+
+            if (mapCenter && mapBounds && mapZoom) {
+                ignoreNextZoomUpdate = true;
+                zoom.value = mapZoom;
+
+                ignoreNextCenterUpdate = true;
+                center.value = [mapCenter.lng, mapCenter.lat];
+
+                bounds.value = [
+                    [mapBounds.getSouthWest().lng, mapBounds.getSouthWest().lat],
+                    [mapBounds.getNorthEast().lng, mapBounds.getNorthEast().lat],
+                ];
+            }
         });
 
         newMap.on('moveend', () => {
             isMoving.value = false;
+        });
+
+        newMap.on('zoom', () => {
+            isZooming.value = true;
         });
 
         newMap.on('zoomend', () => {
@@ -107,7 +107,15 @@ export function useMapBox<T>(
 
         newMap.once('load', () => {
             isLoaded.value = true;
-            syncMapState();
+
+            const mapBounds = newMap.getBounds();
+
+            if (mapBounds) {
+                bounds.value = [
+                    [mapBounds.getSouthWest().lng, mapBounds.getSouthWest().lat],
+                    [mapBounds.getNorthEast().lng, mapBounds.getNorthEast().lat],
+                ];
+            }
         });
 
         // Geolocation configuration //
@@ -156,34 +164,41 @@ export function useMapBox<T>(
         map.value?.remove();
     });
 
-    // Update the max bounds if the prop changes
+    // Watchers to sync external ref changes to map
     watch(maxBounds, (newBounds) => {
-        const bounds = newBounds ?? [
-            [-180, -90],
-            [180, 90],
-        ];
-        map.value?.setMaxBounds(bounds);
+        map.value?.setMaxBounds(
+            newBounds ?? [
+                [-180, -90],
+                [180, 90],
+            ],
+        );
     });
 
-    // Sync external changes to the map
-    // Skip if map is currently moving/zooming to prevent circular updates
-    watch(
-        center,
-        (newCenter) => {
-            if (!map.value || !isLoaded.value || isMoving.value) return;
-            map.value.setCenter(newCenter);
-        },
-        { flush: 'sync' },
-    );
+    watch(center, (newCenter) => {
+        if (ignoreNextCenterUpdate) {
+            ignoreNextCenterUpdate = false;
+            return;
+        }
 
-    watch(
-        zoom,
-        (newZoom) => {
-            if (!map.value || !isLoaded.value || isZooming.value) return;
-            map.value.setZoom(newZoom);
-        },
-        { flush: 'sync' },
-    );
+        if (!map.value || !isLoaded.value) {
+            return;
+        }
+
+        map.value.setCenter(newCenter);
+    });
+
+    watch(zoom, (newZoom) => {
+        if (ignoreNextZoomUpdate) {
+            ignoreNextZoomUpdate = false;
+            return;
+        }
+
+        if (!map.value || !isLoaded.value) {
+            return;
+        }
+
+        map.value.setZoom(newZoom);
+    });
 
     /**
      * Adds a marker to the map.
@@ -297,7 +312,7 @@ export function useMapBox<T>(
         flyTo,
         center,
         zoom,
-        bounds,
+        bounds: bounds,
         isLoaded: readonly(isLoaded),
         isDragging: readonly(isDragging),
         isZooming: readonly(isZooming),

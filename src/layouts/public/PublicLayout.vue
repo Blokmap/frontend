@@ -6,10 +6,11 @@ import { onMounted, onUnmounted, ref } from 'vue';
 
 const showSpotlight = ref(false);
 
-function handleOpenSpotlight() {
-    showSpotlight.value = true;
-}
-
+/**
+ * Handle keyboard shortcuts to open/close the spotlight search.
+ *
+ * @param event - The keyboard event.
+ */
 function handleKeyboardShortcuts(event: KeyboardEvent) {
     const isMetaKey = event.metaKey || event.ctrlKey;
     const isTriggerKey = event.code === 'Space' || event.code === 'KeyK';
@@ -34,7 +35,7 @@ onUnmounted(() => {
         <Teleport to="body"> <LocationSearch v-model:visible="showSpotlight" /> </Teleport>
         <header class="header">
             <div class="content">
-                <PublicHeader @click:search="handleOpenSpotlight" />
+                <PublicHeader @click:search="showSpotlight = true" />
             </div>
         </header>
 

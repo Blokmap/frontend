@@ -31,8 +31,11 @@ app.mount('#app');
 
 // Cache busting
 // A bit of a hack but works
+let reloaded = false;
+
 window.addEventListener('error', (event) => {
-    if (event.message.includes('dynamically imported module')) {
+    if (event.message.includes('dynamically imported module') && !reloaded) {
         window.location.reload();
+        reloaded = true;
     }
 });

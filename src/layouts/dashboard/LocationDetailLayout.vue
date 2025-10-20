@@ -207,7 +207,7 @@ function navigateToTab(tab: string): void {
     <Teleport to="body">
         <Transition name="slide-up">
             <div v-if="editingStore.hasChanges" class="save-bar">
-                <div class="save-bar__content">
+                <div class="flex items-center justify-between">
                     <p class="flex items-center font-medium">
                         <FontAwesomeIcon :icon="faWarning" class="mr-2" />
                         Je hebt niet-opgeslagen wijzigingen.
@@ -241,9 +241,5 @@ function navigateToTab(tab: string): void {
 .save-bar {
     @apply fixed bottom-8 left-1/2 z-50 w-[650px] max-w-full -translate-x-1/2 px-6 py-4;
     @apply rounded-full border border-slate-800 bg-slate-900 text-slate-100;
-
-    .save-bar__content {
-        @apply flex items-center justify-between;
-    }
 }
 </style>

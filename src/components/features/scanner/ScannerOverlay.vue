@@ -155,6 +155,26 @@ onUnmounted(() => {
     &.loading {
         @apply bg-black;
     }
+
+    /* Blurred dark overlay everywhere */
+    &:not(.loading)::before {
+        @apply content-[''];
+        @apply absolute inset-0 bg-black/50 backdrop-blur-md;
+
+        /* Cut out a square hole for the scanning region (512px = h-128) */
+        clip-path: polygon(
+            0 0,
+            100% 0,
+            100% 100%,
+            0 100%,
+            0 0,
+            calc(50% - 256px) calc(50% - 256px),
+            calc(50% - 256px) calc(50% + 256px),
+            calc(50% + 256px) calc(50% + 256px),
+            calc(50% + 256px) calc(50% - 256px),
+            calc(50% - 256px) calc(50% - 256px)
+        );
+    }
 }
 
 .scanning-region {
@@ -162,12 +182,6 @@ onUnmounted(() => {
 
     &:has(.loading-message) {
         @apply bg-white;
-    }
-
-    &:not(:has(.loading-message))::before {
-        content: '';
-        @apply absolute inset-0 backdrop-blur-xs;
-        box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.75);
     }
 }
 

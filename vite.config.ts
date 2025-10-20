@@ -6,6 +6,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     plugins: [vue(), tailwindcss()],
+    publicDir: 'static',
     optimizeDeps: {
         exclude: ['@primeuix'],
     },
@@ -14,7 +15,6 @@ export default defineConfig({
             '@': path.resolve(__dirname, './src'),
         },
     },
-    publicDir: 'static',
     build: {
         outDir: 'public',
         rollupOptions: {

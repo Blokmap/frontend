@@ -28,3 +28,11 @@ app.directive('focustrap', FocusTrap);
 
 // Mount the app.
 app.mount('#app');
+
+// Cache busting
+// A bit of a hack but works
+window.addEventListener('error', (event) => {
+    if (event.message.includes('dynamically imported module')) {
+        window.location.reload();
+    }
+});

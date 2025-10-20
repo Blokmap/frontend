@@ -11,6 +11,7 @@ import {
     faCheckCircle,
     faClock,
     faHourglassHalf,
+    faQuestionCircle,
     faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -145,8 +146,12 @@ const getSelectedStatusOption = (reservation: Reservation) => {
                     Bevestigd
                 </Badge>
                 <Badge severity="info" v-if="data.state === ReservationState.Created">
+                    <FontAwesomeIcon class="mr-2" :icon="faQuestionCircle" />
+                    Te bevestigen
+                </Badge>
+                <Badge severity="contrast" v-if="data.state === ReservationState.Pending">
                     <FontAwesomeIcon class="mr-2" :icon="faClock" />
-                    In afwachting
+                    In behandeling
                 </Badge>
             </TableCell>
             <TableCell>

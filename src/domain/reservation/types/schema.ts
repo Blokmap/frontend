@@ -4,10 +4,11 @@ import type { Profile } from '@/domain/profile';
 import type { Time } from '@/utils/time';
 
 export enum ReservationState {
-    Created = 'Created',
-    Absent = 'Absent',
-    Present = 'Present',
-    Cancelled = 'Cancelled',
+    Created = 'created',
+    Absent = 'absent',
+    Present = 'present',
+    Cancelled = 'cancelled',
+    Pending = 'pending',
 }
 
 export type Reservation = {

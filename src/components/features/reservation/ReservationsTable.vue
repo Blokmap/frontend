@@ -1,16 +1,24 @@
 <script lang="ts" setup>
-import Button from 'primevue/button';
+import Badge from 'primevue/badge';
+import Select, { type SelectChangeEvent } from 'primevue/select';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import ActionMenu from '@/components/shared/atoms/ActionMenu.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import TableHead from '@/components/shared/molecules/table/TableHead.vue';
-import { faCheck, faCheckDouble } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCheck,
+    faCheckCircle,
+    faClock,
+    faHourglassHalf,
+    faTimesCircle,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import { ReservationState, type Reservation, type ReservationGroup } from '@/domain/reservation';
 import { timeToString } from '@/utils/time';
-import type { Profile } from '@/domain/profile';
-import type { Reservation } from '@/domain/reservation';
 
 const props = defineProps<{
     reservations?: Reservation[];
@@ -19,14 +27,18 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    'confirm:reservation': [reservationId: number];
-    'confirm:profile': [profileId: number];
+    'change:status': [reservationId: number, status: ReservationState];
 }>();
 
-interface ReservationGroup {
-    profile: Profile;
-    reservations: Reservation[];
-}
+const { locale } = useI18n();
+
+const statusOptions = computed(() => {
+    return [
+        { label: 'Aangemaakt', value: ReservationState.Created, icon: faHourglassHalf },
+        { label: 'Aanwezig', value: ReservationState.Present, icon: faCheckCircle },
+        { label: 'Afwezig', value: ReservationState.Absent, icon: faTimesCircle },
+    ];
+});
 
 // Group reservations by profile
 const groupedReservations = computed(() => {
@@ -35,15 +47,19 @@ const groupedReservations = computed(() => {
     const grouped = new Map<number, ReservationGroup>();
 
     for (const reservation of props.reservations) {
-        if (!reservation.createdBy) continue;
+        const profileId = reservation.createdBy?.id;
 
-        const profileId = reservation.createdBy.id;
+        if (!profileId || !reservation.createdBy) {
+            continue;
+        }
+
         if (!grouped.has(profileId)) {
             grouped.set(profileId, {
                 profile: reservation.createdBy,
                 reservations: [],
             });
         }
+
         grouped.get(profileId)!.reservations.push(reservation);
     }
 
@@ -53,16 +69,21 @@ const groupedReservations = computed(() => {
     }));
 });
 
-const onConfirmReservation = (reservationId: number) => {
-    emit('confirm:reservation', reservationId);
+const onStatusChange = (
+    reservationId: number,
+    event: SelectChangeEvent,
+    hideMenu: () => void,
+): void => {
+    const state = event.value as ReservationState;
+
+    if (state) {
+        hideMenu();
+        emit('change:status', reservationId, state);
+    }
 };
 
-const onConfirmProfile = (profileId: number) => {
-    emit('confirm:profile', profileId);
-};
-
-const hasUnconfirmedReservations = (reservations: Reservation[]) => {
-    return reservations.some((r) => !r.confirmedAt);
+const getSelectedStatusOption = (reservation: Reservation) => {
+    return statusOptions.value.find((opt) => opt.value === reservation.state) || null;
 };
 </script>
 
@@ -77,7 +98,7 @@ const hasUnconfirmedReservations = (reservations: Reservation[]) => {
         <template #header>
             <tr>
                 <TableHead>Tijd</TableHead>
-                <TableHead>Blok</TableHead>
+                <TableHead>Aanmaakdatum</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Acties</TableHead>
             </tr>
@@ -94,60 +115,74 @@ const hasUnconfirmedReservations = (reservations: Reservation[]) => {
                             {{ data.profile.firstName }} {{ data.profile.lastName }}
                         </div>
                         <div class="text-xs text-slate-500">
-                            {{ items.length }} reservering{{ items.length !== 1 ? 'en' : '' }}
+                            {{ items.length }} reservatie{{ items.length !== 1 ? 's' : '' }}
                         </div>
                     </div>
                 </div>
-
-                <!-- Bulk Action -->
-                <Button
-                    v-if="hasUnconfirmedReservations(items)"
-                    size="small"
-                    @click.stop="onConfirmProfile(data.profile.id)"
-                    :disabled="props.loading">
-                    <FontAwesomeIcon :icon="faCheckDouble" class="mr-2" />
-                    Alles bevestigen
-                </Button>
             </div>
         </template>
 
         <template #row="{ data }">
             <TableCell>
-                {{ timeToString(data.startTime) }} - {{ timeToString(data.endTime) }}
+                <FontAwesomeIcon :icon="faClock" class="mr-1" />
+                {{ timeToString(data.startTime) }} -
+                {{ timeToString(data.endTime) }}
             </TableCell>
-            <TableCell> Blok {{ data.blockIndex + 1 }} </TableCell>
             <TableCell>
-                <span
-                    v-if="data.confirmedAt"
-                    class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                    <FontAwesomeIcon :icon="faCheck" class="mr-1" />
+                {{
+                    data.createdAt.toLocaleDateString(locale, {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    })
+                }}
+            </TableCell>
+            <TableCell>
+                <Badge severity="success" v-if="data.state === ReservationState.Present">
+                    <FontAwesomeIcon class="mr-2" :icon="faCheck" />
                     Bevestigd
-                </span>
-                <span
-                    v-else
-                    class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                </Badge>
+                <Badge severity="info" v-if="data.state === ReservationState.Created">
+                    <FontAwesomeIcon class="mr-2" :icon="faClock" />
                     In afwachting
-                </span>
+                </Badge>
             </TableCell>
             <TableCell>
                 <div class="flex justify-center">
-                    <ActionMenu :is-pending="props.isReservationPending?.(data.id)">
+                    <ActionMenu :is-pending="isReservationPending?.(data.id)">
                         <template #content="{ hideMenu }">
-                            <Button
-                                v-if="!data.confirmedAt"
-                                text
-                                severity="secondary"
-                                class="w-full justify-start"
-                                @click="
-                                    () => {
-                                        onConfirmReservation(data.id);
-                                        hideMenu();
-                                    }
-                                ">
-                                <FontAwesomeIcon :icon="faCheck" class="mr-2" />
-                                Bevestigen
-                            </Button>
-                            <div v-else class="px-2 py-1 text-xs text-slate-500">Al bevestigd</div>
+                            <div>
+                                <label class="mb-1 block text-sm font-medium text-gray-700">
+                                    Status wijzigen
+                                </label>
+                                <Select
+                                    :model-value="data.state"
+                                    :options="statusOptions"
+                                    :loading="isReservationPending?.(data.id)"
+                                    option-label="label"
+                                    option-value="value"
+                                    placeholder="Selecteer nieuwe status"
+                                    class="w-full min-w-[200px]"
+                                    @change="(event) => onStatusChange(data.id, event, hideMenu)">
+                                    <template #option="{ option }">
+                                        <div class="flex items-center gap-2 text-sm">
+                                            <FontAwesomeIcon :icon="option.icon" />
+                                            <span>{{ option.label }}</span>
+                                        </div>
+                                    </template>
+                                    <template #value="{ value }">
+                                        <div
+                                            v-if="value && getSelectedStatusOption(data)"
+                                            class="flex items-center gap-2 text-sm">
+                                            <FontAwesomeIcon
+                                                :icon="getSelectedStatusOption(data)!.icon" />
+                                            <span>{{ getSelectedStatusOption(data)!.label }}</span>
+                                        </div>
+                                    </template>
+                                </Select>
+                            </div>
                         </template>
                     </ActionMenu>
                 </div>

@@ -35,8 +35,17 @@ const hideMenu = () => {
         <Popover ref="menu">
             <div class="p-1">
                 <p class="mb-3 text-sm font-medium text-slate-500">Acties</p>
-                <div class="space-y-2">
-                    <slot name="content" :hide-menu="hideMenu"></slot>
+                <div class="space-y-4">
+                    <!-- Main content slot -->
+                    <slot name="content" :hide-menu="hideMenu">
+                        <!-- Default content slot -->
+                        <slot :hide-menu="hideMenu"></slot>
+                    </slot>
+
+                    <!-- Navigation section (always rendered independently) -->
+                    <div v-if="$slots.navigation" class="space-y-1 border-t border-slate-200 pt-2">
+                        <slot name="navigation" :hide-menu="hideMenu"></slot>
+                    </div>
                 </div>
             </div>
         </Popover>

@@ -6,11 +6,12 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import {
-    useConfirmReservation,
     useReadLocationReservations,
+    useReservationState,
 } from '@/composables/data/useReservations';
 import { useToast } from '@/composables/store/useToast';
-import type { Reservation } from '@/domain/reservation';
+import { useRouteDate } from '@/composables/useRouteDate';
+import type { Reservation, ReservationState } from '@/domain/reservation';
 
 const props = defineProps<{
     locationId: string;
@@ -18,30 +19,32 @@ const props = defineProps<{
 
 const toast = useToast();
 
-const selectedDate = ref<Date>(new Date());
 const searchQuery = ref<string>('');
-const pendingConfirmations = ref<Set<number>>(new Set());
+const pendingStatusChanges = ref<Set<number>>(new Set());
+const selectedDay = useRouteDate({ paramName: 'day' });
 
 // Fetch reservations for the selected date
 const { data: reservations, isLoading } = useReadLocationReservations(
     computed(() => +props.locationId),
-    computed(() => ({ selectedDate: selectedDate.value })),
+    computed(() => ({ day: selectedDay.value })),
 );
 
-// Mutation for confirming a single reservation
-const { mutateAsync: confirmReservation } = useConfirmReservation({
+// Mutation for changing reservation state
+const { mutateAsync: changeReservationState } = useReservationState({
     onSuccess: () => {
         toast.add({
             severity: 'success',
-            summary: 'Reservering bevestigd',
-            detail: 'De reservering is succesvol bevestigd.',
+            summary: 'Status gewijzigd',
+            detail: 'De reserveringsstatus is succesvol gewijzigd.',
         });
     },
-    onError: () => {
+    onError: (error: any) => {
+        const message = error.message || 'Er is iets misgegaan bij het wijzigen van de status.';
+
         toast.add({
             severity: 'error',
-            summary: 'Fout bij bevestigen',
-            detail: 'Er is iets misgegaan bij het bevestigen van de reservering.',
+            summary: 'Fout bij wijzigen van reservatiestatus',
+            detail: message,
         });
     },
 });
@@ -52,6 +55,7 @@ const filteredReservations = computed(() => {
     if (!searchQuery.value.trim()) return reservations.value;
 
     const query = searchQuery.value.toLowerCase();
+
     return reservations.value.filter((reservation: Reservation) => {
         const profile = reservation.createdBy;
         if (!profile) return false;
@@ -66,64 +70,23 @@ const filteredReservations = computed(() => {
 
 // Check if a reservation is pending confirmation
 const isReservationPending = (reservationId: number) => {
-    return pendingConfirmations.value.has(reservationId);
+    return pendingStatusChanges.value.has(reservationId);
 };
 
-// Handle confirming a single reservation
-const handleConfirmReservation = async (reservationId: number) => {
-    pendingConfirmations.value.add(reservationId);
+// Handle changing reservation status
+async function onStatusChange(reservationId: number, state: ReservationState) {
+    pendingStatusChanges.value.add(reservationId);
+
     try {
-        await confirmReservation({
+        await changeReservationState({
             locationId: +props.locationId,
             reservationId,
+            state,
         });
     } finally {
-        pendingConfirmations.value.delete(reservationId);
+        pendingStatusChanges.value.delete(reservationId);
     }
-};
-
-// Handle confirming all reservations for a profile
-const handleConfirmProfile = async (profileId: number) => {
-    if (!reservations.value) return;
-
-    const profileReservations = reservations.value.filter(
-        (r: Reservation) => r.createdBy?.id === profileId && !r.confirmedAt,
-    );
-
-    // Mark all as pending
-    for (const reservation of profileReservations) {
-        pendingConfirmations.value.add(reservation.id);
-    }
-
-    try {
-        // Confirm all reservations in parallel
-        await Promise.all(
-            profileReservations.map((reservation: Reservation) =>
-                confirmReservation({
-                    locationId: +props.locationId,
-                    reservationId: reservation.id,
-                }),
-            ),
-        );
-
-        toast.add({
-            severity: 'success',
-            summary: 'Reserveringen bevestigd',
-            detail: `Alle reserveringen voor deze gebruiker zijn bevestigd.`,
-        });
-    } catch {
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij bevestigen',
-            detail: 'Er is iets misgegaan bij het bevestigen van de reserveringen.',
-        });
-    } finally {
-        // Remove all from pending
-        for (const reservation of profileReservations) {
-            pendingConfirmations.value.delete(reservation.id);
-        }
-    }
-};
+}
 </script>
 
 <template>
@@ -133,7 +96,7 @@ const handleConfirmProfile = async (profileId: number) => {
             <!-- Date Selector -->
             <div class="min-w-[200px] flex-1">
                 <label class="mb-2 block text-sm font-medium text-slate-700">Datum</label>
-                <DateInput v-model:date="selectedDate" />
+                <DateInput v-model:date="selectedDay" />
             </div>
 
             <!-- Search -->
@@ -156,7 +119,7 @@ const handleConfirmProfile = async (profileId: number) => {
             :reservations="filteredReservations"
             :loading="isLoading"
             :is-reservation-pending="isReservationPending"
-            @confirm:reservation="handleConfirmReservation"
-            @confirm:profile="handleConfirmProfile" />
+            @change:status="onStatusChange">
+        </ReservationsTable>
     </div>
 </template>

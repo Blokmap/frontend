@@ -13,7 +13,6 @@ export enum ReservationState {
 export type Reservation = {
     id: number;
     state: ReservationState;
-    blockIndex: number;
     startTime: Time;
     endTime: Time;
     day: Date;
@@ -24,4 +23,9 @@ export type Reservation = {
     confirmedBy?: Profile | null;
     createdAt: Date;
     updatedAt: Date;
+};
+
+export type ReservationGroup = {
+    profile: Profile;
+    reservations: Reservation[];
 };

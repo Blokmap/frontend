@@ -5,6 +5,7 @@ import TabList from 'primevue/tablist';
 import Tabs from 'primevue/tabs';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
 import {
     faCalendar,
     faCog,
@@ -25,9 +26,11 @@ import {
 } from '@/composables/data/useLocations';
 import { useLocationEditing } from '@/composables/store/useLocationEditing';
 import { useToast } from '@/composables/store/useToast';
+import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
     locationId: string;
+    profile: Profile;
 }>();
 
 const toast = useToast();
@@ -36,13 +39,14 @@ const route = useRoute();
 
 const editingStore = useLocationEditing();
 
-// Determine active tab from route name
 const activeTab = computed<string>(() => {
     const routeName = route.name?.toString() || '';
+
     if (routeName.includes('reservations')) return 'reservations';
     if (routeName.includes('openings')) return 'openings';
     if (routeName.includes('images')) return 'images';
     if (routeName.includes('settings')) return 'settings';
+
     return 'info';
 });
 
@@ -162,13 +166,21 @@ function navigateToTab(tab: string): void {
     <!-- Content -->
     <div v-else class="relative space-y-6">
         <!-- Header -->
-        <div>
-            <h1 class="text-3xl font-semibold">
-                {{ location.name }}
-            </h1>
-            <p v-if="location.excerpt?.nl" class="mt-2 text-gray-600">
-                {{ location.excerpt.nl }}
-            </p>
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-semibold">
+                    {{ location.name }}
+                </h1>
+                <p v-if="location.excerpt?.nl" class="mt-2 text-gray-600">
+                    {{ location.excerpt.nl }}
+                </p>
+            </div>
+            <RouterLink :to="{ name: 'locations.detail', params: { locationId } }">
+                <Button severity="secondary">
+                    <FontAwesomeIcon :icon="faEye" />
+                    <span>Bekijken</span>
+                </Button>
+            </RouterLink>
         </div>
 
         <!-- Tabs -->

@@ -58,7 +58,7 @@ export async function readLocationReservations(
     const endpoint = endpoints.locations.reservations.list.replace('{id}', locationId.toString());
 
     const params: Record<string, any> = {
-        ...formatFilters(filters, ['inWeekOf']),
+        ...formatFilters(filters, ['inWeekOf', 'day']),
         ...formatIncludes(includes),
     };
 

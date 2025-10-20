@@ -2,9 +2,8 @@
 import OpeningTimeDialog from '@/components/features/location/builder/OpeningTimeDialog.vue';
 import OpeningTimesCalendar from '@/components/features/location/builder/OpeningTimesCalendar.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
-import { formatDate } from '@vueuse/core';
-import { computed, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { ref } from 'vue';
+import { useRouteDate } from '@/composables/useRouteDate';
 import { DEFAULT_OPENING_TIME_REQUEST, type OpeningTimeRequest } from '@/domain/openings';
 import type { TimeCell, TimeSlot } from '@/domain/calendar';
 
@@ -18,47 +17,17 @@ const emit = defineEmits<{
     delete: [id: number, sequence?: boolean];
 }>();
 
-const router = useRouter();
-const route = useRoute();
-
-const inWeekOf = computed(() => {
-    const dateParam = route.query.inWeekOf?.toString();
-
-    if (dateParam) {
-        const date = new Date(dateParam);
-
-        if (!isNaN(date.getTime())) {
-            return date;
-        }
-    }
-
-    return new Date();
-});
+const inWeekOf = useRouteDate({ paramName: 'inWeekOf', updateMethod: 'push' });
 
 const showDialog = ref(false);
 const editingOpeningTime = ref<OpeningTimeRequest | null>(null);
 const isEditing = ref(false);
 
 /**
- * Updates the date in the URL query parameter
- */
-function onDateInWeekUpdate(newDate: Date): void {
-    const dateString = formatDate(newDate, 'YYYY-MM-DD');
-    router.push({
-        name: route.name || undefined,
-        params: route.params,
-        query: {
-            ...route.query,
-            inWeekOf: dateString,
-        },
-    });
-}
-
-/**
  * Handles date selection from calendar controls
  */
 function onDateSelect(date: Date): void {
-    onDateInWeekUpdate(date);
+    inWeekOf.value = date;
 }
 
 /**

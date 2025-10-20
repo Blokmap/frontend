@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import Select, { type SelectChangeEvent } from 'primevue/select';
 import ActionMenu from '@/components/shared/atoms/ActionMenu.vue';
+import NavigationLink from '@/components/shared/atoms/NavigationLink.vue';
 import {
     faUser,
     faUserSlash,
@@ -9,6 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
+
 import type { Profile, ProfileState } from '@/domain/profile';
 
 const props = defineProps<{
@@ -63,56 +65,47 @@ const onStatusChange = async (event: SelectChangeEvent, hideMenu: () => void) =>
         </template>
 
         <template #content="{ hideMenu }">
-            <div class="space-y-4">
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-700">
-                        Status wijzigen
-                    </label>
-                    <Select
-                        :model-value="props.profile.state"
-                        :options="statusOptions"
-                        :loading="isPending"
-                        option-label="label"
-                        option-value="value"
-                        placeholder="Selecteer nieuwe status"
-                        class="w-full min-w-[200px]"
-                        @change="(event) => onStatusChange(event, hideMenu)">
-                        <template #option="{ option }">
-                            <div class="flex items-center gap-2">
-                                <FontAwesomeIcon :icon="option.icon" />
-                                <span>{{ option.label }}</span>
-                            </div>
-                        </template>
-                        <template #value="{ value }">
-                            <div v-if="value && selectedOption" class="flex items-center gap-2">
-                                <FontAwesomeIcon :icon="selectedOption.icon" />
-                                <span>{{ selectedOption.label }}</span>
-                            </div>
-                        </template>
-                    </Select>
-                </div>
-
-                <div class="space-y-1 border-t border-slate-200 pt-2">
-                    <RouterLink
-                        v-for="action in navigationActions"
-                        :key="action.label"
-                        :to="action.to"
-                        class="navigation-link"
-                        @click="hideMenu">
-                        <FontAwesomeIcon :icon="action.icon" class="text-slate-700" />
-                        <span>{{ action.label }}</span>
-                    </RouterLink>
-                </div>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-gray-700">
+                    Status wijzigen
+                </label>
+                <Select
+                    :model-value="props.profile.state"
+                    :options="statusOptions"
+                    :loading="isPending"
+                    option-label="label"
+                    option-value="value"
+                    placeholder="Selecteer nieuwe status"
+                    class="w-full min-w-[200px]"
+                    @change="(event) => onStatusChange(event, hideMenu)">
+                    <template #option="{ option }">
+                        <div class="flex items-center gap-2">
+                            <FontAwesomeIcon :icon="option.icon" />
+                            <span>{{ option.label }}</span>
+                        </div>
+                    </template>
+                    <template #value="{ value }">
+                        <div v-if="value && selectedOption" class="flex items-center gap-2">
+                            <FontAwesomeIcon :icon="selectedOption.icon" />
+                            <span>{{ selectedOption.label }}</span>
+                        </div>
+                    </template>
+                </Select>
             </div>
+        </template>
+
+        <template #navigation="{ hideMenu }">
+            <NavigationLink
+                v-for="action in navigationActions"
+                :key="action.label"
+                :icon="action.icon"
+                :label="action.label"
+                :to="action.to"
+                @click="hideMenu" />
         </template>
     </ActionMenu>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
-
-.navigation-link {
-    @apply flex w-full items-center gap-3 px-2 py-1;
-    @apply rounded-md text-sm text-slate-700 transition-colors hover:bg-slate-100;
-}
 </style>

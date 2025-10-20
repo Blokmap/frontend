@@ -21,22 +21,18 @@
 
 .p-badge-success {
     @apply bg-primary-100 text-primary-700;
-    @apply dark:border-green-800 dark:bg-green-950 dark:text-green-300;
 }
 
 .p-badge-info {
     @apply bg-secondary-100 text-secondary-700;
-    @apply dark:bg-sky-400 dark:text-sky-950;
 }
 
 .p-badge-warn {
-    @apply bg-orange-500 text-white;
-    @apply dark:bg-orange-400 dark:text-orange-950;
+    @apply bg-orange-100 text-orange-700;
 }
 
 .p-badge-danger {
     @apply bg-red-100 text-red-700;
-    @apply dark:bg-red-400 dark:text-red-950;
 }
 
 .p-badge-contrast {

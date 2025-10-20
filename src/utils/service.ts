@@ -1,4 +1,3 @@
-import { formatDate } from '@vueuse/core';
 import { dateToString } from './date';
 import { timeToString } from './time';
 import type { Paginated } from '@/utils/pagination';
@@ -23,12 +22,12 @@ export function formatIncludes(includes: string[] | null = []): Record<string, b
  * Formats a request object by converting Date objects to strings.
  *
  * @param data - The request data object to format.
- * @param dateOnlyOverrides - Array of keys that should be formatted as date-only (YYYY-MM-DD) instead of date-time.
+ * @param dayOnlyOverrides - Array of keys that should be formatted as date-only (YYYY-MM-DD) instead of date-time.
  * @returns {Record<string, any>} - The formatted request data object.
  */
 export function formatRequest<T extends Record<string, any>>(
     data: T,
-    dateOnlyOverrides: (keyof T)[] = [],
+    dayOnlyOverrides: (keyof T)[] = [],
 ): Record<string, any> {
     const result: Record<string, any> = { ...data };
 
@@ -41,11 +40,7 @@ export function formatRequest<T extends Record<string, any>>(
         }
 
         if (value instanceof Date) {
-            if (dateOnlyOverrides.includes(key)) {
-                result[key] = formatDate(value, 'YYYY-MM-DD');
-            } else {
-                result[key] = dateToString(value);
-            }
+            result[key] = dateToString(value, dayOnlyOverrides.includes(key));
         }
 
         if (typeof value === 'object' && 'hours' in value && 'minutes' in value) {

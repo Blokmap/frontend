@@ -1,32 +1,11 @@
 <script setup lang="ts">
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
-import { formatDate } from '@vueuse/core';
-import { computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouteDate } from '@/composables/useRouteDate';
 
-const router = useRouter();
-const route = useRoute();
+const inWeekOf = useRouteDate({ paramName: 'inWeekOf', source: 'params', updateMethod: 'push' });
 
-const inWeekOf = computed(() => {
-    const dateParam = route.params.inWeekOf?.toString();
-    const date = new Date(dateParam);
-    return isNaN(date.getTime()) ? new Date() : date;
-});
-
-function handleDateInWeekUpdate(newDate: Date): void {
-    const dateString = formatDate(newDate, 'YYYY-MM-DD');
-    router.push({
-        name: 'profile.reservations',
-        params: {
-            inWeekOf: dateString,
-        },
-    });
-}
-
-function handleDateSelect(date: any): void {
-    if (date instanceof Date) {
-        handleDateInWeekUpdate(date);
-    }
+function handleDateSelect(date: Date): void {
+    inWeekOf.value = date;
 }
 </script>
 

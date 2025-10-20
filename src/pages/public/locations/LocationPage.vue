@@ -20,14 +20,15 @@ import {
     faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import placeholder from '@/assets/img/placeholder/location-stock-2.jpg';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useReadLocation } from '@/composables/data/useLocations';
 import { useReadOpeningTimes } from '@/composables/data/useOpeningTimes';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
+import { useRouteDate } from '@/composables/useRouteDate';
 import { pushRedirectUrl } from '@/domain/auth';
 
 const { locationId, reservation } = defineProps<{ locationId: string; reservation: string }>();
@@ -35,10 +36,9 @@ const { locationId, reservation } = defineProps<{ locationId: string; reservatio
 const { locale } = useI18n();
 const { setPageTitle } = usePageTitleStore();
 
-const route = useRoute();
 const router = useRouter();
 
-const currentWeek = ref<Date>(new Date());
+const currentWeek = useRouteDate({ paramName: 'week' });
 
 const { profileId, data: profile } = useAuthProfile();
 
@@ -67,20 +67,6 @@ watch(
     (newLocation) => {
         if (newLocation) {
             setPageTitle(newLocation.name);
-        }
-    },
-    { immediate: true },
-);
-
-// Initialize currentWeek from query parameter if present
-watch(
-    () => route.query.week,
-    (weekParam) => {
-        if (weekParam && typeof weekParam === 'string') {
-            const date = new Date(weekParam);
-            if (!isNaN(date.getTime())) {
-                currentWeek.value = date;
-            }
         }
     },
     { immediate: true },
@@ -151,7 +137,7 @@ function onDialogClose(): void {
                             params: { locationId },
                         }"
                         v-if="profile?.isAdmin">
-                        <Button severity="contrast">
+                        <Button severity="secondary">
                             <span>Bewerken</span>
                             <FontAwesomeIcon :icon="faEdit" />
                         </Button>

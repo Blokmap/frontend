@@ -173,6 +173,7 @@ watch(currentWeek, (newWeek) => {
 
             <!-- Calendar -->
             <div v-else class="rounded-lg border border-gray-200">
+                {{ allTimeSlots }}
                 <Calendar
                     class="h-full"
                     :current-week="currentWeek"

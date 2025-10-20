@@ -1,12 +1,14 @@
 <script lang="ts" setup>
 import Select, { type SelectChangeEvent } from 'primevue/select';
 import ActionMenu from '@/components/shared/atoms/ActionMenu.vue';
+import NavigationLink from '@/components/shared/atoms/NavigationLink.vue';
 import ConfirmDialog from '@/components/shared/molecules/ConfirmDialog.vue';
 import { faClock, faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import { faCheck, faTimes, faEdit, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
 import LocationConfirmationDialog from './LocationConfirmationDialog.vue';
+
 import type { Location, LocationState } from '@/domain/location';
 
 const props = withDefaults(
@@ -125,61 +127,55 @@ watch(
         </template>
 
         <template #content="{ hideMenu }">
-            <div class="space-y-4">
-                <!-- Status Change Section -->
-                <div v-if="showStatusChange">
-                    <label class="mb-1 block text-sm font-medium text-gray-700">
-                        Status wijzigen
-                    </label>
-                    <Select
-                        :model-value="props.location.state"
-                        :options="statusOptions"
-                        :loading="isPending"
-                        option-label="label"
-                        option-value="value"
-                        placeholder="Selecteer nieuwe status"
-                        class="w-full min-w-[200px]"
-                        @change="(event) => onStatusChange(event, hideMenu)">
-                        <template #option="{ option }">
-                            <div class="flex items-center gap-2 text-sm">
-                                <FontAwesomeIcon :icon="option.icon" />
-                                <span>{{ option.label }}</span>
-                            </div>
-                        </template>
-                        <template #value="{ value }">
-                            <div
-                                v-if="value && selectedStatusOption"
-                                class="flex items-center gap-2 text-sm">
-                                <FontAwesomeIcon :icon="selectedStatusOption.icon" />
-                                <span>{{ selectedStatusOption.label }}</span>
-                            </div>
-                        </template>
-                    </Select>
-                </div>
-
-                <!-- Navigation Actions -->
-                <div class="navigation" :class="{ 'border-t-0 pt-0': !showStatusChange }">
-                    <RouterLink
-                        class="navigation-link"
-                        :to="{
-                            name: 'dashboard.locations.detail.info',
-                            params: { locationId: props.location.id },
-                        }">
-                        <FontAwesomeIcon :icon="faEdit" class="text-slate-700" />
-                        <span>Beheren</span>
-                    </RouterLink>
-
-                    <button class="navigation-link">
-                        <FontAwesomeIcon :icon="faCalendarAlt" class="text-slate-700" />
-                        <span>Reservaties</span>
-                    </button>
-
-                    <button class="navigation-link destructive" @click="onDeleteClick(hideMenu)">
-                        <FontAwesomeIcon :icon="faTrashCan" />
-                        <span>Verwijderen</span>
-                    </button>
-                </div>
+            <!-- Status Change Section -->
+            <div v-if="showStatusChange">
+                <label class="mb-1 block text-sm font-medium text-gray-700">
+                    Status wijzigen
+                </label>
+                <Select
+                    :model-value="props.location.state"
+                    :options="statusOptions"
+                    :loading="isPending"
+                    option-label="label"
+                    option-value="value"
+                    placeholder="Selecteer nieuwe status"
+                    class="w-full min-w-[200px]"
+                    @change="(event) => onStatusChange(event, hideMenu)">
+                    <template #option="{ option }">
+                        <div class="flex items-center gap-2 text-sm">
+                            <FontAwesomeIcon :icon="option.icon" />
+                            <span>{{ option.label }}</span>
+                        </div>
+                    </template>
+                    <template #value="{ value }">
+                        <div
+                            v-if="value && selectedStatusOption"
+                            class="flex items-center gap-2 text-sm">
+                            <FontAwesomeIcon :icon="selectedStatusOption.icon" />
+                            <span>{{ selectedStatusOption.label }}</span>
+                        </div>
+                    </template>
+                </Select>
             </div>
+        </template>
+
+        <template #navigation="{ hideMenu }">
+            <NavigationLink
+                :icon="faEdit"
+                label="Beheren"
+                :to="{
+                    name: 'dashboard.locations.detail.info',
+                    params: { locationId: props.location.id },
+                }"
+                @click="hideMenu" />
+
+            <NavigationLink :icon="faCalendarAlt" label="Reservaties" @click="hideMenu" />
+
+            <NavigationLink
+                :icon="faTrashCan"
+                label="Verwijderen"
+                :destructive="true"
+                @click="onDeleteClick(hideMenu)" />
         </template>
     </ActionMenu>
 
@@ -217,17 +213,4 @@ watch(
 
 <style scoped>
 @reference '@/assets/styles/main.css';
-
-.navigation {
-    @apply space-y-1 border-t border-slate-200 pt-2;
-}
-
-.navigation-link {
-    @apply flex w-full items-center gap-3 px-2 py-1;
-    @apply rounded-md text-sm text-slate-700 transition-colors hover:bg-slate-100;
-
-    &.destructive {
-        @apply text-red-700 hover:bg-red-50;
-    }
-}
 </style>

@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import ReservationsTable from '@/components/features/reservation/ReservationsTable.vue';
 import DateInput from '@/components/shared/molecules/form/DateInput.vue';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faQrcode, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import {
@@ -18,10 +19,7 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
-
-const searchQuery = ref<string>('');
-const pendingStatusChanges = ref<Set<number>>(new Set());
-const selectedDay = useRouteDate({ paramName: 'day' });
+const selectedDay = useRouteDate();
 
 // Fetch reservations for the selected date
 const { data: reservations, isLoading } = useReadLocationReservations(
@@ -49,6 +47,9 @@ const { mutateAsync: changeReservationState } = useReservationState({
     },
 });
 
+const searchQuery = ref<string>('');
+const pendingStatusChanges = ref<Set<number>>(new Set());
+
 // Filter reservations based on search query
 const filteredReservations = computed(() => {
     if (!reservations.value) return [];
@@ -68,16 +69,25 @@ const filteredReservations = computed(() => {
     });
 });
 
-// Check if a reservation is pending confirmation
-const isReservationPending = (reservationId: number) => {
+/**
+ * Check if a reservation's state is being changed
+ *
+ * @param reservationId - ID of the reservation
+ */
+function isReservationPending(reservationId: number): boolean {
     return pendingStatusChanges.value.has(reservationId);
-};
+}
 
-// Handle changing reservation status
-async function onStatusChange(reservationId: number, state: ReservationState) {
-    pendingStatusChanges.value.add(reservationId);
-
+/**
+ * Handle changing reservation status
+ *
+ * @param reservationId - ID of the reservation
+ * @param state - New state to set
+ */
+async function onStatusChange(reservationId: number, state: ReservationState): Promise<void> {
     try {
+        pendingStatusChanges.value.add(reservationId);
+
         await changeReservationState({
             locationId: +props.locationId,
             reservationId,
@@ -92,7 +102,7 @@ async function onStatusChange(reservationId: number, state: ReservationState) {
 <template>
     <div class="space-y-6">
         <!-- Filters -->
-        <div class="flex flex-wrap gap-4">
+        <div class="flex flex-wrap items-end gap-4">
             <!-- Date Selector -->
             <div class="min-w-[200px] flex-1">
                 <label class="mb-2 block text-sm font-medium text-slate-700">Datum</label>
@@ -106,12 +116,25 @@ async function onStatusChange(reservationId: number, state: ReservationState) {
                     <InputText
                         v-model="searchQuery"
                         placeholder="Zoek op naam, gebruikersnaam of e-mail..."
-                        class="w-full pl-10" />
+                        class="w-full pl-10">
+                    </InputText>
                     <FontAwesomeIcon
                         :icon="faSearch"
-                        class="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400" />
+                        class="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400">
+                    </FontAwesomeIcon>
                 </div>
             </div>
+            <!-- Toggle Scanner -->
+            <RouterLink
+                :to="{
+                    name: 'dashboard.locations.detail.scanner',
+                    params: { locationId: props.locationId },
+                }">
+                <Button>
+                    <FontAwesomeIcon :icon="faQrcode" />
+                    Open Scanner
+                </Button>
+            </RouterLink>
         </div>
 
         <!-- Reservations Table -->

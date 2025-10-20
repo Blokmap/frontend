@@ -18,6 +18,7 @@ export const LocationDetailLayout = () => import('@/layouts/dashboard/LocationDe
 export const LocationInfoPage = () => import('@/pages/dashboard/locations/LocationInfoPage.vue');
 export const LocationReservationsPage = () =>
     import('@/pages/dashboard/locations/LocationReservationsPage.vue');
+export const LocationScanPage = () => import('@/pages/dashboard/locations/LocationScanPage.vue');
 export const LocationOpeningsPage = () =>
     import('@/pages/dashboard/locations/LocationOpeningsPage.vue');
 export const LocationImagesPage = () =>

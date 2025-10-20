@@ -21,6 +21,7 @@ import {
     LocationInfoPage,
     LocationOpeningsPage,
     LocationReservationsPage,
+    LocationScanPage,
     LocationSettingsPage,
     LocationPage,
     LocationSubmitPage,
@@ -182,6 +183,26 @@ const routes: RouteRecordRaw[] = [
                                         {
                                             label: 'Reservaties',
                                             to: { name: 'dashboard.locations.detail.reservations' },
+                                        },
+                                    ],
+                                },
+                            },
+                            {
+                                path: 'scanner',
+                                name: 'dashboard.locations.detail.scanner',
+                                component: LocationScanPage,
+                                props: true,
+                                meta: {
+                                    title: 'Scanner',
+                                    breadcrumbs: [
+                                        { label: 'Dashboard', to: { name: 'dashboard' } },
+                                        {
+                                            label: 'Locaties',
+                                            to: { name: 'dashboard.locations.index' },
+                                        },
+                                        {
+                                            label: 'Scanner',
+                                            to: { name: 'dashboard.locations.detail.scanner' },
                                         },
                                     ],
                                 },

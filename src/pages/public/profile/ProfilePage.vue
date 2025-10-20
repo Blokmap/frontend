@@ -3,6 +3,7 @@ import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Chip from 'primevue/chip';
 import Skeleton from 'primevue/skeleton';
+import ProfileQrCode from '@/components/features/profile/ProfileQrCode.vue';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import ProfileAvatarDialog from '@/components/features/profile/avatar/ProfileAvatarDialog.vue';
 import ProfileEditDialog from '@/components/features/profile/edit/ProfileEditDialog.vue';
@@ -24,7 +25,6 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useReadProfileReservations, useReadProfileStats } from '@/composables/data/useProfile';
-import { useProfileScan } from '@/composables/useProfileScan';
 
 const router = useRouter();
 
@@ -42,8 +42,6 @@ const {
     data: profileStatsData,
 } = useReadProfileStats(profileId);
 
-const { currentCodeUrl, toggleScanMode } = useProfileScan();
-
 const showAvatarDialog = ref(false);
 const showEditDialog = ref(false);
 
@@ -58,18 +56,11 @@ function openReservationsModal(): void {
         <Card>
             <template #content>
                 <div class="relative">
-                    <!-- QR/Bar Code Section - Top Right -->
+                    <!-- QR Code Section - Top Right -->
                     <div
                         v-if="!profileIsLoading && profile"
                         class="absolute top-0 right-0 flex h-full flex-col justify-start">
-                        <div
-                            class="aspect-square h-24 cursor-pointer rounded-lg border border-gray-200 bg-gray-50 p-2 transition-colors hover:bg-gray-100"
-                            @click="toggleScanMode">
-                            <img
-                                :src="currentCodeUrl"
-                                alt="Profile scan code"
-                                class="h-full w-full object-contain" />
-                        </div>
+                        <ProfileQrCode :profile="profile" />
                     </div>
 
                     <!-- Main Profile Content -->

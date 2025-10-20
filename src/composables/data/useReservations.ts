@@ -72,7 +72,7 @@ export function useCreateReservation(
  */
 export function useDeleteReservation(
     options: CompMutationOptions = {},
-): CompMutation<DeleteReservationParams, void> {
+): CompMutation<DeleteReservationParams> {
     const queryClient = useQueryClient();
 
     const mutation = useMutation({

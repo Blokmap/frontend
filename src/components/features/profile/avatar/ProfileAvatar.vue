@@ -9,7 +9,6 @@ withDefaults(
         profile: Profile;
         image?: string;
         editable?: boolean;
-        avatarClass?: string;
     }>(),
     {
         editable: false,
@@ -29,7 +28,6 @@ defineEmits<{
         <Avatar
             v-if="!profile.avatarUrl && !image"
             class="aspect-square h-full w-full"
-            :class="avatarClass"
             shape="circle">
             <FontAwesomeIcon class="icon text-surface" :icon="faUser" />
         </Avatar>
@@ -37,7 +35,6 @@ defineEmits<{
             v-else
             alt="Profile Avatar"
             class="aspect-square h-full w-full rounded-full object-cover"
-            :class="avatarClass"
             loading="lazy"
             :src="image || profile.avatarUrl?.url" />
     </div>
@@ -49,6 +46,16 @@ defineEmits<{
 .avatar-wrapper {
     @apply relative flex items-center justify-center;
     @apply aspect-square w-fit;
+
+    /* Ensure children respect the square ratio for iOS Safari */
+    & > * {
+        @apply aspect-square h-full w-full;
+    }
+
+    img {
+        /* Additional iOS Safari fixes */
+        @apply max-h-full min-h-full max-w-full min-w-full object-cover;
+    }
 
     .avatar-overlay {
         @apply flex items-center justify-center opacity-0;

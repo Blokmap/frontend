@@ -79,14 +79,17 @@ function openReservationsModal(): void {
                             <Skeleton shape="circle" size="96px" />
                         </template>
                         <template v-else>
-                            <ProfileAvatar
-                                avatar-class="avatar-placeholder"
-                                :profile="profile"
-                                editable
-                                @click:edit="showAvatarDialog = true" />
+                            <div class="max-w-[120px]">
+                                <ProfileAvatar
+                                    :profile="profile"
+                                    editable
+                                    @click:edit="showAvatarDialog = true">
+                                </ProfileAvatar>
+                            </div>
                             <ProfileAvatarDialog
                                 v-model:visible="showAvatarDialog"
-                                :profile="profile" />
+                                :profile="profile">
+                            </ProfileAvatarDialog>
                         </template>
 
                         <!-- Profile Info -->
@@ -230,12 +233,3 @@ function openReservationsModal(): void {
         </Card>
     </div>
 </template>
-
-<style>
-@reference '@/assets/styles/main.css';
-
-.avatar-placeholder {
-    @apply bg-gradient-conic text-white;
-    @apply h-[6rem] w-[6rem] text-3xl font-bold;
-}
-</style>

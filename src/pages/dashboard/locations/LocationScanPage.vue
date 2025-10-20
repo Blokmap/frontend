@@ -21,7 +21,7 @@ function onScan(result: Result): void {
         timestamp: new Date().toISOString(),
         locationId: props.locationId,
     });
-
+    navigator.vibrate?.(100);
     alert(`Gescande QR-code: ${result.getText()}`);
 }
 

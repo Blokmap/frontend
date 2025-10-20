@@ -155,26 +155,6 @@ onUnmounted(() => {
     &.loading {
         @apply bg-black;
     }
-
-    /* Apply blur to the entire overlay except the scanning region */
-    &:not(.loading)::before {
-        content: '';
-        @apply absolute inset-0;
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        mask: radial-gradient(
-            circle at center,
-            transparent 0,
-            transparent calc(512px / 2),
-            black calc(512px / 2)
-        );
-        -webkit-mask: radial-gradient(
-            circle at center,
-            transparent 0,
-            transparent calc(512px / 2),
-            black calc(512px / 2)
-        );
-    }
 }
 
 .scanning-region {
@@ -186,9 +166,8 @@ onUnmounted(() => {
 
     &:not(:has(.loading-message))::before {
         content: '';
-        @apply absolute inset-0;
+        @apply absolute inset-0 backdrop-blur-xs;
         box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.75);
-        pointer-events: none;
     }
 }
 

@@ -9,6 +9,7 @@ import { ref, watch, onUnmounted, computed } from 'vue';
 import type { Result } from '@zxing/library';
 
 const visible = defineModel<boolean>('visible', { default: false });
+const isProcessing = defineModel<boolean>('processing', { default: false });
 
 const emit = defineEmits<{
     scan: [result: Result];
@@ -20,12 +21,12 @@ const { stream, enabled } = useUserMedia({
 });
 
 const scanner = new BrowserMultiFormatReader();
-
 const videoRef = ref<HTMLVideoElement>();
 const scanControls = ref<IScannerControls | null>(null);
-const isVideoReady = ref<boolean>(false);
+const isVideoReady = ref(false);
 
 const isLoading = computed(() => enabled.value && (!stream.value || !isVideoReady.value));
+const canScan = computed(() => videoRef.value && enabled.value && !scanControls.value);
 
 watch(
     visible,
@@ -40,7 +41,6 @@ watch([stream, videoRef], ([newStream, video]) => {
     if (!video || !newStream) return;
 
     video.srcObject = newStream;
-
     video.addEventListener(
         'loadedmetadata',
         () => {
@@ -51,54 +51,43 @@ watch([stream, videoRef], ([newStream, video]) => {
     );
 });
 
-/**
- * Start scanning for QR codes. Emits 'scan' event on successful scan.
- */
+watch(isProcessing, (processing) => {
+    if (processing) {
+        stopScanning();
+    } else if (canScan.value) {
+        startScanning();
+    }
+});
+
 async function startScanning(): Promise<void> {
-    if (!videoRef.value || scanControls.value) return;
+    if (!canScan.value) return;
 
     try {
-        scanControls.value = await scanner.decodeFromVideoElement(videoRef.value, (result) => {
-            if (result) {
-                emit('scan', result);
-            }
+        scanControls.value = await scanner.decodeFromVideoElement(videoRef.value!, (result) => {
+            if (result) emit('scan', result);
         });
     } catch (error) {
         console.error('Scanning failed:', error);
     }
 }
 
-/**
- * Cleanup resources and stop scanning
- */
-function cleanup(): void {
-    // Stop scanner
+function stopScanning(): void {
     scanControls.value?.stop();
     scanControls.value = null;
-    isVideoReady.value = false;
-
-    // Stop camera stream
-    stream.value?.getTracks().forEach((track) => track.stop());
-
-    if (videoRef.value) {
-        videoRef.value.srcObject = null;
-    }
 }
 
-/**
- * Close the scanner overlay
- */
+function cleanup(): void {
+    stopScanning();
+    stream.value?.getTracks().forEach((track) => track.stop());
+    isVideoReady.value = false;
+}
+
 function close(): void {
-    cleanup();
-    enabled.value = false;
     visible.value = false;
     emit('close');
 }
 
-onUnmounted(() => {
-    cleanup();
-    enabled.value = false;
-});
+onUnmounted(cleanup);
 </script>
 
 <template>

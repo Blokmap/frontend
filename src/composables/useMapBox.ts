@@ -47,10 +47,6 @@ export function useMapBox<T>(
         [180, 90],
     ]);
 
-    // Ignore functions to prevent watcher callbacks during map events
-    let ignoreNextCenterUpdate = false;
-    let ignoreNextZoomUpdate = false;
-
     onMounted(() => {
         if (container.value === null) {
             console.error('Map container is not defined, cannot initialize map');
@@ -72,20 +68,17 @@ export function useMapBox<T>(
 
         // Listeners //
 
-        newMap.on('move', () => {
+        newMap.on('move', async () => {
             isMoving.value = true;
 
-            const mapZoom = newMap.getZoom();
-            const mapCenter = newMap.getCenter();
             const mapBounds = newMap.getBounds();
+            const mapCenter = newMap.getCenter();
 
-            if (mapCenter && mapBounds && mapZoom) {
-                ignoreNextZoomUpdate = true;
-                zoom.value = mapZoom;
-
-                ignoreNextCenterUpdate = true;
+            if (mapCenter) {
                 center.value = [mapCenter.lng, mapCenter.lat];
+            }
 
+            if (mapBounds) {
                 bounds.value = [
                     [mapBounds.getSouthWest().lng, mapBounds.getSouthWest().lat],
                     [mapBounds.getNorthEast().lng, mapBounds.getNorthEast().lat],
@@ -93,12 +86,18 @@ export function useMapBox<T>(
             }
         });
 
-        newMap.on('moveend', () => {
-            isMoving.value = false;
+        newMap.on('zoom', async () => {
+            isZooming.value = true;
+
+            const mapZoom = newMap.getZoom();
+
+            if (mapZoom) {
+                zoom.value = mapZoom;
+            }
         });
 
-        newMap.on('zoom', () => {
-            isZooming.value = true;
+        newMap.on('moveend', () => {
+            isMoving.value = false;
         });
 
         newMap.on('zoomend', () => {
@@ -164,40 +163,41 @@ export function useMapBox<T>(
         map.value?.remove();
     });
 
-    // Watchers to sync external ref changes to map
     watch(maxBounds, (newBounds) => {
-        map.value?.setMaxBounds(
-            newBounds ?? [
-                [-180, -90],
-                [180, 90],
-            ],
-        );
+        const bounds = newBounds ?? [
+            [-180, -90],
+            [180, 90],
+        ];
+        map.value?.setMaxBounds(bounds);
     });
 
-    watch(center, (newCenter) => {
-        if (ignoreNextCenterUpdate) {
-            ignoreNextCenterUpdate = false;
-            return;
-        }
+    watch(
+        center,
+        (newCenter) => {
+            if (!map.value || !isLoaded.value) return;
 
-        if (!map.value || !isLoaded.value) {
-            return;
-        }
+            const currentCenter = map.value.getCenter();
+            const tolerance = 0.000001;
 
-        map.value.setCenter(newCenter);
-    });
+            if (
+                Math.abs(currentCenter.lng - newCenter[0]) > tolerance ||
+                Math.abs(currentCenter.lat - newCenter[1]) > tolerance
+            ) {
+                map.value.setCenter(newCenter);
+            }
+        },
+        { deep: true },
+    );
 
     watch(zoom, (newZoom) => {
-        if (ignoreNextZoomUpdate) {
-            ignoreNextZoomUpdate = false;
-            return;
-        }
+        if (!map.value || !isLoaded.value) return;
 
-        if (!map.value || !isLoaded.value) {
-            return;
-        }
+        const currentZoom = map.value.getZoom();
+        const tolerance = 0.01;
 
-        map.value.setZoom(newZoom);
+        if (Math.abs(currentZoom - newZoom) > tolerance) {
+            map.value.setZoom(newZoom);
+        }
     });
 
     /**
@@ -298,7 +298,7 @@ export function useMapBox<T>(
             map.value.flyTo({
                 center: lngLat,
                 zoom,
-                duration: 2000,
+                duration: 1000,
                 essential: true,
             });
         });

@@ -79,7 +79,6 @@ const { mutateAsync: updateImages, isPending: isUpdatingImages } = useUpdateLoca
 
 const isUpdating = computed(() => isUpdatingLocation.value || isUpdatingImages.value);
 
-// Initialize the store when location loads
 watchEffect(() => {
     if (location.value) {
         editingStore.initializeLocation(location.value);

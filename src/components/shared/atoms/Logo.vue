@@ -14,7 +14,7 @@ const variantClasses = computed(() => {
         return 'bg-slate-900 text-slate-200';
     }
 
-    return 'bg-primary-50 text-primary-500';
+    return 'bg-primary-100 text-primary-500';
 });
 
 onMounted(async () => {

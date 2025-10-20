@@ -16,11 +16,13 @@ export const useLocationEditing = defineStore('locationEditing', () => {
     const originalImagesSnapshot = ref<string>('');
 
     const hasLocationChanges = computed(() => {
+        if (!originalFormSnapshot.value) return false;
         const currentFormSnapshot = JSON.stringify(locationForm.value);
         return currentFormSnapshot !== originalFormSnapshot.value;
     });
 
     const hasImagesChanges = computed(() => {
+        if (!originalImagesSnapshot.value) return false;
         const currentImagesSnapshot = JSON.stringify(imagesForm.value);
         return currentImagesSnapshot !== originalImagesSnapshot.value;
     });

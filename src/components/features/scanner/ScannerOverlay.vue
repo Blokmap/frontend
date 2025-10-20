@@ -39,16 +39,8 @@ watch(
 
 watch([stream, videoRef], ([newStream, video]) => {
     if (!video || !newStream) return;
-
     video.srcObject = newStream;
-    video.addEventListener(
-        'loadedmetadata',
-        () => {
-            isVideoReady.value = true;
-            startScanning();
-        },
-        { once: true },
-    );
+    video.addEventListener('loadeddata', startScanning, { once: true });
 });
 
 watch(isProcessing, (processing) => {
@@ -60,7 +52,10 @@ watch(isProcessing, (processing) => {
 });
 
 async function startScanning(): Promise<void> {
-    if (!canScan.value) return;
+    if (!canScan.value || !videoRef.value) return;
+    if (videoRef.value.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
+
+    isVideoReady.value = true;
 
     try {
         scanControls.value = await scanner.decodeFromVideoElement(videoRef.value!, (result) => {

@@ -153,7 +153,6 @@ export function createMockReservation(overrides?: Partial<Reservation>): Reserva
     return {
         id: 1,
         state: 'Created' as ReservationState,
-        blockIndex: 0,
         day: new Date('2024-01-15'),
         startTime: { hours: 9, minutes: 0 },
         endTime: { hours: 17, minutes: 0 },

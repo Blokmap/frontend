@@ -23,7 +23,7 @@ export function formatFilters<T extends Record<string, any>>(
         const value = result[key];
 
         // Remove null or undefined values
-        if (value === null || value === undefined) {
+        if (!value) {
             delete result[key];
             continue;
         }

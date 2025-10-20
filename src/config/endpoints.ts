@@ -63,6 +63,7 @@ export const endpoints = {
         pend: '/locations/{id}/pend',
         permissions: '/locations/permissions',
         nearest: '/locations/nearest',
+        scan: '/locations/{id}/scan',
         openingTimes: {
             createMany: '/locations/{id}/opening-times',
             updateOne: '/locations/{id}/opening-times/{openingTimeId}',

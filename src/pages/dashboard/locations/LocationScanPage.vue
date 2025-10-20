@@ -13,11 +13,16 @@ const router = useRouter();
 const isProcessing = ref<boolean>(false);
 
 /**
- * Handle scanned result
+ * Handle scanned result - ignore if already processing
  *
- * @param result  - Scanned QR code result
+ * @param result - Scanned QR code result
  */
 async function onScan(result: Result): Promise<void> {
+    // Ignore scan if already processing
+    if (isProcessing.value) {
+        return;
+    }
+
     isProcessing.value = true;
 
     console.log('QR Code scanned:', {
@@ -27,11 +32,14 @@ async function onScan(result: Result): Promise<void> {
         locationId: props.locationId,
     });
 
-    navigator.vibrate?.(100);
+    // Vibrate if supported
+    if (navigator.vibrate) {
+        navigator.vibrate(500);
+    }
 
     alert(`Gescande QR-code: ${result.getText()}`);
 
-    // Resume scanning
+    // Ready for next scan
     isProcessing.value = false;
 }
 
@@ -47,13 +55,7 @@ function onClose(): void {
 </script>
 
 <template>
-    {{ isProcessing }}
     <Teleport to="body">
-        <ScannerOverlay
-            :visible="true"
-            v-model:processing="isProcessing"
-            @scan="onScan"
-            @close="onClose">
-        </ScannerOverlay>
+        <ScannerOverlay :visible="true" @scan="onScan" @close="onClose" />
     </Teleport>
 </template>

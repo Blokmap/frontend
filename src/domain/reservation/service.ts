@@ -1,6 +1,7 @@
 import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
+import { stringToDate } from '@/utils/date';
 import { formatFilters } from '@/utils/filter';
 import { formatIncludes } from '@/utils/service';
 import { stringToTime, timeToString, type Time } from '@/utils/time';
@@ -20,10 +21,10 @@ export function parseReservation(reservationData: any): Reservation {
         ...reservationData,
         startTime: stringToTime(reservationData.startTime),
         endTime: stringToTime(reservationData.endTime),
-        day: new Date(reservationData.day),
-        confirmedAt: reservationData.confirmedAt ? new Date(reservationData.confirmedAt) : null,
-        createdAt: new Date(reservationData.createdAt),
-        updatedAt: new Date(reservationData.updatedAt),
+        day: stringToDate(reservationData.day, true),
+        confirmedAt: stringToDate(reservationData.confirmedAt, true),
+        createdAt: stringToDate(reservationData.createdAt, true),
+        updatedAt: stringToDate(reservationData.updatedAt, true),
     };
 }
 

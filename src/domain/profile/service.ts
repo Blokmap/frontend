@@ -18,7 +18,7 @@ import type { Paginated } from '@/utils/pagination';
 export function parseProfile(profileData: any | null): Profile {
     return {
         ...profileData,
-        createdAt: stringToDate(profileData.createdAt),
+        createdAt: stringToDate(profileData.createdAt, true),
     };
 }
 

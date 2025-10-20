@@ -1,6 +1,7 @@
 import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
+import { stringToDate } from '@/utils/date';
 import { formatFilters } from '@/utils/filter';
 import { formatRequest } from '@/utils/service';
 import { stringToTime, timeToString } from '@/utils/time';
@@ -15,20 +16,20 @@ import type { OpeningTime, OpeningTimeRequest, OpeningTimeFilter } from './types
  */
 export function parseOpeningTime(openingTimeData: any): OpeningTime {
     const reservableFrom = openingTimeData.reservableFrom
-        ? new Date(openingTimeData.reservableFrom)
+        ? stringToDate(openingTimeData.reservableFrom, true)
         : null;
 
     const reservableUntil = openingTimeData.reservableUntil
-        ? new Date(openingTimeData.reservableUntil)
+        ? stringToDate(openingTimeData.reservableUntil, true)
         : null;
 
     return {
         ...openingTimeData,
-        day: new Date(openingTimeData.day),
+        day: stringToDate(openingTimeData.day, true),
         startTime: stringToTime(openingTimeData.startTime),
         endTime: stringToTime(openingTimeData.endTime),
-        createdAt: new Date(openingTimeData.createdAt),
-        updatedAt: new Date(openingTimeData.updatedAt),
+        createdAt: stringToDate(openingTimeData.createdAt, true),
+        updatedAt: stringToDate(openingTimeData.updatedAt, true),
         reservableFrom,
         reservableUntil,
     };

@@ -27,15 +27,15 @@ export type LocationIncludes = 'images' | 'createdBy';
 export function parseLocation(locationData: any): Location {
     const location = { ...locationData };
 
-    location.createdAt = stringToDate(location.createdAt);
-    location.updatedAt = stringToDate(location.updatedAt);
+    location.createdAt = stringToDate(location.createdAt, true);
+    location.updatedAt = stringToDate(location.updatedAt, true);
 
     if (location.openingTimes) {
         location.openingTimes = location.openingTimes.map(parseOpeningTime);
     }
 
     if (location.approvedAt) {
-        location.approvedAt = stringToDate(location.approvedAt);
+        location.approvedAt = stringToDate(location.approvedAt, true);
     }
 
     if (location.createdBy) {

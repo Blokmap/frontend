@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useUserMedia } from '@vueuse/core';
 import { BrowserMultiFormatReader, type IScannerControls } from '@zxing/browser';
@@ -9,7 +9,6 @@ import { ref, watch, onUnmounted, computed } from 'vue';
 import type { Result } from '@zxing/library';
 
 const visible = defineModel<boolean>('visible', { default: false });
-const isProcessing = defineModel<boolean>('processing', { default: false });
 
 const emit = defineEmits<{
     scan: [result: Result];
@@ -20,84 +19,78 @@ const { stream, enabled } = useUserMedia({
     constraints: { video: { facingMode: 'environment' } },
 });
 
-const scanner = new BrowserMultiFormatReader();
 const videoRef = ref<HTMLVideoElement>();
 const scanControls = ref<IScannerControls | null>(null);
 const isVideoReady = ref(false);
 
 const isLoading = computed(() => enabled.value && (!stream.value || !isVideoReady.value));
-const canScan = computed(() => videoRef.value && enabled.value && !scanControls.value);
 
+// Enable camera when visible
 watch(
     visible,
     (isVisible) => {
         enabled.value = isVisible;
-        if (!isVisible) cleanup();
+        if (!isVisible) {
+            scanControls.value?.stop();
+            scanControls.value = null;
+            stream.value?.getTracks().forEach((track) => track.stop());
+            isVideoReady.value = false;
+        }
     },
     { immediate: true },
 );
 
+// Start scanning when video is ready
 watch([stream, videoRef], ([newStream, video]) => {
-    if (!video || !newStream) return;
+    if (!video || !newStream || scanControls.value) return;
+
     video.srcObject = newStream;
-    video.addEventListener('loadeddata', startScanning, { once: true });
+
+    video.onloadeddata = async () => {
+        isVideoReady.value = true;
+        console.log('Video stream loaded, starting scanner...');
+
+        try {
+            const scanner = new BrowserMultiFormatReader();
+
+            scanControls.value = await scanner.decodeFromVideoElement(video, (result) => {
+                if (result) emit('scan', result);
+            });
+        } catch (error) {
+            console.error('Scanning failed:', error);
+        }
+    };
 });
-
-watch(isProcessing, (processing) => {
-    if (processing) {
-        stopScanning();
-    } else if (canScan.value) {
-        startScanning();
-    }
-});
-
-async function startScanning(): Promise<void> {
-    if (!canScan.value || !videoRef.value) return;
-    if (videoRef.value.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
-
-    isVideoReady.value = true;
-
-    try {
-        scanControls.value = await scanner.decodeFromVideoElement(videoRef.value!, (result) => {
-            if (result) emit('scan', result);
-        });
-    } catch (error) {
-        console.error('Scanning failed:', error);
-    }
-}
-
-function stopScanning(): void {
-    scanControls.value?.stop();
-    scanControls.value = null;
-}
-
-function cleanup(): void {
-    stopScanning();
-    stream.value?.getTracks().forEach((track) => track.stop());
-    isVideoReady.value = false;
-}
 
 function close(): void {
     visible.value = false;
     emit('close');
 }
 
-onUnmounted(cleanup);
+onUnmounted(() => {
+    enabled.value = false;
+});
 </script>
 
 <template>
     <Transition name="scale">
         <div v-if="visible" class="overlay">
-            <Button
-                @click="close"
-                severity="secondary"
-                class="close-button"
-                rounded
-                aria-label="Close scanner">
-                <template #icon>
-                    <FontAwesomeIcon :icon="faTimes" />
-                </template>
-            </Button>
+            <div class="absolute top-4 right-4 z-100 space-x-3">
+                <Button severity="contrast">
+                    <FontAwesomeIcon :icon="faCog" />
+                    <span>Scaninstellingen</span>
+                </Button>
+                <Button
+                    @click="close"
+                    severity="secondary"
+                    class="close-button"
+                    rounded
+                    aria-label="Close scanner">
+                    <template #icon>
+                        <FontAwesomeIcon :icon="faTimes" />
+                    </template>
+                </Button>
+            </div>
 
             <video
                 v-show="!isLoading"
@@ -191,9 +184,5 @@ onUnmounted(cleanup);
 
 .loading-message {
     @apply px-4 py-2 text-center text-sm font-medium text-black;
-}
-
-.close-button {
-    @apply !absolute top-4 right-4 z-100;
 }
 </style>

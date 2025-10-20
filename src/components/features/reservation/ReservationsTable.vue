@@ -1,17 +1,15 @@
 <script lang="ts" setup>
-import Badge from 'primevue/badge';
 import Select, { type SelectChangeEvent } from 'primevue/select';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
+import ReservationStateBadge from '@/components/features/reservation/ReservationStateBadge.vue';
 import ActionMenu from '@/components/shared/atoms/ActionMenu.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import TableHead from '@/components/shared/molecules/table/TableHead.vue';
 import {
-    faCheck,
     faCheckCircle,
     faClock,
     faHourglassHalf,
-    faQuestionCircle,
     faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -141,18 +139,7 @@ const getSelectedStatusOption = (reservation: Reservation) => {
                 }}
             </TableCell>
             <TableCell>
-                <Badge severity="success" v-if="data.state === ReservationState.Present">
-                    <FontAwesomeIcon class="mr-2" :icon="faCheck" />
-                    Bevestigd
-                </Badge>
-                <Badge severity="info" v-if="data.state === ReservationState.Created">
-                    <FontAwesomeIcon class="mr-2" :icon="faQuestionCircle" />
-                    Te bevestigen
-                </Badge>
-                <Badge severity="contrast" v-if="data.state === ReservationState.Pending">
-                    <FontAwesomeIcon class="mr-2" :icon="faClock" />
-                    In behandeling
-                </Badge>
+                <ReservationStateBadge :reservation="data" />
             </TableCell>
             <TableCell>
                 <div class="flex justify-center">

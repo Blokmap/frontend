@@ -17,7 +17,11 @@ export type LocationFeatures = {
     openInWeekend: boolean;
 };
 
-export type LocationState = 'approved' | 'pending' | 'rejected';
+export enum LocationState {
+    Approved = 'approved',
+    Pending = 'pending',
+    Rejected = 'rejected',
+}
 
 export type Location = {
     id: number;

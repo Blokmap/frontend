@@ -10,24 +10,24 @@
 <script lang="ts" setup>
 import Badge from 'primevue/badge';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { faCheck, faTimes, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { capitalize } from 'vue';
-import type { Location, LocationState } from '@/domain/location';
+import { LocationState, type Location } from '@/domain/location';
+import type { IconDefinition } from '@fortawesome/fontawesome-common-types';
 
 defineProps<{
     location: Location;
 }>();
 
 const severities: Record<LocationState, string> = {
-    approved: 'success',
-    pending: 'info',
-    rejected: 'danger',
+    [LocationState.Approved]: 'success',
+    [LocationState.Pending]: 'info',
+    [LocationState.Rejected]: 'danger',
 };
 
 const icons: Record<LocationState, IconDefinition> = {
-    approved: faCheck,
-    pending: faClock,
-    rejected: faTimes,
+    [LocationState.Approved]: faCheck,
+    [LocationState.Pending]: faClock,
+    [LocationState.Rejected]: faTimes,
 };
 </script>

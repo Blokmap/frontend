@@ -69,6 +69,7 @@ export function useReadProfileReservations(
     const query = useQuery<Reservation[], AxiosError>({
         queryKey: PROFILE_QUERY_KEYS.reservations(profileId, filters),
         enabled,
+        placeholderData: (previousData) => previousData,
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
             const filtersValue = toValue(filters);

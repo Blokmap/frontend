@@ -66,10 +66,11 @@ const openingFilters = computed(() => ({
     inWeekOf: currentWeek.value,
 }));
 
-const { data: reservations, isPending: isLoadingReservations } = useReadProfileReservations(
-    profileId,
-    reservationFilters,
-);
+const {
+    data: reservations,
+    isPending: isLoadingReservations,
+    refetch: refetchReservations,
+} = useReadProfileReservations(profileId, reservationFilters);
 
 const { data: openings, isPending: isLoadingOpenings } = useReadOpeningTimes(
     computed(() => props.location.id),
@@ -139,14 +140,7 @@ function onOpeningTimeClick(slot: TimeSlot<OpeningTime>, event: Event): void {
 function onRequestDelete(request: ReservationRequest): void {
     if (isSaving.value) return;
 
-    const index = reservationsToCreate.value.findIndex(
-        (r) =>
-            r.openingTimeId === request.openingTimeId &&
-            r.startTime.hours === request.startTime.hours &&
-            r.startTime.minutes === request.startTime.minutes &&
-            r.endTime.hours === request.endTime.hours &&
-            r.endTime.minutes === request.endTime.minutes,
-    );
+    const index = reservationsToCreate.value.findIndex((r) => r === request);
 
     if (index !== -1) {
         reservationsToCreate.value.splice(index, 1);
@@ -215,7 +209,10 @@ async function savePendingChanges(): Promise<void> {
 
         await Promise.all(promises);
 
-        // Reset pending changes
+        // Refetch reservations to get the updated data
+        await refetchReservations();
+
+        // Reset pending changes after refetch completes
         reservationsToCreate.value = [];
         reservationsToDelete.value = [];
 

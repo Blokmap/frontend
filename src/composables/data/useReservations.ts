@@ -73,23 +73,8 @@ export type CreateReservationsParams = {
 export function useCreateReservations(
     options: CompMutationOptions = {},
 ): CompMutation<CreateReservationsParams, Reservation[]> {
-    const queryClient = useQueryClient();
-
     const mutation = useMutation({
         ...options,
-        onSuccess: (data, variables, context) => {
-            // Invalidate profile reservations queries
-            queryClient.invalidateQueries({
-                queryKey: RESERVATION_QUERY_KEYS.profileReservations(),
-            });
-
-            // Invalidate location reservations queries
-            queryClient.invalidateQueries({
-                queryKey: ['location', 'reservations'],
-            });
-
-            options.onSuccess?.(data, variables, context);
-        },
         mutationFn: ({ locationId, requests }: CreateReservationsParams) => {
             return createReservations(locationId, requests);
         },
@@ -116,11 +101,6 @@ export function useDeleteReservation(
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate location reservations queries
-            queryClient.invalidateQueries({
-                queryKey: ['location', 'reservations'],
-            });
-
             // Invalidate profile reservations queries
             queryClient.invalidateQueries({
                 queryKey: RESERVATION_QUERY_KEYS.profileReservations(),
@@ -150,23 +130,8 @@ export type DeleteReservationsParams = {
 export function useDeleteReservations(
     options: CompMutationOptions = {},
 ): CompMutation<DeleteReservationsParams> {
-    const queryClient = useQueryClient();
-
     const mutation = useMutation({
         ...options,
-        onSuccess: (data, variables, context) => {
-            // Invalidate location reservations queries
-            queryClient.invalidateQueries({
-                queryKey: ['location', 'reservations'],
-            });
-
-            // Invalidate profile reservations queries
-            queryClient.invalidateQueries({
-                queryKey: RESERVATION_QUERY_KEYS.profileReservations(),
-            });
-
-            options.onSuccess?.(data, variables, context);
-        },
         mutationFn: ({ locationId, reservationIds }: DeleteReservationsParams) => {
             return deleteReservations(locationId, reservationIds);
         },

@@ -34,7 +34,7 @@ onMounted(() => {
 
 const severityClasses: Record<string, string> = {
     success: 'text-primary-500 bg-primary-100',
-    info: 'text-primary-500 bg-primary-100',
+    info: 'text-secondary-500 bg-secondary-100',
     warn: 'text-orange-500 bg-orange-100 dark:bg-orange-700 dark:text-orange-200',
     error: 'text-red-500 bg-red-100 dark:bg-red-800 dark:text-red-200',
 };
@@ -48,7 +48,7 @@ const severityIcons: Record<string, IconDefinition> = {
 </script>
 
 <template>
-    <Toast position="bottom-right">
+    <Toast position="bottom-right" @close="toast.remove">
         <template #container="slotProps">
             <div class="flex items-center gap-3 p-3">
                 <div class="icon-container" :class="severityClasses[slotProps.message.severity]">

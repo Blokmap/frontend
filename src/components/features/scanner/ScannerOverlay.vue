@@ -16,7 +16,13 @@ const emit = defineEmits<{
 }>();
 
 const { stream, enabled } = useUserMedia({
-    constraints: { video: { facingMode: 'environment' } },
+    constraints: {
+        video: {
+            facingMode: 'environment',
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+        },
+    },
 });
 
 const videoRef = ref<HTMLVideoElement>();
@@ -75,8 +81,8 @@ onUnmounted(() => {
 <template>
     <Transition name="scale">
         <div v-if="visible" class="overlay">
-            <div class="absolute top-4 right-4 z-100 space-x-3">
-                <Button severity="contrast">
+            <div class="absolute top-0 z-100 flex w-full justify-between gap-3 p-4">
+                <Button severity="contrast" size="small">
                     <FontAwesomeIcon :icon="faCog" />
                     <span>Scaninstellingen</span>
                 </Button>

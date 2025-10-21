@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ScannerOverlay from '@/components/features/scanner/ScannerOverlay.vue';
 import { useSound } from '@vueuse/sound';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import ping from '@/assets/sounds/ping.mp3';
 import { useScanProfile } from '@/composables/data/useProfile';
@@ -15,13 +16,15 @@ const router = useRouter();
 const toast = useToast();
 const sound = useSound(ping, { volume: 3 });
 
+const successfullProfileScans = ref<number[]>([]);
+
 const { mutateAsync: scanProfile, isPending } = useScanProfile({
     onSuccess: () => {
         if (navigator.vibrate) {
             navigator.vibrate(500);
         }
 
-        sound.play({});
+        sound.play();
 
         toast.add({
             severity: 'success',
@@ -52,13 +55,26 @@ async function onScan(result: Result): Promise<void> {
     const profileId = +result.getText();
     const locationId = +props.locationId;
 
-    scanProfile({
+    // Ignore scan if recently scanned
+    if (successfullProfileScans.value.includes(profileId)) {
+        toast.add({
+            id: `already-scanned-${profileId}`,
+            severity: 'info',
+            summary: 'Already scanned',
+            detail: 'This profile has already been scanned recently.',
+        });
+        return;
+    }
+
+    await scanProfile({
         profileId,
         request: {
             locationId,
             day: new Date(),
         },
     });
+
+    successfullProfileScans.value.push(profileId);
 }
 
 /**

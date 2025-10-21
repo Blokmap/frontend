@@ -5,7 +5,11 @@ import { faSlash, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { toTimeslots, type TimeSlot } from '@/domain/calendar';
-import { type Reservation, type ReservationRequest } from '@/domain/reservation';
+import {
+    RESERVATION_STATE_ICONS,
+    type Reservation,
+    type ReservationRequest,
+} from '@/domain/reservation';
 import { timeToString } from '@/utils/time';
 import {
     isOpeningTimeSlot,
@@ -154,6 +158,12 @@ function onReservationDelete(reservation: Reservation): void {
                     <div
                         class="reservation-card"
                         :class="{ deleted: isPendingDeletion(slot.metadata.data) }">
+                        <FontAwesomeIcon
+                            v-if="!isPendingDeletion(slot.metadata.data)"
+                            :icon="RESERVATION_STATE_ICONS[slot.metadata.data.state]"
+                            class="state-icon"
+                            :spin="slot.metadata.data.state === 'pending'">
+                        </FontAwesomeIcon>
                         <Button
                             rounded
                             class="delete-btn"
@@ -231,10 +241,16 @@ function onReservationDelete(reservation: Reservation): void {
         @apply flex items-center justify-center;
     }
 
+    .state-icon {
+        @apply !absolute top-3 left-3 z-10;
+        @apply text-secondary-600 text-sm;
+        @apply transition-opacity duration-150;
+    }
+
     .delete-btn {
-        @apply !absolute top-1 right-1 z-10;
+        @apply !absolute top-1 right-1 z-20;
         @apply text-secondary-600;
-        @apply opacity-0 hover:opacity-100;
+        @apply opacity-0;
         @apply transition-opacity duration-150;
     }
 
@@ -244,8 +260,14 @@ function onReservationDelete(reservation: Reservation): void {
         @apply text-4xl text-red-700;
     }
 
-    &:hover .delete-btn {
-        @apply opacity-100;
+    &:hover {
+        .delete-btn {
+            @apply opacity-100;
+        }
+
+        .state-icon {
+            @apply opacity-0;
+        }
     }
 
     &.deleted {

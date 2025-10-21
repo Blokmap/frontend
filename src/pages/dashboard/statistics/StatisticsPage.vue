@@ -23,7 +23,7 @@ const isLoading = false;
             <ul class="mt-4 space-y-2 text-gray-600">
                 <li>• Totaal aantal gebruikers</li>
                 <li>• Aantal locaties</li>
-                <li>• Reserveringsstatistieken</li>
+                <li>• Reservatiesstatistieken</li>
                 <li>• Gebruiksanalyses</li>
             </ul>
         </div>

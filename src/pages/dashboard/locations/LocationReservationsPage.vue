@@ -33,7 +33,7 @@ const { mutateAsync: changeReservationState } = useReservationState({
         toast.add({
             severity: 'success',
             summary: 'Status gewijzigd',
-            detail: 'De reserveringsstatus is succesvol gewijzigd.',
+            detail: 'De reservatiesstatus is succesvol gewijzigd.',
         });
     },
     onError: (error: any) => {

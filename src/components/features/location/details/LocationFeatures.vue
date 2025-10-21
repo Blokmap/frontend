@@ -55,7 +55,7 @@ const featuresList = computed(() => {
     if (props.location.isReservable) {
         list.push({
             icon: faCalendarWeek,
-            title: 'Reserveringen mogelijk',
+            title: 'Reservaties mogelijk',
             description: 'Reserveer je plek van tevoren',
             iconColor: 'text-primary-500',
         });

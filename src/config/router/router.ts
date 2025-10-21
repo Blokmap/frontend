@@ -57,10 +57,10 @@ const routes: RouteRecordRaw[] = [
                         name: 'profile.reservations',
                         component: ReservationsPage,
                         meta: {
-                            title: 'Reserveringen',
+                            title: 'Reservaties',
                             breadcrumbs: [
                                 { label: 'Profiel', to: { name: 'profile' } },
-                                { label: 'Reserveringen', to: { name: 'profile.reservations' } },
+                                { label: 'Reservaties', to: { name: 'profile.reservations' } },
                             ],
                         },
                     },
@@ -83,7 +83,7 @@ const routes: RouteRecordRaw[] = [
                         },
                     },
                     {
-                        path: ':locationId/:reservation?',
+                        path: ':locationId',
                         name: 'locations.detail',
                         props: true,
                         component: LocationPage,

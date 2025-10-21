@@ -22,7 +22,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import placeholder from '@/assets/img/placeholder/location-stock-2.jpg';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useReadLocation } from '@/composables/data/useLocations';
@@ -31,12 +31,13 @@ import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useRouteDate } from '@/composables/useRouteDate';
 import { pushRedirectUrl } from '@/domain/auth';
 
-const { locationId, reservation } = defineProps<{ locationId: string; reservation: string }>();
+const { locationId } = defineProps<{ locationId: string }>();
 
 const { locale } = useI18n();
 const { setPageTitle } = usePageTitleStore();
 
 const router = useRouter();
+const route = useRoute();
 
 const currentWeek = useRouteDate({ paramName: 'week' });
 
@@ -60,7 +61,20 @@ const {
     computed(() => ({ inWeekOf: currentWeek.value })),
 );
 
-const showReservationDialog = computed<boolean>(() => reservation === 'reservation');
+const showReservationDialog = computed<boolean>({
+    get: () => 'reservation' in route.query,
+    set: (value: boolean) => {
+        const query = { ...route.query };
+
+        if (value) {
+            query.reservation = '';
+        } else {
+            delete query.reservation;
+        }
+
+        router.replace({ query });
+    },
+});
 
 watch(
     location,
@@ -71,19 +85,6 @@ watch(
     },
     { immediate: true },
 );
-
-/**
- * Navigate to the same location page but with the reservation query parameter set
- * to open the reservation dialog.
- */
-function onReserveClick(): void {
-    const reservation = 'reservation';
-
-    router.push({
-        name: 'locations.detail',
-        params: { locationId, reservation },
-    });
-}
 
 /**
  * Navigate to the login page, storing the current location page as redirect URL
@@ -97,16 +98,6 @@ function onLoginClick(): void {
     pushRedirectUrl(route.fullPath);
 
     router.push({ name: 'auth' });
-}
-
-/**
- * Close the reservation dialog by unsetting the query parameter
- */
-function onDialogClose(): void {
-    router.push({
-        name: 'locations.detail',
-        params: { locationId },
-    });
 }
 </script>
 
@@ -276,7 +267,10 @@ function onDialogClose(): void {
 
                             <!-- Action Button or No Reservation Needed -->
                             <template v-if="location?.isReservable">
-                                <Button class="w-full" @click="onReserveClick" v-if="profileId">
+                                <Button
+                                    class="w-full"
+                                    @click="showReservationDialog = true"
+                                    v-if="profileId">
                                     Plek Reserveren
                                     <FontAwesomeIcon :icon="faArrowRight" />
                                 </Button>
@@ -302,9 +296,8 @@ function onDialogClose(): void {
         <ReservationBuilderDialog
             v-if="location"
             v-model:date="currentWeek"
-            :location="location"
-            :visible="showReservationDialog"
-            @update:visible="onDialogClose">
+            v-model:visible="showReservationDialog"
+            :location="location">
         </ReservationBuilderDialog>
     </template>
 </template>

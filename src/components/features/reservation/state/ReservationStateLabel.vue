@@ -28,7 +28,7 @@ const { t } = useI18n();
         </template>
 
         <!-- Cancelled State -->
-        <template v-if="state === ReservationState.Cancelled">
+        <template v-if="state === ReservationState.Rejected">
             <div class="status-dot bg-gray-500" />
             <span class="status-text text-gray-500">
                 {{ t('app.status.cancelled') }}

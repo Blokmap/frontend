@@ -4,11 +4,11 @@ import type { Profile } from '@/domain/profile';
 import type { Time } from '@/utils/time';
 
 export enum ReservationState {
+    Pending = 'pending',
     Created = 'created',
+    Rejected = 'rejected',
     Absent = 'absent',
     Present = 'present',
-    Cancelled = 'cancelled',
-    Pending = 'pending',
 }
 
 export type Reservation = {
@@ -34,4 +34,9 @@ export type ReservationRequest = {
     day: Date;
     startTime: Time;
     endTime: Time;
+};
+
+export type ReservationQueueResponse = {
+    reservationId: number;
+    state: string;
 };

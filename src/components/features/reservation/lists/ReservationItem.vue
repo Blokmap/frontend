@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ReservationStateBadge from '@/components/features/reservation/state/ReservationStateBadge.vue';
-import { formatReservationDateTime, type Reservation } from '@/domain/reservation';
+import { type Reservation } from '@/domain/reservation';
+import { formatReservationDateTime } from '@/domain/reservation/helpers/format';
 
 defineProps<{
     reservation: Reservation;

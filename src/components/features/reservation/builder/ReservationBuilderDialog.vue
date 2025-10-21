@@ -4,6 +4,7 @@ import Dialog from 'primevue/dialog';
 import Popover from 'primevue/popover';
 import ProgressSpinner from 'primevue/progressspinner';
 import ReservationBuilderCalendar from '@/components/features/reservation/builder/ReservationBuilderCalendar.vue';
+import ReservationBuilderLegend from '@/components/features/reservation/builder/ReservationBuilderLegend.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import TimeInput from '@/components/shared/molecules/form/TimeInput.vue';
 import { computed, ref, watch, useTemplateRef } from 'vue';
@@ -12,12 +13,17 @@ import { useAuthProfile } from '@/composables/data/useAuth';
 import { useReadOpeningTimes } from '@/composables/data/useOpeningTimes';
 import { useReadProfileReservations } from '@/composables/data/useProfile';
 import { useCreateReservations, useDeleteReservations } from '@/composables/data/useReservations';
+import { useWebsocket } from '@/composables/data/useWebsocket';
 import { useToast } from '@/composables/store/useToast';
 import { dateToTime, timeToDate } from '@/utils/time';
 import type { TimeSlot } from '@/domain/calendar';
 import type { Location } from '@/domain/location';
 import type { OpeningTime } from '@/domain/openings';
-import type { Reservation, ReservationRequest } from '@/domain/reservation';
+import type {
+    Reservation,
+    ReservationQueueResponse,
+    ReservationRequest,
+} from '@/domain/reservation';
 
 const props = defineProps<{
     location: Location;
@@ -30,6 +36,26 @@ const router = useRouter();
 const toast = useToast();
 
 const { profileId } = useAuthProfile();
+
+// WebSocket connection for real-time updates
+const websocketChannel = computed(() => {
+    const id = profileId.value;
+    if (!id) return null;
+    return {
+        profileId: id,
+        tag: 'reservations',
+    };
+});
+
+useWebsocket<ReservationQueueResponse>(websocketChannel, (data: ReservationQueueResponse) => {
+    if (data.state === 'error') {
+        toast.add({
+            severity: 'error',
+            summary: 'Fout bij verwerken reservatie',
+            detail: `Er is een fout opgetreden bij het verwerken van je reservatie (ID: ${data.reservationId}).`,
+        });
+    }
+});
 
 const reservationFilters = computed(() => ({
     inWeekOf: currentWeek.value,
@@ -258,18 +284,25 @@ watch(visible, (newVisible) => {
         </div>
 
         <template #footer>
-            <div class="mr-auto flex items-center gap-6">
-                <div class="flex items-center gap-2">
-                    <div class="h-4 w-4 rounded border-l-4 border-slate-400 bg-slate-100"></div>
-                    <span class="text-sm text-gray-700">Beschikbaar</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="border-primary-500 bg-primary-100 h-4 w-4 rounded border-l-4"></div>
-                    <span class="text-sm text-gray-700">Jouw reservering</span>
-                </div>
-            </div>
+            <ReservationBuilderLegend
+                class="mr-auto"
+                :has-additions="reservationsToCreate.length > 0"
+                :has-deletions="reservationsToDelete.length > 0">
+            </ReservationBuilderLegend>
 
             <template v-if="hasPendingChanges">
+                <div class="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-1.5 text-sm">
+                    <span v-if="reservationsToCreate.length > 0" class="flex items-center gap-1">
+                        <span class="font-semibold text-green-700">
+                            +{{ reservationsToCreate.length }}
+                        </span>
+                    </span>
+                    <span v-if="reservationsToDelete.length > 0" class="flex items-center gap-1">
+                        <span class="font-semibold text-red-700">
+                            -{{ reservationsToDelete.length }}
+                        </span>
+                    </span>
+                </div>
                 <Button severity="contrast" text :disabled="isSaving" @click="cancelPendingChanges">
                     Annuleren
                 </Button>

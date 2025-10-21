@@ -1,5 +1,4 @@
 export const endpoints = {
-    websocket: '/ws',
     auth: {
         // endpoints in auth service
         login: '/auth/local/login',
@@ -141,3 +140,5 @@ export const mapboxEndpoints = {
         reverse: '/search/geocode/v6/reverse',
     },
 };
+
+export const websocketEndpoint = '/api/ws';

@@ -16,7 +16,6 @@ import {
     type OpeningTimeRequest,
 } from '@/domain/openings';
 import { formatDayName } from '@/utils/date';
-import { dateToTime, timeToDate } from '@/utils/time';
 
 const props = defineProps<{
     openingTime?: OpeningTimeRequest | null;
@@ -51,24 +50,6 @@ const isRepetitionEnabled = computed({
     get: () => !!openingTime.value.repetition,
     set: (enabled: boolean) => {
         openingTime.value.repetition = enabled ? { ...DEFAULT_REPETITION_CONFIG } : undefined;
-    },
-});
-
-const startTime = computed({
-    get: () => {
-        return timeToDate(openingTime.value.startTime);
-    },
-    set: (timeOnlyDate: Date) => {
-        openingTime.value.startTime = dateToTime(timeOnlyDate);
-    },
-});
-
-const endTime = computed({
-    get: () => {
-        return timeToDate(openingTime.value.endTime);
-    },
-    set: (timeOnlyDate: Date) => {
-        openingTime.value.endTime = dateToTime(timeOnlyDate);
     },
 });
 
@@ -142,11 +123,11 @@ function onDeleteClick(): void {
                 </div>
                 <div>
                     <label class="mb-1 block text-xs font-medium text-gray-600">Van</label>
-                    <TimeInput v-model="startTime" hour-format="24" />
+                    <TimeInput v-model="openingTime.startTime" />
                 </div>
                 <div>
                     <label class="mb-1 block text-xs font-medium text-gray-600">Tot</label>
-                    <TimeInput v-model="endTime" hour-format="24" />
+                    <TimeInput v-model="openingTime.endTime" />
                 </div>
             </div>
 

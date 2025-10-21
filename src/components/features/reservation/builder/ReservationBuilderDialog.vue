@@ -15,7 +15,6 @@ import { useReadProfileReservations } from '@/composables/data/useProfile';
 import { useCreateReservations, useDeleteReservations } from '@/composables/data/useReservations';
 import { useWebsocket } from '@/composables/data/useWebsocket';
 import { useToast } from '@/composables/store/useToast';
-import { dateToTime, timeToDate } from '@/utils/time';
 import type { TimeSlot } from '@/domain/calendar';
 import type { Location } from '@/domain/location';
 import type { OpeningTime } from '@/domain/openings';
@@ -87,25 +86,7 @@ const reservationsToDelete = ref<Reservation[]>([]);
 // Popover state
 const reservationPopover = useTemplateRef('reservationPopover');
 const activeRequest = ref<ReservationRequest | null>(null);
-
-// Computed for TimeInput (needs Date objects)
-const popoverStartDate = computed({
-    get: () => (activeRequest.value ? timeToDate(activeRequest.value.startTime) : new Date()),
-    set: (date: Date) => {
-        if (activeRequest.value) {
-            activeRequest.value.startTime = dateToTime(date);
-        }
-    },
-});
-
-const popoverEndDate = computed({
-    get: () => (activeRequest.value ? timeToDate(activeRequest.value.endTime) : new Date()),
-    set: (date: Date) => {
-        if (activeRequest.value) {
-            activeRequest.value.endTime = dateToTime(date);
-        }
-    },
-});
+const activeOpeningTimeSlot = ref<TimeSlot<OpeningTime> | null>(null);
 
 const isSaving = ref<boolean>(false);
 const isLoading = computed<boolean>(() => isLoadingReservations.value || isLoadingOpenings.value);
@@ -122,6 +103,9 @@ const hasPendingChanges = computed(
  */
 function onOpeningTimeClick(slot: TimeSlot<OpeningTime>, event: Event): void {
     if (isSaving.value || !slot.metadata) return;
+
+    // Store the opening time slot for min/max constraints
+    activeOpeningTimeSlot.value = slot;
 
     // Show popover to create new reservation
     activeRequest.value = {
@@ -317,12 +301,22 @@ watch(visible, (newVisible) => {
             <div class="space-y-3">
                 <div>
                     <label class="mb-1 block text-sm font-medium text-gray-700">Starttijd</label>
-                    <TimeInput v-model="popoverStartDate" />
+                    <TimeInput
+                        v-if="activeRequest && activeOpeningTimeSlot"
+                        v-model="activeRequest.startTime"
+                        :min-time="activeOpeningTimeSlot.startTime"
+                        :max-time="activeOpeningTimeSlot.endTime">
+                    </TimeInput>
                 </div>
 
                 <div>
                     <label class="mb-1 block text-sm font-medium text-gray-700">Eindtijd</label>
-                    <TimeInput v-model="popoverEndDate" />
+                    <TimeInput
+                        v-if="activeRequest && activeOpeningTimeSlot"
+                        v-model="activeRequest.endTime"
+                        :min-time="activeOpeningTimeSlot.startTime"
+                        :max-time="activeOpeningTimeSlot.endTime">
+                    </TimeInput>
                 </div>
             </div>
 

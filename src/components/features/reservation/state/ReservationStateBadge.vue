@@ -1,15 +1,7 @@
 <script setup lang="ts">
 import Badge from 'primevue/badge';
-import {
-    faBan,
-    faCheck,
-    faClock,
-    faHourglassHalf,
-    faTimes,
-    type IconDefinition,
-} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { ReservationState } from '@/domain/reservation';
+import { RESERVATION_STATE_ICONS, ReservationState } from '@/domain/reservation';
 
 defineProps<{
     state: ReservationState;
@@ -19,31 +11,23 @@ const severities: Record<ReservationState, string> = {
     [ReservationState.Created]: 'info',
     [ReservationState.Present]: 'success',
     [ReservationState.Absent]: 'danger',
-    [ReservationState.Cancelled]: 'contrast',
+    [ReservationState.Rejected]: 'contrast',
     [ReservationState.Pending]: 'warn',
 };
 
-const icons: Record<ReservationState, IconDefinition> = {
-    [ReservationState.Created]: faHourglassHalf,
-    [ReservationState.Present]: faCheck,
-    [ReservationState.Absent]: faTimes,
-    [ReservationState.Cancelled]: faBan,
-    [ReservationState.Pending]: faClock,
-};
-
 const labels: Record<ReservationState, string> = {
-    [ReservationState.Created]: 'Te bevestigen',
-    [ReservationState.Present]: 'Bevestigd',
+    [ReservationState.Created]: 'Bevestigd',
+    [ReservationState.Present]: 'Aanwezig',
     [ReservationState.Absent]: 'Afwezig',
-    [ReservationState.Cancelled]: 'Geannuleerd',
+    [ReservationState.Rejected]: 'Geweigerd',
     [ReservationState.Pending]: 'In behandeling',
 };
 </script>
 
 <template>
-    <Badge :severity="severities[state]" class="w-[120px]">
+    <Badge :severity="severities[state]">
         <div class="flex w-full items-center justify-around gap-1">
-            <FontAwesomeIcon :icon="icons[state]" />
+            <FontAwesomeIcon :icon="RESERVATION_STATE_ICONS[state]" :spin="state === 'pending'" />
             <span>{{ labels[state] }}</span>
         </div>
     </Badge>

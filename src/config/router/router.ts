@@ -12,7 +12,6 @@ import {
     DashboardAuthoritiesPage,
     DashboardAuthorityPage,
     DashboardInstitutionPage,
-    DashboardPage,
     DashboardReviewsPage,
     DashboardStatisticsPage,
     InstitutionIndexPage,
@@ -115,12 +114,8 @@ const routes: RouteRecordRaw[] = [
         children: [
             {
                 path: '',
+                redirect: { name: 'dashboard.locations.index' },
                 name: 'dashboard',
-                component: DashboardPage,
-                meta: {
-                    title: 'Dashboard',
-                    breadcrumbs: [{ label: 'Dashboard', to: { name: 'dashboard' } }],
-                },
             },
             {
                 path: 'locations',

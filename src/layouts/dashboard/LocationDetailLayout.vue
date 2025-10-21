@@ -251,7 +251,7 @@ function navigateToTab(tab: string): void {
 @reference '@/assets/styles/main.css';
 
 .save-bar {
-    @apply fixed bottom-8 left-1/2 z-50 w-[650px] max-w-full -translate-x-1/2 px-6 py-4;
+    @apply fixed bottom-8 left-1/2 z-50 w-full max-w-[700px] -translate-x-1/2 px-6 py-4;
     @apply rounded-full border border-slate-800 bg-slate-900 text-slate-100;
 }
 </style>

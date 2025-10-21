@@ -1,9 +1,5 @@
-import {
-    faCircleCheck,
-    faCircleNotch,
-    faUserCheck,
-    faUserXmark,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
+import { faUserCheck, faUserXmark, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { ReservationState } from './types';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 

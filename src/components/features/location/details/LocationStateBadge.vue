@@ -11,6 +11,7 @@
 import Badge from 'primevue/badge';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { capitalize } from 'vue';
 import { LocationState, type Location } from '@/domain/location';
 import type { IconDefinition } from '@fortawesome/fontawesome-common-types';

@@ -1,6 +1,7 @@
 import type { Authority } from '@/domain/authority';
 import type { Image } from '@/domain/image';
 import type { Institution } from '@/domain/institution';
+import type { Time } from '@/utils/time';
 
 export type ProfileState = 'active' | 'disabled' | 'deleted';
 
@@ -29,4 +30,10 @@ export type ProfileRequest = {
     firstName?: string;
     lastName?: string;
     username?: string;
+};
+
+export type ProfileScanRequest = {
+    locationId: number;
+    day?: Date | null;
+    time?: Time | null;
 };

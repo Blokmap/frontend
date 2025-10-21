@@ -11,9 +11,16 @@ import {
     updateProfileAvatar,
     readProfileLocations,
     readProfile,
+    scanProfile,
 } from '@/domain/profile';
 import type { Location } from '@/domain/location';
-import type { Profile, ProfileStats, ProfileFilter, ProfileState } from '@/domain/profile';
+import type {
+    Profile,
+    ProfileStats,
+    ProfileFilter,
+    ProfileState,
+    ProfileScanRequest,
+} from '@/domain/profile';
 import type { Reservation, ReservationFilter } from '@/domain/reservation';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
@@ -204,6 +211,28 @@ export function useUpdateProfile(
             const profile = await updateProfile(profileId, profileData);
             return profile;
         },
+    });
+
+    return mutation;
+}
+
+export type ScanProfileParams = {
+    profileId: number;
+    request: ProfileScanRequest;
+};
+
+/**
+ * Composable to handle scanning a profile.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for scanning a profile.
+ */
+export function useScanProfile(
+    options: CompMutationOptions = {},
+): CompMutation<ScanProfileParams, Reservation[]> {
+    const mutation = useMutation({
+        ...options,
+        mutationFn: ({ profileId, request }: ScanProfileParams) => scanProfile(profileId, request),
     });
 
     return mutation;

@@ -122,17 +122,34 @@ function onLoginClick(): void {
                         </template>
                         <Skeleton v-else-if="isPending" height="36px" width="400px" />
                     </h1>
-                    <RouterLink
-                        :to="{
-                            name: 'dashboard.locations.detail.info',
-                            params: { locationId },
-                        }"
-                        v-if="profile?.isAdmin">
-                        <Button severity="secondary">
-                            <span>Bewerken</span>
-                            <FontAwesomeIcon :icon="faEdit" />
-                        </Button>
-                    </RouterLink>
+                    <template v-if="profile?.isAdmin">
+                        <div class="flex space-x-3">
+                            <RouterLink
+                                :to="{
+                                    name: 'dashboard.locations.detail.reservations',
+                                    params: { locationId },
+                                }"
+                                v-if="location && location?.isReservable">
+                                <Button severity="contrast">
+                                    <span>Reservaties</span>
+                                    <FontAwesomeIcon :icon="faUsers" />
+                                </Button>
+                            </RouterLink>
+
+                            <Skeleton v-else-if="isPending" height="36px" width="120px" />
+
+                            <RouterLink
+                                :to="{
+                                    name: 'dashboard.locations.detail.info',
+                                    params: { locationId },
+                                }">
+                                <Button severity="secondary">
+                                    <span>Bewerken</span>
+                                    <FontAwesomeIcon :icon="faEdit" />
+                                </Button>
+                            </RouterLink>
+                        </div>
+                    </template>
                 </div>
 
                 <!-- Tags -->

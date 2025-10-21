@@ -15,6 +15,7 @@ import { useReadProfileReservations } from '@/composables/data/useProfile';
 import { useCreateReservations, useDeleteReservations } from '@/composables/data/useReservations';
 import { useWebsocket } from '@/composables/data/useWebsocket';
 import { useToast } from '@/composables/store/useToast';
+import { minutesToTime, timeToMinutes, doTimeRangesOverlap } from '@/utils/time';
 import type { TimeSlot } from '@/domain/calendar';
 import type { Location } from '@/domain/location';
 import type { OpeningTime } from '@/domain/openings';
@@ -137,7 +138,42 @@ function onRequestDelete(request: ReservationRequest): void {
 function onReservationCreate(): void {
     if (!activeRequest.value) return;
 
-    reservationsToCreate.value.push({ ...activeRequest.value });
+    const request = { ...activeRequest.value };
+    const reqStart = timeToMinutes(request.startTime);
+    const reqEnd = timeToMinutes(request.endTime);
+
+    const overlaps = [...(reservations.value || []), ...reservationsToCreate.value]
+        .filter((r) => {
+            const isSameDay = r.day === request.day;
+
+            const overlaps = doTimeRangesOverlap(
+                request.startTime,
+                request.endTime,
+                r.startTime,
+                r.endTime,
+            );
+
+            return isSameDay && overlaps;
+        })
+        .map((r) => ({ start: timeToMinutes(r.startTime), end: timeToMinutes(r.endTime) }));
+
+    if (overlaps.length) {
+        let finalStart = reqStart;
+        let finalEnd = reqEnd;
+
+        // Adjust start if covered by a conflict
+        const startConflict = overlaps.find((r) => finalStart >= r.start && finalStart < r.end);
+        if (startConflict) finalStart = startConflict.end;
+
+        // Adjust end if there's a conflict after the (possibly adjusted) start
+        const endConflict = overlaps.find((r) => r.start >= finalStart && r.start < finalEnd);
+        if (endConflict) finalEnd = endConflict.start;
+
+        request.startTime = minutesToTime(finalStart);
+        request.endTime = minutesToTime(finalEnd);
+    }
+
+    reservationsToCreate.value.push(request);
 
     reservationPopover.value?.hide();
     activeRequest.value = null;

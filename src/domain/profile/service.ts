@@ -1,11 +1,12 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { parseReservation } from '@/domain/reservation';
-import { stringToDate } from '@/utils/date';
+import { dateToString, stringToDate } from '@/utils/date';
 import { formatFilters } from '@/utils/filter';
 import { createFormDataRequest, formatIncludes, transformPaginatedResponse } from '@/utils/service';
+import { timeToString } from '@/utils/time';
 import { parseLocation } from '../location';
-import type { Profile, ProfileStats, ProfileFilter } from './types';
+import type { Profile, ProfileStats, ProfileFilter, ProfileScanRequest } from './types';
 import type { Reservation, ReservationFilter, ReservationIncludes } from '@/domain/reservation';
 import type { Paginated } from '@/utils/pagination';
 
@@ -159,7 +160,32 @@ export async function unblockProfile(profileId: number): Promise<Profile> {
     const response = await client.post(
         endpoints.profiles.unblock.replace('{id}', profileId.toString()),
     );
+
     return parseProfile(response.data);
+}
+
+/**
+ * Initiates a scan for the specified profile.
+ *
+ * @param profileId - The ID of the profile to scan.
+ * @returns A promise that resolves when the scan is initiated.
+ */
+export async function scanProfile(
+    profileId: number,
+    request: ProfileScanRequest,
+): Promise<Reservation[]> {
+    const body = {
+        ...request,
+        day: dateToString(request.day, true),
+        time: timeToString(request.time),
+    };
+
+    const { data } = await client.post(
+        endpoints.profiles.scan.replace('{id}', profileId.toString()),
+        body,
+    );
+
+    return data.map(parseReservation);
 }
 
 /**
@@ -170,6 +196,8 @@ export async function unblockProfile(profileId: number): Promise<Profile> {
  */
 export async function readProfileLocations(profileId: string | number) {
     const endpoint = endpoints.profiles.locations.list.replace('{id}', profileId.toString());
-    const response = await client.get<Location[]>(endpoint);
-    return response.data.map(parseLocation);
+
+    const { data } = await client.get<Location[]>(endpoint);
+
+    return data.map(parseLocation);
 }

@@ -7,8 +7,6 @@ export const useToast = defineStore('toast', () => {
     const messages = ref<ToastMessageOptions[]>([]);
 
     function processQueuedMessages(primeToast: ToastServiceMethods) {
-        console.log('Processing queued messages in store', messages.value);
-
         if (messages.value.length > 0) {
             for (const message of messages.value) {
                 primeToast.add(message);

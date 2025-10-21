@@ -20,6 +20,7 @@ export const endpoints = {
         block: '/profiles/{id}/block',
         unblock: '/profiles/{id}/unblock',
         stats: '/profiles/{id}/stats',
+        scan: '/profiles/{id}/scan',
         authorities: {
             list: '/profiles/{id}/authorities',
         },

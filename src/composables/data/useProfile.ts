@@ -14,7 +14,7 @@ import {
 } from '@/domain/profile';
 import type { Location } from '@/domain/location';
 import type { Profile, ProfileStats, ProfileFilter, ProfileState } from '@/domain/profile';
-import type { Reservation } from '@/domain/reservation';
+import type { Reservation, ReservationFilter } from '@/domain/reservation';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
@@ -24,8 +24,10 @@ export const PROFILE_QUERY_KEYS = {
     list: (filters: MaybeRefOrGetter<Partial<ProfileFilter>>) =>
         ['admin', 'profiles', filters] as const,
     stats: (profileId: MaybeRefOrGetter<number | null>) => ['profile', 'stats', profileId] as const,
-    reservations: (profileId: MaybeRef<number | null>, inWeekOf: MaybeRefOrGetter<Date>) =>
-        ['profile', 'reservations', profileId, inWeekOf] as const,
+    reservations: (
+        profileId: MaybeRef<number | null>,
+        filters: MaybeRefOrGetter<ReservationFilter>,
+    ) => ['profile', 'reservations', profileId, filters] as const,
     locations: (profileId: MaybeRef<number | null>) => ['profile', 'locations', profileId] as const,
 } as const;
 
@@ -60,18 +62,18 @@ export function useReadProfileStats(
  */
 export function useReadProfileReservations(
     profileId: MaybeRef<number | null>,
-    inWeekOf: MaybeRefOrGetter<Date> = new Date(),
+    filters: MaybeRef<ReservationFilter>,
 ): CompQuery<Reservation[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 
     const query = useQuery<Reservation[], AxiosError>({
-        queryKey: PROFILE_QUERY_KEYS.reservations(profileId, inWeekOf),
+        queryKey: PROFILE_QUERY_KEYS.reservations(profileId, filters),
         enabled,
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
-            const dateInWeek = toValue(inWeekOf);
+            const filtersValue = toValue(filters);
 
-            return readProfileReservations(profileIdValue, { inWeekOf: dateInWeek }, [
+            return readProfileReservations(profileIdValue, filtersValue, [
                 'location',
                 'openingTime',
             ]);

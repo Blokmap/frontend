@@ -2,10 +2,8 @@ import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { stringToDate } from '@/utils/date';
-import { formatFilters } from '@/utils/filter';
-import { formatIncludes } from '@/utils/service';
 import { stringToTime, timeToString, type Time } from '@/utils/time';
-import type { Reservation, ReservationFilter } from './types';
+import type { Reservation, ReservationRequest } from './types';
 
 export type ReservationIncludes = 'profile' | 'location' | 'openingTime' | 'confirmedBy';
 
@@ -41,31 +39,6 @@ export function serializeReservation(reservation: Reservation): any {
         endTime: timeToString(reservation.endTime),
         day: formatDate(reservation.day, 'YYYY-MM-DD'),
     };
-}
-
-/**
- * Get reservations for a specific location.
- *
- * @param locationId - The ID of the location to fetch reservations for.
- * @param filters - The filters to apply when fetching reservations.
- * @param includes - The related data to include in the response.
- * @returns A promise that resolves to an array of reservations.
- */
-export async function readLocationReservations(
-    locationId: number,
-    filters: Partial<ReservationFilter> = {},
-    includes: ReservationIncludes[] = [],
-): Promise<Reservation[]> {
-    const endpoint = endpoints.locations.reservations.list.replace('{id}', locationId.toString());
-
-    const params: Record<string, any> = {
-        ...formatFilters(filters, ['inWeekOf', 'day']),
-        ...formatIncludes(includes),
-    };
-
-    const response = await client.get(endpoint, { params });
-
-    return response.data.map(parseReservation);
 }
 
 /**
@@ -105,15 +78,8 @@ export async function createReservation(
  * @param reservationId - The ID of the reservation to delete.
  * @returns A promise that resolves when the reservation is deleted.
  */
-export async function deleteReservation(
-    locationId: number,
-    openingTimeId: number,
-    reservationId: number,
-): Promise<void> {
-    const endpoint = endpoints.locations.openingTimes.reservations.delete
-        .replace('{id}', locationId.toString())
-        .replace('{openingTimeId}', openingTimeId.toString())
-        .replace('{reservationId}', reservationId.toString());
+export async function deleteReservation(reservationId: number): Promise<void> {
+    const endpoint = endpoints.reservations.delete.replace('{id}', reservationId.toString());
 
     await client.delete(endpoint);
 }
@@ -136,4 +102,44 @@ export async function confirmReservation(
     const response = await client.post(endpoint);
 
     return parseReservation(response.data);
+}
+
+/**
+ * Bulk create reservations for a location.
+ *
+ * @param locationId - The ID of the location.
+ * @param requests - Array of reservation requests with openingTimeId, startTime, and endTime.
+ * @returns A promise that resolves to an array of created reservations.
+ */
+export async function createReservations(
+    locationId: number,
+    requests: ReservationRequest[],
+): Promise<Reservation[]> {
+    const endpoint = endpoints.locations.reservations.create.replace('{id}', locationId.toString());
+
+    const body = requests.map((request) => ({
+        openingTimeId: request.openingTimeId,
+        startTime: timeToString(request.startTime),
+        endTime: timeToString(request.endTime),
+    }));
+
+    const response = await client.post(endpoint, body);
+
+    return response.data.map(parseReservation);
+}
+
+/**
+ * Bulk delete reservations for a location.
+ *
+ * @param locationId - The ID of the location.
+ * @param reservationIds - Array of reservation IDs to delete.
+ * @returns A promise that resolves when all reservations are deleted.
+ */
+export async function deleteReservations(
+    locationId: number,
+    reservationIds: number[],
+): Promise<void> {
+    const endpoint = endpoints.locations.reservations.delete.replace('{id}', locationId.toString());
+
+    await client.delete(endpoint, { data: reservationIds });
 }

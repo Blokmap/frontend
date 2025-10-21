@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import ReservationsTable from '@/components/features/reservation/ReservationsTable.vue';
+import ReservationsTable from '@/components/features/reservation/lists/ReservationsTable.vue';
 import DateInput from '@/components/shared/molecules/form/DateInput.vue';
 import { faQrcode, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

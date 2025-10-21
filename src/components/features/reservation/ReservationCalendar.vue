@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ReservationStateLabel from '@/components/features/reservation/ReservationStateLabel.vue';
+import ReservationStateLabel from '@/components/features/reservation/state/ReservationStateLabel.vue';
 import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
 import { faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

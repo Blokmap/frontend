@@ -2,6 +2,12 @@ import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { parseOpeningTime } from '@/domain/openings';
 import { parseProfile } from '@/domain/profile';
+import {
+    parseReservation,
+    type Reservation,
+    type ReservationFilter,
+    type ReservationIncludes,
+} from '@/domain/reservation';
 import { stringToDate } from '@/utils/date';
 import { formatFilters, formatLocationSearchFilters } from '@/utils/filter';
 import { createFormDataRequest, formatIncludes, transformPaginatedResponse } from '@/utils/service';
@@ -290,4 +296,29 @@ export async function reorderLocationImages(
         endpoints.locations.images.reorder.replace('{id}', locationId.toString()),
         images,
     );
+}
+
+/**
+ * Get reservations for a specific location.
+ *
+ * @param locationId - The ID of the location to fetch reservations for.
+ * @param filters - The filters to apply when fetching reservations.
+ * @param includes - The related data to include in the response.
+ * @returns A promise that resolves to an array of reservations.
+ */
+export async function readLocationReservations(
+    locationId: number,
+    filters: Partial<ReservationFilter> = {},
+    includes: ReservationIncludes[] = [],
+): Promise<Reservation[]> {
+    const endpoint = endpoints.locations.reservations.list.replace('{id}', locationId.toString());
+
+    const params: Record<string, any> = {
+        ...formatFilters(filters, ['inWeekOf', 'day']),
+        ...formatIncludes(includes),
+    };
+
+    const response = await client.get(endpoint, { params });
+
+    return response.data.map(parseReservation);
 }

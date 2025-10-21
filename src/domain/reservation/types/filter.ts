@@ -5,4 +5,5 @@ export type ReservationFilter = Pagination & {
     day?: Date | null;
     inWeekOf?: Date | null;
     state?: ReservationState | null;
+    locationId?: number | null;
 };

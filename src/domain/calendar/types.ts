@@ -7,7 +7,6 @@ export type TimeCell = {
 };
 
 export type TimeSlot<T = any> = {
-    id?: string;
     day: Date;
     startTime: Time;
     endTime: Time;

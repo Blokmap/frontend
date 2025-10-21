@@ -13,7 +13,7 @@ describe('calendar helpers', () => {
 
             const result = toTimeslot(timeslottable);
 
-            expect(result.day).toBe(timeslottable.day);
+            expect(result.day).toEqual(timeslottable.day);
             expect(result.startTime).toEqual({ hours: 9, minutes: 0 });
             expect(result.endTime).toEqual({ hours: 17, minutes: 0 });
             expect(result.metadata).toBe(timeslottable);

@@ -22,8 +22,9 @@ import {
     updateLocation,
     deleteLocationImage,
     reorderLocationImages,
+    readLocationReservations,
 } from '@/domain/location';
-import { readLocationReservations, type Reservation } from '@/domain/reservation';
+import { type Reservation } from '@/domain/reservation';
 import type { ImageReorderRequest, ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Select, { type SelectChangeEvent } from 'primevue/select';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
-import ReservationStateBadge from '@/components/features/reservation/ReservationStateBadge.vue';
+import ReservationStateBadge from '@/components/features/reservation/state/ReservationStateBadge.vue';
 import ActionMenu from '@/components/shared/atoms/ActionMenu.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
@@ -139,7 +139,7 @@ const getSelectedStatusOption = (reservation: Reservation) => {
                 }}
             </TableCell>
             <TableCell>
-                <ReservationStateBadge :reservation="data" />
+                <ReservationStateBadge :state="data.state" />
             </TableCell>
             <TableCell>
                 <div class="flex justify-center">

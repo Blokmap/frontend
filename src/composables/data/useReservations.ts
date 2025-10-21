@@ -1,16 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { toValue, type MaybeRef } from 'vue';
+import { readLocationReservations } from '@/domain/location';
 import {
     confirmReservation,
     createReservation,
+    createReservations,
     deleteReservation,
-    readLocationReservations,
-} from '@/domain/reservation';
-import type {
-    Reservation,
-    ReservationIncludes,
-    ReservationFilter,
-    ReservationState,
+    deleteReservations,
+    type Reservation,
+    type ReservationFilter,
+    type ReservationIncludes,
+    type ReservationRequest,
+    type ReservationState,
 } from '@/domain/reservation';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Time } from '@/utils/time';
@@ -26,12 +27,6 @@ export type CreateReservationParams = {
     openingTimeId: number;
     startTime: Time;
     endTime: Time;
-};
-
-export type DeleteReservationParams = {
-    locationId: number;
-    openingTimeId: number;
-    reservationId: number;
 };
 
 /**
@@ -64,6 +59,49 @@ export function useCreateReservation(
     return mutation;
 }
 
+export type CreateReservationsParams = {
+    locationId: number;
+    requests: ReservationRequest[];
+};
+
+/**
+ * Composable to handle bulk creating reservations.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for creating multiple reservations.
+ */
+export function useCreateReservations(
+    options: CompMutationOptions = {},
+): CompMutation<CreateReservationsParams, Reservation[]> {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate profile reservations queries
+            queryClient.invalidateQueries({
+                queryKey: RESERVATION_QUERY_KEYS.profileReservations(),
+            });
+
+            // Invalidate location reservations queries
+            queryClient.invalidateQueries({
+                queryKey: ['location', 'reservations'],
+            });
+
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: ({ locationId, requests }: CreateReservationsParams) => {
+            return createReservations(locationId, requests);
+        },
+    });
+
+    return mutation;
+}
+
+export type DeleteReservationParams = {
+    reservationId: number;
+};
+
 /**
  * Composable to handle deleting a reservation.
  *
@@ -90,8 +128,47 @@ export function useDeleteReservation(
 
             options.onSuccess?.(data, variables, context);
         },
-        mutationFn: ({ locationId, openingTimeId, reservationId }: DeleteReservationParams) => {
-            return deleteReservation(locationId, openingTimeId, reservationId);
+        mutationFn: ({ reservationId }: DeleteReservationParams) => {
+            return deleteReservation(reservationId);
+        },
+    });
+
+    return mutation;
+}
+
+export type DeleteReservationsParams = {
+    locationId: number;
+    reservationIds: number[];
+};
+
+/**
+ * Composable to handle bulk deleting reservations.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for deleting multiple reservations.
+ */
+export function useDeleteReservations(
+    options: CompMutationOptions = {},
+): CompMutation<DeleteReservationsParams> {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate location reservations queries
+            queryClient.invalidateQueries({
+                queryKey: ['location', 'reservations'],
+            });
+
+            // Invalidate profile reservations queries
+            queryClient.invalidateQueries({
+                queryKey: RESERVATION_QUERY_KEYS.profileReservations(),
+            });
+
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: ({ locationId, reservationIds }: DeleteReservationsParams) => {
+            return deleteReservations(locationId, reservationIds);
         },
     });
 
@@ -199,8 +276,8 @@ export function useReservationState(
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: ({ locationId, reservationId, state }: ReservationStateParams) => {
-            // Currently only Present state is supported via confirmReservation
-            if (state === 'Present') {
+            // Currently only present state is supported via confirmReservation
+            if (state === 'present') {
                 return confirmReservation(locationId, reservationId);
             }
 

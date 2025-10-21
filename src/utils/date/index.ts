@@ -141,3 +141,18 @@ export function isToday(date: Date): boolean {
 export function isWeekend(day: Date): boolean {
     return day.getDay() === 0 || day.getDay() === 6;
 }
+
+/**
+ * Checks if two dates fall on the same calendar day.
+ *
+ * @param date1 - The first date to compare.
+ * @param date2 - The second date to compare.
+ * @returns True if both dates are on the same day, false otherwise.
+ */
+export function isSameDay(date1: Date, date2: Date): boolean {
+    return (
+        date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate()
+    );
+}

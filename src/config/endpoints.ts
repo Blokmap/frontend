@@ -1,4 +1,5 @@
 export const endpoints = {
+    websocket: '/ws',
     auth: {
         // endpoints in auth service
         login: '/auth/local/login',
@@ -87,6 +88,8 @@ export const endpoints = {
         reservations: {
             list: '/locations/{id}/reservations',
             confirm: '/locations/{id}/reservations/{reservationId}/confirm',
+            create: '/locations/{id}/reservations',
+            delete: '/locations/{id}/reservations',
         },
         reviews: {
             list: '/locations/{id}/reviews',
@@ -105,6 +108,9 @@ export const endpoints = {
             reorder: '/locations/{id}/images/reorder',
             read: '/locations/{id}/images',
         },
+    },
+    reservations: {
+        delete: '/reservations/{id}',
     },
     tags: {
         list: '/tags',

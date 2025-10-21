@@ -1,5 +1,5 @@
 import type { Image, ImageRequest } from '@/domain/image';
-import type { Location, LocationRequest } from '@/domain/location';
+import { LocationState, type Location, type LocationRequest } from '@/domain/location';
 import type { OpeningTime, OpeningTimeRequest } from '@/domain/openings';
 import type { Profile } from '@/domain/profile';
 import type { Reservation, ReservationState } from '@/domain/reservation';
@@ -74,7 +74,7 @@ export function createMockLocation(overrides?: Partial<Location>): Location {
     return {
         id: 1,
         name: 'Test Location',
-        state: 'approved',
+        state: LocationState.Approved,
         excerpt: createMockTranslation(),
         description: createMockTranslation(),
         seatCount: 50,
@@ -159,8 +159,6 @@ export function createMockReservation(overrides?: Partial<Reservation>): Reserva
         createdBy: createMockProfile(),
         location: createMockLocation(),
         openingTime: undefined,
-        confirmedAt: null,
-        confirmedBy: null,
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01'),
         ...overrides,
@@ -185,7 +183,6 @@ export function createMockTimeSlottable(overrides?: Partial<TimeSlottable>): Tim
  */
 export function createMockTimeSlot<T = any>(overrides?: Partial<TimeSlot<T>>): TimeSlot<T> {
     return {
-        id: 'timeslot-1',
         day: new Date('2024-01-15'),
         startTime: { hours: 9, minutes: 0 },
         endTime: { hours: 17, minutes: 0 },

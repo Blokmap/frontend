@@ -20,8 +20,6 @@ export type Reservation = {
     createdBy?: Profile;
     location?: Location;
     openingTime?: OpeningTime;
-    confirmedAt: Date | null;
-    confirmedBy?: Profile | null;
     createdAt: Date;
     updatedAt: Date;
 };
@@ -29,4 +27,11 @@ export type Reservation = {
 export type ReservationGroup = {
     profile: Profile;
     reservations: Reservation[];
+};
+
+export type ReservationRequest = {
+    openingTimeId: number;
+    day: Date;
+    startTime: Time;
+    endTime: Time;
 };

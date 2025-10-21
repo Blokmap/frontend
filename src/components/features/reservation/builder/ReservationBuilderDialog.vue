@@ -1,0 +1,315 @@
+<script setup lang="ts">
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import Popover from 'primevue/popover';
+import ProgressSpinner from 'primevue/progressspinner';
+import ReservationBuilderCalendar from '@/components/features/reservation/builder/ReservationBuilderCalendar.vue';
+import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
+import TimeInput from '@/components/shared/molecules/form/TimeInput.vue';
+import { computed, ref, watch, useTemplateRef } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthProfile } from '@/composables/data/useAuth';
+import { useReadOpeningTimes } from '@/composables/data/useOpeningTimes';
+import { useReadProfileReservations } from '@/composables/data/useProfile';
+import { useCreateReservations, useDeleteReservations } from '@/composables/data/useReservations';
+import { useToast } from '@/composables/store/useToast';
+import { dateToTime, timeToDate } from '@/utils/time';
+import type { TimeSlot } from '@/domain/calendar';
+import type { Location } from '@/domain/location';
+import type { OpeningTime } from '@/domain/openings';
+import type { Reservation, ReservationRequest } from '@/domain/reservation';
+
+const props = defineProps<{
+    location: Location;
+}>();
+
+const visible = defineModel<boolean>('visible', { required: true });
+const currentWeek = defineModel<Date>('date', { required: true });
+
+const router = useRouter();
+const toast = useToast();
+
+const { profileId } = useAuthProfile();
+
+const reservationFilters = computed(() => ({
+    inWeekOf: currentWeek.value,
+    locationId: props.location.id,
+}));
+
+const openingFilters = computed(() => ({
+    inWeekOf: currentWeek.value,
+}));
+
+const { data: reservations, isPending: isLoadingReservations } = useReadProfileReservations(
+    profileId,
+    reservationFilters,
+);
+
+const { data: openings, isPending: isLoadingOpenings } = useReadOpeningTimes(
+    computed(() => props.location.id),
+    openingFilters,
+);
+
+const { mutateAsync: createReservations } = useCreateReservations();
+const { mutateAsync: deleteReservations } = useDeleteReservations();
+
+// Builder state
+const reservationsToCreate = ref<ReservationRequest[]>([]);
+const reservationsToDelete = ref<Reservation[]>([]);
+
+// Popover state
+const reservationPopover = useTemplateRef('reservationPopover');
+const activeRequest = ref<ReservationRequest | null>(null);
+
+// Computed for TimeInput (needs Date objects)
+const popoverStartDate = computed({
+    get: () => (activeRequest.value ? timeToDate(activeRequest.value.startTime) : new Date()),
+    set: (date: Date) => {
+        if (activeRequest.value) {
+            activeRequest.value.startTime = dateToTime(date);
+        }
+    },
+});
+
+const popoverEndDate = computed({
+    get: () => (activeRequest.value ? timeToDate(activeRequest.value.endTime) : new Date()),
+    set: (date: Date) => {
+        if (activeRequest.value) {
+            activeRequest.value.endTime = dateToTime(date);
+        }
+    },
+});
+
+const isSaving = ref<boolean>(false);
+const isLoading = computed<boolean>(() => isLoadingReservations.value || isLoadingOpenings.value);
+
+const hasPendingChanges = computed(
+    () => reservationsToCreate.value.length + reservationsToDelete.value.length > 0,
+);
+
+/**
+ * Handle click on an opening time slot
+ *
+ * @param slot - The clicked time slot
+ * @param event - The click event
+ */
+function onOpeningTimeClick(slot: TimeSlot<OpeningTime>, event: Event): void {
+    if (isSaving.value || !slot.metadata) return;
+
+    // Show popover to create new reservation
+    activeRequest.value = {
+        day: slot.metadata.day,
+        openingTimeId: slot.metadata.id,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+    };
+
+    reservationPopover.value?.toggle(event);
+}
+
+/**
+ * Handle deletion of a tentative reservation request
+ */
+function onRequestDelete(request: ReservationRequest): void {
+    if (isSaving.value) return;
+
+    const index = reservationsToCreate.value.findIndex(
+        (r) =>
+            r.openingTimeId === request.openingTimeId &&
+            r.startTime.hours === request.startTime.hours &&
+            r.startTime.minutes === request.startTime.minutes &&
+            r.endTime.hours === request.endTime.hours &&
+            r.endTime.minutes === request.endTime.minutes,
+    );
+
+    if (index !== -1) {
+        reservationsToCreate.value.splice(index, 1);
+    }
+}
+
+/**
+ * Handle creation of a new reservation
+ */
+function onReservationCreate(): void {
+    if (!activeRequest.value) return;
+
+    reservationsToCreate.value.push({ ...activeRequest.value });
+
+    reservationPopover.value?.hide();
+    activeRequest.value = null;
+}
+
+/**
+ * Handles deletion of a reservation.
+ *
+ * @param reservation - The reservation to delete
+ */
+function onReservationDelete(reservation: Reservation): void {
+    if (isSaving.value) return;
+
+    const index = reservationsToDelete.value.findIndex((r) => r.id === reservation.id);
+
+    if (index !== -1) {
+        reservationsToDelete.value.splice(index, 1);
+    } else {
+        reservationsToDelete.value.push(reservation);
+    }
+}
+
+/**
+ * Save all pending changes (creations and deletions)
+ */
+async function savePendingChanges(): Promise<void> {
+    if (!hasPendingChanges.value || isSaving.value) return;
+
+    isSaving.value = true;
+
+    try {
+        const promises: Promise<any>[] = [];
+
+        // Bulk create reservations
+        if (reservationsToCreate.value.length > 0) {
+            promises.push(
+                createReservations({
+                    locationId: props.location.id,
+                    requests: reservationsToCreate.value,
+                }),
+            );
+        }
+
+        // Bulk delete reservations
+        if (reservationsToDelete.value.length > 0) {
+            promises.push(
+                deleteReservations({
+                    locationId: props.location.id,
+                    reservationIds: reservationsToDelete.value.map((r) => r.id),
+                }),
+            );
+        }
+
+        await Promise.all(promises);
+
+        // Reset pending changes
+        reservationsToCreate.value = [];
+        reservationsToDelete.value = [];
+
+        toast.add({
+            severity: 'success',
+            summary: 'Wijzigingen opgeslagen',
+            detail: `Wijziging(en) succesvol opgeslagen.`,
+        });
+    } catch {
+        toast.add({
+            severity: 'error',
+            summary: 'Fout bij opslaan',
+            detail: 'Er is een fout opgetreden bij het opslaan van je wijzigingen.',
+        });
+    } finally {
+        isSaving.value = false;
+    }
+}
+
+/**
+ * Cancel all pending changes and reset state
+ */
+function cancelPendingChanges(): void {
+    if (isSaving.value) return;
+    reservationsToCreate.value = [];
+    reservationsToDelete.value = [];
+}
+
+// Navigate back when dialog closes
+watch(visible, (newVisible) => {
+    if (!newVisible) {
+        router.push({
+            name: 'locations.detail',
+            params: { locationId: props.location.id },
+        });
+    }
+});
+</script>
+
+<template>
+    <Dialog v-model:visible="visible" modal :closable="false" class="dialog">
+        <template #header>
+            <!-- Calendar Controls -->
+            <CalendarControls class="w-full" v-model:date="currentWeek" />
+        </template>
+
+        <div class="space-y-6">
+            <!-- Loading State -->
+            <div v-if="isLoading" class="flex items-center justify-center py-12">
+                <ProgressSpinner />
+            </div>
+
+            <!-- Calendar -->
+            <ReservationBuilderCalendar
+                v-else-if="openings && reservations"
+                :current-week="currentWeek"
+                :opening-times="openings"
+                :reservations="reservations"
+                :reservations-to-create="reservationsToCreate"
+                :reservations-to-delete="reservationsToDelete"
+                :is-saving="isSaving"
+                @click:opening="onOpeningTimeClick"
+                @delete:request="onRequestDelete"
+                @delete:reservation="onReservationDelete">
+            </ReservationBuilderCalendar>
+        </div>
+
+        <template #footer>
+            <div class="mr-auto flex items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <div class="h-4 w-4 rounded border-l-4 border-slate-400 bg-slate-100"></div>
+                    <span class="text-sm text-gray-700">Beschikbaar</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="border-primary-500 bg-primary-100 h-4 w-4 rounded border-l-4"></div>
+                    <span class="text-sm text-gray-700">Jouw reservering</span>
+                </div>
+            </div>
+
+            <template v-if="hasPendingChanges">
+                <Button severity="contrast" text :disabled="isSaving" @click="cancelPendingChanges">
+                    Annuleren
+                </Button>
+                <Button :loading="isSaving" @click="savePendingChanges"> Opslaan </Button>
+            </template>
+            <Button v-else severity="contrast" text @click="visible = false">Sluiten</Button>
+        </template>
+    </Dialog>
+
+    <!-- Reservation Creation Popover -->
+    <Popover ref="reservationPopover">
+        <div class="w-80 space-y-4 p-4">
+            <h3 class="text-base font-semibold text-gray-900">Nieuwe reservatie</h3>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-gray-700">Starttijd</label>
+                    <TimeInput v-model="popoverStartDate" />
+                </div>
+
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-gray-700">Eindtijd</label>
+                    <TimeInput v-model="popoverEndDate" />
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <Button severity="contrast" text size="small" @click="reservationPopover?.hide()">
+                    Annuleren
+                </Button>
+                <Button size="small" @click="onReservationCreate">Toevoegen</Button>
+            </div>
+        </div>
+    </Popover>
+</template>
+
+<style>
+@reference '@/assets/styles/main.css';
+
+.dialog {
+    @apply h-full w-full max-w-[1240px];
+}
+</style>

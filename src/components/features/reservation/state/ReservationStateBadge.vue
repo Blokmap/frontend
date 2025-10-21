@@ -9,10 +9,10 @@ import {
     type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { ReservationState, type Reservation } from '@/domain/reservation';
+import { ReservationState } from '@/domain/reservation';
 
 defineProps<{
-    reservation: Reservation;
+    state: ReservationState;
 }>();
 
 const severities: Record<ReservationState, string> = {
@@ -41,10 +41,10 @@ const labels: Record<ReservationState, string> = {
 </script>
 
 <template>
-    <Badge :severity="severities[reservation.state]" class="w-[120px]">
+    <Badge :severity="severities[state]" class="w-[120px]">
         <div class="flex w-full items-center justify-around gap-1">
-            <FontAwesomeIcon :icon="icons[reservation.state]" />
-            <span>{{ labels[reservation.state] }}</span>
+            <FontAwesomeIcon :icon="icons[state]" />
+            <span>{{ labels[state] }}</span>
         </div>
     </Badge>
 </template>

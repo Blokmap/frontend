@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { formatDate } from '@vueuse/core';
-import ReservationStateBadge from './ReservationStateBadge.vue';
-import type { Reservation } from '@/domain/reservation';
+import ReservationStateBadge from '@/components/features/reservation/state/ReservationStateBadge.vue';
+import { formatReservationDateTime, type Reservation } from '@/domain/reservation';
 
 defineProps<{
     reservation: Reservation;
@@ -19,7 +18,7 @@ defineProps<{
                 {{ reservation.location?.name || 'Onbekende Locatie' }}
             </div>
             <div class="text-sm text-gray-600">
-                {{ formatDate(new Date(reservation.startTime), 'DD MMM YYYY') }}
+                {{ formatReservationDateTime(reservation) }}
             </div>
         </div>
     </div>

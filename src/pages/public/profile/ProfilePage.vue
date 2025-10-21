@@ -9,8 +9,8 @@ import ProfileAvatarDialog from '@/components/features/profile/avatar/ProfileAva
 import ProfileEditDialog from '@/components/features/profile/edit/ProfileEditDialog.vue';
 import StatsCard from '@/components/features/profile/stats/StatsCard.vue';
 import StatsCardSkeleton from '@/components/features/profile/stats/StatsCardSkeleton.vue';
-import ReservationItem from '@/components/features/reservation/ReservationItem.vue';
-import ReservationItemSkeleton from '@/components/features/reservation/ReservationItemSkeleton.vue';
+import ReservationItem from '@/components/features/reservation/lists/ReservationItem.vue';
+import ReservationItemSkeleton from '@/components/features/reservation/lists/ReservationItemSkeleton.vue';
 import {
     faBuilding,
     faCalendarDays,

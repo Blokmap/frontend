@@ -8,7 +8,7 @@ import LocationMap from '@/components/features/map/LocationMap.vue';
 import LocationMapSkeleton from '@/components/features/map/LocationMapSkeleton.vue';
 import OpeningsTable from '@/components/features/openings/OpeningsTable.vue';
 import OpeningsTableSkeleton from '@/components/features/openings/OpeningsTableSkeleton.vue';
-import ReservationBuilderDialog from '@/components/features/reservation/ReservationBuilderDialog.vue';
+import ReservationBuilderDialog from '@/components/features/reservation/builder/ReservationBuilderDialog.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import Gallery from '@/components/shared/organisms/image/Gallery.vue';
 import GallerySkeleton from '@/components/shared/organisms/image/GallerySkeleton.vue';

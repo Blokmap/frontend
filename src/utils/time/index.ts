@@ -1,5 +1,8 @@
 import type { Time, TimeGranularity } from './types';
 
+export * from './types';
+export * from './overlap';
+
 /**
  * Converts a Time object to a string in HH:MM format.
  *
@@ -157,5 +160,3 @@ export function isNight(time: Time): boolean {
 export function isMorning(time: Time): boolean {
     return time.hours >= 6 && time.hours < 12;
 }
-
-export * from './types';

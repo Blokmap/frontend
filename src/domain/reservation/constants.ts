@@ -1,0 +1,1 @@
+export const RESERVATION_BLOCK_SIZE_MINUTES = 5;

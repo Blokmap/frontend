@@ -7,9 +7,6 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
     plugins: [vue(), tailwindcss()],
     publicDir: 'static',
-    optimizeDeps: {
-        exclude: ['@primeuix'],
-    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),
@@ -26,6 +23,11 @@ export default defineConfig({
                     vue: ['vue', '@vueuse/core', '@vueuse/shared'],
                     primevue: ['primevue'],
                     mapbox: ['mapbox-gl'],
+                },
+                paths: (id) => {
+                    if (id.startsWith('@primeuix')) {
+                        return 'data:text/javascript,export const style = "";';
+                    }
                 },
             },
         },

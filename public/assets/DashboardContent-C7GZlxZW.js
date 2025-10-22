@@ -1,1 +1,0 @@
-import{_ as o}from"./index-BH2d3-5Q.js";import{c as t,d as s,f as n}from"./vue-Ch5H8NcK.js";const r={},a={class:"dashboard-content"};function c(e,d){return s(),t("div",a,[n(e.$slots,"default",{},void 0,!0)])}const i=o(r,[["render",c],["__scopeId","data-v-b520d4ea"]]);export{i as D};

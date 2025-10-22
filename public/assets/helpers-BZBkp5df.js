@@ -1,1 +1,0 @@
-function t(r,e){return{id:r.id,imageUrl:r.url,tempUrl:r.url,isPrimary:e===0,index:e}}function l(r){return r.tempUrl?r.tempUrl:r.imageUrl?r.imageUrl:r.file?URL.createObjectURL(r.file):""}export{l as g,t as i};

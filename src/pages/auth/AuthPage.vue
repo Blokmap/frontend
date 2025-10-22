@@ -112,7 +112,7 @@ function switchToRegister(): void {
 </script>
 
 <template>
-    <h1 ref="title" class="text-bold text-center text-4xl">
+    <h1 ref="title" class="text-bold text-center text-4xl" data-testid="auth-title">
         <span class="font-bold text-slate-700">{{ $t('pages.auth.title') }}</span>
     </h1>
     <p class="text-md mt-1 max-w-80 text-center text-slate-500">
@@ -125,6 +125,7 @@ function switchToRegister(): void {
         <Select
             class="!w-[300px] py-1 ps-6"
             :placeholder="$t('pages.auth.institution.select')"
+            data-testid="institution-select"
             pt:overlay:class="!w-[300px] w-full"
             pt:list-container:class="p-0"
             :options="filteredInstitutions"
@@ -179,12 +180,22 @@ function switchToRegister(): void {
         </a>
     </template>
     <div class="absolute right-4 bottom-4">
-        <Button severity="secondary" size="small" link @click="switchToLogin">
+        <Button
+            severity="secondary"
+            size="small"
+            link
+            data-testid="password-login-button"
+            @click="switchToLogin">
             <span class="hover:underline">{{ $t('pages.auth.actions.loginPassword') }}</span>
             <FontAwesomeIcon :icon="faArrowRight" />
         </Button>
     </div>
-    <Dialog class="w-[500px]" :visible="isDialogVisible" modal @update:visible="closeDialog">
+    <Dialog
+        class="w-[500px]"
+        :visible="isDialogVisible"
+        modal
+        data-testid="auth-dialog"
+        @update:visible="closeDialog">
         <template #header>
             <h2 class="text-lg font-bold">
                 {{

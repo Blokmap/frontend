@@ -22,3 +22,6 @@ tsconfig.tsbuildinfo
 *.njsproj
 *.sln
 *.sw?
+
+# Test files
+test/cy/screenshots

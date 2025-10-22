@@ -32,10 +32,16 @@ function handleFormSubmission(): void {
 </script>
 
 <template>
-    <form class="space-y-3" @submit.prevent="handleFormSubmission">
+    <form class="space-y-3" @submit.prevent="handleFormSubmission" data-testid="login-form">
         <FloatLabel variant="on">
             <label for="username">Username or Email</label>
-            <InputText id="username" v-model="form.username" class="w-full" required />
+            <InputText
+                id="username"
+                v-model="form.username"
+                class="w-full"
+                data-testid="login-username"
+                required>
+            </InputText>
         </FloatLabel>
 
         <FloatLabel variant="on">
@@ -45,7 +51,9 @@ function handleFormSubmission(): void {
                 v-model="form.password"
                 type="password"
                 class="w-full"
-                required />
+                data-testid="login-password"
+                required>
+            </InputText>
         </FloatLabel>
 
         <label class="mt-5 mb-4 flex items-center gap-2" for="remember">
@@ -58,6 +66,7 @@ function handleFormSubmission(): void {
             label="Log in with email"
             severity="primary"
             type="submit"
+            data-testid="login-submit"
             :loading="isLoading">
             <template #icon>
                 <FontAwesomeIcon :icon="faArrowRight" />

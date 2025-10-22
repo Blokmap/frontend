@@ -106,7 +106,9 @@ function onNearestClick(): void {
             </div>
 
             <div class="space-y-4" v-else>
-                <h2 class="flex items-center justify-between text-lg font-semibold">
+                <h2
+                    class="flex items-center justify-between text-lg font-semibold"
+                    data-testid="locations-title">
                     <span>
                         <template v-if="locations?.data?.length">
                             <span v-if="locations.truncated">
@@ -155,7 +157,7 @@ function onNearestClick(): void {
                 </template>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 xl:grid-cols-3">
+            <div class="grid grid-cols-2 gap-4 xl:grid-cols-3" data-testid="locations-grid">
                 <template v-if="locationsIsPending">
                     <LocationCardSkeleton v-for="n in previousLocationCount" :key="n">
                     </LocationCardSkeleton>
@@ -166,7 +168,8 @@ function onNearestClick(): void {
                         v-for="location in locations.data"
                         :key="location.id"
                         :to="{ name: 'locations.detail', params: { locationId: location.id } }"
-                        class="location-card-link">
+                        class="location-card-link"
+                        data-testid="location-card-link">
                         <LocationCard
                             :location="location"
                             @mouseenter="hoveredLocation = location"
@@ -190,6 +193,7 @@ function onNearestClick(): void {
                     ref="map"
                     v-model:hovered-location="hoveredLocation"
                     class="border-1 border-slate-200"
+                    data-testid="locations-map"
                     :locations="locations?.data"
                     :is-loading="locationsIsPending"
                     @update:bounds="onBoundsChange">

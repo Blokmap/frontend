@@ -114,7 +114,7 @@ function onLoginClick(): void {
             <div class="space-y-3">
                 <!-- Title and Quick Info -->
                 <div class="flex items-center justify-between gap-3">
-                    <h1 class="text-3xl font-semibold text-gray-900">
+                    <h1 class="text-3xl font-semibold text-gray-900" data-testid="location-name">
                         <template v-if="location">
                             {{ location.name }}
                         </template>

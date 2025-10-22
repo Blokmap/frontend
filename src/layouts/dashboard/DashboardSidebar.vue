@@ -56,13 +56,17 @@ function handleNavigate() {
 </script>
 
 <template>
-    <div class="sidebar">
+    <div class="sidebar" data-testid="dashboard-sidebar">
         <!-- Logo and Close Button Section -->
         <div class="sidebar-header">
-            <RouterLink :to="{ name: 'locations' }" @click="handleNavigate">
+            <RouterLink :to="{ name: 'locations' }" @click="handleNavigate" data-testid="logo-link">
                 <Logo :show-subtitle="false" variant="dark" />
             </RouterLink>
-            <button class="sidebar-close-btn" @click="closeMenu" aria-label="Close menu">
+            <button
+                class="sidebar-close-btn"
+                @click="closeMenu"
+                aria-label="Close menu"
+                data-testid="sidebar-close">
                 <FontAwesomeIcon :icon="faTimes" />
             </button>
         </div>
@@ -81,6 +85,7 @@ function handleNavigate() {
                         name: 'dashboard.profiles.locations',
                         params: { profileId: profile.id },
                     }"
+                    data-testid="my-locations-link"
                     @click="handleNavigate">
                     <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Locaties</p>
@@ -90,6 +95,7 @@ function handleNavigate() {
                     class="sidebar-link"
                     :class="{ active: isRouteActive('locations.submit') }"
                     :to="{ name: 'locations.submit' }"
+                    data-testid="new-location-link"
                     @click="handleNavigate">
                     <FontAwesomeIcon :icon="faPlus" />
                     <p>Nieuwe Locatie</p>
@@ -198,7 +204,11 @@ function handleNavigate() {
         </div>
 
         <div class="sidebar-profile">
-            <RouterLink class="sidebar-link" :to="{ name: 'profile' }" @click="handleNavigate">
+            <RouterLink
+                class="sidebar-link"
+                :to="{ name: 'profile' }"
+                data-testid="profile-link"
+                @click="handleNavigate">
                 <ProfileAvatar :profile="profile" class="h-10 w-10" />
                 <div class="flex-1 space-y-1 leading-tight">
                     <div class="text-sm font-semibold text-white">
@@ -208,7 +218,10 @@ function handleNavigate() {
                 </div>
             </RouterLink>
 
-            <button class="sidebar-link logout-btn" @click="handleLogoutClick">
+            <button
+                class="sidebar-link logout-btn"
+                data-testid="logout-button"
+                @click="handleLogoutClick">
                 <FontAwesomeIcon :icon="faSignOut" />
                 <span>Uitloggen</span>
             </button>

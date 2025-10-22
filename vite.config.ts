@@ -15,19 +15,11 @@ export default defineConfig({
     build: {
         outDir: 'public',
         rollupOptions: {
-            external: (id) => {
-                return id.startsWith('@primeuix');
-            },
             output: {
                 manualChunks: {
                     vue: ['vue', '@vueuse/core', '@vueuse/shared'],
                     primevue: ['primevue'],
                     mapbox: ['mapbox-gl'],
-                },
-                paths: (id) => {
-                    if (id.startsWith('@primeuix')) {
-                        return 'data:text/javascript,export const style = "";';
-                    }
                 },
             },
         },

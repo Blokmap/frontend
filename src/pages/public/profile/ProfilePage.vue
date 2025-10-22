@@ -9,8 +9,7 @@ import ProfileAvatarDialog from '@/components/features/profile/avatar/ProfileAva
 import ProfileEditDialog from '@/components/features/profile/edit/ProfileEditDialog.vue';
 import StatsCard from '@/components/features/profile/stats/StatsCard.vue';
 import StatsCardSkeleton from '@/components/features/profile/stats/StatsCardSkeleton.vue';
-import ReservationItem from '@/components/features/reservation/lists/ReservationItem.vue';
-import ReservationItemSkeleton from '@/components/features/reservation/lists/ReservationItemSkeleton.vue';
+import ProfileReservationsTable from '@/components/features/reservation/lists/ProfileReservationsTable.vue';
 import {
     faCalendarDays,
     faChartLine,
@@ -205,31 +204,28 @@ function openReservationsModal(): void {
                 </div>
             </template>
             <template #content>
-                <div class="space-y-4">
-                    <template v-if="reservationsIsLoading || reservationsIsPending">
-                        <ReservationItemSkeleton v-for="n in 3" :key="n" />
-                    </template>
-                    <template v-else-if="reservations && reservations.length > 0">
-                        <ReservationItem
-                            v-for="reservation in reservations"
-                            :key="reservation.id"
-                            :reservation="reservation">
-                        </ReservationItem>
-                    </template>
-                    <template v-else>
-                        <div class="space-y-4 py-8 text-center text-gray-500">
-                            <FontAwesomeIcon :icon="faCalendarDays" class="text-4xl" />
-                            <p>Geen reservaties deze week</p>
-                            <Button
-                                severity="secondary"
-                                outlined
-                                size="small"
-                                @click="router.push({ name: 'locations' })">
-                                Bekijk Locaties
-                            </Button>
-                        </div>
-                    </template>
-                </div>
+                <ProfileReservationsTable
+                    :reservations="reservations"
+                    :loading="reservationsIsLoading || reservationsIsPending" />
+
+                <template
+                    v-if="
+                        !reservationsIsLoading &&
+                        !reservationsIsPending &&
+                        (!reservations || reservations.length === 0)
+                    ">
+                    <div class="space-y-4 py-8 text-center text-gray-500">
+                        <FontAwesomeIcon :icon="faCalendarDays" class="text-4xl" />
+                        <p>Geen reservaties deze week</p>
+                        <Button
+                            severity="secondary"
+                            outlined
+                            size="small"
+                            @click="router.push({ name: 'locations' })">
+                            Bekijk Locaties
+                        </Button>
+                    </div>
+                </template>
             </template>
         </Card>
     </div>

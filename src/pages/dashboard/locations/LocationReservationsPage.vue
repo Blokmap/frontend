@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import ReservationsTable from '@/components/features/reservation/lists/ReservationsTable.vue';
+import LocationReservationsTable from '@/components/features/reservation/lists/LocationReservationsTable.vue';
 import DateInput from '@/components/shared/molecules/form/DateInput.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import { faQrcode, faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -140,11 +140,11 @@ async function onStatusChange(reservationId: number, state: ReservationState): P
         </div>
 
         <!-- Reservations Table -->
-        <ReservationsTable
+        <LocationReservationsTable
             :reservations="filteredReservations"
             :loading="isLoading"
             :is-reservation-pending="isReservationPending"
             @change:status="onStatusChange">
-        </ReservationsTable>
+        </LocationReservationsTable>
     </DashboardContent>
 </template>

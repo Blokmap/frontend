@@ -15,28 +15,27 @@ withDefaults(
     },
 );
 
-defineEmits<{
-    (e: 'click:edit'): void;
-}>();
+defineEmits<{ (e: 'click:edit'): void }>();
 </script>
 
 <template>
     <div class="avatar-wrapper">
+        <!-- Edit overlay -->
         <div v-if="editable" class="avatar-overlay" @click="$emit('click:edit')">
-            <FontAwesomeIcon class="icon text-white" :icon="faPencil" />
+            <FontAwesomeIcon class="overlay-icon" :icon="faPencil" />
         </div>
+
+        <!-- Placeholder avatar -->
         <Avatar
             v-if="!profile.avatarUrl && !image"
-            class="aspect-square h-full w-full"
-            shape="circle">
-            <FontAwesomeIcon class="icon text-surface" :icon="faUser" />
+            class="avatar-placeholder"
+            shape="circle"
+            size="xlarge">
+            <FontAwesomeIcon class="placeholder-icon" :icon="faUser" />
         </Avatar>
-        <img
-            v-else
-            alt="Profile Avatar"
-            class="aspect-square h-full w-full rounded-full object-cover"
-            loading="lazy"
-            :src="image || profile.avatarUrl?.url" />
+
+        <!-- Profile image -->
+        <img v-else :src="image || profile.avatarUrl?.url" alt="Profile Avatar" loading="lazy" />
     </div>
 </template>
 
@@ -44,32 +43,36 @@ defineEmits<{
 @reference '@/assets/styles/main.css';
 
 .avatar-wrapper {
-    @apply relative flex items-center justify-center;
-    @apply aspect-square w-fit;
+    @apply relative flex aspect-square items-center justify-center;
 
-    /* Ensure children respect the square ratio for iOS Safari */
-    & > * {
-        @apply aspect-square h-full w-full;
-    }
+    .avatar-placeholder {
+        @apply h-full w-full bg-slate-200;
 
-    img {
-        /* Additional iOS Safari fixes */
-        @apply max-h-full min-h-full max-w-full min-w-full object-cover;
+        .placeholder-icon {
+            @apply text-slate-500;
+            width: clamp(1rem, 25%, 4rem);
+            height: clamp(1rem, 25%, 4rem);
+            font-size: clamp(1rem, 25%, 4rem);
+        }
     }
 
     .avatar-overlay {
-        @apply flex items-center justify-center opacity-0;
-        @apply absolute inset-0 rounded-full transition-all duration-300;
+        @apply absolute inset-0 z-10 flex items-center justify-center rounded-full;
+        @apply cursor-pointer bg-black/50 opacity-0 transition-opacity duration-300;
+
+        .overlay-icon {
+            @apply text-white;
+            width: clamp(1rem, 25%, 4rem);
+            height: clamp(1rem, 25%, 4rem);
+        }
     }
 
-    .icon {
-        width: clamp(1rem, 25%, 4rem);
-        height: clamp(1rem, 25%, 4rem);
-        font-size: clamp(1rem, 25%, 4rem);
+    img {
+        @apply absolute inset-0 aspect-square h-full w-full rounded-full object-cover;
     }
 
     &:hover .avatar-overlay {
-        @apply cursor-pointer bg-black/50 opacity-100;
+        @apply opacity-100;
     }
 }
 </style>

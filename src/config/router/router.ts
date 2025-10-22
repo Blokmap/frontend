@@ -28,7 +28,6 @@ import {
     LocationsPage,
     ProfilePage,
     ProfilesIndexPage,
-    ReservationsPage,
     ProfileLocationsPage,
 } from './pages';
 
@@ -49,18 +48,6 @@ const routes: RouteRecordRaw[] = [
                         meta: {
                             title: 'Profiel',
                             breadcrumbs: [{ label: 'Profiel', to: { name: 'profile' } }],
-                        },
-                    },
-                    {
-                        path: 'reservations/:inWeekOf?',
-                        name: 'profile.reservations',
-                        component: ReservationsPage,
-                        meta: {
-                            title: 'Reservaties',
-                            breadcrumbs: [
-                                { label: 'Profiel', to: { name: 'profile' } },
-                                { label: 'Reservaties', to: { name: 'profile.reservations' } },
-                            ],
                         },
                     },
                 ],

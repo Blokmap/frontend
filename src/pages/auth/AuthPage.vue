@@ -18,7 +18,7 @@ import { useToast } from '@/composables/store/useToast';
 import { endpoints } from '@/config/endpoints';
 import { authIdentityProviders, pullRedirectUrl } from '@/domain/auth';
 
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 const toast = useToast();
 const router = useRouter();
 const route = useRoute();
@@ -33,7 +33,7 @@ const {
     onError: (error) => {
         toast.add({
             severity: 'error',
-            summary: 'Inloggen mislukt',
+            summary: t('domains.auth.errors.loginFailed'),
             detail: error.response?.data,
         });
     },
@@ -48,8 +48,8 @@ const {
 
         toast.add({
             severity: 'success',
-            summary: 'Ingelogd!',
-            detail: 'Je bent succesvol ingelogd.',
+            summary: t('domains.auth.success.loggedIn'),
+            detail: t('domains.auth.success.loggedInDetail'),
         });
     },
 });
@@ -62,15 +62,15 @@ const {
     onError: (error) => {
         toast.add({
             severity: 'error',
-            summary: 'Registratie mislukt',
+            summary: t('domains.auth.errors.registerFailed'),
             detail: error.response?.data,
         });
     },
     onSuccess: () => {
         toast.add({
             severity: 'success',
-            summary: 'Geregistreerd!',
-            detail: 'Je bent succesvol geregistreerd. Je kan nu inloggen.',
+            summary: t('domains.auth.success.registered'),
+            detail: t('domains.auth.success.registeredDetail'),
         });
         router.push({ name: 'auth', params: { action: 'login' } });
     },
@@ -113,10 +113,10 @@ function switchToRegister(): void {
 
 <template>
     <h1 ref="title" class="text-bold text-center text-4xl">
-        <span class="font-bold text-slate-700">Blokmap Account</span>
+        <span class="font-bold text-slate-700">{{ $t('pages.auth.title') }}</span>
     </h1>
     <p class="text-md mt-1 max-w-80 text-center text-slate-500">
-        Gebruik je onderwijsinstelling of een ander type account om in te loggen.
+        {{ $t('pages.auth.subtitle') }}
     </p>
     <IconField class="my-2">
         <InputIcon>
@@ -124,7 +124,7 @@ function switchToRegister(): void {
         </InputIcon>
         <Select
             class="!w-[300px] py-1 ps-6"
-            placeholder="Selecteer een instelling"
+            :placeholder="$t('pages.auth.institution.select')"
             pt:overlay:class="!w-[300px] w-full"
             pt:list-container:class="p-0"
             :options="filteredInstitutions"
@@ -133,7 +133,7 @@ function switchToRegister(): void {
             <template #header>
                 <InputText
                     v-model="institutionFilter"
-                    placeholder="Zoek een instelling"
+                    :placeholder="$t('pages.auth.institution.search')"
                     class="w-full border-0">
                 </InputText>
             </template>
@@ -160,8 +160,7 @@ function switchToRegister(): void {
             </template>
             <template #empty>
                 <span class="text-gray-500">
-                    Geen overeenkomsten gevonden. Geen zorgen, je kan nog steeds een account maken
-                    via de opties hieronder!
+                    {{ $t('pages.auth.institution.noMatch') }}
                 </span>
             </template>
         </Select>
@@ -172,7 +171,7 @@ function switchToRegister(): void {
                 class="w-[300px]"
                 severity="contrast"
                 size="small"
-                :label="`Log in met ${idp.name}`">
+                :label="$t('pages.auth.actions.loginWith', [idp.name])">
                 <template #icon>
                     <img :src="idp.logo!" :alt="idp.name" class="h-5 w-5 object-contain" />
                 </template>
@@ -181,14 +180,18 @@ function switchToRegister(): void {
     </template>
     <div class="absolute right-4 bottom-4">
         <Button severity="secondary" size="small" link @click="switchToLogin">
-            <span class="hover:underline">Inloggen met wachtwoord</span>
+            <span class="hover:underline">{{ $t('pages.auth.actions.loginPassword') }}</span>
             <FontAwesomeIcon :icon="faArrowRight" />
         </Button>
     </div>
     <Dialog class="w-[500px]" :visible="isDialogVisible" modal @update:visible="closeDialog">
         <template #header>
             <h2 class="text-lg font-bold">
-                {{ route.params.action === 'register' ? 'Registreren' : 'Inloggen met wachtwoord' }}
+                {{
+                    route.params.action === 'register'
+                        ? $t('pages.auth.actions.register')
+                        : $t('pages.auth.actions.login')
+                }}
             </h2>
         </template>
         <template #default>
@@ -197,7 +200,7 @@ function switchToRegister(): void {
                 <span
                     class="mt-4 block cursor-pointer text-center hover:underline"
                     @click="switchToRegister">
-                    Heb je nog geen account?
+                    {{ $t('pages.auth.actions.noAccount') }}
                 </span>
             </template>
             <template v-else-if="route.params.action === 'register'">
@@ -208,7 +211,7 @@ function switchToRegister(): void {
                 <span
                     class="mt-4 block cursor-pointer text-center hover:underline"
                     @click="switchToLogin">
-                    Heb je al een account?
+                    {{ $t('pages.auth.actions.hasAccount') }}
                 </span>
             </template>
         </template>

@@ -10,6 +10,7 @@ const editingStore = useLocationEditing();
     <DashboardContent>
         <LocationInformationBuilder
             v-if="editingStore.locationForm"
-            v-model="editingStore.locationForm" />
+            v-model="editingStore.locationForm">
+        </LocationInformationBuilder>
     </DashboardContent>
 </template>

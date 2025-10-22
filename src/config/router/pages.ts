@@ -1,6 +1,5 @@
 // Profile
 export const ProfilePage = () => import('@/pages/public/profile/ProfilePage.vue');
-export const ReservationsPage = () => import('@/pages/public/profile/ReservationsPage.vue');
 
 // Locations
 export const LocationsPage = () => import('@/pages/public/locations/LocationsPage.vue');

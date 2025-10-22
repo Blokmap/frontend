@@ -13,18 +13,18 @@ const isLoading = false;
 
         <template v-else>
             <DashboardPageHeader
-                title="Reviews"
-                subtitle="Beheer en moderatie van gebruikersbeoordelingen." />
+                :title="$t('pages.dashboard.reviews.index.title')"
+                :subtitle="$t('pages.dashboard.reviews.index.subtitle')" />
 
             <div class="rounded-lg bg-white p-4 shadow md:p-6">
                 <p class="text-gray-500">
-                    Deze pagina toont het reviewbeheer, met functionaliteit voor:
+                    {{ $t('pages.dashboard.reviews.index.description') }}
                 </p>
                 <ul class="mt-4 space-y-2 text-gray-600">
-                    <li>• Overzicht van alle reviews</li>
-                    <li>• Reviews modereren en goedkeuren</li>
-                    <li>• Rapporteerde reviews behandelen</li>
-                    <li>• Reviewstatistieken bekijken</li>
+                    <li>• {{ $t('pages.dashboard.reviews.index.features.overview') }}</li>
+                    <li>• {{ $t('pages.dashboard.reviews.index.features.moderate') }}</li>
+                    <li>• {{ $t('pages.dashboard.reviews.index.features.reported') }}</li>
+                    <li>• {{ $t('pages.dashboard.reviews.index.features.statistics') }}</li>
                 </ul>
             </div>
         </template>

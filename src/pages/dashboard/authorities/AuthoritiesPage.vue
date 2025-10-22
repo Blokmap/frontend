@@ -12,7 +12,7 @@ const isLoading = false;
         <DashboardLoading v-if="isLoading" />
 
         <template v-else>
-            <DashboardPageHeader title="Autoriteiten" />
+            <DashboardPageHeader :title="$t('pages.dashboard.authorities.index.title')" />
             <!-- TODO: Add authorities content -->
         </template>
     </DashboardContent>

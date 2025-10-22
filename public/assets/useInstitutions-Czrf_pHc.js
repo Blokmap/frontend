@@ -1,0 +1,1 @@
+import{bs as i,a7 as o,at as a}from"./index-BH2d3-5Q.js";import{a8 as e}from"./vue-Ch5H8NcK.js";async function u(t={}){const s={...t};return(await i.get(o.institutions.list,{params:s})).data}const r={list:t=>["institutions",t]};function l(t,s={}){return a({...s,queryKey:r.list(t),queryFn:()=>u(e(t))})}export{l as u};

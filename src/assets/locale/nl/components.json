@@ -1,0 +1,25 @@
+{
+    "toast": {
+        "error": "Er is een fout opgetreden",
+        "success": "Actie succesvol uitgevoerd",
+        "info": "Informatie"
+    },
+    "search": {
+        "noResults": "Geen resultaten gevonden",
+        "inNeighborhood": "In de buurt",
+        "allLocations": "Alle locaties",
+        "anyDay": "Alle data"
+    },
+    "reservation": {},
+    "calendar": {
+        "days": {
+            "monday": "Maandag",
+            "tuesday": "Dinsdag",
+            "wednesday": "Woensdag",
+            "thursday": "Donderdag",
+            "friday": "Vrijdag",
+            "saturday": "Zaterdag",
+            "sunday": "Zondag"
+        }
+    }
+}

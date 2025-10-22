@@ -15,11 +15,11 @@ const notFound = false;
 
         <DashboardNotFound
             v-else-if="notFound"
-            title="Autoriteit Niet Gevonden"
-            message="De autoriteit die je zoekt bestaat niet of je hebt geen toegang." />
+            :title="$t('pages.dashboard.authorities.detail.notFound')"
+            :message="$t('pages.dashboard.authorities.detail.notFoundMessage')" />
 
         <template v-else>
-            <DashboardPageHeader title="Autoriteit Details" />
+            <DashboardPageHeader :title="$t('pages.dashboard.authorities.detail.title')" />
             <!-- TODO: Add authority details content -->
         </template>
     </DashboardContent>

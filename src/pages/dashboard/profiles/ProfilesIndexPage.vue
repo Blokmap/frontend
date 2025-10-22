@@ -8,6 +8,7 @@ import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
 import { useDebounceFn } from '@vueuse/core';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useReadProfiles, useUpdateProfileState } from '@/composables/data/useProfile';
@@ -17,6 +18,7 @@ import type { Profile, ProfileFilter, ProfileState } from '@/domain/profile';
 
 const router = useRouter();
 const toast = useToast();
+const { t } = useI18n();
 
 const searchQuery = ref<string>('');
 
@@ -36,8 +38,10 @@ const {
 
 const { data: counts } = useAdminCounts();
 
-const pageTitle = computed(
-    () => `Alle Profielen (${abbreviateCount(counts.value?.profileCount) ?? '...'})`,
+const pageTitle = computed(() =>
+    t('pages.dashboard.profiles.index.title', [
+        abbreviateCount(counts.value?.profileCount) ?? '...',
+    ]),
 );
 
 const isProfilePending = (profileId: number): boolean => {
@@ -73,8 +77,8 @@ async function onChangeProfileStatus(profileId: number, status: ProfileState) {
     const statusLabel = status === 'disabled' ? 'geblokkeerd' : 'geactiveerd';
     toast.add({
         severity: 'success',
-        summary: 'Status Bijgewerkt',
-        detail: `Profiel werd succesvol ${statusLabel}!`,
+        summary: t('domains.profiles.success.statusUpdated'),
+        detail: t('domains.profiles.success.statusUpdatedDetail', [statusLabel]),
     });
 }
 </script>
@@ -90,13 +94,13 @@ async function onChangeProfileStatus(profileId: number, status: ProfileState) {
                         :current-count="profiles?.data.length"
                         :total-count="profiles?.total"
                         :truncated="profiles?.truncated"
-                        empty-message="Geen profielen gevonden.">
+                        :empty-message="$t('pages.dashboard.profiles.index.empty')">
                     </ResultSummary>
                 </template>
                 <template #filters>
                     <SearchField
                         v-model="searchQuery"
-                        placeholder="Zoek door alle profielen..."
+                        :placeholder="$t('pages.dashboard.profiles.index.search')"
                         :loading="isFetching"
                         @input="onSearchChange">
                     </SearchField>

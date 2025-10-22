@@ -1,0 +1,23 @@
+{
+    "titles": {
+        "profile": "Profil",
+        "reservations": "Réservations",
+        "locations": "Emplacements",
+        "locationDetail": "Détails de l'emplacement",
+        "locationSubmit": "Ajouter un emplacement",
+        "dashboard": "Tableau de bord",
+        "dashboardLocations": "Gestion des emplacements",
+        "dashboardLocationDetail": "Gestion des emplacements",
+        "dashboardAuthorities": "Gestion des autorités",
+        "dashboardAuthorityDetail": "Gestion des autorités",
+        "dashboardInstitutions": "Gestion des institutions",
+        "dashboardInstitutionDetail": "Gestion des institutions",
+        "dashboardProfiles": "Gestion des profils",
+        "auth": "Connexion"
+    },
+    "blokmap": {
+        "sidebar": {
+            "locate": "Aller à la position actuelle"
+        }
+    }
+}

@@ -3,7 +3,6 @@ import LocationSearch from '@/components/features/location/search/LocationSearch
 import Logo from '@/components/shared/atoms/Logo.vue';
 import LanguageSelector from '@/components/shared/molecules/LanguageSelector.vue';
 import MenuButton from '@/components/shared/organisms/MenuButton.vue';
-import { useLocalStorage } from '@vueuse/core';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
@@ -14,7 +13,6 @@ defineEmits<{
 }>();
 
 const { locale } = useI18n();
-const rememberedLocale = useLocalStorage('locale', 'nl');
 
 const isExpandedSearch = ref(false);
 
@@ -22,12 +20,6 @@ function onEscapeClick(event: KeyboardEvent): void {
     if (event.key !== 'Escape') return;
     event.preventDefault();
     isExpandedSearch.value = false;
-}
-
-function onLocaleChange(newLocale?: string | null): void {
-    if (!newLocale) return;
-    locale.value = newLocale;
-    rememberedLocale.value = newLocale;
 }
 
 onMounted(() => {
@@ -48,7 +40,7 @@ onUnmounted(() => {
 
             <div class="actions">
                 <MenuButton />
-                <LanguageSelector :model-value="locale" @update:model-value="onLocaleChange" />
+                <LanguageSelector v-model="locale" />
             </div>
         </div>
 

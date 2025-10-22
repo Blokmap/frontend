@@ -12,13 +12,7 @@ import ReservationBuilderDialog from '@/components/features/reservation/builder/
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import Gallery from '@/components/shared/organisms/image/Gallery.vue';
 import GallerySkeleton from '@/components/shared/organisms/image/GallerySkeleton.vue';
-import {
-    faArrowRight,
-    faCheckCircle,
-    faEdit,
-    faLocationDot,
-    faUsers,
-} from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faEdit, faLocationDot, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -105,8 +99,12 @@ function onLoginClick(): void {
     <template v-if="isError">
         <div class="flex min-h-screen items-center justify-center">
             <div class="text-center">
-                <h2 class="text-2xl font-semibold text-gray-900">Locatie niet gevonden</h2>
-                <p class="mt-2 text-gray-600">De locatie die je zoekt bestaat niet.</p>
+                <h2 class="text-2xl font-semibold text-gray-900">
+                    {{ $t('pages.locations.notFound.title') }}
+                </h2>
+                <p class="mt-2 text-gray-600">
+                    {{ $t('pages.locations.notFound.description') }}
+                </p>
             </div>
         </div>
     </template>
@@ -131,7 +129,9 @@ function onLoginClick(): void {
                                 }"
                                 v-if="location && location?.isReservable">
                                 <Button severity="contrast">
-                                    <span class="hidden md:inline">Reservaties</span>
+                                    <span class="hidden md:inline">
+                                        {{ $t('domains.reservations.name', 2) }}
+                                    </span>
                                     <FontAwesomeIcon :icon="faUsers" />
                                 </Button>
                             </RouterLink>
@@ -144,7 +144,9 @@ function onLoginClick(): void {
                                     params: { locationId },
                                 }">
                                 <Button severity="secondary">
-                                    <span class="hidden md:inline">Bewerken</span>
+                                    <span class="hidden md:inline">
+                                        {{ $t('general.actions.edit') }}
+                                    </span>
                                     <FontAwesomeIcon :icon="faEdit" />
                                 </Button>
                             </RouterLink>
@@ -161,12 +163,10 @@ function onLoginClick(): void {
 
                     <Badge severity="contrast" class="flex items-center gap-2 border-0 p-0">
                         <FontAwesomeIcon :icon="faUsers" class="text-primary" />
-                        <span>{{ location.seatCount }} plaatsen</span>
-                    </Badge>
-
-                    <Badge severity="contrast" class="flex items-center gap-2 border-0 p-0">
-                        <FontAwesomeIcon class="text-primary" :icon="faCheckCircle" />
-                        <span>Geverifieerd</span>
+                        <span>
+                            {{ location.seatCount }}
+                            {{ $t('domains.locations.spot', location.seatCount).toLowerCase() }}
+                        </span>
                     </Badge>
                 </div>
             </div>
@@ -211,7 +211,7 @@ function onLoginClick(): void {
                     <!-- Features Section -->
                     <div v-if="location" class="space-y-6 border-b border-gray-200 pb-8">
                         <h2 class="text-2xl font-semibold text-gray-900">
-                            Wat deze bloklocatie biedt
+                            {{ $t('pages.locations.sections.features.title') }}
                         </h2>
                         <LocationFeatures :location="location" />
                     </div>
@@ -231,7 +231,9 @@ function onLoginClick(): void {
                     <!-- Location Section -->
                     <div class="space-y-6">
                         <h2 class="text-2xl font-semibold text-gray-900">
-                            <template v-if="location"> Locatie op kaart </template>
+                            <template v-if="location">
+                                {{ $t('pages.locations.sections.geolocation.title') }}
+                            </template>
                             <Skeleton v-else-if="isPending" height="28px" width="200px" />
                         </h2>
 
@@ -252,7 +254,8 @@ function onLoginClick(): void {
                                 :center="[location.longitude, location.latitude]"
                                 :zoom="17"
                                 :interactive="false"
-                                :geo-location-control="false" />
+                                :geo-location-control="false">
+                            </LocationMap>
                             <LocationMapSkeleton v-else-if="isPending" />
                         </div>
                     </div>
@@ -265,9 +268,11 @@ function onLoginClick(): void {
                         <div class="rounded-xl border border-slate-200 bg-white p-6">
                             <h3 class="text-xl font-semibold text-gray-900">
                                 <template v-if="location?.isReservable">
-                                    Reserveer een plek
+                                    {{ $t('pages.locations.sections.reservations.title') }}
                                 </template>
-                                <template v-else> Openingsuren </template>
+                                <template v-else>
+                                    {{ $t('domains.openings.name', 2) }}
+                                </template>
                             </h3>
 
                             <div class="my-6">
@@ -288,7 +293,7 @@ function onLoginClick(): void {
                                     class="w-full"
                                     @click="showReservationDialog = true"
                                     v-if="profileId">
-                                    Plek Reserveren
+                                    {{ $t('pages.locations.sections.reservations.create') }}
                                     <FontAwesomeIcon :icon="faArrowRight" />
                                 </Button>
                                 <Button
@@ -296,12 +301,14 @@ function onLoginClick(): void {
                                     severity="contrast"
                                     @click="onLoginClick"
                                     v-else>
-                                    Inloggen om te reserveren
+                                    {{ $t('pages.locations.sections.reservations.login') }}
                                     <FontAwesomeIcon :icon="faArrowRight" />
                                 </Button>
                             </template>
                             <template v-else-if="location && !location.isReservable">
-                                <div class="text-center">Geen reservatie nodig 🥳</div>
+                                <div class="text-center">
+                                    {{ $t('pages.locations.sections.reservations.notNeeded') }}
+                                </div>
                             </template>
                         </div>
                     </div>

@@ -8,10 +8,13 @@ import LocationSettingsBuilder from '@/components/features/location/builder/buil
 import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useLocalStorage } from '@/composables/useLocalStorage';
 import { DEFAULT_LOCATION_REQUEST, type LocationRequest } from '@/domain/location';
 import type { BuilderStep, BuilderSubstep } from '@/components/features/location/builder';
 import type { ImageRequest } from '@/domain/image';
+
+const { t } = useI18n();
 
 const imagesForm = ref<ImageRequest[]>([]);
 
@@ -26,18 +29,18 @@ const substeps = ref<BuilderSubstep[]>([]);
 const steps: { id: BuilderStep; label: string; desc: string }[] = [
     {
         id: 'basics',
-        label: 'Registreer nieuwe Blokspot',
-        desc: 'Start met wat basisinformatie zoals de naam en een beschrijving van de nieuwe locatie. Bevestig het adres op de kaart.',
+        label: t('pages.locations.submit.steps.basics.label'),
+        desc: t('pages.locations.submit.steps.basics.desc'),
     },
     {
         id: 'images',
-        label: 'Afbeeldingen',
-        desc: "Voeg een paar foto's to die de locatie mooi in beeld brengen.",
+        label: t('pages.locations.submit.steps.images.label'),
+        desc: t('pages.locations.submit.steps.images.desc'),
     },
     {
         id: 'settings',
-        label: 'Instituties',
-        desc: 'De instellingen van de locatie bepalen hoe men reservaties kan maken.',
+        label: t('pages.locations.submit.steps.settings.label'),
+        desc: t('pages.locations.submit.steps.settings.desc'),
     },
 ];
 
@@ -117,7 +120,7 @@ async function submitLocation(): Promise<void> {
                     size="small"
                     @click="goPrevious">
                     <FontAwesomeIcon :icon="faArrowLeft" class="mr-2" />
-                    Vorige
+                    {{ $t('general.actions.previous') }}
                 </Button>
 
                 <Button
@@ -127,10 +130,10 @@ async function submitLocation(): Promise<void> {
                     <template v-if="isLastStep">
                         <FontAwesomeIcon v-if="!isCreating" :icon="faCheck" class="mr-2" />
                         <FontAwesomeIcon v-else :icon="faSpinner" class="mr-2" spin />
-                        Voltooien
+                        {{ $t('general.actions.complete') }}
                     </template>
                     <template v-else>
-                        Volgende
+                        {{ $t('general.actions.next') }}
                         <FontAwesomeIcon :icon="faArrowRight" class="ml-2" />
                     </template>
                 </Button>
@@ -181,9 +184,9 @@ async function submitLocation(): Promise<void> {
             <div class="flex items-center gap-2 text-xs text-slate-600">
                 <span>{{ stepIndex + 1 }}/{{ steps.length }}</span>
                 <span class="text-slate-400">•</span>
-                <span
-                    >{{ substeps.filter((s) => s.isCompleted).length }}/{{ substeps.length }}</span
-                >
+                <span>
+                    {{ substeps.filter((s) => s.isCompleted).length }}/{{ substeps.length }}
+                </span>
             </div>
 
             <!-- Navigation buttons -->

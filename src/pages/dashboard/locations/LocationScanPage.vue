@@ -2,6 +2,7 @@
 import ScannerOverlay from '@/components/features/scanner/ScannerOverlay.vue';
 import { useSound } from '@vueuse/sound';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import ping from '@/assets/sounds/ping.mp3';
 import { useScanProfile } from '@/composables/data/useProfile';
@@ -14,6 +15,7 @@ const props = defineProps<{
 
 const router = useRouter();
 const toast = useToast();
+const { t } = useI18n();
 const sound = useSound(ping, { volume: 3 });
 
 const successfullProfileScans = ref<number[]>([]);
@@ -28,15 +30,15 @@ const { mutateAsync: scanProfile, isPending } = useScanProfile({
 
         toast.add({
             severity: 'success',
-            summary: 'Scan successful',
-            detail: 'Profile has been scanned successfully.',
+            summary: t('domains.profiles.success.scanSuccessful'),
+            detail: t('domains.profiles.success.scanSuccessfulDetail'),
         });
     },
     onError: () => {
         toast.add({
             severity: 'error',
-            summary: 'Scan failed',
-            detail: 'An error occurred while scanning the profile.',
+            summary: t('domains.profiles.errors.scanFailed'),
+            detail: t('domains.profiles.errors.scanFailedDetail'),
         });
     },
 });
@@ -60,8 +62,8 @@ async function onScan(result: Result): Promise<void> {
         toast.add({
             id: `already-scanned-${profileId}`,
             severity: 'info',
-            summary: 'Already scanned',
-            detail: 'This profile has already been scanned recently.',
+            summary: t('domains.profiles.info.alreadyScanned'),
+            detail: t('domains.profiles.info.alreadyScannedDetail'),
         });
         return;
     }

@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, ref, useTemplateRef, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSearchLocations, useNearestLocation } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useToast } from '@/composables/store/useToast';
@@ -20,6 +21,7 @@ defineOptions({ name: 'LocationsPage' });
 
 const filterStore = useLocationFilters();
 const toast = useToast();
+const i18n = useI18n();
 
 const { geoLocation } = storeToRefs(filterStore);
 
@@ -35,8 +37,8 @@ const { mutate: flyToNearestLocation, isPending: isFlyingToNearestLocation } = u
     onError: () => {
         toast.add({
             severity: 'error',
-            summary: 'Fout bij het ophalen van de dichtstbijzijnde locatie',
-            detail: 'Probeer het later opnieuw.',
+            summary: i18n.t('domains.locations.errors.fetchNearest'),
+            detail: i18n.t('domains.locations.errors.tryAgainLater'),
         });
     },
 });
@@ -108,14 +110,19 @@ function onNearestClick(): void {
                     <span>
                         <template v-if="locations?.data?.length">
                             <span v-if="locations.truncated">
-                                Meer dan {{ locations.total }} locaties gevonden
+                                {{
+                                    $t('pages.locations.filters.foundResultsTruncated', [
+                                        locations.total,
+                                    ])
+                                }}
                             </span>
                             <span v-else>
-                                {{ locations.total }}
-                                {{ locations.total === 1 ? 'locatie' : 'locaties' }} gevonden
+                                {{ $t('pages.locations.filters.foundResults', [locations.total]) }}
                             </span>
                         </template>
-                        <template v-else>Geen exacte resultaten gevonden</template>
+                        <template v-else>
+                            {{ $t('general.noResultsExact') }}
+                        </template>
                     </span>
 
                     <FontAwesomeIcon
@@ -126,15 +133,22 @@ function onNearestClick(): void {
 
                 <template v-if="locations && hasNextPage(locations)">
                     <p class="text-slate-500">
-                        {{ locations.perPage }} van {{ locations.total }}
-                        locaties getoond. Gebruik de filters om je zoekopdracht te verfijnen.
+                        {{
+                            $t(
+                                'pages.locations.filters.showingLocations',
+                                { perPage: locations.perPage, total: locations.total },
+                                locations.perPage,
+                            )
+                        }}
                     </p>
                 </template>
 
                 <template v-if="!locations?.data?.length">
-                    <p class="text-slate-600">Probeer je zoekcriteria of filters aan te passen.</p>
+                    <p class="text-slate-600">
+                        {{ $t('pages.locations.filters.adjustCriteria') }}
+                    </p>
                     <p class="cursor-pointer text-slate-600 underline" @click="onNearestClick">
-                        Vlieg naar dichtstbijzijnde Blokspot
+                        {{ $t('pages.locations.filters.flyToNearest') }}
                         <FontAwesomeIcon :icon="faArrowRight" v-if="!isFlyingToNearestLocation" />
                         <FontAwesomeIcon :icon="faSpinner" spin v-else />
                     </p>

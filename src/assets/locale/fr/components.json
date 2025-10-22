@@ -1,0 +1,25 @@
+{
+    "toast": {
+        "error": "Une erreur s'est produite",
+        "success": "Action effectuée avec succès",
+        "info": "Information"
+    },
+    "search": {
+        "noResults": "Aucun résultat trouvé",
+        "inNeighborhood": "À proximité",
+        "allLocations": "Tous les emplacements",
+        "anyDay": "N'importe quel jour"
+    },
+    "reservation": {},
+    "calendar": {
+        "days": {
+            "monday": "Lundi",
+            "tuesday": "Mardi",
+            "wednesday": "Mercredi",
+            "thursday": "Jeudi",
+            "friday": "Vendredi",
+            "saturday": "Samedi",
+            "sunday": "Dimanche"
+        }
+    }
+}

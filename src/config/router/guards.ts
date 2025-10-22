@@ -1,9 +1,12 @@
 import { useQueryClient } from '@tanstack/vue-query';
-import { AUTH_QUERY_KEYS } from '@/composables/data/useAuth';
+import { computed, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { AUTH_QUERY_KEYS, useAuthProfile } from '@/composables/data/useAuth';
 import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useToast } from '@/composables/store/useToast';
 import { pushRedirectUrl, readAuthProfile } from '@/domain/auth';
+import { router } from './router';
 import type { Breadcrumbs } from '@/utils/breadcrumb';
 import type { NavigationGuardReturn, RouteLocationNormalized } from 'vue-router';
 
@@ -88,4 +91,46 @@ export async function titleRouterGuard(
     } else {
         clearPageTitle();
     }
+}
+
+/**
+ * Sets up authentication session expiry guard.
+ * Watches for profile changes and redirects to auth page if session expires on protected routes.
+ * Call this once in your app's root component (e.g., App.vue).
+ */
+export function setupAuthGuard(): void {
+    const route = useRoute();
+    const toast = useToast();
+
+    const { data: profile } = useAuthProfile({
+        enabled: computed(() => {
+            const authSettings = route.meta.auth;
+            return authSettings?.required !== false;
+        }),
+    });
+
+    // Watch for auth profile changes and redirect if session expires on protected routes
+    watch(profile, (newProfile, oldProfile) => {
+        const authSettings = route.meta.auth;
+
+        // Only act if profile went from being set to null (session expired)
+        if (!oldProfile || !!newProfile) {
+            return;
+        }
+
+        // Only act if current route requires authentication
+        if (!authSettings || authSettings.required === false) {
+            return;
+        }
+
+        toast.add({
+            severity: 'warn',
+            summary: 'Sessie verlopen',
+            detail: 'Je sessie is verlopen. Log opnieuw in om door te gaan.',
+        });
+
+        pushRedirectUrl(route.fullPath);
+
+        router.push({ name: 'auth' });
+    });
 }

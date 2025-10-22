@@ -18,6 +18,9 @@ export default defineConfig({
     build: {
         outDir: 'public',
         rollupOptions: {
+            external: (id) => {
+                return id.startsWith('@primeuix');
+            },
             output: {
                 manualChunks: {
                     vue: ['vue', '@vueuse/core', '@vueuse/shared'],

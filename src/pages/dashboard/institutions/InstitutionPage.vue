@@ -15,11 +15,11 @@ const notFound = false;
 
         <DashboardNotFound
             v-else-if="notFound"
-            title="Institutie Niet Gevonden"
-            message="De institutie die je zoekt bestaat niet of je hebt geen toegang." />
+            :title="$t('pages.dashboard.institutions.detail.notFound')"
+            :message="$t('pages.dashboard.institutions.detail.notFoundMessage')" />
 
         <template v-else>
-            <DashboardPageHeader title="Institutie Details" />
+            <DashboardPageHeader :title="$t('pages.dashboard.institutions.detail.title')" />
             <!-- TODO: Add institution details content -->
         </template>
     </DashboardContent>

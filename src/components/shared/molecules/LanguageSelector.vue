@@ -5,7 +5,7 @@ import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getFlagImage } from '@/config/locale';
+import { getFlagImage } from '@/config/i18n';
 
 const language = defineModel<string>();
 
@@ -48,7 +48,7 @@ function handleLocaleChange(newLocale: string): void {
                     :class="{ active: loc === currentLocale }"
                     @click="handleLocaleChange(loc)">
                     <img :src="getFlagImage(loc)" alt="flag" class="h-6 w-6" />
-                    <span class="">{{ t(`app.locales.${loc}`) }}</span>
+                    <span class="">{{ t(`locales.${loc}`) }}</span>
                 </div>
             </template>
         </div>

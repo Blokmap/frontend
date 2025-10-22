@@ -13,6 +13,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import {
     useDeleteLocation,
@@ -27,7 +28,7 @@ import type { Profile } from '@/domain/profile';
 defineProps<{ profile: Profile }>();
 
 const toast = useToast();
-// const i18n = useI18n();
+const { t } = useI18n();
 
 const searchQuery = ref<string>('');
 
@@ -56,8 +57,8 @@ const {
         await refetch();
         toast.add({
             severity: 'success',
-            summary: 'Status Bijgewerkt',
-            detail: 'Locatiestatus werd succesvol bijgewerkt!',
+            summary: t('domains.locations.success.statusUpdated'),
+            detail: t('domains.locations.success.statusUpdatedDetail'),
         });
     },
 });
@@ -71,16 +72,18 @@ const {
         await refetch();
         toast.add({
             severity: 'success',
-            summary: 'Locatie Verwijderd',
-            detail: 'De locatie werd succesvol verwijderd!',
+            summary: t('domains.locations.success.deleted'),
+            detail: t('domains.locations.success.deletedDetail'),
         });
     },
 });
 
 const { data: counts } = useAdminCounts();
 
-const pageTitle = computed(
-    () => `Alle Locaties (${abbreviateCount(counts.value?.locationCount) ?? '...'})`,
+const pageTitle = computed(() =>
+    t('pages.dashboard.locations.index.title', [
+        abbreviateCount(counts.value?.locationCount) ?? '...',
+    ]),
 );
 
 const onSearchChange = useDebounceFn(() => {
@@ -140,7 +143,7 @@ function onDeleteLocation(locationId: number) {
                     <RouterLink :to="{ name: 'locations.submit' }">
                         <Button severity="secondary">
                             <FontAwesomeIcon :icon="faPlus" />
-                            Nieuwe Locatie
+                            {{ $t('pages.dashboard.locations.index.new') }}
                         </Button>
                     </RouterLink>
                 </template>
@@ -149,14 +152,14 @@ function onDeleteLocation(locationId: number) {
                         :current-count="locations?.data.length"
                         :total-count="locations?.total"
                         :truncated="locations?.truncated"
-                        empty-message="Geen locaties gevonden.">
+                        :empty-message="$t('pages.dashboard.locations.index.empty')">
                     </ResultSummary>
                 </template>
                 <template #filters>
                     <div class="flex flex-col gap-3 sm:flex-row">
                         <SearchField
                             v-model="searchQuery"
-                            placeholder="Zoek door alle locaties..."
+                            :placeholder="$t('pages.dashboard.locations.index.search')"
                             :loading="isFetching"
                             @input="onSearchChange">
                         </SearchField>

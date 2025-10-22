@@ -4,7 +4,7 @@ import { VueQueryPlugin } from '@tanstack/vue-query';
 import { createPinia } from 'pinia';
 import { ConfirmationService, FocusTrap, Ripple, ToastService, Tooltip } from 'primevue';
 import { createApp } from 'vue';
-import { i18n } from '@/config/locale';
+import { i18n } from '@/config/i18n';
 import { vueQueryConfig, primevueConfig } from '@/config/plugin';
 import { router } from '@/config/router';
 
@@ -39,3 +39,5 @@ window.addEventListener('unhandledrejection', (event) => {
         reloaded = true;
     }
 });
+
+export default app;

@@ -1,15 +1,127 @@
 {
-    "test": "Test",
-    "components": {
-        "calendar": {
-            "days": {
-                "monday": "Lundi",
-                "tuesday": "Mardi",
-                "wednesday": "Mercredi",
-                "thursday": "Jeudi",
-                "friday": "Vendredi",
-                "saturday": "Samedi",
-                "sunday": "Dimanche"
+    "profile": {
+        "stats": {
+            "completedReservations": "Réservation terminée | Réservations terminées",
+            "totalReservations": "Réservation effectuée | Réservations effectuées",
+            "upcomingReservations": "Réservation à venir | Réservations à venir",
+            "studyHours": "Heure réservée | Heures réservées"
+        },
+        "qrCode": {
+            "title": "Votre code QR",
+            "description": "Montrez ce code lors de votre enregistrement dans un lieu d’étude que vous avez réservé."
+        },
+        "reservations": {
+            "empty": "Vous n’avez pas encore effectué de réservations.",
+            "exploreLocations": "Découvrir les lieux"
+        }
+    },
+    "locations": {
+        "notFound": {
+            "title": "Lieu non trouvé",
+            "description": "Le lieu que vous recherchez n’existe pas."
+        },
+        "sections": {
+            "features": {
+                "title": "Ce que ce lieu d’étude propose"
+            },
+            "geolocation": {
+                "title": "Emplacement sur la carte"
+            },
+            "reservations": {
+                "title": "Réserver une place",
+                "create": "Réserver une place",
+                "login": "Connectez-vous pour faire une réservation",
+                "notNeeded": "Aucune réservation n’est nécessaire pour ce lieu."
+            }
+        },
+        "filters": {
+            "foundResultsTruncated": "Plus de {0} résultats trouvés.",
+            "foundResults": "{0} lieu d’étude trouvé | {0} lieux d’étude trouvés",
+            "showingLocations": "{perPage} lieu sur {total} affiché. Utilisez les filtres pour affiner votre recherche. | {perPage} lieux sur {total} affichés. Utilisez les filtres pour affiner votre recherche.",
+            "adjustCriteria": "Essayez de modifier vos critères ou vos filtres.",
+            "flyToNearest": "Aller au Blokspot le plus proche"
+        },
+        "submit": {
+            "steps": {
+                "basics": {
+                    "label": "Enregistrer un nouveau Blokspot",
+                    "desc": "Commencez par quelques informations de base sur le nouveau lieu. Confirmez l’adresse sur la carte."
+                },
+                "images": {
+                    "label": "Images",
+                    "desc": "Ajoutez quelques photos qui mettent bien en valeur le lieu."
+                },
+                "settings": {
+                    "label": "Institutions",
+                    "desc": "Les paramètres du lieu déterminent comment les utilisateurs peuvent faire des réservations."
+                }
+            }
+        }
+    },
+    "auth": {
+        "title": "Compte Blokmap",
+        "subtitle": "Utilisez votre établissement d’enseignement ou un autre type de compte pour vous connecter.",
+        "institution": {
+            "select": "Sélectionnez un établissement",
+            "search": "Recherchez un établissement",
+            "noMatch": "Aucune correspondance trouvée. Pas de souci, vous pouvez toujours créer un compte via les options ci-dessous !"
+        },
+        "actions": {
+            "loginWith": "Se connecter avec {0}",
+            "loginPassword": "Se connecter avec un mot de passe",
+            "register": "S’inscrire",
+            "login": "Se connecter avec un mot de passe",
+            "noAccount": "Vous n’avez pas encore de compte ?",
+            "hasAccount": "Vous avez déjà un compte ?"
+        }
+    },
+    "dashboard": {
+        "locations": {
+            "index": {
+                "title": "Tous les lieux ({0})",
+                "new": "Nouveau lieu",
+                "empty": "Aucun lieu trouvé.",
+                "search": "Recherchez parmi tous les lieux..."
+            }
+        },
+        "profiles": {
+            "index": {
+                "title": "Tous les profils ({0})",
+                "empty": "Aucun profil trouvé.",
+                "search": "Recherchez parmi tous les profils..."
+            }
+        },
+        "authorities": {
+            "index": {
+                "title": "Autorités"
+            },
+            "detail": {
+                "title": "Détails de l’autorité",
+                "notFound": "Autorité non trouvée",
+                "notFoundMessage": "L’autorité que vous recherchez n’existe pas ou vous n’y avez pas accès."
+            }
+        },
+        "institutions": {
+            "index": {
+                "title": "Institutions"
+            },
+            "detail": {
+                "title": "Détails de l’institution",
+                "notFound": "Institution non trouvée",
+                "notFoundMessage": "L’institution que vous recherchez n’existe pas ou vous n’y avez pas accès."
+            }
+        },
+        "reviews": {
+            "index": {
+                "title": "Avis",
+                "subtitle": "Gestion et modération des avis des utilisateurs.",
+                "description": "Cette page présente la gestion des avis, avec des fonctionnalités pour :",
+                "features": {
+                    "overview": "Vue d’ensemble de tous les avis",
+                    "moderate": "Modérer et approuver les avis",
+                    "reported": "Gérer les avis signalés",
+                    "statistics": "Voir les statistiques des avis"
+                }
             }
         }
     }

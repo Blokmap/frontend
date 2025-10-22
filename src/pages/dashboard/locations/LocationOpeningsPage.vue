@@ -2,6 +2,7 @@
 import LocationOpeningBuilder from '@/components/features/location/builder/builders/LocationOpeningBuilder.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import { ref, watchEffect } from 'vue';
+import { useI18n } from 'vue-i18n';
 import {
     useCreateOpeningTimes,
     useDeleteOpeningTime,
@@ -17,21 +18,22 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
+const { t } = useI18n();
 const editingStore = useLocationEditing();
 
 const { mutateAsync: createOpeningTimes } = useCreateOpeningTimes({
     onSuccess: () => {
         toast.add({
             severity: 'success',
-            summary: 'Openingstijd toegevoegd',
-            detail: 'De openingstijd is succesvol toegevoegd.',
+            summary: t('domains.openings.success.created'),
+            detail: t('domains.openings.success.createdDetail'),
         });
     },
     onError: () => {
         toast.add({
             severity: 'error',
-            summary: 'Fout bij toevoegen',
-            detail: 'Er is iets misgegaan bij het toevoegen van de openingstijd.',
+            summary: t('domains.openings.errors.createFailed'),
+            detail: t('domains.openings.errors.createFailedDetail'),
         });
     },
 });
@@ -40,15 +42,15 @@ const { mutateAsync: updateOpeningTime } = useUpdateOpeningTime({
     onSuccess: () => {
         toast.add({
             severity: 'success',
-            summary: 'Openingstijd bijgewerkt',
-            detail: 'De openingstijd is succesvol bijgewerkt.',
+            summary: t('domains.openings.success.updated'),
+            detail: t('domains.openings.success.updatedDetail'),
         });
     },
     onError: () => {
         toast.add({
             severity: 'error',
-            summary: 'Fout bij bijwerken',
-            detail: 'Er is iets misgegaan bij het bijwerken van de openingstijd.',
+            summary: t('domains.openings.errors.updateFailed'),
+            detail: t('domains.openings.errors.updateFailedDetail'),
         });
     },
 });
@@ -57,15 +59,15 @@ const { mutateAsync: deleteOpeningTime } = useDeleteOpeningTime({
     onSuccess: () => {
         toast.add({
             severity: 'success',
-            summary: 'Openingstijd verwijderd',
-            detail: 'De openingstijd is succesvol verwijderd.',
+            summary: t('domains.openings.success.deleted'),
+            detail: t('domains.openings.success.deletedDetail'),
         });
     },
     onError: () => {
         toast.add({
             severity: 'error',
-            summary: 'Fout bij verwijderen',
-            detail: 'Er is iets misgegaan bij het verwijderen van de openingstijd.',
+            summary: t('domains.openings.errors.deleteFailed'),
+            detail: t('domains.openings.errors.deleteFailedDetail'),
         });
     },
 });

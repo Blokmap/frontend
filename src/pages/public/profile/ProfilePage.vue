@@ -19,7 +19,7 @@ import {
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useReadProfileReservations, useReadProfileStats } from '@/composables/data/useProfile';
@@ -40,12 +40,13 @@ const {
     data: profileStatsData,
 } = useReadProfileStats(profileId);
 
-const showAvatarDialog = ref(false);
-const showEditDialog = ref(false);
+const showAvatarDialog = ref<boolean>(false);
+const showEditDialog = ref<boolean>(false);
 
-function openReservationsModal(): void {
-    router.push({ name: 'profile.reservations' });
-}
+const completedReservations = computed(() => profileStatsData.value?.completedReservations || 0);
+const upcomingReservations = computed(() => profileStatsData.value?.upcomingReservations || 0);
+const totalReservations = computed(() => profileStatsData.value?.totalReservations || 0);
+const reservationHours = computed(() => profileStatsData.value?.totalReservationHours || 0);
 </script>
 
 <template>
@@ -142,11 +143,12 @@ function openReservationsModal(): void {
             <Card v-if="!profileIsLoading && profile" class="md:col-span-1">
                 <template #content>
                     <div class="flex flex-col items-center gap-3 text-center">
-                        <h3 class="text-lg font-semibold text-gray-900">Jouw QR Code</h3>
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            {{ $t('pages.profile.qrCode.title') }}
+                        </h3>
                         <ProfileQrCode :profile="profile" />
                         <p class="text-xs text-gray-600">
-                            Laat deze code scannen bij het inchecken bij een bloklocatie waarvoor je
-                            hebt gereserveerd.
+                            {{ $t('pages.profile.qrCode.description') }}
                         </p>
                     </div>
                 </template>
@@ -162,32 +164,32 @@ function openReservationsModal(): void {
                 <!-- Total Reservations Card -->
                 <StatsCard
                     :icon="faCalendarDays"
-                    :value="profileStatsData?.totalReservations || 0"
-                    label="Aantal reservaties"
+                    :value="totalReservations"
+                    :label="$t('pages.profile.stats.totalReservations', totalReservations)"
                     icon-color="text-secondary-500">
                 </StatsCard>
 
                 <!-- Study Hours Card -->
                 <StatsCard
                     :icon="faClock"
-                    :value="`${profileStatsData?.totalReservationHours || 0}u`"
-                    label="Uren gereserveerd"
+                    :value="`${reservationHours}u`"
+                    :label="$t('pages.profile.stats.studyHours', reservationHours)"
                     icon-color="text-secondary-500">
                 </StatsCard>
 
                 <!-- Completed Card -->
                 <StatsCard
                     :icon="faCheckCircle"
-                    :value="profileStatsData?.completedReservations || 0"
-                    label="Voltooide reservaties"
+                    :value="completedReservations"
+                    :label="$t('pages.profile.stats.completedReservations', completedReservations)"
                     icon-color="text-slate-500">
                 </StatsCard>
 
                 <!-- Upcoming Card -->
                 <StatsCard
                     :icon="faChartLine"
-                    :value="profileStatsData?.upcomingReservations || 0"
-                    label="Aanstaande reservaties"
+                    :value="upcomingReservations"
+                    :label="$t('pages.profile.stats.upcomingReservations', upcomingReservations)"
                     icon-color="text-slate-500">
                 </StatsCard>
             </template>
@@ -195,34 +197,24 @@ function openReservationsModal(): void {
 
         <!-- Current Week Activity -->
         <Card>
-            <template #header>
-                <div class="flex items-center justify-between p-6 pb-0">
-                    <h2 class="text-xl font-semibold text-gray-900">Reservaties Deze Week</h2>
-                    <Button size="small" severity="secondary" text @click="openReservationsModal">
-                        Bekijk Kalender
-                    </Button>
-                </div>
-            </template>
             <template #content>
                 <ProfileReservationsTable
                     :reservations="reservations"
-                    :loading="reservationsIsLoading || reservationsIsPending" />
+                    :loading="reservationsIsLoading || reservationsIsPending">
+                </ProfileReservationsTable>
 
-                <template
-                    v-if="
-                        !reservationsIsLoading &&
-                        !reservationsIsPending &&
-                        (!reservations || reservations.length === 0)
-                    ">
+                <template v-if="reservations && reservations.length === 0">
                     <div class="space-y-4 py-8 text-center text-gray-500">
                         <FontAwesomeIcon :icon="faCalendarDays" class="text-4xl" />
-                        <p>Geen reservaties deze week</p>
+                        <p>
+                            {{ $t('pages.profile.reservations.empty') }}
+                        </p>
                         <Button
                             severity="secondary"
                             outlined
                             size="small"
                             @click="router.push({ name: 'locations' })">
-                            Bekijk Locaties
+                            {{ $t('pages.profile.reservations.exploreLocations') }}
                         </Button>
                     </div>
                 </template>

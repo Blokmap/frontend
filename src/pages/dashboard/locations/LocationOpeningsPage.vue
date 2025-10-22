@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import LocationOpeningBuilder from '@/components/features/location/builder/builders/LocationOpeningBuilder.vue';
+import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import { ref, watchEffect } from 'vue';
 import {
     useCreateOpeningTimes,
@@ -120,10 +121,12 @@ async function onDeleteOpeningTime(openingTimeId: number, sequence?: boolean): P
 </script>
 
 <template>
-    <LocationOpeningBuilder
-        :opening-times="openingsForm"
-        @create="onCreateOpeningTime"
-        @update="onUpdateOpeningTime"
-        @delete="onDeleteOpeningTime">
-    </LocationOpeningBuilder>
+    <DashboardContent>
+        <LocationOpeningBuilder
+            :opening-times="openingsForm"
+            @create="onCreateOpeningTime"
+            @update="onUpdateOpeningTime"
+            @delete="onDeleteOpeningTime">
+        </LocationOpeningBuilder>
+    </DashboardContent>
 </template>

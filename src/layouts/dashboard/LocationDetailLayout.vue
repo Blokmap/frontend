@@ -3,8 +3,10 @@ import Button from 'primevue/button';
 import Tab from 'primevue/tab';
 import TabList from 'primevue/tablist';
 import Tabs from 'primevue/tabs';
+import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
+import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import {
     faCalendar,
@@ -153,67 +155,67 @@ function navigateToTab(tab: string): void {
 </script>
 
 <template>
-    <!-- Loading State -->
-    <DashboardLoading v-if="isLoading" />
+    <DashboardContent>
+        <!-- Loading State -->
+        <DashboardLoading v-if="isLoading" />
 
-    <!-- Not Found State -->
-    <DashboardNotFound
-        v-else-if="!location || error"
-        title="Locatie Niet Gevonden"
-        message="De locatie die je zoekt bestaat niet of je hebt geen toegang.">
-    </DashboardNotFound>
+        <!-- Not Found State -->
+        <DashboardNotFound
+            v-else-if="!location || error"
+            title="Locatie Niet Gevonden"
+            message="De locatie die je zoekt bestaat niet of je hebt geen toegang.">
+        </DashboardNotFound>
 
-    <!-- Content -->
-    <div v-else class="relative space-y-6">
-        <!-- Header -->
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-semibold">
-                    {{ location.name }}
-                </h1>
-                <p v-if="location.excerpt?.nl" class="mt-2 text-gray-600">
-                    {{ location.excerpt.nl }}
-                </p>
+        <!-- Content -->
+        <template v-else>
+            <!-- Header -->
+            <DashboardPageHeader
+                :title="location.name"
+                :subtitle="location.excerpt?.nl || undefined">
+                <template #actions>
+                    <RouterLink :to="{ name: 'locations.detail', params: { locationId } }">
+                        <Button severity="secondary">
+                            <FontAwesomeIcon :icon="faEye" />
+                            <span>Bekijken</span>
+                        </Button>
+                    </RouterLink>
+                </template>
+            </DashboardPageHeader>
+
+            <!-- Tabs -->
+            <div class="tabs-wrapper">
+                <Tabs :value="activeTab" class="text-sm">
+                    <TabList>
+                        <Tab value="info" @click="navigateToTab('info')">
+                            <FontAwesomeIcon :icon="faList" class="tab-icon" />
+                            <span class="tab-label">Informatie</span>
+                        </Tab>
+                        <Tab value="reservations" @click="navigateToTab('reservations')">
+                            <FontAwesomeIcon :icon="faUsers" class="tab-icon" />
+                            <span class="tab-label">Reservaties</span>
+                        </Tab>
+                        <Tab value="openings" @click="navigateToTab('openings')">
+                            <FontAwesomeIcon :icon="faCalendar" class="tab-icon" />
+                            <span class="tab-label">Openingstijden</span>
+                        </Tab>
+                        <Tab value="images" @click="navigateToTab('images')">
+                            <FontAwesomeIcon :icon="faImages" class="tab-icon" />
+                            <span class="tab-label">Afbeeldingen</span>
+                        </Tab>
+                        <Tab value="settings" class="ml-auto" @click="navigateToTab('settings')">
+                            <FontAwesomeIcon :icon="faCog" class="tab-icon" />
+                            <span class="tab-label">Instellingen</span>
+                        </Tab>
+                    </TabList>
+                </Tabs>
             </div>
-            <RouterLink :to="{ name: 'locations.detail', params: { locationId } }">
-                <Button severity="secondary">
-                    <FontAwesomeIcon :icon="faEye" />
-                    <span>Bekijken</span>
-                </Button>
-            </RouterLink>
-        </div>
 
-        <!-- Tabs -->
-        <Tabs :value="activeTab" class="text-sm">
-            <TabList>
-                <Tab value="info" @click="navigateToTab('info')">
-                    <FontAwesomeIcon :icon="faList" class="mr-2" />
-                    <span>Informatie</span>
-                </Tab>
-                <Tab value="reservations" @click="navigateToTab('reservations')">
-                    <FontAwesomeIcon :icon="faUsers" class="mr-2" />
-                    <span>Reservaties</span>
-                </Tab>
-                <Tab value="openings" @click="navigateToTab('openings')">
-                    <FontAwesomeIcon :icon="faCalendar" class="mr-2" />
-                    <span>Openingstijden</span>
-                </Tab>
-                <Tab value="images" @click="navigateToTab('images')">
-                    <FontAwesomeIcon :icon="faImages" class="mr-2" />
-                    <span>Afbeeldingen</span>
-                </Tab>
-                <Tab value="settings" class="ml-auto" @click="navigateToTab('settings')">
-                    <FontAwesomeIcon :icon="faCog" class="mr-2" />
-                    <span>Instellingen</span>
-                </Tab>
-            </TabList>
-        </Tabs>
-
-        <!-- Page Content -->
-        <div class="tab-content">
-            <RouterView />
-        </div>
-    </div>
+            <!-- Page Content -->
+            <div class="tab-content">
+                <RouterView />
+            </div>
+        </template>
+    </DashboardContent>
 
     <!-- Sticky Save Bar (teleported outside to prevent layout shift) -->
     <Teleport to="body">
@@ -249,6 +251,19 @@ function navigateToTab(tab: string): void {
 
 <style scoped>
 @reference '@/assets/styles/main.css';
+
+.tabs-wrapper {
+    @apply -mx-3 overflow-x-auto px-3;
+    @apply md:mx-0 md:overflow-visible md:px-0;
+}
+
+.tab-icon {
+    @apply mr-2;
+}
+
+.tab-label {
+    @apply hidden md:inline;
+}
 
 .save-bar {
     @apply fixed bottom-8 left-1/2 z-50 w-full max-w-[700px] -translate-x-1/2 px-6 py-4;

@@ -1,8 +1,6 @@
 <script lang="ts" setup generic="T extends Record<string, any>, G = any">
-export type TableGroup<TData, TGroup = any> = {
-    group: TGroup;
-    items: TData[];
-};
+import { provide, ref } from 'vue';
+import type { TableGroup } from '.';
 
 const props = defineProps<{
     value?: T[];
@@ -14,6 +12,14 @@ const emit = defineEmits<{
     'click:group': [groupData: G];
 }>();
 
+const columns = ref<string[]>([]);
+
+provide('registerColumn', (column: string) => {
+    if (!columns.value.includes(column)) {
+        columns.value.push(column);
+    }
+});
+
 function onRowClick(item: T) {
     emit('click:row', item);
 }
@@ -24,10 +30,20 @@ function onGroupClick(group: G) {
 </script>
 
 <template>
-    <div class="table-container">
+    <!-- Desktop Table View -->
+    <div class="table-container hidden md:block">
         <table class="table">
-            <thead class="table-header">
-                <slot name="header"> </slot>
+            <thead v-if="$slots.header || columns.length" class="table-header">
+                <slot name="header">
+                    <tr>
+                        <th
+                            v-for="(column, index) in columns"
+                            :key="index"
+                            class="table-header-cell">
+                            {{ column }}
+                        </th>
+                    </tr>
+                </slot>
             </thead>
             <tbody class="table-body">
                 <!-- Grouped rendering -->
@@ -35,7 +51,7 @@ function onGroupClick(group: G) {
                     <template v-for="(groupData, groupIndex) in props.grouped" :key="groupIndex">
                         <!-- Group header row -->
                         <tr class="table-group-row" @click="onGroupClick(groupData.group)">
-                            <td :colspan="100" class="table-group-cell">
+                            <td :colspan="columns.length || 100" class="table-group-cell">
                                 <slot
                                     name="group"
                                     :data="groupData.group"
@@ -71,14 +87,56 @@ function onGroupClick(group: G) {
             </tbody>
         </table>
     </div>
+
+    <!-- Mobile Card View -->
+    <div class="mobile-card-container md:hidden">
+        <!-- Grouped rendering -->
+        <template v-if="props.grouped">
+            <div
+                v-for="(groupData, groupIndex) in props.grouped"
+                :key="groupIndex"
+                class="mobile-card-group">
+                <!-- Group header -->
+                <div class="mobile-card-group-header" @click="onGroupClick(groupData.group)">
+                    <slot
+                        name="group"
+                        :data="groupData.group"
+                        :items="groupData.items"
+                        :index="groupIndex"></slot>
+                </div>
+                <!-- Group items -->
+                <div
+                    v-for="(item, itemIndex) in groupData.items"
+                    :key="`${groupIndex}-${itemIndex}`"
+                    class="mobile-card"
+                    @click="onRowClick(item)">
+                    <slot name="row" :data="item" :index="itemIndex" :group="groupData.group">
+                    </slot>
+                </div>
+            </div>
+        </template>
+
+        <!-- Non-grouped rendering -->
+        <template v-else>
+            <div
+                v-for="(item, index) in props.value"
+                :key="index"
+                class="mobile-card"
+                @click="onRowClick(item)">
+                <slot name="row" :data="item" :index="index"></slot>
+            </div>
+        </template>
+    </div>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
+/* Desktop Table View */
 .table-container {
-    @apply overflow-hidden rounded-lg border border-slate-200;
+    @apply hidden overflow-hidden rounded-lg border border-slate-200;
     @apply overflow-x-auto;
+    @apply md:block;
 
     .table {
         @apply min-w-full bg-white;
@@ -114,6 +172,46 @@ function onGroupClick(group: G) {
                 &:hover {
                     @apply bg-slate-50;
                 }
+            }
+        }
+    }
+}
+
+/* Mobile Card View */
+.mobile-card-container {
+    @apply flex flex-col gap-3;
+    @apply md:hidden;
+
+    .mobile-card-group {
+        @apply space-y-2;
+
+        .mobile-card-group-header {
+            @apply rounded-lg bg-slate-50 p-3;
+            @apply border border-slate-200;
+            @apply cursor-pointer;
+        }
+    }
+
+    .mobile-card {
+        @apply rounded-lg border border-slate-200 bg-white;
+        @apply p-4;
+        @apply cursor-pointer transition-all;
+        @apply hover:border-slate-300 hover:shadow-sm;
+        @apply active:scale-[0.99];
+
+        /* Make table cells stack vertically on mobile */
+        :deep(td) {
+            @apply block px-0 py-2;
+            @apply border-b border-slate-100 last:border-b-0;
+            @apply whitespace-normal;
+
+            /* First child in each cell acts as a label on mobile */
+            &:first-child {
+                @apply pt-0;
+            }
+
+            &:last-child {
+                @apply pb-0;
             }
         }
     }

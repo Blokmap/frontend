@@ -113,7 +113,7 @@ function switchToRegister(): void {
 
 <template>
     <h1 ref="title" class="text-bold text-center text-4xl">
-        <span class="text-gradient-conic font-bold">Blokmap Account</span>
+        <span class="font-bold text-slate-700">Blokmap Account</span>
     </h1>
     <p class="text-md mt-1 max-w-80 text-center text-slate-500">
         Gebruik je onderwijsinstelling of een ander type account om in te loggen.
@@ -134,7 +134,8 @@ function switchToRegister(): void {
                 <InputText
                     v-model="institutionFilter"
                     placeholder="Zoek een instelling"
-                    class="w-full border-0" />
+                    class="w-full border-0">
+                </InputText>
             </template>
             <template #option="{ option }">
                 <div class="flex items-center gap-2">

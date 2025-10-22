@@ -2,11 +2,10 @@
 import InstitutionActionsMenu from '@/components/features/institution/InstitutionActionsMenu.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
-import TableHead from '@/components/shared/molecules/table/TableHead.vue';
 import { useI18n } from 'vue-i18n';
-import type { Institution } from '@/domain/institution';
+import { type Institution } from '@/domain/institution';
 
-const props = defineProps<{
+defineProps<{
     institutions?: Institution[];
     loading?: boolean;
 }>();
@@ -23,19 +22,9 @@ const onInstitutionClick = (institution: Institution) => {
 </script>
 
 <template>
-    <Table :value="props.institutions" @click:row="onInstitutionClick">
-        <template #header>
-            <tr>
-                <TableHead>Institutie</TableHead>
-                <TableHead>E-mailadres</TableHead>
-                <TableHead>Telefoon</TableHead>
-                <TableHead>Locatie</TableHead>
-                <TableHead>Acties</TableHead>
-            </tr>
-        </template>
-
+    <Table :value="institutions" @click:row="onInstitutionClick">
         <template #row="{ data: institution }">
-            <TableCell>
+            <TableCell column="Institutie">
                 <div class="flex items-center space-x-3">
                     <div class="h-12 w-12 flex-shrink-0">
                         <!-- <img
@@ -54,15 +43,15 @@ const onInstitutionClick = (institution: Institution) => {
                 </div>
             </TableCell>
 
-            <TableCell>
+            <TableCell column="E-mailadres">
                 {{ institution.email || '-' }}
             </TableCell>
 
-            <TableCell>
+            <TableCell column="Telefoon">
                 {{ institution.phone || '-' }}
             </TableCell>
 
-            <TableCell>
+            <TableCell column="Locatie">
                 <div v-if="institution.city || institution.province" class="text-sm">
                     <div v-if="institution.street">{{ institution.street }}</div>
                     <div>
@@ -78,7 +67,7 @@ const onInstitutionClick = (institution: Institution) => {
                 <span v-else>-</span>
             </TableCell>
 
-            <TableCell>
+            <TableCell column="Acties">
                 <InstitutionActionsMenu :institution="institution" />
             </TableCell>
         </template>

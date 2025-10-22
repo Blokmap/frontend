@@ -33,8 +33,8 @@ app.mount('#app');
 // A bit of a hack but works
 let reloaded = false;
 
-window.addEventListener('error', (event) => {
-    if (event.message.includes('dynamically imported module') && !reloaded) {
+window.addEventListener('unhandledrejection', (event) => {
+    if (event.reason?.message?.includes('dynamically imported module') && !reloaded) {
         window.location.reload();
         reloaded = true;
     }

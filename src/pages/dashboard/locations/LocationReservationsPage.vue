@@ -3,6 +3,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import ReservationsTable from '@/components/features/reservation/lists/ReservationsTable.vue';
 import DateInput from '@/components/shared/molecules/form/DateInput.vue';
+import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import { faQrcode, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
@@ -100,9 +101,9 @@ async function onStatusChange(reservationId: number, state: ReservationState): P
 </script>
 
 <template>
-    <div class="space-y-6">
+    <DashboardContent>
         <!-- Filters -->
-        <div class="flex flex-wrap items-end gap-4">
+        <div class="flex flex-wrap items-end gap-3 md:gap-4">
             <!-- Date Selector -->
             <div class="min-w-[200px] flex-1">
                 <label class="mb-2 block text-sm font-medium text-slate-700">Datum</label>
@@ -110,7 +111,7 @@ async function onStatusChange(reservationId: number, state: ReservationState): P
             </div>
 
             <!-- Search -->
-            <div class="min-w-[300px] flex-1">
+            <div class="min-w-[250px] flex-1 md:min-w-[300px]">
                 <label class="mb-2 block text-sm font-medium text-slate-700">Zoeken</label>
                 <div class="relative">
                     <InputText
@@ -132,7 +133,8 @@ async function onStatusChange(reservationId: number, state: ReservationState): P
                 }">
                 <Button>
                     <FontAwesomeIcon :icon="faQrcode" />
-                    Open Scanner
+                    <span class="hidden sm:inline">Open Scanner</span>
+                    <span class="sm:hidden">Scanner</span>
                 </Button>
             </RouterLink>
         </div>
@@ -144,5 +146,5 @@ async function onStatusChange(reservationId: number, state: ReservationState): P
             :is-reservation-pending="isReservationPending"
             @change:status="onStatusChange">
         </ReservationsTable>
-    </div>
+    </DashboardContent>
 </template>

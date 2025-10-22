@@ -111,7 +111,7 @@ function onLoginClick(): void {
         </div>
     </template>
     <template v-else>
-        <div class="space-y-8">
+        <div class="space-y-6 md:space-y-8">
             <!-- Hero Section -->
             <div class="space-y-3">
                 <!-- Title and Quick Info -->
@@ -131,7 +131,7 @@ function onLoginClick(): void {
                                 }"
                                 v-if="location && location?.isReservable">
                                 <Button severity="contrast">
-                                    <span>Reservaties</span>
+                                    <span class="hidden md:inline">Reservaties</span>
                                     <FontAwesomeIcon :icon="faUsers" />
                                 </Button>
                             </RouterLink>
@@ -144,7 +144,7 @@ function onLoginClick(): void {
                                     params: { locationId },
                                 }">
                                 <Button severity="secondary">
-                                    <span>Bewerken</span>
+                                    <span class="hidden md:inline">Bewerken</span>
                                     <FontAwesomeIcon :icon="faEdit" />
                                 </Button>
                             </RouterLink>

@@ -11,6 +11,7 @@ import {
     faMapLocationDot,
     faPlus,
     faSignOut,
+    faTimes,
     faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -24,6 +25,8 @@ import type { Profile } from '@/domain/profile';
 const props = defineProps<{
     profile: Profile;
 }>();
+
+const visible = defineModel<boolean>('visible', { default: false });
 
 const router = useRouter();
 const route = useRoute();
@@ -42,15 +45,26 @@ async function handleLogoutClick(): Promise<void> {
 function isRouteActive(routeName: string): boolean {
     return route.name?.toString().startsWith(routeName) || false;
 }
+
+function closeMenu() {
+    visible.value = false;
+}
+
+function handleNavigate() {
+    closeMenu();
+}
 </script>
 
 <template>
     <div class="sidebar">
-        <!-- Logo Section -->
-        <div class="flex justify-center py-1">
-            <RouterLink :to="{ name: 'locations' }">
+        <!-- Logo and Close Button Section -->
+        <div class="sidebar-header">
+            <RouterLink :to="{ name: 'locations' }" @click="handleNavigate">
                 <Logo :show-subtitle="false" variant="dark" />
             </RouterLink>
+            <button class="sidebar-close-btn" @click="closeMenu" aria-label="Close menu">
+                <FontAwesomeIcon :icon="faTimes" />
+            </button>
         </div>
 
         <!-- Navigation Sections -->
@@ -66,7 +80,8 @@ function isRouteActive(routeName: string): boolean {
                     :to="{
                         name: 'dashboard.profiles.locations',
                         params: { profileId: profile.id },
-                    }">
+                    }"
+                    @click="handleNavigate">
                     <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Locaties</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
@@ -74,7 +89,8 @@ function isRouteActive(routeName: string): boolean {
                 <RouterLink
                     class="sidebar-link"
                     :class="{ active: isRouteActive('locations.submit') }"
-                    :to="{ name: 'locations.submit' }">
+                    :to="{ name: 'locations.submit' }"
+                    @click="handleNavigate">
                     <FontAwesomeIcon :icon="faPlus" />
                     <p>Nieuwe Locatie</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
@@ -89,7 +105,8 @@ function isRouteActive(routeName: string): boolean {
                 <RouterLink
                     class="sidebar-link"
                     :class="{ active: isRouteActive('dashboard.authorities') }"
-                    :to="{ name: 'dashboard.authorities' }">
+                    :to="{ name: 'dashboard.authorities' }"
+                    @click="handleNavigate">
                     <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Autoriteiten</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
@@ -104,7 +121,8 @@ function isRouteActive(routeName: string): boolean {
                 <RouterLink
                     class="sidebar-link"
                     :class="{ active: isRouteActive('dashboard.institutions.index') }"
-                    :to="{ name: 'dashboard.institutions.index' }">
+                    :to="{ name: 'dashboard.institutions.index' }"
+                    @click="handleNavigate">
                     <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Instituties</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
@@ -119,7 +137,8 @@ function isRouteActive(routeName: string): boolean {
                 <RouterLink
                     class="sidebar-link"
                     :class="{ active: isRouteActive('dashboard.statistics') }"
-                    :to="{ name: 'dashboard.statistics' }">
+                    :to="{ name: 'dashboard.statistics' }"
+                    @click="handleNavigate">
                     <FontAwesomeIcon :icon="faChartSimple" />
                     <p>Statistieken</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
@@ -127,7 +146,8 @@ function isRouteActive(routeName: string): boolean {
                 <RouterLink
                     class="sidebar-link"
                     :class="{ active: isRouteActive('dashboard.institutions.index') }"
-                    :to="{ name: 'dashboard.institutions.index' }">
+                    :to="{ name: 'dashboard.institutions.index' }"
+                    @click="handleNavigate">
                     <FontAwesomeIcon :icon="faCity" />
                     <p>Instituties</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
@@ -138,7 +158,8 @@ function isRouteActive(routeName: string): boolean {
                 <RouterLink
                     class="sidebar-link"
                     :class="{ active: isRouteActive('dashboard.authorities') }"
-                    :to="{ name: 'dashboard.authorities' }">
+                    :to="{ name: 'dashboard.authorities' }"
+                    @click="handleNavigate">
                     <FontAwesomeIcon :icon="faBuilding" />
                     <p>Autoriteiten</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
@@ -149,7 +170,8 @@ function isRouteActive(routeName: string): boolean {
                 <RouterLink
                     class="sidebar-link"
                     :class="{ active: isRouteActive('dashboard.locations.index') }"
-                    :to="{ name: 'dashboard.locations.index' }">
+                    :to="{ name: 'dashboard.locations.index' }"
+                    @click="handleNavigate">
                     <FontAwesomeIcon :icon="faMapLocationDot" />
                     <p>Locaties</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
@@ -163,7 +185,8 @@ function isRouteActive(routeName: string): boolean {
                 <RouterLink
                     class="sidebar-link"
                     :class="{ active: isRouteActive('dashboard.profiles.index') }"
-                    :to="{ name: 'dashboard.profiles.index' }">
+                    :to="{ name: 'dashboard.profiles.index' }"
+                    @click="handleNavigate">
                     <FontAwesomeIcon :icon="faUsers" />
                     <p>Profielen</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
@@ -175,7 +198,7 @@ function isRouteActive(routeName: string): boolean {
         </div>
 
         <div class="sidebar-profile">
-            <RouterLink class="sidebar-link" :to="{ name: 'profile' }">
+            <RouterLink class="sidebar-link" :to="{ name: 'profile' }" @click="handleNavigate">
                 <ProfileAvatar :profile="profile" class="h-10 w-10" />
                 <div class="flex-1 space-y-1 leading-tight">
                     <div class="text-sm font-semibold text-white">
@@ -197,10 +220,24 @@ function isRouteActive(routeName: string): boolean {
 @reference '@/assets/styles/main.css';
 
 .sidebar {
-    @apply fixed flex h-[calc(100vh-3rem)] flex-col bg-slate-900 py-1 text-slate-300;
+    @apply flex flex-col bg-slate-900 py-1 text-slate-300;
+    @apply h-full;
+
+    .sidebar-header {
+        @apply flex items-center justify-between px-3 pt-2;
+        @apply md:justify-center md:px-3 md:pt-2;
+
+        .sidebar-close-btn {
+            @apply flex h-10 w-10 items-center justify-center;
+            @apply rounded-md bg-slate-800 text-xl text-white;
+            @apply transition-colors hover:bg-slate-700;
+            @apply md:hidden;
+        }
+    }
 
     .sidebar-items {
-        @apply flex-1 space-y-6 px-6 py-6;
+        @apply flex-1 space-y-6 px-5 py-3;
+        @apply md:py-6;
 
         .sidebar-section {
             @apply space-y-1.5;

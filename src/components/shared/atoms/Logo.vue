@@ -2,9 +2,7 @@
 import gsap from 'gsap';
 import { computed, onMounted, ref } from 'vue';
 
-const { variant } = withDefaults(defineProps<{ variant?: 'light' | 'dark' }>(), {
-    variant: 'light',
-});
+const { variant = 'light' } = defineProps<{ variant?: 'light' | 'dark' }>();
 
 const logoRef = ref<HTMLElement | null>(null);
 const textRef = ref<HTMLElement | null>(null);
@@ -69,7 +67,8 @@ function handleHoverOut() {
 .logo {
     font-family: 'Armageda';
     @apply flex w-fit items-center rounded-lg px-2 py-1;
-    @apply cursor-pointer text-3xl font-black tracking-tight uppercase select-none;
+    @apply cursor-pointer font-black tracking-tight uppercase select-none;
+    @apply text-2xl md:text-3xl;
     @apply transition-shadow duration-200;
 
     .letters {

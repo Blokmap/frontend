@@ -9,12 +9,13 @@ import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } f
 import type { AxiosError } from 'axios';
 
 export const AUTH_QUERY_KEYS = {
-    profile: () => ['profile', 'details'] as const,
-} as const;
+    profile: () => ['profile', 'details'],
+};
 
 /**
  * Composable to fetch the authenticated user's profile.
  *
+ * @param options - Optional query options.
  * @returns The query object containing the profile data and its state.
  */
 export function useAuthProfile(

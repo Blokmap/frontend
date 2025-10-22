@@ -9,10 +9,14 @@ const props = defineProps<{
 }>();
 
 const container = ref<HTMLDivElement>();
-const qrWriter = new BrowserQRCodeSvgWriter();
 
+/**
+ * Generates and renders the QR code for the given profile ID.
+ */
 function generateQrCode(): void {
     if (!container.value) return;
+
+    const qrWriter = new BrowserQRCodeSvgWriter();
 
     try {
         const hints = new Map();

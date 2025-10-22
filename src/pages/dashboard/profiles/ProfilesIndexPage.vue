@@ -3,10 +3,11 @@ import Paginator from 'primevue/paginator';
 import ProfileTable from '@/components/features/profile/ProfileTable.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
+import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
+import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
 import { useDebounceFn } from '@vueuse/core';
-import { ref } from 'vue';
-// import { useRouter } from 'vue-router';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useReadProfiles, useUpdateProfileState } from '@/composables/data/useProfile';
@@ -34,6 +35,10 @@ const {
 } = useUpdateProfileState();
 
 const { data: counts } = useAdminCounts();
+
+const pageTitle = computed(
+    () => `Alle Profielen (${abbreviateCount(counts.value?.profileCount) ?? '...'})`,
+);
 
 const isProfilePending = (profileId: number): boolean => {
     return isUpdatingProfile.value && updateVariables.value?.profileId === profileId;
@@ -75,49 +80,44 @@ async function onChangeProfileStatus(profileId: number, status: ProfileState) {
 </script>
 
 <template>
-    <!-- Loading State -->
-    <DashboardLoading v-if="isLoading" />
+    <DashboardContent>
+        <DashboardLoading v-if="isLoading" />
 
-    <!-- Content -->
-    <template v-else>
-        <div class="flex items-center justify-between gap-3">
-            <div class="space-y-2">
-                <h1 class="text-3xl font-bold">
-                    Alle Profielen ({{ abbreviateCount(counts?.profileCount) ?? '...' }})
-                </h1>
+        <template v-else>
+            <DashboardPageHeader :title="pageTitle">
+                <template #metadata>
+                    <ResultSummary
+                        :current-count="profiles?.data.length"
+                        :total-count="profiles?.total"
+                        :truncated="profiles?.truncated"
+                        empty-message="Geen profielen gevonden.">
+                    </ResultSummary>
+                </template>
+                <template #filters>
+                    <SearchField
+                        v-model="searchQuery"
+                        placeholder="Zoek door alle profielen..."
+                        :loading="isFetching"
+                        @input="onSearchChange">
+                    </SearchField>
+                </template>
+            </DashboardPageHeader>
 
-                <ResultSummary
-                    :current-count="profiles?.data.length"
-                    :total-count="profiles?.total"
-                    :truncated="profiles?.truncated"
-                    empty-message="Geen profielen gevonden.">
-                </ResultSummary>
-            </div>
-        </div>
+            <ProfileTable
+                :profiles="profiles?.data"
+                :loading="isLoading"
+                :is-profile-pending="isProfilePending"
+                @click:profile="onProfileClick"
+                @change:status="onChangeProfileStatus">
+            </ProfileTable>
 
-        <div class="flex gap-3">
-            <SearchField
-                v-model="searchQuery"
-                placeholder="Zoek door alle profielen..."
-                :loading="isFetching"
-                @input="onSearchChange">
-            </SearchField>
-        </div>
-
-        <ProfileTable
-            :profiles="profiles?.data"
-            :loading="isLoading"
-            :is-profile-pending="isProfilePending"
-            @click:profile="onProfileClick"
-            @change:status="onChangeProfileStatus">
-        </ProfileTable>
-
-        <Paginator
-            v-if="profiles?.data?.length"
-            :first="profiles.perPage * (profiles.page - 1)"
-            :rows="profiles.perPage"
-            :total-records="profiles.total"
-            @page="onPageChange">
-        </Paginator>
-    </template>
+            <Paginator
+                v-if="profiles?.data?.length"
+                :first="profiles.perPage * (profiles.page - 1)"
+                :rows="profiles.perPage"
+                :total-records="profiles.total"
+                @page="onPageChange">
+            </Paginator>
+        </template>
+    </DashboardContent>
 </template>

@@ -2,8 +2,10 @@
 import Button from 'primevue/button';
 import LocationDataItem from '@/components/features/location/LocationDataItem.vue';
 import LocationDataList from '@/components/features/location/LocationDataList.vue';
+import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
+import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, watchEffect } from 'vue';
@@ -50,6 +52,14 @@ const currentProfile = computed(() => (!isExtProfile.value ? props.profile : fet
 const isLoadingProfile = computed(() => isExtProfile.value && isProfileLoading.value);
 const showNotFound = computed(() => isExtProfile.value && isProfileError.value);
 const isInitialLoading = computed(() => isLoadingProfile.value || isLoading.value);
+
+const pageTitle = computed(() => {
+    if (profileId.value === props.profile.id) return 'Mijn Locaties';
+    if (currentProfile.value) {
+        return `Locaties van ${currentProfile.value.firstName} ${currentProfile.value.lastName}`;
+    }
+    return 'Locaties';
+});
 
 /**
  * Check if a location is currently being updated.
@@ -98,43 +108,36 @@ watchEffect(() => {
 </script>
 
 <template>
-    <!-- Loading State -->
-    <DashboardLoading v-if="isInitialLoading" />
+    <DashboardContent>
+        <DashboardLoading v-if="isInitialLoading" />
 
-    <!-- Not Found State -->
-    <DashboardNotFound
-        v-else-if="showNotFound"
-        title="Profiel Niet Gevonden"
-        message="Het profiel dat je zoekt bestaat niet of je hebt geen toegang." />
+        <DashboardNotFound
+            v-else-if="showNotFound"
+            title="Profiel Niet Gevonden"
+            message="Het profiel dat je zoekt bestaat niet of je hebt geen toegang." />
 
-    <!-- Content -->
-    <template v-else>
-        <div class="flex items-center justify-between gap-3">
-            <h1 class="text-3xl font-bold">
-                <template v-if="profileId === profile.id">Mijn Locaties</template>
-                <template v-else-if="currentProfile">
-                    Locaties van {{ currentProfile.firstName }} {{ currentProfile.lastName }}
+        <template v-else>
+            <DashboardPageHeader :title="pageTitle">
+                <template v-if="profileId === profile.id" #actions>
+                    <RouterLink :to="{ name: 'locations.submit' }">
+                        <Button severity="secondary">
+                            <FontAwesomeIcon :icon="faPlus" />
+                            Nieuwe Locatie
+                        </Button>
+                    </RouterLink>
                 </template>
-                <template v-else>Locaties</template>
-            </h1>
+            </DashboardPageHeader>
 
-            <RouterLink v-if="profileId === profile.id" :to="{ name: 'locations.submit' }">
-                <Button severity="secondary">
-                    <FontAwesomeIcon :icon="faPlus" />
-                    Nieuwe Locatie
-                </Button>
-            </RouterLink>
-        </div>
-
-        <LocationDataList :locations="locations" :loading="false">
-            <template #item="{ location }">
-                <LocationDataItem
-                    :location="location"
-                    :action-is-pending="isLocationPending(location.id)"
-                    :show-status-change="true"
-                    @change:state="onChangeLocationStatus">
-                </LocationDataItem>
-            </template>
-        </LocationDataList>
-    </template>
+            <LocationDataList :locations="locations" :loading="false">
+                <template #item="{ location }">
+                    <LocationDataItem
+                        :location="location"
+                        :action-is-pending="isLocationPending(location.id)"
+                        :show-status-change="true"
+                        @change:state="onChangeLocationStatus">
+                    </LocationDataItem>
+                </template>
+            </LocationDataList>
+        </template>
+    </DashboardContent>
 </template>

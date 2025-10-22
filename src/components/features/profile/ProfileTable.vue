@@ -4,7 +4,6 @@ import ProfileStateBadge from '@/components/features/profile/ProfileStateBadge.v
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
-import TableHead from '@/components/shared/molecules/table/TableHead.vue';
 import type { Profile, ProfileState } from '@/domain/profile';
 
 const props = defineProps<{
@@ -28,19 +27,9 @@ const onStatusChange = (profileId: number, status: ProfileState) => {
 </script>
 
 <template>
-    <Table :value="props.profiles" @click:row="onProfileClick">
-        <template #header>
-            <tr>
-                <TableHead>Profiel</TableHead>
-                <TableHead>E-mailadres</TableHead>
-                <TableHead>Institutie</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Acties</TableHead>
-            </tr>
-        </template>
-
+    <Table :value="profiles" @click:row="onProfileClick">
         <template #row="{ data: profile }">
-            <TableCell>
+            <TableCell column="Profiel">
                 <div class="flex items-center space-x-3">
                     <div class="h-12 w-12 flex-shrink-0">
                         <ProfileAvatar :profile="profile" />
@@ -54,19 +43,19 @@ const onStatusChange = (profileId: number, status: ProfileState) => {
                 </div>
             </TableCell>
 
-            <TableCell>
+            <TableCell column="E-mailadres">
                 {{ profile.email }}
             </TableCell>
 
-            <TableCell>
+            <TableCell column="Institutie">
                 {{ profile.institution?.name || '-' }}
             </TableCell>
 
-            <TableCell>
+            <TableCell column="Status">
                 <ProfileStateBadge :profile="profile" />
             </TableCell>
 
-            <TableCell>
+            <TableCell column="Acties">
                 <ProfileActionsMenu
                     :profile="profile"
                     :is-pending="props.isProfilePending?.(profile.id)"

@@ -5,7 +5,6 @@ import ReservationStateBadge from '@/components/features/reservation/state/Reser
 import ActionMenu from '@/components/shared/atoms/ActionMenu.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
-import TableHead from '@/components/shared/molecules/table/TableHead.vue';
 import {
     faCheckCircle,
     faClock,
@@ -94,15 +93,6 @@ const getSelectedStatusOption = (reservation: Reservation) => {
     </div>
 
     <Table v-else :grouped="groupedReservations">
-        <template #header>
-            <tr>
-                <TableHead>Tijd</TableHead>
-                <TableHead>Aanmaakdatum</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Acties</TableHead>
-            </tr>
-        </template>
-
         <template #group="{ data, items }">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
@@ -122,12 +112,12 @@ const getSelectedStatusOption = (reservation: Reservation) => {
         </template>
 
         <template #row="{ data }">
-            <TableCell>
+            <TableCell column="Tijd">
                 <FontAwesomeIcon :icon="faClock" class="mr-1" />
                 {{ timeToString(data.startTime) }} -
                 {{ timeToString(data.endTime) }}
             </TableCell>
-            <TableCell>
+            <TableCell column="Aanmaakdatum">
                 {{
                     data.createdAt.toLocaleDateString(locale, {
                         day: 'numeric',
@@ -138,10 +128,10 @@ const getSelectedStatusOption = (reservation: Reservation) => {
                     })
                 }}
             </TableCell>
-            <TableCell>
+            <TableCell column="Status">
                 <ReservationStateBadge :state="data.state" />
             </TableCell>
-            <TableCell>
+            <TableCell column="Acties">
                 <div class="flex justify-center">
                     <ActionMenu :is-pending="isReservationPending?.(data.id)">
                         <template #content="{ hideMenu }">

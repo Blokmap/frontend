@@ -126,7 +126,7 @@ defineExpose({ map });
 
 .loader {
     @apply absolute top-4 left-1/2 z-50 -translate-x-1/2 transform;
-    @apply rounded-full bg-white px-6 py-2 text-sm font-medium text-slate-700 shadow-md;
+    @apply rounded bg-white px-6 py-2 text-sm font-medium text-slate-700 shadow-md;
     @apply flex items-center justify-center gap-2;
 }
 </style>

@@ -1,36 +1,48 @@
 <script setup lang="ts">
 import ProgressSpinner from 'primevue/progressspinner';
-import { watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import Logo from '@/components/shared/atoms/Logo.vue';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { ref } from 'vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import DashboardHeader from './DashboardHeader.vue';
 import DashboardSidebar from './DashboardSidebar.vue';
 
-const router = useRouter();
-const route = useRoute();
+const { data: profile } = useAuthProfile();
 
-const { data: profile, isLoading } = useAuthProfile();
+const isSidebarOpen = ref<boolean>(false);
 
-watch(isLoading, (isLoading) => {
-    if (!isLoading && !profile.value) {
-        router.push(route);
-    }
-});
+/**
+ * Toggle the visibility of the sidebar
+ */
+function toggleSidebar(): void {
+    isSidebarOpen.value = !isSidebarOpen.value;
+}
 </script>
 
 <template>
     <div class="wrapper">
-        <nav class="sidebar" role="navigation" aria-label="Dashboard navigation">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <Logo :show-subtitle="false" variant="dark" />
+            <button class="mobile-menu-btn" @click="toggleSidebar" aria-label="Toggle menu">
+                <FontAwesomeIcon :icon="faBars" />
+            </button>
+        </header>
+
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" :class="{ 'mobile-hidden': !isSidebarOpen }">
             <template v-if="!profile">
                 <div class="flex h-full w-full items-center justify-center">
                     <ProgressSpinner />
                 </div>
             </template>
             <template v-else>
-                <DashboardSidebar :profile="profile" />
+                <DashboardSidebar v-model:visible="isSidebarOpen" :profile="profile" />
             </template>
         </nav>
 
+        <!-- Main Content -->
         <div class="content">
             <template v-if="!profile">
                 <div class="flex h-full w-full items-center justify-center">
@@ -54,25 +66,56 @@ watch(isLoading, (isLoading) => {
 @reference '@/assets/styles/main.css';
 
 .wrapper {
-    @apply flex flex-1;
-    @apply py-3 pr-3 md:py-6 md:pr-6;
+    @apply relative flex flex-1 flex-col md:flex-row;
+    @apply md:py-6 md:pr-6;
+
+    .mobile-header {
+        @apply flex items-center justify-between;
+        @apply px-3 pt-3;
+        @apply md:hidden;
+
+        .mobile-menu-btn {
+            @apply flex h-10 w-10 items-center justify-center;
+            @apply rounded-md bg-slate-900 text-xl text-white;
+            @apply transition-colors hover:bg-slate-800;
+        }
+    }
 
     .sidebar {
-        @apply w-72;
+        @apply flex-shrink-0;
+        @apply fixed top-0 left-0 z-50;
+        @apply w-full;
+        @apply md:relative md:w-72;
+
+        &.mobile-hidden {
+            @apply hidden md:block;
+        }
+
+        .sidebar-close-btn {
+            @apply absolute top-3 right-3 z-50;
+            @apply flex h-10 w-10 items-center justify-center;
+            @apply rounded-md bg-slate-800 text-xl text-white;
+            @apply transition-colors hover:bg-slate-700;
+            @apply md:hidden;
+        }
     }
 
     .content {
-        @apply flex flex-1 flex-col overflow-hidden rounded-md bg-gray-50;
+        @apply flex flex-1 flex-col;
+        @apply m-3 overflow-hidden rounded-md bg-gray-50;
+        @apply md:m-0;
 
         .header {
+            @apply hidden;
+            @apply md:flex md:items-center;
             @apply border-b-1 border-slate-200 bg-transparent;
             @apply p-4;
-            @apply flex items-center;
         }
 
         .main {
-            @apply mx-auto w-full max-w-[1200px] flex-1 space-y-8 px-4 py-8;
+            @apply mx-auto w-full max-w-[1200px] flex-1 px-3 py-4;
             @apply bg-transparent;
+            @apply md:px-4 md:py-8;
         }
     }
 }

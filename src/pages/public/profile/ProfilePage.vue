@@ -12,7 +12,6 @@ import StatsCardSkeleton from '@/components/features/profile/stats/StatsCardSkel
 import ReservationItem from '@/components/features/reservation/lists/ReservationItem.vue';
 import ReservationItemSkeleton from '@/components/features/reservation/lists/ReservationItemSkeleton.vue';
 import {
-    faBuilding,
     faCalendarDays,
     faChartLine,
     faCheckCircle,
@@ -52,25 +51,18 @@ function openReservationsModal(): void {
 
 <template>
     <div class="mx-auto w-full max-w-[1080px] space-y-6">
-        <!-- Profile Header -->
-        <Card>
-            <template #content>
-                <div class="relative">
-                    <!-- QR Code Section - Top Right -->
-                    <div
-                        v-if="!profileIsLoading && profile"
-                        class="absolute top-0 right-0 flex h-full flex-col justify-start">
-                        <ProfileQrCode :profile="profile" />
-                    </div>
-
-                    <!-- Main Profile Content -->
-                    <div class="flex flex-col items-center gap-6 pr-20 md:flex-row">
+        <!-- Profile Header and QR Code Row -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-4 md:items-start">
+            <!-- Profile Header -->
+            <Card class="md:col-span-3">
+                <template #content>
+                    <div class="profile-header">
                         <!-- Avatar Section -->
                         <template v-if="profileIsLoading || !profile">
                             <Skeleton shape="circle" size="96px" />
                         </template>
                         <template v-else>
-                            <div class="max-w-[120px]">
+                            <div class="avatar-wrapper">
                                 <ProfileAvatar
                                     :profile="profile"
                                     editable
@@ -84,7 +76,7 @@ function openReservationsModal(): void {
                         </template>
 
                         <!-- Profile Info -->
-                        <div class="flex-1 space-y-3">
+                        <div class="profile-info">
                             <template v-if="profileIsLoading">
                                 <Skeleton height="36px" width="200px" />
                                 <Skeleton height="21px" width="300px" />
@@ -92,7 +84,7 @@ function openReservationsModal(): void {
                             </template>
                             <template v-else-if="profile">
                                 <!-- Name and Edit Button -->
-                                <div class="flex items-center gap-3">
+                                <div class="profile-info__name">
                                     <h1 class="text-2xl font-bold text-gray-900">
                                         {{ profile.firstName }} {{ profile.lastName }}
                                     </h1>
@@ -101,29 +93,33 @@ function openReservationsModal(): void {
                                         severity="secondary"
                                         text
                                         @click="showEditDialog = true"
-                                        class="text-sm">
+                                        class="hidden text-sm md:inline-flex">
                                         Profiel Bewerken
                                     </Button>
                                     <ProfileEditDialog
                                         v-model:visible="showEditDialog"
-                                        :profile="profile" />
+                                        :profile="profile">
+                                    </ProfileEditDialog>
                                 </div>
 
                                 <div class="flex items-center gap-2 text-gray-600">
-                                    <FontAwesomeIcon :icon="faUser" class="text-gray-400" />
-                                    @{{ profile.username }}
+                                    <FontAwesomeIcon
+                                        :icon="faUser"
+                                        class="!md:inline !hidden text-gray-400">
+                                    </FontAwesomeIcon>
+                                    <span class="text-xs md:text-base">
+                                        @{{ profile.username }}
+                                    </span>
                                 </div>
-                                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                    <div class="flex items-center gap-3">
-                                        <FontAwesomeIcon :icon="faEnvelope" class="text-gray-400" />
-                                        <span class="text-gray-700">{{ profile.email }}</span>
-                                    </div>
-                                    <div v-if="profile.institution" class="flex items-center gap-3">
-                                        <FontAwesomeIcon :icon="faBuilding" class="text-gray-400" />
-                                        <span class="text-gray-700">{{
-                                            profile.institution?.name
-                                        }}</span>
-                                    </div>
+
+                                <div class="flex items-center gap-2 text-gray-600 md:gap-3">
+                                    <FontAwesomeIcon
+                                        :icon="faEnvelope"
+                                        class="!md:inline !hidden text-gray-400">
+                                    </FontAwesomeIcon>
+                                    <span class="text-xs text-gray-700 md:text-base">
+                                        {{ profile.email }}
+                                    </span>
                                 </div>
 
                                 <!-- Authorities/Roles -->
@@ -140,9 +136,23 @@ function openReservationsModal(): void {
                             </template>
                         </div>
                     </div>
-                </div>
-            </template>
-        </Card>
+                </template>
+            </Card>
+
+            <!-- QR Code Card -->
+            <Card v-if="!profileIsLoading && profile" class="md:col-span-1">
+                <template #content>
+                    <div class="flex flex-col items-center gap-3 text-center">
+                        <h3 class="text-lg font-semibold text-gray-900">Jouw QR Code</h3>
+                        <ProfileQrCode :profile="profile" />
+                        <p class="text-xs text-gray-600">
+                            Laat deze code scannen bij het inchecken bij een bloklocatie waarvoor je
+                            hebt gereserveerd.
+                        </p>
+                    </div>
+                </template>
+            </Card>
+        </div>
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -224,3 +234,31 @@ function openReservationsModal(): void {
         </Card>
     </div>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.profile-header {
+    @apply flex flex-row items-center gap-3 md:gap-6;
+
+    .avatar-wrapper {
+        @apply h-16 w-16 flex-shrink-0;
+        @apply md:h-24 md:w-24;
+    }
+
+    .profile-info {
+        @apply flex flex-1 flex-col space-y-1;
+        @apply md:space-y-3;
+
+        .profile-info__name {
+            @apply flex flex-row items-center gap-0.5;
+            @apply md:gap-3;
+
+            h1 {
+                @apply text-base leading-tight font-bold;
+                @apply md:text-2xl md:leading-normal;
+            }
+        }
+    }
+}
+</style>

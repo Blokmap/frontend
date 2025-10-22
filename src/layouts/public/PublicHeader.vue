@@ -41,17 +41,19 @@ onUnmounted(() => {
 
 <template>
     <div class="header-content">
-        <div class="logo">
+        <div class="navigation-wrapper">
             <RouterLink :to="{ name: 'locations' }">
                 <Logo />
             </RouterLink>
+
+            <div class="actions">
+                <MenuButton />
+                <LanguageSelector :model-value="locale" @update:model-value="onLocaleChange" />
+            </div>
         </div>
 
-        <LocationSearch @click:search="$emit('click:search')" />
-
-        <div class="actions">
-            <MenuButton />
-            <LanguageSelector :model-value="locale" @update:model-value="onLocaleChange" />
+        <div class="search-wrapper">
+            <LocationSearch @click:search="$emit('click:search')" />
         </div>
     </div>
 </template>
@@ -60,15 +62,20 @@ onUnmounted(() => {
 @reference '@/assets/styles/main.css';
 
 .header-content {
-    @apply relative z-10 flex rounded-xl;
-    @apply mx-auto w-full items-center justify-center;
+    @apply relative flex flex-col rounded-xl;
+    @apply mx-auto w-full items-center justify-center gap-4;
 
-    .logo {
-        @apply absolute top-[50%] left-0 translate-y-[-50%];
+    .navigation-wrapper {
+        @apply flex w-full items-center justify-between;
+    }
+
+    .search-wrapper {
+        @apply w-full md:max-w-[300px];
+        @apply md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2;
     }
 
     .actions {
-        @apply absolute top-0 right-0 flex h-full transform items-center gap-2;
+        @apply flex items-center gap-2;
     }
 }
 </style>

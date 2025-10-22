@@ -69,7 +69,7 @@ export function useReadProfileStats(
  */
 export function useReadProfileReservations(
     profileId: MaybeRef<number | null>,
-    filters: MaybeRef<ReservationFilter>,
+    filters: MaybeRef<ReservationFilter> = {},
 ): CompQuery<Reservation[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 

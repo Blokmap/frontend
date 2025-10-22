@@ -28,7 +28,7 @@ const emit = defineEmits<{
     'change:state': [locationId: number, status: LocationState];
 }>();
 
-const { locale } = useI18n();
+const i18n = useI18n();
 const router = useRouter();
 
 /**
@@ -79,14 +79,14 @@ function navigateToDetail(): void {
                 <img
                     :src="getLocationImageUrl(location)"
                     :alt="location.name"
-                    class="location-image" />
+                    class="h-full w-full object-cover" />
             </div>
 
             <!-- Main Content -->
             <div class="min-w-0 flex-1 space-y-3">
                 <!-- Header with name and address -->
                 <div class="flex w-full items-center justify-between gap-3">
-                    <h3 class="location-title">
+                    <h3 class="text-lg font-semibold text-gray-900 transition-colors md:text-xl">
                         {{ location.name }}
                     </h3>
                     <LocationStateBadge :location="location" />
@@ -102,19 +102,19 @@ function navigateToDetail(): void {
 
                 <LocationLanguagesList :location="location" />
 
-                <p class="location-address">
+                <p class="text-sm text-gray-500">
                     {{ formatLocationAddress(location) }}
                 </p>
 
                 <!-- Description -->
-                <p class="location-description">
-                    {{ location.excerpt?.[locale] }}
+                <p class="text-sm text-gray-700">
+                    {{ location.excerpt?.[i18n.locale.value] }}
                 </p>
             </div>
         </div>
 
         <!-- Action Button -->
-        <div class="flex items-center justify-center self-stretch border-l border-slate-100 ps-4">
+        <div class="location-actions">
             <LocationActionsMenu
                 :location="location"
                 :is-pending="actionIsPending"
@@ -131,31 +131,24 @@ function navigateToDetail(): void {
 @reference '@/assets/styles/main.css';
 
 .location-card {
-    @apply flex items-center gap-6 p-4;
+    @apply flex flex-col gap-3 p-3;
     @apply rounded-lg border border-slate-200 bg-white;
+    @apply md:flex-row md:gap-6 md:p-4;
+}
 
-    .location-card-clickable {
-        @apply flex flex-1 cursor-pointer items-center gap-6;
-    }
+.location-card-clickable {
+    @apply flex flex-1 cursor-pointer flex-col gap-3;
+    @apply md:flex-row md:items-center md:gap-6;
+}
 
-    .location-image-container {
-        @apply relative aspect-square max-h-[175px] flex-shrink-0 overflow-hidden rounded-xl;
+.location-image-container {
+    @apply relative aspect-square w-full flex-shrink-0 overflow-hidden rounded-xl;
+    @apply max-h-[200px];
+    @apply md:max-h-[175px] md:w-auto;
+}
 
-        .location-image {
-            @apply h-full w-full object-cover;
-        }
-    }
-
-    .location-title {
-        @apply text-xl font-semibold text-gray-900 transition-colors;
-    }
-
-    .location-address {
-        @apply text-sm text-gray-500;
-    }
-
-    .location-description {
-        @apply text-sm text-gray-700;
-    }
+.location-actions {
+    @apply flex items-center justify-center self-stretch border-t border-slate-100 pt-3;
+    @apply md:border-t-0 md:border-l md:ps-4 md:pt-0;
 }
 </style>

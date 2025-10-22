@@ -62,25 +62,29 @@ onUnmounted(() => {
 
 .wrapper {
     @apply w-full;
-    @apply m-3 md:m-6;
+    @apply m-2 md:m-6;
     @apply flex flex-1 flex-col;
 
     .content {
-        @apply mx-auto max-w-[1420px] px-3 md:px-6 2xl:w-[78vw];
+        @apply mx-auto max-w-[1420px] 2xl:w-[78vw];
+        @apply px-3 md:px-6;
     }
 
     .main {
-        @apply w-full flex-1 rounded-b-md py-6;
+        @apply w-full flex-1 rounded-b-md;
+        @apply py-4 md:py-6;
         @apply bg-gray-50;
     }
 
     .header {
-        @apply rounded-t-md bg-white py-6;
+        @apply rounded-t-md bg-white;
+        @apply py-4 md:py-6;
         @apply border-b border-slate-200;
     }
 
     .footer {
-        @apply bg-slate-900 pt-3 text-slate-300 md:pt-6;
+        @apply bg-slate-900 text-slate-300;
+        @apply pt-4 pb-1 md:pt-6;
     }
 }
 </style>

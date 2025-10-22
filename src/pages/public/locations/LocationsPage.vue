@@ -96,8 +96,8 @@ function onNearestClick(): void {
 </script>
 
 <template>
-    <div class="flex w-full flex-col items-stretch gap-6 md:flex-row">
-        <div class="flex w-full flex-col space-y-6 md:w-1/2">
+    <div class="page-container">
+        <div class="locations-list">
             <div v-if="locationsIsPending" class="mt-2">
                 <Skeleton height="2rem" />
                 <Skeleton class="mt-3" height="1rem" />
@@ -170,7 +170,7 @@ function onNearestClick(): void {
                 @page="onPageChange">
             </Paginator>
         </div>
-        <div class="flex md:w-1/2">
+        <div class="map-container">
             <div class="sticky top-4 w-full" :style="{ height: 'calc(100vh - 2rem)' }">
                 <BlokMap
                     ref="map"
@@ -186,53 +186,20 @@ function onNearestClick(): void {
 </template>
 
 <style scoped>
-.location-card-link {
-    animation: fadeInUp 0.4s ease-out forwards;
-    opacity: 0;
-    transform: translateY(20px);
+@reference '@/assets/styles/main.css';
+
+.page-container {
+    @apply flex w-full flex-col items-stretch gap-3;
+    @apply md:flex-row md:gap-6;
 }
 
-.location-card-link:nth-child(1) {
-    animation-delay: 0.05s;
-}
-.location-card-link:nth-child(2) {
-    animation-delay: 0.1s;
-}
-.location-card-link:nth-child(3) {
-    animation-delay: 0.15s;
-}
-.location-card-link:nth-child(4) {
-    animation-delay: 0.2s;
-}
-.location-card-link:nth-child(5) {
-    animation-delay: 0.25s;
-}
-.location-card-link:nth-child(6) {
-    animation-delay: 0.3s;
-}
-.location-card-link:nth-child(7) {
-    animation-delay: 0.35s;
-}
-.location-card-link:nth-child(8) {
-    animation-delay: 0.4s;
-}
-.location-card-link:nth-child(9) {
-    animation-delay: 0.45s;
-}
-.location-card-link:nth-child(10) {
-    animation-delay: 0.5s;
-}
-.location-card-link:nth-child(11) {
-    animation-delay: 0.55s;
-}
-.location-card-link:nth-child(12) {
-    animation-delay: 0.6s;
+.locations-list {
+    @apply hidden w-full flex-col space-y-6;
+    @apply md:flex md:w-1/2;
 }
 
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.map-container {
+    @apply -mx-3 -my-4 w-[calc(100%+1.5rem)];
+    @apply md:mx-0 md:my-0 md:flex md:w-1/2;
 }
 </style>

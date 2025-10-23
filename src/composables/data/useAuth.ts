@@ -101,26 +101,15 @@ export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<Lo
  */
 export function useAuthRegister(options: CompMutationOptions = {}): CompMutation<RegisterRequest> {
     const client = useQueryClient();
-    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         mutationFn: register,
         onSuccess: (data, vars, context) => {
-            toast.add({
-                severity: 'success',
-                summary: 'Registratie geslaagd',
-                detail: 'Je account is succesvol aangemaakt.',
-            });
             client.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.profile() });
             options.onSuccess?.(data, vars, context);
         },
         onError: (error, vars, context) => {
-            toast.add({
-                severity: 'error',
-                summary: 'Registratie mislukt',
-                detail: 'Er is een fout opgetreden bij het registreren.',
-            });
             options.onError?.(error, vars, context);
         },
     });

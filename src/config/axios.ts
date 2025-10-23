@@ -56,6 +56,15 @@ export function setupAxiosInterceptors(): void {
                 }
             }
 
+            if (error.status === HttpStatusCode.PayloadTooLarge) {
+                console.debug('File too large error intercepted', error);
+                toast.add({
+                    severity: 'error',
+                    summary: 'Bestand te groot',
+                    detail: 'Het geüploade bestand is te groot. Probeer een kleiner bestand te uploaden.',
+                });
+            }
+
             throw error;
         },
     );

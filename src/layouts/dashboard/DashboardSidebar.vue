@@ -233,12 +233,12 @@ function handleNavigate() {
 @reference '@/assets/styles/main.css';
 
 .sidebar {
-    @apply flex flex-col bg-slate-900 py-1 text-slate-300;
-    @apply h-full;
+    @apply flex flex-col gap-5 pt-4 pb-5;
+    @apply bg-slate-900 text-slate-300;
 
     .sidebar-header {
-        @apply flex items-center justify-between px-3 pt-2;
-        @apply md:justify-center md:px-3 md:pt-2;
+        @apply flex items-center justify-between px-3;
+        @apply md:justify-center md:px-3;
 
         .sidebar-close-btn {
             @apply flex h-10 w-10 items-center justify-center;
@@ -249,8 +249,7 @@ function handleNavigate() {
     }
 
     .sidebar-items {
-        @apply flex-1 space-y-6 px-5 py-3;
-        @apply md:py-6;
+        @apply flex-1 space-y-6 px-5;
 
         .sidebar-section {
             @apply space-y-1.5;

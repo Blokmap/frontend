@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import Button from 'primevue/button';
 import LocationDataItem from '@/components/features/location/LocationDataItem.vue';
 import LocationDataList from '@/components/features/location/LocationDataList.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
 import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
+import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, watchEffect } from 'vue';
@@ -120,10 +120,9 @@ watchEffect(() => {
             <DashboardPageHeader :title="pageTitle">
                 <template v-if="profileId === profile.id" #actions>
                     <RouterLink :to="{ name: 'locations.submit' }">
-                        <Button severity="secondary">
+                        <PageHeaderButton severity="secondary" label="Nieuwe Locatie">
                             <FontAwesomeIcon :icon="faPlus" />
-                            Nieuwe Locatie
-                        </Button>
+                        </PageHeaderButton>
                     </RouterLink>
                 </template>
             </DashboardPageHeader>

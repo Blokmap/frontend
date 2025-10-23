@@ -24,7 +24,9 @@ function toggleSidebar(): void {
     <div class="wrapper">
         <!-- Mobile Header -->
         <header class="mobile-header">
-            <Logo :show-subtitle="false" variant="dark" />
+            <RouterLink :to="{ name: 'locations' }">
+                <Logo :show-subtitle="false" variant="dark" />
+            </RouterLink>
             <button class="mobile-menu-btn" @click="toggleSidebar" aria-label="Toggle menu">
                 <FontAwesomeIcon :icon="faBars" />
             </button>
@@ -83,9 +85,8 @@ function toggleSidebar(): void {
 
     .sidebar {
         @apply flex-shrink-0;
-        @apply fixed top-0 left-0 z-50;
-        @apply w-full;
-        @apply md:relative md:w-72;
+        @apply fixed top-0 left-0 z-50 md:sticky md:top-0;
+        @apply min-h-screen w-full md:w-72;
 
         &.mobile-hidden {
             @apply hidden md:block;

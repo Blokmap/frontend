@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { useToast } from '@/composables/store/useToast';
 import { readAuthProfile, login, logout, register } from '@/domain/auth';
 import type { LoginRequest, RegisterRequest } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
@@ -42,17 +41,11 @@ export function useAuthProfile(
  */
 export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<void> {
     const client = useQueryClient();
-    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         mutationFn: logout,
         onSuccess: (data, vars, context) => {
-            toast.add({
-                severity: 'success',
-                summary: 'Uitgelogd',
-                detail: 'Je bent succesvol uitgelogd.',
-            });
             client.invalidateQueries({ queryKey: AUTH_QUERY_KEYS.profile() });
             options.onSuccess?.(data, vars, context);
         },
@@ -68,7 +61,6 @@ export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<v
  */
 export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<LoginRequest> {
     const client = useQueryClient();
-    const toast = useToast();
     const router = useRouter();
 
     const mutation = useMutation({
@@ -80,11 +72,6 @@ export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<Lo
             options.onSuccess?.(data, vars, context);
         },
         onError: (error, vars, context) => {
-            toast.add({
-                severity: 'error',
-                summary: 'Inloggen mislukt',
-                detail: 'Er is een fout opgetreden bij het inloggen.',
-            });
             options.onError?.(error, vars, context);
         },
     });

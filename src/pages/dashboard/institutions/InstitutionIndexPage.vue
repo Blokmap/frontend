@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
 import Paginator from 'primevue/paginator';
 import InstitutionTable from '@/components/features/institution/InstitutionTable.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
@@ -7,6 +6,7 @@ import SearchField from '@/components/shared/atoms/SearchField.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
+import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';
@@ -58,10 +58,12 @@ const onCreateInstitution = () => {
         <template v-else>
             <DashboardPageHeader :title="pageTitle">
                 <template #actions>
-                    <Button severity="secondary" @click="onCreateInstitution">
+                    <PageHeaderButton
+                        severity="secondary"
+                        label="Nieuwe Institutie"
+                        @click="onCreateInstitution">
                         <FontAwesomeIcon :icon="faPlus" />
-                        Nieuwe Institutie
-                    </Button>
+                    </PageHeaderButton>
                 </template>
                 <template #metadata>
                     <ResultSummary

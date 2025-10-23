@@ -7,6 +7,7 @@ import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
 import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
+import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import {
     faCalendar,
@@ -174,10 +175,9 @@ function navigateToTab(tab: string): void {
                 :subtitle="location.excerpt?.nl || undefined">
                 <template #actions>
                     <RouterLink :to="{ name: 'locations.detail', params: { locationId } }">
-                        <Button severity="secondary">
+                        <PageHeaderButton severity="secondary" label="Bekijken">
                             <FontAwesomeIcon :icon="faEye" />
-                            <span>Bekijken</span>
-                        </Button>
+                        </PageHeaderButton>
                     </RouterLink>
                 </template>
             </DashboardPageHeader>
@@ -258,7 +258,7 @@ function navigateToTab(tab: string): void {
 }
 
 .tab-icon {
-    @apply mr-2;
+    @apply mr-0 md:mr-2;
 }
 
 .tab-label {

@@ -36,18 +36,6 @@ export function setupAxiosInterceptors(): void {
             return response;
         },
         (error: AxiosError) => {
-            if (error.status === HttpStatusCode.Unauthorized) {
-                router.push({
-                    name: 'auth',
-                    query: { redirect: window.location.pathname },
-                });
-                toast.add({
-                    severity: 'error',
-                    summary: 'Niet ingelogd',
-                    detail: 'Je moet ingelogd zijn om deze actie uit te voeren.',
-                });
-            }
-
             if (error.status === HttpStatusCode.Forbidden) {
                 if (error.request.method === 'GET') {
                     router.push({ name: 'dashboard' });

@@ -123,7 +123,7 @@ function onNearestClick(): void {
                             </span>
                         </template>
                         <template v-else>
-                            {{ $t('general.noResultsExact') }}
+                            {{ $t('general.errors.noResultsExact') }}
                         </template>
                     </span>
 

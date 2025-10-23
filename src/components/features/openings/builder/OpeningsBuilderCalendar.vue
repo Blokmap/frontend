@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import OpeningTimeslot from '@/components/features/location/timeslots/OpeningTimeslot.vue';
+import OpeningTimeslot from '@/components/features/openings/timeslots/OpeningTimeslot.vue';
 import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
 import { computed } from 'vue';
 import { openingRequestsToTimeSlots, type TimeCell, type TimeSlot } from '@/domain/calendar';

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import OpeningTimeDialog from '@/components/features/location/builder/OpeningTimeDialog.vue';
-import OpeningTimesCalendar from '@/components/features/location/builder/OpeningTimesCalendar.vue';
+import OpeningBuilderDialog from '@/components/features/openings/builder/OpeningBuilderDialog.vue';
+import OpeningsBuilderCalendar from '@/components/features/openings/builder/OpeningsBuilderCalendar.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import { ref } from 'vue';
 import { useRouteDate } from '@/composables/useRouteDate';
@@ -115,21 +115,21 @@ function onCellClick(timeCell: TimeCell): void {
         <CalendarControls :date="inWeekOf" @update:date="onDateSelect" />
 
         <!-- Calendar view -->
-        <OpeningTimesCalendar
+        <OpeningsBuilderCalendar
             :opening-times="openingTimes"
             :in-week-of="inWeekOf"
             @click:cell="onCellClick"
             @click:slot="onEditClick"
             @drag:slot="onDragSlot">
-        </OpeningTimesCalendar>
+        </OpeningsBuilderCalendar>
 
         <!-- Opening time dialog -->
-        <OpeningTimeDialog
+        <OpeningBuilderDialog
             v-model:visible="showDialog"
             :opening-time="editingOpeningTime"
             :is-editing="isEditing"
             @save="onSave"
             @delete="onDelete">
-        </OpeningTimeDialog>
+        </OpeningBuilderDialog>
     </div>
 </template>

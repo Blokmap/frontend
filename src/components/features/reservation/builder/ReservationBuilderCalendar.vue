@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
+import OpeningTimeslot from '@/components/features/openings/timeslots/OpeningTimeslot.vue';
+import ReservationRequestTimeslot from '@/components/features/reservation/timeslots/ReservationRequestTimeslot.vue';
+import ReservationTimeslot from '@/components/features/reservation/timeslots/ReservationTimeslot.vue';
 import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
-import { faSlash, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { toTimeslots, type TimeSlot } from '@/domain/calendar';
-import {
-    RESERVATION_STATE_ICONS,
-    type Reservation,
-    type ReservationRequest,
-} from '@/domain/reservation';
-import { timeToString } from '@/utils/time';
 import {
     isOpeningTimeSlot,
     isReservationRequestSlot,
@@ -21,6 +15,7 @@ import {
     type SlotMetadata,
 } from './index';
 import type { OpeningTime } from '@/domain/openings';
+import type { Reservation, ReservationRequest } from '@/domain/reservation';
 
 const props = defineProps<{
     currentWeek: Date;
@@ -144,72 +139,31 @@ function onReservationDelete(reservation: Reservation): void {
             <template #time-slot="{ slot }">
                 <!-- Opening Time Slot -->
                 <template v-if="isOpeningTimeSlot(slot)">
-                    <div class="opening-time-card" @click="onOpeningTimeClick(slot, $event)">
-                        <div class="time-display">
-                            <span class="time-text">
-                                {{ timeToString(slot.startTime) }}-{{ timeToString(slot.endTime) }}
-                            </span>
-                        </div>
-                    </div>
+                    <OpeningTimeslot
+                        :start-time="slot.startTime"
+                        :end-time="slot.endTime"
+                        @click="onOpeningTimeClick(slot, $event)" />
                 </template>
 
                 <!-- Reservation Slot -->
                 <template v-else-if="isReservationSlot(slot)">
-                    <div
-                        class="reservation-card"
-                        :class="{ deleted: isPendingDeletion(slot.metadata.data) }">
-                        <FontAwesomeIcon
-                            v-if="!isPendingDeletion(slot.metadata.data)"
-                            :icon="RESERVATION_STATE_ICONS[slot.metadata.data.state]"
-                            class="state-icon"
-                            :spin="slot.metadata.data.state === 'pending'">
-                        </FontAwesomeIcon>
-                        <Button
-                            rounded
-                            class="delete-btn"
-                            size="small"
-                            severity="contrast"
-                            :disabled="isSaving"
-                            @click.stop="onReservationDelete(slot.metadata.data)"
-                            text>
-                            <template #icon>
-                                <FontAwesomeIcon :icon="faTrash" class="h-3 w-3" />
-                            </template>
-                        </Button>
-                        <FontAwesomeIcon
-                            :icon="faSlash"
-                            class="delete-cross"
-                            v-if="isPendingDeletion(slot.metadata.data)">
-                        </FontAwesomeIcon>
-                        <div class="time-display">
-                            <span class="time-text">
-                                {{ timeToString(slot.startTime) }}-{{ timeToString(slot.endTime) }}
-                            </span>
-                        </div>
-                    </div>
+                    <ReservationTimeslot
+                        :start-time="slot.startTime"
+                        :end-time="slot.endTime"
+                        :reservation="slot.metadata.data"
+                        :is-pending-deletion="isPendingDeletion(slot.metadata.data)"
+                        :is-saving="isSaving"
+                        @delete="onReservationDelete" />
                 </template>
 
                 <!-- Reservation Request Slot -->
                 <template v-else-if="isReservationRequestSlot(slot)">
-                    <div class="reservation-request-card">
-                        <Button
-                            rounded
-                            class="delete-btn"
-                            size="small"
-                            severity="contrast"
-                            :disabled="isSaving"
-                            @click.stop="onRequestDelete(slot.metadata.data)"
-                            text>
-                            <template #icon>
-                                <FontAwesomeIcon :icon="faTrash" class="h-3 w-3" />
-                            </template>
-                        </Button>
-                        <div class="time-display">
-                            <span class="time-text">
-                                {{ timeToString(slot.startTime) }}-{{ timeToString(slot.endTime) }}
-                            </span>
-                        </div>
-                    </div>
+                    <ReservationRequestTimeslot
+                        :start-time="slot.startTime"
+                        :end-time="slot.endTime"
+                        :request="slot.metadata.data"
+                        :is-saving="isSaving"
+                        @delete="onRequestDelete" />
                 </template>
             </template>
         </Calendar>
@@ -218,99 +172,4 @@ function onReservationDelete(reservation: Reservation): void {
 
 <style scoped>
 @reference '@/assets/styles/main.css';
-
-.opening-time-card {
-    @apply relative h-full bg-slate-100;
-    @apply flex items-center justify-center p-2;
-    @apply cursor-pointer;
-    @apply hover:bg-slate-200;
-
-    .time-display {
-        @apply text-slate-600;
-    }
-}
-
-.reservation-card {
-    @apply bg-secondary-100 relative h-full p-2;
-    @apply border-secondary-500 border-l-3;
-    @apply flex items-center justify-center;
-    @apply transition-all duration-150;
-
-    .time-display {
-        @apply text-secondary-800;
-        @apply flex items-center justify-center;
-    }
-
-    .state-icon {
-        @apply !absolute top-3 left-3 z-10;
-        @apply text-secondary-600 text-sm;
-        @apply transition-opacity duration-150;
-    }
-
-    .delete-btn {
-        @apply !absolute top-1 right-1 z-20;
-        @apply text-secondary-600;
-        @apply opacity-0;
-        @apply transition-opacity duration-150;
-    }
-
-    .delete-cross {
-        @apply absolute top-1/2 left-1/2;
-        @apply -translate-x-1/2 -translate-y-1/2;
-        @apply text-4xl text-red-700;
-    }
-
-    &:hover {
-        .delete-btn {
-            @apply opacity-100;
-        }
-
-        .state-icon {
-            @apply opacity-0;
-        }
-    }
-
-    &.deleted {
-        @apply border-red-700 bg-red-100;
-
-        .time-display {
-            @apply text-red-700;
-        }
-
-        .delete-btn {
-            @apply text-red-700;
-        }
-    }
-}
-
-.reservation-request-card {
-    @apply bg-secondary-100 relative h-full p-2;
-    @apply border-secondary-400 border-l-3 border-dashed;
-    @apply flex items-center justify-center;
-    @apply transition-all duration-150;
-
-    .time-display {
-        @apply text-secondary-700;
-        @apply flex items-center justify-center;
-    }
-
-    .delete-btn {
-        @apply !absolute top-1 right-1 z-10;
-        @apply text-secondary-500;
-        @apply opacity-0 hover:opacity-100;
-        @apply transition-opacity duration-150;
-    }
-
-    &:hover .delete-btn {
-        @apply opacity-100;
-    }
-}
-
-.time-display {
-    @apply flex items-center justify-center text-center;
-
-    .time-text {
-        @apply text-xs font-medium;
-    }
-}
 </style>

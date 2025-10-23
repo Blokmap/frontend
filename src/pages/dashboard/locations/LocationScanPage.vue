@@ -21,19 +21,7 @@ const sound = useSound(ping, { volume: 3 });
 const successfullProfileScans = ref<number[]>([]);
 
 const { mutateAsync: scanProfile, isPending } = useScanProfile({
-    onSuccess: () => {
-        if (navigator.vibrate) {
-            navigator.vibrate(500);
-        }
-
-        sound.play();
-
-        toast.add({
-            severity: 'success',
-            summary: t('domains.profiles.success.scanSuccessful'),
-            detail: t('domains.profiles.success.scanSuccessfulDetail'),
-        });
-    },
+    onSuccess: onScanSuccess,
     onError: () => {
         toast.add({
             severity: 'error',
@@ -49,23 +37,17 @@ const { mutateAsync: scanProfile, isPending } = useScanProfile({
  * @param result - Scanned QR code result
  */
 async function onScan(result: Result): Promise<void> {
+    const profileId = +result.getText();
+    const locationId = +props.locationId;
+
     // Ignore scan if already processing
     if (isPending.value) {
         return;
     }
 
-    const profileId = +result.getText();
-    const locationId = +props.locationId;
-
     // Ignore scan if recently scanned
     if (successfullProfileScans.value.includes(profileId)) {
-        toast.add({
-            id: `already-scanned-${profileId}`,
-            severity: 'info',
-            summary: t('domains.profiles.info.alreadyScanned'),
-            detail: t('domains.profiles.info.alreadyScannedDetail'),
-        });
-        return;
+        return onScanSuccess(profileId);
     }
 
     await scanProfile({
@@ -77,6 +59,32 @@ async function onScan(result: Result): Promise<void> {
     });
 
     successfullProfileScans.value.push(profileId);
+}
+
+/**
+ * Handle successful scan
+ *
+ * @param id - Scanned profile ID
+ */
+function onScanSuccess(id: number): void {
+    const toastId = `scan-success-${id}`;
+
+    if (toast.hasVisibleToast(toastId)) {
+        return;
+    }
+
+    if (navigator.vibrate) {
+        navigator.vibrate(500);
+    }
+
+    sound.play();
+
+    toast.add({
+        id: toastId,
+        severity: 'success',
+        summary: t('domains.profiles.success.scanSuccessful'),
+        detail: t('domains.profiles.success.scanSuccessfulDetail'),
+    });
 }
 
 /**

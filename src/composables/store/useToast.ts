@@ -7,7 +7,7 @@ export type ToastMessage = ToastMessageOptions & {
     id?: string;
 };
 
-const DEFAULT_LIFE = 5000;
+const DEFAULT_LIFE = 2500;
 
 export const useToast = defineStore('toast', () => {
     const messages = ref<ToastMessage[]>([]);
@@ -19,10 +19,9 @@ export const useToast = defineStore('toast', () => {
                 primeToast.add(message);
 
                 if (message.id) {
-                    visible.value.push(message);
-
                     // Remove from visible messages after life time
                     const life = message.life ?? DEFAULT_LIFE;
+                    visible.value.push(message);
 
                     setTimeout(() => {
                         const index = visible.value.indexOf(message);
@@ -51,8 +50,8 @@ export const useToast = defineStore('toast', () => {
     }
 
     function remove(message: ToastMessage) {
-        const messageIndex = messages.value.indexOf(message);
-        const visibleIndex = visible.value.indexOf(message);
+        const messageIndex = messages.value.findIndex((m) => m.id === message.id);
+        const visibleIndex = visible.value.findIndex((m) => m.id === message.id);
 
         if (visibleIndex > -1) {
             visible.value.splice(visibleIndex, 1);

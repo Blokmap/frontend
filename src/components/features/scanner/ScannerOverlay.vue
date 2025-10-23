@@ -106,7 +106,7 @@ onUnmounted(() => {
                 class="camera-feed"></video>
 
             <div class="overlay-mask" :class="{ loading: isLoading }">
-                <div class="scanning-region">
+                <div class="scanning-region" :class="{ loading: isLoading }">
                     <template v-if="!isLoading">
                         <div
                             v-for="corner in ['tl', 'tr', 'bl', 'br']"
@@ -136,7 +136,7 @@ onUnmounted(() => {
     @apply absolute inset-0 z-10 flex items-center justify-center;
 
     &.loading {
-        @apply bg-black;
+        @apply bg-black/70 backdrop-blur-lg;
     }
 
     /* Blurred dark overlay everywhere */
@@ -163,8 +163,8 @@ onUnmounted(() => {
 .scanning-region {
     @apply relative flex h-128 w-128 items-center justify-center;
 
-    &:has(.loading-message) {
-        @apply bg-white;
+    &.loading {
+        @apply rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md;
     }
 }
 
@@ -189,6 +189,6 @@ onUnmounted(() => {
 }
 
 .loading-message {
-    @apply px-4 py-2 text-center text-sm font-medium text-black;
+    @apply px-4 py-2 text-center text-sm font-medium text-white;
 }
 </style>

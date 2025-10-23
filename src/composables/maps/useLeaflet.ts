@@ -1,7 +1,7 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { type Ref, isRef, onActivated, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
-import { defaultMapOptions } from '@/domain/map';
+import { DEFAULT_MAP_OPTIONS } from '@/domain/map';
 import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/domain/map';
 
 /**
@@ -13,11 +13,11 @@ import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/dom
  */
 export function useLeaflet<T>(
     container: Ref<HTMLElement | null>,
-    options: MapOptions = defaultMapOptions,
+    options: MapOptions = DEFAULT_MAP_OPTIONS,
 ): MapAdapter<T> {
     // Merge default options with provided options
     options = {
-        ...defaultMapOptions,
+        ...DEFAULT_MAP_OPTIONS,
         ...options,
     };
 

@@ -1,6 +1,6 @@
 import type { MapOptions } from './types';
 
-export const defaultMapOptions = {
+export const DEFAULT_MAP_OPTIONS = {
     style: 'mapbox://styles/mapbox/outdoors-v11',
     zoom: 7,
     maxBounds: [

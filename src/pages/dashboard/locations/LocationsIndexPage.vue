@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
 import Paginator from 'primevue/paginator';
 import LocationDataItem from '@/components/features/location/LocationDataItem.vue';
 import LocationDataList from '@/components/features/location/LocationDataList.vue';
@@ -9,6 +8,7 @@ import SearchField from '@/components/shared/atoms/SearchField.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
+import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';
@@ -141,10 +141,11 @@ function onDeleteLocation(locationId: number) {
             <DashboardPageHeader :title="pageTitle">
                 <template #actions>
                     <RouterLink :to="{ name: 'locations.submit' }">
-                        <Button severity="secondary">
+                        <PageHeaderButton
+                            severity="secondary"
+                            :label="$t('pages.dashboard.locations.index.new')">
                             <FontAwesomeIcon :icon="faPlus" />
-                            {{ $t('pages.dashboard.locations.index.new') }}
-                        </Button>
+                        </PageHeaderButton>
                     </RouterLink>
                 </template>
                 <template #metadata>

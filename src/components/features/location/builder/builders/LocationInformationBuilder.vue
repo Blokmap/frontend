@@ -20,7 +20,7 @@ import { useI18n } from 'vue-i18n';
 import { useGeocodeAddress } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/store/useToast';
 import { LOCATION_SETTINGS, formatLocationAddress } from '@/domain/location';
-import { defaultMapOptions } from '@/domain/map';
+import { DEFAULT_MAP_OPTIONS } from '@/domain/map';
 import type { BuilderSubstep } from '..';
 import type { LocationRequest } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
@@ -44,7 +44,7 @@ const mapCenter = computed<LngLat>({
         if (longitude && latitude) {
             return [longitude, latitude];
         }
-        return defaultMapOptions.center;
+        return DEFAULT_MAP_OPTIONS.center;
     },
     set([lng, lat]: LngLat) {
         // Round to 6 decimal places (~11cm precision) to
@@ -86,6 +86,7 @@ const needsCoordinateCalculation = computed(() => {
     return false;
 });
 
+// Update completeness based on form values
 watchEffect(() => {
     const data = form.value;
     const ex = data.excerpt;
@@ -102,6 +103,7 @@ watchEffect(() => {
     );
 });
 
+// Update substeps based on form completeness
 watchEffect(() => {
     const data = form.value;
     const ex = data.excerpt;
@@ -119,6 +121,18 @@ watchEffect(() => {
     ];
 });
 
+// Clear calculated coordinates when address changes
+watch(
+    () => [form.value.street, form.value.number, form.value.zip, form.value.city],
+    () => {
+        calculatedCoordinates.value = null;
+    },
+);
+
+/**
+ * Calculate coordinates based on the entered address
+ * and update the map center and zoom.
+ */
 async function calculateCoordinates(): Promise<void> {
     if (!canCalculateCoordinates.value) return;
 
@@ -138,20 +152,15 @@ async function calculateCoordinates(): Promise<void> {
     }
 }
 
+/**
+ * Reset the map center and zoom to the last calculated coordinates
+ */
 function resetToCalculatedCoordinates(): void {
     if (calculatedCoordinates.value) {
         mapCenter.value = calculatedCoordinates.value;
         mapZoom.value = 18;
     }
 }
-
-// Clear calculated coordinates when address changes
-watch(
-    () => [form.value.street, form.value.number, form.value.zip, form.value.city],
-    () => {
-        calculatedCoordinates.value = null;
-    },
-);
 </script>
 
 <template>
@@ -161,7 +170,9 @@ watch(
                 <div class="flex w-full items-center justify-between">
                     <div>
                         <h3 class="text-xl font-semibold text-gray-900">Basis informatie</h3>
-                        <p class="text-sm text-gray-600">Voer de basisgegevens van uw locatie in</p>
+                        <p class="mt-3 text-sm text-gray-600">
+                            Voer de basisgegevens van uw locatie in
+                        </p>
                     </div>
                     <div class="flex items-center space-x-2">
                         <LanguageSelector v-model="currentLanguage">
@@ -247,24 +258,16 @@ watch(
         <LocationBuilderCard :icon="faHome">
             <template #header>
                 <h3 class="text-xl font-semibold text-gray-900">Adres informatie</h3>
-                <p class="text-sm text-gray-600">
+                <p class="mt-3 text-sm text-gray-600">
                     Voer het adres van uw locatie in op de kaart. Sleep de kaart om de locatie
                     marker precies te positioneren.
                 </p>
             </template>
             <template #default>
-                <!-- Map with overlay address input -->
                 <div class="relative">
-                    <LocationMap
-                        class="aspect-video h-full w-full rounded-lg"
-                        ref="map-container"
-                        v-model:center="mapCenter"
-                        v-model:zoom="mapZoom">
-                    </LocationMap>
-
                     <!-- Address Input Overlay -->
-                    <div class="absolute top-3 left-3 z-10 w-64">
-                        <div class="space-y-3 rounded-lg bg-white p-3 shadow-xs">
+                    <div class="address-overlay">
+                        <div class="address-wrapper">
                             <div class="flex items-center justify-between">
                                 <h4 class="text-sm font-medium text-gray-900">Adres</h4>
                             </div>
@@ -340,7 +343,7 @@ watch(
                                 v-else-if="hasCoordinates && !hasManuallyAdjusted"
                                 :show-icon="false">
                                 <div class="flex items-center gap-2 text-xs">
-                                    <span> Sleep de marker om de positie te verfijnen. </span>
+                                    <span>Sleep de marker om de positie te verfijnen.</span>
                                     <FontAwesomeIcon :icon="faCheckCircle" />
                                 </div>
                             </Callout>
@@ -354,6 +357,14 @@ watch(
                             </div>
                         </div>
                     </div>
+
+                    <!-- Map -->
+                    <LocationMap
+                        class="aspect-video h-full w-full rounded-lg"
+                        ref="map-container"
+                        v-model:center="mapCenter"
+                        v-model:zoom="mapZoom">
+                    </LocationMap>
                 </div>
             </template>
         </LocationBuilderCard>
@@ -362,6 +373,16 @@ watch(
 
 <style scoped>
 @reference '@/assets/styles/main.css';
+
+.address-overlay {
+    @apply z-10 mb-3 w-full;
+    @apply sm:absolute sm:top-3 sm:left-3 sm:mb-0 sm:w-64;
+
+    .address-wrapper {
+        @apply space-y-3 rounded-lg bg-white;
+        @apply sm:space-y-3 sm:p-3 sm:shadow-sm;
+    }
+}
 
 .address-input {
     @apply w-full border-0 bg-transparent px-3 py-2 text-sm shadow-none;

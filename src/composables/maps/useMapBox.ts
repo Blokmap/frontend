@@ -1,7 +1,7 @@
 import mapboxgl from 'mapbox-gl';
 import { type Ref, isRef, onActivated, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { defaultMapOptions } from '@/domain/map';
+import { DEFAULT_MAP_OPTIONS } from '@/domain/map';
 import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/domain/map';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
@@ -15,14 +15,14 @@ const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
  */
 export function useMapBox<T>(
     container: Ref<HTMLElement | null>,
-    options: MapOptions = defaultMapOptions,
+    options: MapOptions = DEFAULT_MAP_OPTIONS,
 ): MapAdapter<T> {
     const { locale } = useI18n();
 
     // Merge default options with provided options
     // This allows for overriding default values while keeping the defaults intact.
     options = {
-        ...defaultMapOptions,
+        ...DEFAULT_MAP_OPTIONS,
         ...options,
     };
 

@@ -6,7 +6,7 @@ defineProps<{
 </script>
 
 <template>
-    <div class="flex items-center gap-6">
+    <div class="flex flex-wrap gap-6">
         <div class="legend-item">
             <div class="legend-box bg-slate-100"></div>
             <span class="legend-label">Beschikbaar</span>
@@ -32,13 +32,13 @@ defineProps<{
 
 .legend-item {
     @apply flex items-center gap-2;
-}
 
-.legend-box {
-    @apply h-5 w-5;
-}
+    .legend-box {
+        @apply h-5 w-5 shrink-0;
+    }
 
-.legend-label {
-    @apply text-sm text-gray-700;
+    .legend-label {
+        @apply text-sm text-gray-700;
+    }
 }
 </style>

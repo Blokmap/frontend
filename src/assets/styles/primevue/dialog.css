@@ -5,7 +5,7 @@
     @apply bg-surface-0 dark:bg-surface-900;
     @apply dark:text-surface-0 text-slate-800;
     @apply max-h-[90%] scale-100;
-    @apply mx-3 rounded-xl border;
+    @apply rounded-xl border;
     @apply shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)];
 }
 

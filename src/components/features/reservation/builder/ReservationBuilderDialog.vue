@@ -301,31 +301,28 @@ watch(visible, (newVisible) => {
         </div>
 
         <template #footer>
-            <ReservationBuilderLegend
-                class="mr-auto"
-                :has-additions="reservationsToCreate.length > 0"
-                :has-deletions="reservationsToDelete.length > 0">
-            </ReservationBuilderLegend>
+            <div class="flex w-full flex-wrap items-center justify-between gap-6">
+                <ReservationBuilderLegend
+                    :has-additions="reservationsToCreate.length > 0"
+                    :has-deletions="reservationsToDelete.length > 0">
+                </ReservationBuilderLegend>
 
-            <template v-if="hasPendingChanges">
-                <div class="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-1.5 text-sm">
-                    <span v-if="reservationsToCreate.length > 0" class="flex items-center gap-1">
-                        <span class="font-semibold text-green-700">
-                            +{{ reservationsToCreate.length }}
-                        </span>
-                    </span>
-                    <span v-if="reservationsToDelete.length > 0" class="flex items-center gap-1">
-                        <span class="font-semibold text-red-700">
-                            -{{ reservationsToDelete.length }}
-                        </span>
-                    </span>
+                <div class="flex w-full items-center gap-3 md:w-auto">
+                    <template v-if="hasPendingChanges">
+                        <Button
+                            severity="contrast"
+                            text
+                            :disabled="isSaving"
+                            @click="cancelPendingChanges">
+                            Annuleren
+                        </Button>
+                        <Button :loading="isSaving" @click="savePendingChanges"> Opslaan </Button>
+                    </template>
+                    <Button v-else severity="contrast" text @click="visible = false">
+                        Sluiten
+                    </Button>
                 </div>
-                <Button severity="contrast" text :disabled="isSaving" @click="cancelPendingChanges">
-                    Annuleren
-                </Button>
-                <Button :loading="isSaving" @click="savePendingChanges"> Opslaan </Button>
-            </template>
-            <Button v-else severity="contrast" text @click="visible = false">Sluiten</Button>
+            </div>
         </template>
     </Dialog>
 
@@ -370,6 +367,6 @@ watch(visible, (newVisible) => {
 @reference '@/assets/styles/main.css';
 
 .dialog {
-    @apply h-full w-full max-w-[1240px];
+    @apply w-full max-w-[1240px];
 }
 </style>

@@ -200,19 +200,21 @@ watchEffect(async () => {
 @import '@/assets/styles/main.css';
 
 .image-preview {
-    @apply relative aspect-square overflow-hidden rounded-lg border border-slate-200;
+    @apply relative aspect-square overflow-hidden;
+    @apply rounded-lg border border-slate-200;
 
     img {
         @apply h-full w-full object-cover transition-all duration-300;
 
-        &.image-loading {
-            @apply blur-sm;
+        &.loading {
+            @apply scale-105 blur-xs;
         }
     }
 }
 
 .image-overlay {
     @apply absolute inset-0 flex items-center justify-center;
+    @apply bg-black/20 backdrop-blur-sm;
 
     &.image-error {
         @apply bg-red-500/20;

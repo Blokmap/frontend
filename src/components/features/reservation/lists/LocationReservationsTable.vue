@@ -30,6 +30,7 @@ const emit = defineEmits<{
 
 const { locale } = useI18n();
 
+// Options for reservation status select
 const statusOptions = computed(() => {
     return [
         { label: 'Aangemaakt', value: ReservationState.Created, icon: faHourglassHalf },
@@ -67,32 +68,42 @@ const groupedReservations = computed(() => {
     }));
 });
 
-const onStatusChange = (
+/**
+ * Handle status change for a reservation.
+ *
+ * @param reservationId The ID of the reservation.
+ * @param event The select change event.
+ * @param hideMenu Function to hide the action menu.
+ */
+function onStatusChange(
     reservationId: number,
     event: SelectChangeEvent,
     hideMenu: () => void,
-): void => {
+): void {
     const state = event.value as ReservationState;
 
     if (state) {
         hideMenu();
         emit('change:status', reservationId, state);
     }
-};
+}
 
-const getSelectedStatusOption = (reservation: Reservation) => {
+/**
+ * Get the selected status option for a reservation.
+ *
+ * @param reservation The reservation to get the status for.
+ * @returns The selected status option or null.
+ */
+function getSelectedStatusOption(reservation: Reservation) {
     return statusOptions.value.find((opt) => opt.value === reservation.state) || null;
-};
+}
 </script>
 
 <template>
-    <div
-        v-if="!groupedReservations.length"
-        class="rounded-lg border border-slate-200 bg-white px-6 py-12 text-center">
-        <p class="text-sm text-slate-500">Geen reservaties gevonden voor deze datum.</p>
-    </div>
-
-    <Table v-else :grouped="groupedReservations">
+    <Table
+        :grouped="groupedReservations"
+        :is-loading="loading"
+        empty-message="Geen reservaties gevonden voor deze datum.">
         <template #group="{ data, items }">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">

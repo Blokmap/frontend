@@ -89,13 +89,10 @@ const getTotalDuration = (reservations: Reservation[]) => {
 </script>
 
 <template>
-    <div
-        v-if="!groupedReservations.length"
-        class="rounded-lg border border-slate-200 bg-white px-6 py-12 text-center">
-        <p class="text-sm text-slate-500">Geen reservaties deze week.</p>
-    </div>
-
-    <Table v-else :grouped="groupedReservations">
+    <Table
+        :grouped="groupedReservations"
+        :is-loading="loading"
+        empty-message="Geen reservaties deze week.">
         <template #group="{ data, items }">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">

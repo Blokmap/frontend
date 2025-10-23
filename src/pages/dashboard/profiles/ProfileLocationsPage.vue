@@ -9,7 +9,7 @@ import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, watchEffect } from 'vue';
-import { useLocationState } from '@/composables/data/useLocations';
+import { useDeleteLocation, useLocationState } from '@/composables/data/useLocations';
 import { useReadProfile, useReadProfileLocations } from '@/composables/data/useProfile';
 import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
 import { useToast } from '@/composables/store/useToast';
@@ -43,8 +43,35 @@ const {
     isPending: isUpdatingLocation,
     variables: updateVariables,
 } = useLocationState({
-    onSuccess: () => {
-        refetch();
+    onSuccess: async () => {
+        await refetch();
+
+        toast.add({
+            severity: 'success',
+            summary: 'Status Bijgewerkt',
+            detail: 'Locatiestatus werd succesvol bijgewerkt!',
+        });
+    },
+});
+
+const { mutateAsync: deleteLocation, isPending: isPendingDelete } = useDeleteLocation({
+    onSuccess: async () => {
+        await refetch();
+
+        toast.add({
+            severity: 'success',
+            summary: 'Locatie Verwijderd',
+            detail: 'De locatie is succesvol verwijderd.',
+        });
+    },
+    onError: (error: any) => {
+        const message = error.message || 'Er is iets misgegaan bij het verwijderen van de locatie.';
+
+        toast.add({
+            severity: 'error',
+            summary: 'Fout bij verwijderen locatie',
+            detail: message,
+        });
     },
 });
 
@@ -74,14 +101,17 @@ function isLocationPending(locationId: number): boolean {
  * @param locationId The ID of the location to update.
  * @param status The new status to set.
  */
-async function onChangeLocationStatus(locationId: number, status: LocationState) {
-    await updateLocationState({ locationId, state: status });
+function onChangeLocationStatus(locationId: number, status: LocationState) {
+    updateLocationState({ locationId, state: status });
+}
 
-    toast.add({
-        severity: 'success',
-        summary: 'Status Bijgewerkt',
-        detail: 'Locatiestatus werd succesvol bijgewerkt!',
-    });
+/**
+ * Handle deleting a location.
+ *
+ * @param locationId The ID of the location to delete.
+ */
+function onDeleteLocation(locationId: number) {
+    deleteLocation(locationId);
 }
 
 watchEffect(() => {
@@ -114,7 +144,8 @@ watchEffect(() => {
         <DashboardNotFound
             v-else-if="showNotFound"
             title="Profiel Niet Gevonden"
-            message="Het profiel dat je zoekt bestaat niet of je hebt geen toegang." />
+            message="Het profiel dat je zoekt bestaat niet of je hebt geen toegang.">
+        </DashboardNotFound>
 
         <template v-else>
             <DashboardPageHeader :title="pageTitle">
@@ -132,8 +163,10 @@ watchEffect(() => {
                     <LocationDataItem
                         :location="location"
                         :action-is-pending="isLocationPending(location.id)"
+                        :delete-is-pending="isPendingDelete"
                         :show-status-change="true"
-                        @change:state="onChangeLocationStatus">
+                        @change:state="onChangeLocationStatus"
+                        @click:delete="onDeleteLocation">
                     </LocationDataItem>
                 </template>
             </LocationDataList>

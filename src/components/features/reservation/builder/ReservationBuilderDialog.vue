@@ -19,11 +19,7 @@ import { minutesToTime, timeToMinutes, doTimeRangesOverlap } from '@/utils/time'
 import type { TimeSlot } from '@/domain/calendar';
 import type { Location } from '@/domain/location';
 import type { OpeningTime } from '@/domain/openings';
-import type {
-    Reservation,
-    ReservationQueueResponse,
-    ReservationRequest,
-} from '@/domain/reservation';
+import type { Reservation, ReservationRequest } from '@/domain/reservation';
 
 const props = defineProps<{
     location: Location;
@@ -36,26 +32,6 @@ const router = useRouter();
 const toast = useToast();
 
 const { profileId } = useAuthProfile();
-
-// WebSocket connection for real-time updates
-const websocketChannel = computed(() => {
-    const id = profileId.value;
-    if (!id) return null;
-    return {
-        profileId: id,
-        tag: 'reservations',
-    };
-});
-
-useWebsocket<ReservationQueueResponse>(websocketChannel, (data: ReservationQueueResponse) => {
-    if (data.state === 'error') {
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij verwerken reservatie',
-            detail: `Er is een fout opgetreden bij het verwerken van je reservatie (ID: ${data.reservationId}).`,
-        });
-    }
-});
 
 const reservationFilters = computed(() => ({
     inWeekOf: currentWeek.value,
@@ -79,6 +55,30 @@ const { data: openings, isPending: isLoadingOpenings } = useReadOpeningTimes(
 
 const { mutateAsync: createReservations } = useCreateReservations();
 const { mutateAsync: deleteReservations } = useDeleteReservations();
+
+const { subscribe } = useWebsocket(computed(() => visible.value && props.location.isReservable));
+
+watch(
+    [visible, profileId],
+    ([isVisible, currentProfileId]) => {
+        if (isVisible && currentProfileId) {
+            const unsubscribe = subscribe(
+                {
+                    name: 'reservations',
+                    meta: { profileId: currentProfileId },
+                },
+                (message) => {
+                    console.log('[Reservation Queue Update]', message);
+                },
+            );
+
+            return () => {
+                unsubscribe();
+            };
+        }
+    },
+    { immediate: true },
+);
 
 // Builder state
 const reservationsToCreate = ref<ReservationRequest[]>([]);

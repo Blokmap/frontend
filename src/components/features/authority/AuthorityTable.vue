@@ -2,12 +2,13 @@
 import AuthorityActionsMenu from '@/components/features/authority/AuthorityActionsMenu.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
-import TableHead from '@/components/shared/molecules/table/TableHead.vue';
 import type { Authority } from '@/domain/authority';
 
 const props = defineProps<{
     authorities?: Authority[];
     loading?: boolean;
+    emptyMessage?: string;
+    emptyTitle?: string;
 }>();
 
 const emit = defineEmits<{
@@ -20,19 +21,14 @@ const onAuthorityClick = (authority: Authority) => {
 </script>
 
 <template>
-    <Table :value="props.authorities" @click:row="onAuthorityClick">
-        <template #header>
-            <tr>
-                <TableHead>Autoriteit</TableHead>
-                <TableHead>Beschrijving</TableHead>
-                <TableHead>Leden</TableHead>
-                <TableHead>Locaties</TableHead>
-                <TableHead>Acties</TableHead>
-            </tr>
-        </template>
-
+    <Table
+        :value="props.authorities"
+        :is-loading="props.loading"
+        :empty-message="props.emptyMessage"
+        :empty-title="props.emptyTitle"
+        @click:row="onAuthorityClick">
         <template #row="{ data: authority }">
-            <TableCell>
+            <TableCell column="Autoriteit">
                 <div class="flex items-center space-x-3">
                     <div class="min-w-0 flex-1">
                         <div class="truncate text-sm font-medium text-slate-900">
@@ -43,19 +39,19 @@ const onAuthorityClick = (authority: Authority) => {
                 </div>
             </TableCell>
 
-            <TableCell>
+            <TableCell column="Beschrijving">
                 {{ authority.description || '-' }}
             </TableCell>
 
-            <TableCell>
+            <TableCell column="Leden">
                 {{ authority.members?.length || 0 }}
             </TableCell>
 
-            <TableCell>
+            <TableCell column="Locaties">
                 {{ authority.locations?.length || 0 }}
             </TableCell>
 
-            <TableCell>
+            <TableCell column="Acties">
                 <AuthorityActionsMenu :authority="authority" />
             </TableCell>
         </template>

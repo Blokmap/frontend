@@ -6,7 +6,10 @@ import type {
 } from '@tanstack/vue-query';
 import type { AxiosError } from 'axios';
 
-export type CompMutationOptions = Partial<MutationOptions<any, any, any, any>>;
+export type CompMutationOptions = Partial<MutationOptions<any, any, any, any>> & {
+    disableToasts?: boolean;
+};
+
 export type CompQueryOptions<I = string> = Partial<UseQueryOptions<any, any, any, any, any>> & {
     includes?: I[];
     disableToasts?: boolean;

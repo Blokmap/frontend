@@ -6,7 +6,7 @@ import Skeleton from 'primevue/skeleton';
 import ProfileQrCode from '@/components/features/profile/ProfileQrCode.vue';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import ProfileAvatarDialog from '@/components/features/profile/avatar/ProfileAvatarDialog.vue';
-import ProfileEditDialog from '@/components/features/profile/edit/ProfileEditDialog.vue';
+// import ProfileEditDialog from '@/components/features/profile/edit/ProfileEditDialog.vue';
 import StatsCard from '@/components/features/profile/stats/StatsCard.vue';
 import StatsCardSkeleton from '@/components/features/profile/stats/StatsCardSkeleton.vue';
 import ProfileReservationsTable from '@/components/features/reservation/lists/ProfileReservationsTable.vue';
@@ -41,7 +41,7 @@ const {
 } = useReadProfileStats(profileId);
 
 const showAvatarDialog = ref<boolean>(false);
-const showEditDialog = ref<boolean>(false);
+// const showEditDialog = ref<boolean>(false);
 
 const completedReservations = computed(() => profileStatsData.value?.completedReservations || 0);
 const upcomingReservations = computed(() => profileStatsData.value?.upcomingReservations || 0);
@@ -50,7 +50,7 @@ const reservationHours = computed(() => profileStatsData.value?.totalReservation
 </script>
 
 <template>
-    <div class="mx-auto w-full max-w-[1080px] space-y-6">
+    <div class="mx-auto w-full max-w-[1140px] space-y-6">
         <!-- Profile Header and QR Code Row -->
         <div class="grid grid-cols-1 gap-4 md:grid-cols-4 md:items-start">
             <!-- Profile Header -->
@@ -88,18 +88,10 @@ const reservationHours = computed(() => profileStatsData.value?.totalReservation
                                     <h1 class="text-2xl font-bold text-gray-900">
                                         {{ profile.firstName }} {{ profile.lastName }}
                                     </h1>
-                                    <Button
-                                        size="small"
-                                        severity="secondary"
-                                        text
-                                        @click="showEditDialog = true"
-                                        class="hidden text-sm md:inline-flex">
-                                        Profiel Bewerken
-                                    </Button>
-                                    <ProfileEditDialog
+                                    <!-- <ProfileEditDialog
                                         v-model:visible="showEditDialog"
                                         :profile="profile">
-                                    </ProfileEditDialog>
+                                    </ProfileEditDialog> -->
                                 </div>
 
                                 <div class="flex items-center gap-2 text-gray-600">
@@ -196,30 +188,26 @@ const reservationHours = computed(() => profileStatsData.value?.totalReservation
         </div>
 
         <!-- Current Week Activity -->
-        <Card>
-            <template #content>
-                <ProfileReservationsTable
-                    :reservations="reservations"
-                    :loading="reservationsIsLoading || reservationsIsPending">
-                </ProfileReservationsTable>
+        <ProfileReservationsTable
+            :reservations="reservations"
+            :loading="reservationsIsLoading || reservationsIsPending">
+        </ProfileReservationsTable>
 
-                <template v-if="reservations && reservations.length === 0">
-                    <div class="space-y-4 py-8 text-center text-gray-500">
-                        <FontAwesomeIcon :icon="faCalendarDays" class="text-4xl" />
-                        <p>
-                            {{ $t('pages.profile.reservations.empty') }}
-                        </p>
-                        <Button
-                            severity="secondary"
-                            outlined
-                            size="small"
-                            @click="router.push({ name: 'locations' })">
-                            {{ $t('pages.profile.reservations.exploreLocations') }}
-                        </Button>
-                    </div>
-                </template>
-            </template>
-        </Card>
+        <template v-if="reservations && reservations.length === 0">
+            <div class="space-y-4 py-8 text-center text-gray-500">
+                <FontAwesomeIcon :icon="faCalendarDays" class="text-4xl" />
+                <p>
+                    {{ $t('pages.profile.reservations.empty') }}
+                </p>
+                <Button
+                    severity="secondary"
+                    outlined
+                    size="small"
+                    @click="router.push({ name: 'locations' })">
+                    {{ $t('pages.profile.reservations.exploreLocations') }}
+                </Button>
+            </div>
+        </template>
     </div>
 </template>
 

@@ -105,7 +105,12 @@ function getSelectedStatusOption(reservation: Reservation) {
         :is-loading="loading"
         empty-message="Geen reservaties gevonden voor deze datum.">
         <template #group="{ data, items }">
-            <div class="flex items-center justify-between">
+            <RouterLink
+                :to="{
+                    name: 'dashboard.profiles.detail.overview',
+                    params: { profileId: data.profile.id },
+                }"
+                class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="h-10 w-10 flex-shrink-0">
                         <ProfileAvatar :profile="data.profile" />
@@ -119,7 +124,7 @@ function getSelectedStatusOption(reservation: Reservation) {
                         </div>
                     </div>
                 </div>
-            </div>
+            </RouterLink>
         </template>
 
         <template #row="{ data }">

@@ -60,6 +60,7 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
 
 /**
  * Guard that configures the breadcrumb store based on the route meta.
+ * Automatically collects breadcrumbs from parent routes and prepends them to child breadcrumbs.
  *
  * @param to Route to which we are navigating
  */
@@ -68,9 +69,18 @@ export async function breadcrumbRouterGuard(
 ): Promise<NavigationGuardReturn> {
     const { setBreadcrumbs, clearBreadcrumbs } = useBreadcrumbStore();
 
-    if (to.meta.breadcrumbs) {
-        const breadcrumbs = to.meta.breadcrumbs as Breadcrumbs;
-        setBreadcrumbs(breadcrumbs);
+    // Collect breadcrumbs from all matched routes (parents and current)
+    const allBreadcrumbs: Breadcrumbs = [];
+
+    for (const record of to.matched) {
+        if (record.meta.breadcrumbs) {
+            const breadcrumbs = record.meta.breadcrumbs as Breadcrumbs;
+            allBreadcrumbs.push(...breadcrumbs);
+        }
+    }
+
+    if (allBreadcrumbs.length > 0) {
+        setBreadcrumbs(allBreadcrumbs);
     } else {
         clearBreadcrumbs();
     }

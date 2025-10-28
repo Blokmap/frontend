@@ -12,12 +12,10 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useReadProfiles, useUpdateProfileState } from '@/composables/data/useProfile';
-import { useToast } from '@/composables/store/useToast';
 import { abbreviateCount } from '@/utils/format';
 import type { Profile, ProfileFilter, ProfileState } from '@/domain/profile';
 
 const router = useRouter();
-const toast = useToast();
 const { t } = useI18n();
 
 const searchQuery = ref<string>('');
@@ -62,7 +60,7 @@ const onSearchChange = useDebounceFn(() => {
  * @param profile The profile that was clicked.
  */
 function onProfileClick(profile: Profile): void {
-    router.push({ name: 'profiles.detail', params: { profileId: profile.id } });
+    router.push({ name: 'dashboard.profiles.detail.overview', params: { profileId: profile.id } });
 }
 
 /**
@@ -72,14 +70,7 @@ function onProfileClick(profile: Profile): void {
  */
 async function onChangeProfileStatus(profileId: number, status: ProfileState) {
     await updateProfileState({ profileId, state: status });
-    await refetch();
-
-    const statusLabel = status === 'disabled' ? 'geblokkeerd' : 'geactiveerd';
-    toast.add({
-        severity: 'success',
-        summary: t('domains.profiles.success.statusUpdated'),
-        detail: t('domains.profiles.success.statusUpdatedDetail', [statusLabel]),
-    });
+    refetch();
 }
 </script>
 

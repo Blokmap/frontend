@@ -1,0 +1,115 @@
+<script setup lang="ts">
+import Button from 'primevue/button';
+import Card from 'primevue/card';
+import ProfileActionsMenu from '@/components/features/profile/ProfileActionsMenu.vue';
+import ProfileStateBadge from '@/components/features/profile/ProfileStateBadge.vue';
+import KeyValue from '@/components/shared/atoms/KeyValue.vue';
+import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
+import { faChevronDown, faSpinner, faUser } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useUpdateProfileState } from '@/composables/data/useProfile';
+import type { Profile, ProfileState } from '@/domain/profile';
+
+defineProps<{
+    profile: Profile;
+}>();
+
+const { locale } = useI18n();
+
+const { mutateAsync: updateProfileState, isPending: isUpdatingState } = useUpdateProfileState();
+
+const isUpdatingProfile = computed(() => isUpdatingState.value);
+
+/**
+ * Change the profile's status
+ *
+ * @param profileId - ID of the profile
+ * @param state - New state for the profile
+ */
+function onChangeStatus(profileId: number, state: ProfileState) {
+    updateProfileState({ profileId, state });
+}
+</script>
+
+<template>
+    <DashboardContent>
+        <div class="space-y-6">
+            <!-- Profile Information Card -->
+            <Card>
+                <template #title>
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                            <FontAwesomeIcon :icon="faUser" />
+                            <span>Profiel Informatie</span>
+                        </div>
+                        <ProfileActionsMenu
+                            :profile="profile"
+                            :is-pending="isUpdatingProfile"
+                            @change:status="onChangeStatus">
+                            <template #trigger="{ toggle }">
+                                <Button
+                                    severity="contrast"
+                                    :disabled="isUpdatingProfile"
+                                    @click="toggle"
+                                    size="small">
+                                    <span>Acties</span>
+                                    <FontAwesomeIcon
+                                        v-if="isUpdatingProfile"
+                                        :icon="faSpinner"
+                                        spin />
+                                    <FontAwesomeIcon :icon="faChevronDown" v-else />
+                                </Button>
+                            </template>
+                        </ProfileActionsMenu>
+                    </div>
+                </template>
+                <template #content>
+                    <div class="grid grid-cols-1 gap-4 py-3 md:grid-cols-2">
+                        <!-- Username -->
+                        <KeyValue key-label="Gebruikersnaam">
+                            <template #value>@{{ profile.username }}</template>
+                        </KeyValue>
+
+                        <!-- First Name -->
+                        <KeyValue key-label="Voornaam" :value="profile.firstName || '-'" />
+
+                        <!-- Last Name -->
+                        <KeyValue key-label="Achternaam" :value="profile.lastName || '-'" />
+
+                        <!-- Email -->
+                        <KeyValue key-label="E-mailadres" :value="profile.email" />
+
+                        <!-- Created At -->
+                        <KeyValue key-label="Aangemaakt op">
+                            <template #value>
+                                {{
+                                    profile.createdAt.toLocaleDateString(locale, {
+                                        day: '2-digit',
+                                        year: 'numeric',
+                                        month: 'short',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                    })
+                                }}
+                            </template>
+                        </KeyValue>
+
+                        <!-- Status -->
+                        <KeyValue key-label="Status">
+                            <template #value>
+                                <ProfileStateBadge :profile="profile" />
+                            </template>
+                        </KeyValue>
+
+                        <!-- Is Admin -->
+                        <KeyValue key-label="Administrator">
+                            <template #value>{{ profile.isAdmin ? 'Ja' : 'Nee' }}</template>
+                        </KeyValue>
+                    </div>
+                </template>
+            </Card>
+        </div>
+    </DashboardContent>
+</template>

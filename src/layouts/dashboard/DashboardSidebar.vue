@@ -45,17 +45,13 @@ async function handleLogoutClick(): Promise<void> {
 function closeMenu() {
     visible.value = false;
 }
-
-function handleNavigate() {
-    closeMenu();
-}
 </script>
 
 <template>
     <div class="sidebar" data-testid="dashboard-sidebar">
         <!-- Logo and Close Button Section -->
         <div class="sidebar-header">
-            <RouterLink :to="{ name: 'locations' }" @click="handleNavigate" data-testid="logo-link">
+            <RouterLink :to="{ name: 'locations' }" data-testid="logo-link">
                 <Logo :show-subtitle="false" variant="dark" />
             </RouterLink>
             <button
@@ -77,11 +73,10 @@ function handleNavigate() {
                 <RouterLink
                     class="sidebar-link"
                     :to="{
-                        name: 'dashboard.profiles.locations',
+                        name: 'dashboard.profiles.detail.locations',
                         params: { profileId: profile.id },
                     }"
-                    data-testid="my-locations-link"
-                    @click="handleNavigate">
+                    data-testid="my-locations-link">
                     <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Locaties</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
@@ -89,8 +84,7 @@ function handleNavigate() {
                 <RouterLink
                     class="sidebar-link"
                     :to="{ name: 'locations.submit' }"
-                    data-testid="new-location-link"
-                    @click="handleNavigate">
+                    data-testid="new-location-link">
                     <FontAwesomeIcon :icon="faPlus" />
                     <p>Nieuwe Locatie</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
@@ -104,8 +98,10 @@ function handleNavigate() {
                 </h4>
                 <RouterLink
                     class="sidebar-link"
-                    :to="{ name: 'dashboard.authorities' }"
-                    @click="handleNavigate">
+                    :to="{
+                        name: 'dashboard.profiles.detail.authorities',
+                        params: { profileId: profile.id },
+                    }">
                     <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Autoriteiten</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
@@ -119,8 +115,10 @@ function handleNavigate() {
                 </h4>
                 <RouterLink
                     class="sidebar-link"
-                    :to="{ name: 'dashboard.institutions.index' }"
-                    @click="handleNavigate">
+                    :to="{
+                        name: 'dashboard.profiles.detail.institutions',
+                        params: { profileId: profile.id },
+                    }">
                     <FontAwesomeIcon :icon="faList" />
                     <p>Mijn Instituties</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
@@ -132,18 +130,12 @@ function handleNavigate() {
                     <FontAwesomeIcon class="leading-icon" :icon="faChartLine" />
                     <span>Systeem</span>
                 </h4>
-                <RouterLink
-                    class="sidebar-link"
-                    :to="{ name: 'dashboard.statistics' }"
-                    @click="handleNavigate">
+                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.statistics' }">
                     <FontAwesomeIcon :icon="faChartSimple" />
                     <p>Statistieken</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </RouterLink>
-                <RouterLink
-                    class="sidebar-link"
-                    :to="{ name: 'dashboard.institutions.index' }"
-                    @click="handleNavigate">
+                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.institutions.index' }">
                     <FontAwesomeIcon :icon="faCity" />
                     <p>Instituties</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
@@ -151,10 +143,7 @@ function handleNavigate() {
                     </span>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </RouterLink>
-                <RouterLink
-                    class="sidebar-link"
-                    :to="{ name: 'dashboard.authorities' }"
-                    @click="handleNavigate">
+                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.authorities.index' }">
                     <FontAwesomeIcon :icon="faBuilding" />
                     <p>Autoriteiten</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
@@ -162,10 +151,7 @@ function handleNavigate() {
                     </span>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </RouterLink>
-                <RouterLink
-                    class="sidebar-link"
-                    :to="{ name: 'dashboard.locations.index' }"
-                    @click="handleNavigate">
+                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.locations.index' }">
                     <FontAwesomeIcon :icon="faMapLocationDot" />
                     <p>Locaties</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
@@ -176,10 +162,7 @@ function handleNavigate() {
                     </span>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </RouterLink>
-                <RouterLink
-                    class="sidebar-link"
-                    :to="{ name: 'dashboard.profiles.index' }"
-                    @click="handleNavigate">
+                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.profiles.index' }">
                     <FontAwesomeIcon :icon="faUsers" />
                     <p>Profielen</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
@@ -191,11 +174,7 @@ function handleNavigate() {
         </div>
 
         <div class="sidebar-profile">
-            <RouterLink
-                class="sidebar-link"
-                :to="{ name: 'profile' }"
-                data-testid="profile-link"
-                @click="handleNavigate">
+            <RouterLink class="sidebar-link" :to="{ name: 'profile' }" data-testid="profile-link">
                 <ProfileAvatar :profile="profile" class="h-10 w-10" />
                 <div class="flex-1 space-y-1 leading-tight">
                     <div class="text-sm font-semibold text-white">

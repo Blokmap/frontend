@@ -28,9 +28,16 @@ export const LocationsIndexPage = () =>
     import('@/pages/dashboard/locations/LocationsIndexPage.vue');
 
 // Dashboard Profiles
+export const ProfileDetailLayout = () => import('@/layouts/dashboard/ProfileDetailLayout.vue');
 export const ProfilesIndexPage = () => import('@/pages/dashboard/profiles/ProfilesIndexPage.vue');
+export const ProfileOverviewPage = () =>
+    import('@/pages/dashboard/profiles/ProfileOverviewPage.vue');
 export const ProfileLocationsPage = () =>
     import('@/pages/dashboard/profiles/ProfileLocationsPage.vue');
+export const ProfileAuthoritiesPage = () =>
+    import('@/pages/dashboard/profiles/ProfileAuthoritiesPage.vue');
+export const ProfileInstitutionsPage = () =>
+    import('@/pages/dashboard/profiles/ProfileInstitutionsPage.vue');
 
 // Dashboard Authorities
 export const DashboardAuthoritiesPage = () =>

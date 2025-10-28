@@ -37,12 +37,18 @@ const navigationActions = [
     {
         label: 'Locaties bekijken',
         icon: faMapLocationDot,
-        to: { name: 'dashboard.profiles.locations', params: { profileId: props.profile.id } },
+        to: {
+            name: 'dashboard.profiles.detail.locations',
+            params: { profileId: props.profile.id },
+        },
     },
     {
         label: 'Autoriteiten bekijken',
         icon: faUserShield,
-        to: { name: 'dashboard.authorities.index', query: { profileId: props.profile.id } },
+        to: {
+            name: 'dashboard.profiles.detail.authorities',
+            params: { profileId: props.profile.id },
+        },
     },
 ];
 
@@ -79,13 +85,13 @@ const onStatusChange = async (event: SelectChangeEvent, hideMenu: () => void) =>
                     class="w-full min-w-[200px]"
                     @change="(event) => onStatusChange(event, hideMenu)">
                     <template #option="{ option }">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 text-sm">
                             <FontAwesomeIcon :icon="option.icon" />
                             <span>{{ option.label }}</span>
                         </div>
                     </template>
                     <template #value="{ value }">
-                        <div v-if="value && selectedOption" class="flex items-center gap-2">
+                        <div v-if="value && selectedOption" class="flex items-center gap-2 text-sm">
                             <FontAwesomeIcon :icon="selectedOption.icon" />
                             <span>{{ selectedOption.label }}</span>
                         </div>
@@ -101,7 +107,8 @@ const onStatusChange = async (event: SelectChangeEvent, hideMenu: () => void) =>
                 :icon="action.icon"
                 :label="action.label"
                 :to="action.to"
-                @click="hideMenu" />
+                @click="hideMenu">
+            </NavigationLink>
         </template>
     </ActionMenu>
 </template>

@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
-import Tab from 'primevue/tab';
-import TabList from 'primevue/tablist';
-import Tabs from 'primevue/tabs';
+import TabNavigation, { type TabItem } from '@/components/shared/molecules/TabNavigation.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
@@ -21,7 +19,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, watchEffect } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
 import {
     useReadLocation,
     useUpdateLocation,
@@ -37,21 +34,57 @@ const props = defineProps<{
 }>();
 
 const toast = useToast();
-const router = useRouter();
-const route = useRoute();
 
 const editingStore = useLocationEditing();
 
-const activeTab = computed<string>(() => {
-    const routeName = route.name?.toString() || '';
-
-    if (routeName.includes('reservations')) return 'reservations';
-    if (routeName.includes('openings')) return 'openings';
-    if (routeName.includes('images')) return 'images';
-    if (routeName.includes('settings')) return 'settings';
-
-    return 'info';
-});
+const tabs = computed<TabItem[]>(() => [
+    {
+        value: 'info',
+        label: 'Informatie',
+        icon: faList,
+        route: {
+            name: 'dashboard.locations.detail.info',
+            params: { locationId: props.locationId },
+        },
+    },
+    {
+        value: 'reservations',
+        label: 'Reservaties',
+        icon: faUsers,
+        route: {
+            name: 'dashboard.locations.detail.reservations',
+            params: { locationId: props.locationId },
+        },
+    },
+    {
+        value: 'openings',
+        label: 'Openingstijden',
+        icon: faCalendar,
+        route: {
+            name: 'dashboard.locations.detail.openings',
+            params: { locationId: props.locationId },
+        },
+    },
+    {
+        value: 'images',
+        label: 'Afbeeldingen',
+        icon: faImages,
+        route: {
+            name: 'dashboard.locations.detail.images',
+            params: { locationId: props.locationId },
+        },
+    },
+    {
+        value: 'settings',
+        label: 'Instellingen',
+        class: 'ml-auto',
+        icon: faCog,
+        route: {
+            name: 'dashboard.locations.detail.settings',
+            params: { locationId: props.locationId },
+        },
+    },
+]);
 
 const {
     data: location,
@@ -133,26 +166,6 @@ async function saveChanges(): Promise<void> {
         });
     }
 }
-
-/**
- * Navigate to a specific tab
- */
-function navigateToTab(tab: string): void {
-    const routeMap: Record<string, string> = {
-        info: 'dashboard.locations.detail.info',
-        reservations: 'dashboard.locations.detail.reservations',
-        openings: 'dashboard.locations.detail.openings',
-        images: 'dashboard.locations.detail.images',
-        settings: 'dashboard.locations.detail.settings',
-    };
-
-    router.push({
-        name: routeMap[tab],
-        params: {
-            locationId: props.locationId,
-        },
-    });
-}
 </script>
 
 <template>
@@ -183,32 +196,7 @@ function navigateToTab(tab: string): void {
             </DashboardPageHeader>
 
             <!-- Tabs -->
-            <div class="tabs-wrapper">
-                <Tabs :value="activeTab" class="text-sm">
-                    <TabList>
-                        <Tab value="info" @click="navigateToTab('info')">
-                            <FontAwesomeIcon :icon="faList" class="tab-icon" />
-                            <span class="tab-label">Informatie</span>
-                        </Tab>
-                        <Tab value="reservations" @click="navigateToTab('reservations')">
-                            <FontAwesomeIcon :icon="faUsers" class="tab-icon" />
-                            <span class="tab-label">Reservaties</span>
-                        </Tab>
-                        <Tab value="openings" @click="navigateToTab('openings')">
-                            <FontAwesomeIcon :icon="faCalendar" class="tab-icon" />
-                            <span class="tab-label">Openingstijden</span>
-                        </Tab>
-                        <Tab value="images" @click="navigateToTab('images')">
-                            <FontAwesomeIcon :icon="faImages" class="tab-icon" />
-                            <span class="tab-label">Afbeeldingen</span>
-                        </Tab>
-                        <Tab value="settings" class="ml-auto" @click="navigateToTab('settings')">
-                            <FontAwesomeIcon :icon="faCog" class="tab-icon" />
-                            <span class="tab-label">Instellingen</span>
-                        </Tab>
-                    </TabList>
-                </Tabs>
-            </div>
+            <TabNavigation :tabs="tabs" />
 
             <!-- Page Content -->
             <div class="tab-content">
@@ -251,19 +239,6 @@ function navigateToTab(tab: string): void {
 
 <style scoped>
 @reference '@/assets/styles/main.css';
-
-.tabs-wrapper {
-    @apply -mx-3 overflow-x-auto px-3;
-    @apply md:mx-0 md:overflow-visible md:px-0;
-}
-
-.tab-icon {
-    @apply mr-0 md:mr-2;
-}
-
-.tab-label {
-    @apply hidden md:inline;
-}
 
 .save-bar {
     @apply fixed bottom-8 left-1/2 z-50 w-full max-w-[700px] -translate-x-1/2 px-6 py-4;

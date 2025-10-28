@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { useToast } from 'primevue';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
+import { useI18n } from 'vue-i18n';
 import {
     blockProfile,
     deleteProfileAvatar,
@@ -277,18 +279,26 @@ export function useUpdateProfileState(
     options: CompMutationOptions = {},
 ): CompMutation<ProfileStateParams, Profile> {
     const queryClient = useQueryClient();
+    const toast = useToast();
+    const i18n = useI18n();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate the specific profile query
             queryClient.invalidateQueries({
                 queryKey: PROFILE_QUERY_KEYS.read(variables.profileId),
             });
-            // Invalidate the profile list
-            queryClient.invalidateQueries({
-                queryKey: ['admin', 'profiles'],
-            });
+
+            if (!options.disableToasts) {
+                const statusLabel = variables.state === 'disabled' ? 'geblokkeerd' : 'geactiveerd';
+
+                toast.add({
+                    severity: 'success',
+                    summary: i18n.t('domains.profiles.success.statusUpdated'),
+                    detail: i18n.t('domains.profiles.success.statusUpdatedDetail', [statusLabel]),
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: ({ profileId, state }: ProfileStateParams) => {

@@ -27,8 +27,12 @@ import {
     LocationsIndexPage,
     LocationsPage,
     ProfilePage,
-    ProfilesIndexPage,
+    ProfileAuthoritiesPage,
+    ProfileDetailLayout,
     ProfileLocationsPage,
+    ProfileOverviewPage,
+    ProfilesIndexPage,
+    ProfileInstitutionsPage,
 } from './pages';
 
 const routes: RouteRecordRaw[] = [
@@ -65,7 +69,6 @@ const routes: RouteRecordRaw[] = [
                         component: LocationsPage,
                         meta: {
                             title: 'Locaties',
-                            breadcrumbs: [{ label: 'Locaties', to: { name: 'locations' } }],
                         },
                     },
                     {
@@ -97,7 +100,10 @@ const routes: RouteRecordRaw[] = [
     {
         path: '/dashboard',
         component: DashboardLayout,
-        meta: { auth: { required: true } },
+        meta: {
+            auth: { required: true },
+            breadcrumbs: [{ label: 'Dashboard', to: { name: 'dashboard' } }],
+        },
         children: [
             {
                 path: '',
@@ -106,6 +112,9 @@ const routes: RouteRecordRaw[] = [
             },
             {
                 path: 'locations',
+                meta: {
+                    breadcrumbs: [{ label: 'Locaties', to: { name: 'dashboard.locations.index' } }],
+                },
                 children: [
                     {
                         path: '',
@@ -114,16 +123,20 @@ const routes: RouteRecordRaw[] = [
                         meta: {
                             auth: { admin: true },
                             title: 'Beheer Locaties',
-                            breadcrumbs: [
-                                { label: 'Dashboard', to: { name: 'dashboard' } },
-                                { label: 'Locaties', to: { name: 'dashboard.locations.index' } },
-                            ],
                         },
                     },
                     {
                         path: ':locationId',
                         component: LocationDetailLayout,
                         props: true,
+                        meta: {
+                            breadcrumbs: [
+                                {
+                                    label: 'Details',
+                                    to: { name: 'dashboard.locations.detail.info' },
+                                },
+                            ],
+                        },
                         children: [
                             {
                                 path: '',
@@ -136,17 +149,6 @@ const routes: RouteRecordRaw[] = [
                                 props: true,
                                 meta: {
                                     title: 'Locatie Informatie',
-                                    breadcrumbs: [
-                                        { label: 'Dashboard', to: { name: 'dashboard' } },
-                                        {
-                                            label: 'Locaties',
-                                            to: { name: 'dashboard.locations.index' },
-                                        },
-                                        {
-                                            label: 'Details',
-                                            to: { name: 'dashboard.locations.detail.info' },
-                                        },
-                                    ],
                                 },
                             },
                             {
@@ -157,11 +159,6 @@ const routes: RouteRecordRaw[] = [
                                 meta: {
                                     title: 'Locatie Reservaties',
                                     breadcrumbs: [
-                                        { label: 'Dashboard', to: { name: 'dashboard' } },
-                                        {
-                                            label: 'Locaties',
-                                            to: { name: 'dashboard.locations.index' },
-                                        },
                                         {
                                             label: 'Reservaties',
                                             to: { name: 'dashboard.locations.detail.reservations' },
@@ -177,11 +174,6 @@ const routes: RouteRecordRaw[] = [
                                 meta: {
                                     title: 'Scanner',
                                     breadcrumbs: [
-                                        { label: 'Dashboard', to: { name: 'dashboard' } },
-                                        {
-                                            label: 'Locaties',
-                                            to: { name: 'dashboard.locations.index' },
-                                        },
                                         {
                                             label: 'Scanner',
                                             to: { name: 'dashboard.locations.detail.scanner' },
@@ -197,11 +189,6 @@ const routes: RouteRecordRaw[] = [
                                 meta: {
                                     title: 'Locatie Openingstijden',
                                     breadcrumbs: [
-                                        { label: 'Dashboard', to: { name: 'dashboard' } },
-                                        {
-                                            label: 'Locaties',
-                                            to: { name: 'dashboard.locations.index' },
-                                        },
                                         {
                                             label: 'Openingstijden',
                                             to: { name: 'dashboard.locations.detail.openings' },
@@ -217,11 +204,6 @@ const routes: RouteRecordRaw[] = [
                                 meta: {
                                     title: 'Locatie Afbeeldingen',
                                     breadcrumbs: [
-                                        { label: 'Dashboard', to: { name: 'dashboard' } },
-                                        {
-                                            label: 'Locaties',
-                                            to: { name: 'dashboard.locations.index' },
-                                        },
                                         {
                                             label: 'Afbeeldingen',
                                             to: { name: 'dashboard.locations.detail.images' },
@@ -237,11 +219,6 @@ const routes: RouteRecordRaw[] = [
                                 meta: {
                                     title: 'Locatie Instellingen',
                                     breadcrumbs: [
-                                        { label: 'Dashboard', to: { name: 'dashboard' } },
-                                        {
-                                            label: 'Locaties',
-                                            to: { name: 'dashboard.locations.index' },
-                                        },
                                         {
                                             label: 'Instellingen',
                                             to: { name: 'dashboard.locations.detail.settings' },
@@ -257,9 +234,7 @@ const routes: RouteRecordRaw[] = [
                 path: 'authorities',
                 name: 'dashboard.authorities',
                 meta: {
-                    title: 'Beheer Autorisaties',
                     breadcrumbs: [
-                        { label: 'Dashboard', to: { name: 'dashboard' } },
                         { label: 'Autoriteiten', to: { name: 'dashboard.authorities.index' } },
                     ],
                 },
@@ -270,13 +245,6 @@ const routes: RouteRecordRaw[] = [
                         component: DashboardAuthoritiesPage,
                         meta: {
                             title: 'Beheer Autorisaties',
-                            breadcrumbs: [
-                                { label: 'Dashboard', to: { name: 'dashboard' } },
-                                {
-                                    label: 'Autoriteiten',
-                                    to: { name: 'dashboard.authorities.index' },
-                                },
-                            ],
                         },
                     },
                     {
@@ -286,23 +254,22 @@ const routes: RouteRecordRaw[] = [
                         meta: {
                             title: 'Beheer Autorisatie',
                             breadcrumbs: [
-                                { label: 'Dashboard', to: { name: 'dashboard' } },
-                                {
-                                    label: 'Autoriteiten',
-                                    to: { name: 'dashboard.authorities.index' },
-                                },
                                 {
                                     label: 'Autoriteit Details',
                                     to: { name: 'dashboard.authorities.detail' },
                                 },
                             ],
                         },
-                        // Note: breadcrumbs should be updated dynamically by the component to include authority name
                     },
                 ],
             },
             {
                 path: 'institutions',
+                meta: {
+                    breadcrumbs: [
+                        { label: 'Instituties', to: { name: 'dashboard.institutions.index' } },
+                    ],
+                },
                 children: [
                     {
                         path: '',
@@ -310,13 +277,6 @@ const routes: RouteRecordRaw[] = [
                         component: InstitutionIndexPage,
                         meta: {
                             title: 'Beheer Instituties',
-                            breadcrumbs: [
-                                { label: 'Dashboard', to: { name: 'dashboard' } },
-                                {
-                                    label: 'Instituties',
-                                    to: { name: 'dashboard.institutions.index' },
-                                },
-                            ],
                         },
                     },
                     {
@@ -326,11 +286,6 @@ const routes: RouteRecordRaw[] = [
                         meta: {
                             title: 'Beheer Institutie',
                             breadcrumbs: [
-                                { label: 'Dashboard', to: { name: 'dashboard' } },
-                                {
-                                    label: 'Instituties',
-                                    to: { name: 'dashboard.institutions.index' },
-                                },
                                 {
                                     label: 'Institutie Details',
                                     to: { name: 'dashboard.institutions.detail' },
@@ -343,6 +298,9 @@ const routes: RouteRecordRaw[] = [
             },
             {
                 path: 'profiles',
+                meta: {
+                    breadcrumbs: [{ label: 'Profielen', to: { name: 'dashboard.profiles.index' } }],
+                },
                 children: [
                     {
                         path: '',
@@ -351,29 +309,78 @@ const routes: RouteRecordRaw[] = [
                         meta: {
                             auth: { admin: true },
                             title: 'Beheer Profielen',
-                            breadcrumbs: [
-                                { label: 'Dashboard', to: { name: 'dashboard' } },
-                                { label: 'Profielen', to: { name: 'dashboard.profiles.index' } },
-                            ],
                         },
                     },
                     {
-                        path: ':profileId?/locations',
-                        name: 'dashboard.profiles.locations',
+                        path: ':profileId',
+                        component: ProfileDetailLayout,
                         props: true,
-                        component: ProfileLocationsPage,
-                        meta: {
-                            auth: { required: true },
-                            title: 'Locaties',
-                            breadcrumbs: [
-                                { label: 'Dashboard', to: { name: 'dashboard' } },
-                                { label: 'Profielen', to: { name: 'dashboard.profiles.index' } },
-                                {
-                                    label: 'Locaties',
-                                    to: { name: 'dashboard.profiles.locations' },
+                        children: [
+                            {
+                                path: '',
+                                redirect: { name: 'dashboard.profiles.detail.overview' },
+                            },
+                            {
+                                path: 'overview',
+                                name: 'dashboard.profiles.detail.overview',
+                                component: ProfileOverviewPage,
+                                props: true,
+                                meta: {
+                                    title: 'Profiel Overzicht',
+                                    breadcrumbs: [
+                                        {
+                                            label: 'Overzicht',
+                                            to: { name: 'dashboard.profiles.detail.overview' },
+                                        },
+                                    ],
                                 },
-                            ],
-                        },
+                            },
+                            {
+                                path: 'locations',
+                                name: 'dashboard.profiles.detail.locations',
+                                component: ProfileLocationsPage,
+                                props: true,
+                                meta: {
+                                    title: 'Profiel Locaties',
+                                    breadcrumbs: [
+                                        {
+                                            label: 'Locaties',
+                                            to: { name: 'dashboard.profiles.detail.locations' },
+                                        },
+                                    ],
+                                },
+                            },
+                            {
+                                path: 'authorities',
+                                name: 'dashboard.profiles.detail.authorities',
+                                component: ProfileAuthoritiesPage,
+                                props: true,
+                                meta: {
+                                    title: 'Profiel Autoriteiten',
+                                    breadcrumbs: [
+                                        {
+                                            label: 'Autoriteiten',
+                                            to: { name: 'dashboard.profiles.detail.authorities' },
+                                        },
+                                    ],
+                                },
+                            },
+                            {
+                                path: 'institutions',
+                                name: 'dashboard.profiles.detail.institutions',
+                                component: ProfileInstitutionsPage,
+                                props: true,
+                                meta: {
+                                    title: 'Profiel Instituties',
+                                    breadcrumbs: [
+                                        {
+                                            label: 'Instituties',
+                                            to: { name: 'dashboard.profiles.detail.institutions' },
+                                        },
+                                    ],
+                                },
+                            },
+                        ],
                     },
                 ],
             },
@@ -383,10 +390,7 @@ const routes: RouteRecordRaw[] = [
                 component: DashboardStatisticsPage,
                 meta: {
                     title: 'Statistieken',
-                    breadcrumbs: [
-                        { label: 'Dashboard', to: { name: 'dashboard' } },
-                        { label: 'Statistieken', to: { name: 'dashboard.statistics' } },
-                    ],
+                    breadcrumbs: [{ label: 'Statistieken', to: { name: 'dashboard.statistics' } }],
                 },
             },
 
@@ -396,10 +400,7 @@ const routes: RouteRecordRaw[] = [
                 component: DashboardReviewsPage,
                 meta: {
                     title: 'Beheer Reviews',
-                    breadcrumbs: [
-                        { label: 'Dashboard', to: { name: 'dashboard' } },
-                        { label: 'Reviews', to: { name: 'dashboard.reviews' } },
-                    ],
+                    breadcrumbs: [{ label: 'Reviews', to: { name: 'dashboard.reviews' } }],
                 },
             },
         ],

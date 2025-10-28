@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
-import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import LanguageSelector from '@/components/shared/molecules/LanguageSelector.vue';
@@ -71,11 +70,13 @@ function handleFormSubmission(): void {
                 </LanguageSelector>
             </div>
 
-            <FloatLabel variant="on">
-                <label :for="`name-${currentLanguage}`">
+            <div>
+                <label
+                    :for="`name-${currentLanguage}`"
+                    class="mb-2 block text-sm font-medium text-gray-700">
                     {{ $t('components.institutionForm.name') }} ({{
                         currentLanguage.toUpperCase()
-                    }})
+                    }}) *
                 </label>
                 <InputText
                     :id="`name-${currentLanguage}`"
@@ -83,22 +84,27 @@ function handleFormSubmission(): void {
                     class="w-full"
                     required>
                 </InputText>
-            </FloatLabel>
+            </div>
         </div>
 
         <!-- Slug -->
-        <FloatLabel variant="on">
-            <label for="slug">{{ $t('components.institutionForm.slug') }}</label>
+        <div>
+            <label for="slug" class="mb-2 block text-sm font-medium text-gray-700">
+                {{ $t('components.institutionForm.slug') }} *
+            </label>
             <InputText
                 id="slug"
                 v-model="form.slug"
                 class="w-full"
                 :placeholder="DEFAULT_INSTITUTION_REQUEST.slug"
                 required />
-        </FloatLabel>
+        </div>
 
         <!-- Category -->
-        <FloatLabel variant="on">
+        <div>
+            <label for="category" class="mb-2 block text-sm font-medium text-gray-700">
+                {{ $t('components.institutionForm.category') }} *
+            </label>
             <Select
                 id="category"
                 v-model="form.category"
@@ -111,8 +117,7 @@ function handleFormSubmission(): void {
                     <span v-if="selectedCategory">{{ selectedCategory.label }}</span>
                 </template>
             </Select>
-            <label for="category">{{ $t('components.institutionForm.category') }}</label>
-        </FloatLabel>
+        </div>
 
         <!-- Contact Information -->
         <div class="space-y-3">
@@ -120,25 +125,29 @@ function handleFormSubmission(): void {
                 {{ $t('components.institutionForm.contactInformation') }}
             </h3>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FloatLabel variant="on">
-                    <label for="email">{{ $t('components.institutionForm.email') }}</label>
+                <div>
+                    <label for="email" class="mb-2 block text-sm font-medium text-gray-700">
+                        {{ $t('components.institutionForm.email') }}
+                    </label>
                     <InputText
                         id="email"
                         v-model="form.email"
                         type="email"
                         class="w-full"
                         :placeholder="DEFAULT_INSTITUTION_REQUEST.email ?? ''" />
-                </FloatLabel>
+                </div>
 
-                <FloatLabel variant="on">
-                    <label for="phone">{{ $t('components.institutionForm.phone') }}</label>
+                <div>
+                    <label for="phone" class="mb-2 block text-sm font-medium text-gray-700">
+                        {{ $t('components.institutionForm.phone') }}
+                    </label>
                     <InputText
                         id="phone"
                         v-model="form.phoneNumber"
                         type="tel"
                         class="w-full"
                         :placeholder="DEFAULT_INSTITUTION_REQUEST.phoneNumber ?? ''" />
-                </FloatLabel>
+                </div>
             </div>
         </div>
 
@@ -146,67 +155,78 @@ function handleFormSubmission(): void {
         <div class="space-y-3">
             <h3 class="text-lg font-semibold">{{ $t('components.institutionForm.address') }}</h3>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <FloatLabel variant="on" class="md:col-span-2">
-                    <label for="street">{{ $t('components.institutionForm.street') }}</label>
+                <div class="md:col-span-2">
+                    <label for="street" class="mb-2 block text-sm font-medium text-gray-700">
+                        {{ $t('components.institutionForm.street') }}
+                    </label>
                     <InputText
                         id="street"
                         v-model="form.street"
                         class="w-full"
                         :placeholder="DEFAULT_INSTITUTION_REQUEST.street ?? ''" />
-                </FloatLabel>
+                </div>
 
-                <FloatLabel variant="on">
-                    <label for="number">{{ $t('components.institutionForm.number') }}</label>
+                <div>
+                    <label for="number" class="mb-2 block text-sm font-medium text-gray-700">
+                        {{ $t('components.institutionForm.number') }}
+                    </label>
                     <InputText
                         id="number"
                         v-model="form.number"
                         class="w-full"
                         :placeholder="DEFAULT_INSTITUTION_REQUEST.number ?? ''" />
-                </FloatLabel>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <FloatLabel variant="on">
-                    <label for="zip">{{ $t('components.institutionForm.zip') }}</label>
+                <div>
+                    <label for="zip" class="mb-2 block text-sm font-medium text-gray-700">
+                        {{ $t('components.institutionForm.zip') }}
+                    </label>
                     <InputText
                         id="zip"
                         v-model="form.zip"
                         class="w-full"
                         :placeholder="DEFAULT_INSTITUTION_REQUEST.zip ?? ''" />
-                </FloatLabel>
+                </div>
 
-                <FloatLabel variant="on">
-                    <label for="city">{{ $t('components.institutionForm.city') }}</label>
+                <div>
+                    <label for="city" class="mb-2 block text-sm font-medium text-gray-700">
+                        {{ $t('components.institutionForm.city') }}
+                    </label>
                     <InputText
                         id="city"
                         v-model="form.city"
                         class="w-full"
                         :placeholder="DEFAULT_INSTITUTION_REQUEST.city ?? ''" />
-                </FloatLabel>
+                </div>
 
-                <FloatLabel variant="on">
-                    <label for="province">{{ $t('components.institutionForm.province') }}</label>
+                <div>
+                    <label for="province" class="mb-2 block text-sm font-medium text-gray-700">
+                        {{ $t('components.institutionForm.province') }}
+                    </label>
                     <InputText
                         id="province"
                         v-model="form.province"
                         class="w-full"
                         :placeholder="DEFAULT_INSTITUTION_REQUEST.province ?? ''" />
-                </FloatLabel>
+                </div>
             </div>
 
-            <FloatLabel variant="on">
-                <label for="country">{{ $t('components.institutionForm.country') }}</label>
+            <div>
+                <label for="country" class="mb-2 block text-sm font-medium text-gray-700">
+                    {{ $t('components.institutionForm.country') }}
+                </label>
                 <InputText
                     id="country"
                     v-model="form.country"
                     class="w-full"
                     :placeholder="DEFAULT_INSTITUTION_REQUEST.country ?? ''" />
-            </FloatLabel>
+            </div>
         </div>
 
         <!-- Submit Button -->
         <Button
-            class="mt-4 w-full"
             :label="
                 institution
                     ? $t('components.institutionForm.updateButton')

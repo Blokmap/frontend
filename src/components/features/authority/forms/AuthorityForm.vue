@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
-import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
@@ -37,21 +36,24 @@ function handleFormSubmission(): void {
 <template>
     <form class="space-y-4" @submit.prevent="handleFormSubmission">
         <!-- Name -->
-        <FloatLabel variant="on">
-            <label for="name">{{ $t('components.authorityForm.name') }}</label>
+        <div>
+            <label for="name" class="mb-2 block text-sm font-medium text-gray-700">
+                {{ $t('components.authorityForm.name') }} *
+            </label>
             <InputText id="name" v-model="form.name" class="w-full" required />
-        </FloatLabel>
+        </div>
 
         <!-- Description -->
-        <FloatLabel variant="on">
-            <label for="description">{{ $t('components.authorityForm.description') }}</label>
+        <div>
+            <label for="description" class="mb-2 block text-sm font-medium text-gray-700">
+                {{ $t('components.authorityForm.description') }}
+            </label>
             <Textarea id="description" v-model="form.description" class="w-full" rows="4">
             </Textarea>
-        </FloatLabel>
+        </div>
 
         <!-- Submit Button -->
         <Button
-            class="ms-auto mt-4"
             :label="
                 authority
                     ? $t('components.authorityForm.updateButton')

@@ -103,9 +103,17 @@ export function useCreateAuthority(
 export function useUpdateAuthority(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateAuthorityParams> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
         mutationFn: ({ id, data }: UpdateAuthorityParams) => updateAuthority(id, data),
+        onSuccess: (data, variables, context) => {
+            queryClient.invalidateQueries({
+                queryKey: AUTHORITY_QUERY_KEYS.detail(variables.id),
+            });
+            options.onSuccess?.(data, variables, context);
+        },
     });
 
     return mutation;

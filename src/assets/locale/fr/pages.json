@@ -21,6 +21,20 @@
         }
     },
     "dashboard": {
+        "authorities": {
+            "index": {
+                "title": "Autorités"
+            },
+            "create": {
+                "title": "Créer une Nouvelle Autorité",
+                "subtitle": "Remplissez les détails ci-dessous pour créer une nouvelle autorité."
+            },
+            "detail": {
+                "title": "Détails de l'Autorité",
+                "notFound": "Autorité Non Trouvée",
+                "notFoundMessage": "L'autorité que vous recherchez n'existe pas ou vous n'avez pas accès."
+            }
+        },
         "institutions": {
             "index": {
                 "title": "Institutions"

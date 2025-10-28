@@ -36,7 +36,16 @@ const {
     mutateAsync: updateProfileState,
     isPending: isUpdatingProfile,
     variables: updateVariables,
-} = useUpdateProfileState();
+} = useUpdateProfileState({
+    onSuccess: async () => {
+        await refetch();
+        // Success toast is handled in the composable
+    },
+    onError: (error: any) => {
+        // Error toast is handled in the composable
+        console.error('Failed to update profile state:', error);
+    },
+});
 
 const { data: counts } = useAdminCounts();
 

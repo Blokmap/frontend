@@ -19,7 +19,16 @@ defineProps<{
 
 const { locale } = useI18n();
 
-const { mutateAsync: updateProfileState, isPending: isUpdatingState } = useUpdateProfileState();
+const { mutateAsync: updateProfileState, isPending: isUpdatingState } = useUpdateProfileState({
+    onSuccess: () => {
+        // Profile state updated successfully
+        // Toast is handled in the composable
+    },
+    onError: (error: any) => {
+        // Error toast is handled in the composable
+        console.error('Failed to update profile state:', error);
+    },
+});
 
 const isUpdatingProfile = computed(() => isUpdatingState.value);
 
@@ -29,8 +38,8 @@ const isUpdatingProfile = computed(() => isUpdatingState.value);
  * @param profileId - ID of the profile
  * @param state - New state for the profile
  */
-function onChangeStatus(profileId: string, state: ProfileState) {
-    updateProfileState({ profileId, state });
+async function onChangeStatus(profileId: string, state: ProfileState) {
+    await updateProfileState({ profileId, state });
 }
 </script>
 

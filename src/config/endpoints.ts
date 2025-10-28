@@ -52,6 +52,7 @@ export const endpoints = {
     },
     authorities: {
         create: '/authorities',
+        read: '/authorities/{id}',
         update: '/authorities/{id}',
         list: '/authorities',
         locations: {

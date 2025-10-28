@@ -39,5 +39,11 @@
         "country": "Pays",
         "createButton": "Créer l'Institution",
         "updateButton": "Mettre à Jour l'Institution"
+    },
+    "authorityForm": {
+        "name": "Nom",
+        "description": "Description",
+        "createButton": "Créer l'Autorité",
+        "updateButton": "Mettre à Jour l'Autorité"
     }
 }

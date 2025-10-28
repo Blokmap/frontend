@@ -88,7 +88,23 @@
             }
         },
         "authorities": {
-            "name": "Authority | Authorities"
+            "name": "Authority | Authorities",
+            "success": {
+                "created": "Authority Created",
+                "createdDetail": "The authority was successfully created.",
+                "updated": "Authority Updated",
+                "updatedDetail": "The authority was successfully updated.",
+                "deleted": "Authority Deleted",
+                "deletedDetail": "The authority was successfully deleted."
+            },
+            "errors": {
+                "createFailed": "Creation Failed",
+                "createFailedDetail": "Something went wrong while creating the authority.",
+                "updateFailed": "Update Failed",
+                "updateFailedDetail": "Something went wrong while updating the authority.",
+                "deleteFailed": "Deletion Failed",
+                "deleteFailedDetail": "Something went wrong while deleting the authority."
+            }
         },
         "institutions": {
             "name": "Institution | Institutions",

@@ -131,6 +131,18 @@ function closeMenu() {
                     <p>Mijn Autoriteiten</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
                 </a>
+                <a
+                    v-if="profile.isAdmin"
+                    class="sidebar-link"
+                    @click.prevent="
+                        handleNavigation({ name: 'dashboard.authorities.create' }, 'new-authority')
+                    ">
+                    <FontAwesomeIcon
+                        :icon="navigatingTo === 'new-authority' ? faSpinner : faPlus"
+                        :class="{ 'fa-spin': navigatingTo === 'new-authority' }" />
+                    <p>Nieuwe Autoriteit</p>
+                    <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
+                </a>
             </div>
 
             <div class="sidebar-section">

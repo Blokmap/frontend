@@ -1,40 +1,40 @@
 <script setup lang="ts">
 import Card from 'primevue/card';
-import InstitutionForm from '@/components/features/institution/forms/InstitutionForm.vue';
+import AuthorityForm from '@/components/features/authority/forms/AuthorityForm.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
-import { useUpdateInstitution } from '@/composables/data/useInstitutions';
+import { useUpdateAuthority } from '@/composables/data/useAuthorities';
 import { useToast } from '@/composables/store/useToast';
-import type { Institution, InstitutionRequest } from '@/domain/institution';
+import type { Authority, AuthorityRequest } from '@/domain/authority';
 
 const props = defineProps<{
-    institution: Institution;
+    authority: Authority;
 }>();
 
 const toast = useToast();
 
-const { mutateAsync: updateInstitution, isPending: isUpdating } = useUpdateInstitution();
+const { mutateAsync: updateAuthority, isPending: isUpdating } = useUpdateAuthority();
 
 /**
- * Handle form submission to update the institution
+ * Handle form submission to update the authority
  */
-async function handleUpdate(form: InstitutionRequest): Promise<void> {
+async function handleUpdate(form: AuthorityRequest): Promise<void> {
     try {
-        await updateInstitution({
-            id: props.institution.id,
+        await updateAuthority({
+            id: props.authority.id,
             data: form,
         });
 
         toast.add({
             severity: 'success',
             summary: 'Opgeslagen',
-            detail: 'De institutie is succesvol bijgewerkt.',
+            detail: 'De autoriteit is succesvol bijgewerkt.',
         });
     } catch {
         toast.add({
             severity: 'error',
             summary: 'Fout bij opslaan',
-            detail: 'Er is iets misgegaan bij het bijwerken van de institutie.',
+            detail: 'Er is iets misgegaan bij het bijwerken van de autoriteit.',
         });
     }
 }
@@ -45,18 +45,18 @@ async function handleUpdate(form: InstitutionRequest): Promise<void> {
         <div class="space-y-6">
             <!-- Header -->
             <DashboardDetailHeader
-                title="Institutiegegevens"
-                secondary="Bekijk en bewerk institutiegegevens.">
+                title="Autoriteitgegevens"
+                secondary="Bekijk en bewerk autoriteitgegevens.">
             </DashboardDetailHeader>
 
-            <!-- Institution Information Card -->
+            <!-- Authority Information Card -->
             <Card>
                 <template #content>
-                    <InstitutionForm
-                        :institution="institution"
+                    <AuthorityForm
+                        :authority="authority"
                         :is-loading="isUpdating"
                         @click:save="handleUpdate">
-                    </InstitutionForm>
+                    </AuthorityForm>
                 </template>
             </Card>
         </div>

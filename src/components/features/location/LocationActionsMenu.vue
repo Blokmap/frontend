@@ -7,9 +7,8 @@ import { faClock, faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import { faCheck, faTimes, faEdit, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
+import { LocationState, type Location } from '@/domain/location';
 import LocationConfirmationDialog from './LocationConfirmationDialog.vue';
-
-import type { Location, LocationState } from '@/domain/location';
 
 const props = withDefaults(
     defineProps<{
@@ -48,7 +47,7 @@ const selectedStatusOption = computed(() => {
  */
 function onConfirmRejection(): void {
     if (props.location.state !== 'rejected') {
-        emit('change:status', props.location.id, 'rejected');
+        emit('change:status', props.location.id, LocationState.Rejected);
     }
     showRejectionDialog.value = false;
 }
@@ -175,7 +174,8 @@ watch(
                 :icon="faTrashCan"
                 label="Verwijderen"
                 :destructive="true"
-                @click="onDeleteClick(hideMenu)" />
+                @click="onDeleteClick(hideMenu)">
+            </NavigationLink>
         </template>
     </ActionMenu>
 

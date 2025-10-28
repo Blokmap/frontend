@@ -61,6 +61,14 @@ const {
             detail: t('domains.locations.success.statusUpdatedDetail'),
         });
     },
+    onError: (error: any) => {
+        const message = error.message || t('domains.locations.errors.statusUpdateFailed');
+        toast.add({
+            severity: 'error',
+            summary: t('domains.locations.errors.statusUpdateFailed'),
+            detail: message,
+        });
+    },
 });
 
 const {
@@ -74,6 +82,14 @@ const {
             severity: 'success',
             summary: t('domains.locations.success.deleted'),
             detail: t('domains.locations.success.deletedDetail'),
+        });
+    },
+    onError: (error: any) => {
+        const message = error.message || t('domains.locations.errors.deleteFailed');
+        toast.add({
+            severity: 'error',
+            summary: t('domains.locations.errors.deleteFailed'),
+            detail: message,
         });
     },
 });

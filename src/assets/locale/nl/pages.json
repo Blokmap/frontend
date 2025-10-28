@@ -95,6 +95,10 @@
             "index": {
                 "title": "Autoriteiten"
             },
+            "create": {
+                "title": "Nieuwe Autoriteit",
+                "subtitle": "Vul de onderstaande gegevens in om een nieuwe autoriteit aan te maken."
+            },
             "detail": {
                 "title": "Autoriteit Details",
                 "notFound": "Autoriteit Niet Gevonden",

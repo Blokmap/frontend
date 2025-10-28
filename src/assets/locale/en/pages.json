@@ -95,10 +95,14 @@
             "index": {
                 "title": "Authorities"
             },
+            "create": {
+                "title": "Create New Authority",
+                "subtitle": "Fill in the details below to create a new authority."
+            },
             "detail": {
                 "title": "Authority Details",
                 "notFound": "Authority Not Found",
-                "notFoundMessage": "The authority you are looking for does not exist or you don’t have access."
+                "notFoundMessage": "The authority you are looking for does not exist or you don't have access."
             }
         },
         "institutions": {

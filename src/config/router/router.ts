@@ -1,5 +1,6 @@
 import AuthLayout from '@/layouts/auth/AuthLayout.vue';
 import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
+import AuthorityDetailLayout from '@/layouts/dashboard/details/AuthorityDetailLayout.vue';
 import InstitutionDetailLayout from '@/layouts/dashboard/details/InstitutionDetailLayout.vue';
 import LocationDetailLayout from '@/layouts/dashboard/details/LocationDetailLayout.vue';
 import ProfileDetailLayout from '@/layouts/dashboard/details/ProfileDetailLayout.vue';
@@ -12,8 +13,11 @@ import { readAuthProfile, pullRedirectUrl } from '@/domain/auth';
 import { authRouterGuard, breadcrumbRouterGuard, titleRouterGuard } from './guards';
 import {
     AuthPage,
-    DashboardAuthoritiesPage,
-    DashboardAuthorityPage,
+    AuthorityCreatePage,
+    AuthorityIndexPage,
+    AuthorityLocationsPage,
+    AuthorityMembersPage,
+    AuthorityOverviewPage,
     DashboardReviewsPage,
     DashboardStatisticsPage,
     InstitutionCreatePage,
@@ -236,7 +240,6 @@ const routes: RouteRecordRaw[] = [
             },
             {
                 path: 'authorities',
-                name: 'dashboard.authorities',
                 meta: {
                     breadcrumbs: [
                         { label: 'Autoriteiten', to: { name: 'dashboard.authorities.index' } },
@@ -246,24 +249,64 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: '',
                         name: 'dashboard.authorities.index',
-                        component: DashboardAuthoritiesPage,
+                        component: AuthorityIndexPage,
                         meta: {
-                            title: 'Beheer Autorisaties',
+                            title: 'Beheer Autoriteiten',
+                        },
+                    },
+                    {
+                        path: 'create',
+                        name: 'dashboard.authorities.create',
+                        component: AuthorityCreatePage,
+                        meta: {
+                            title: 'Nieuwe Autoriteit',
+                            breadcrumbs: [
+                                {
+                                    label: 'Nieuwe Autoriteit',
+                                    to: { name: 'dashboard.authorities.create' },
+                                },
+                            ],
                         },
                     },
                     {
                         path: ':authorityId',
-                        name: 'dashboard.authorities.detail',
-                        component: DashboardAuthorityPage,
+                        component: AuthorityDetailLayout,
+                        props: true,
                         meta: {
-                            title: 'Beheer Autorisatie',
                             breadcrumbs: [
                                 {
-                                    label: 'Autoriteit Details',
-                                    to: { name: 'dashboard.authorities.detail' },
+                                    label: 'Details',
+                                    to: { name: 'dashboard.authorities.detail.overview' },
                                 },
                             ],
                         },
+                        children: [
+                            {
+                                path: '',
+                                redirect: { name: 'dashboard.authorities.detail.overview' },
+                            },
+                            {
+                                path: 'overview',
+                                name: 'dashboard.authorities.detail.overview',
+                                component: AuthorityOverviewPage,
+                                props: true,
+                                meta: { title: 'Autoriteit Overzicht' },
+                            },
+                            {
+                                path: 'locations',
+                                name: 'dashboard.authorities.detail.locations',
+                                component: AuthorityLocationsPage,
+                                props: true,
+                                meta: { title: 'Autoriteit Locaties' },
+                            },
+                            {
+                                path: 'members',
+                                name: 'dashboard.authorities.detail.members',
+                                component: AuthorityMembersPage,
+                                props: true,
+                                meta: { title: 'Autoriteit Leden' },
+                            },
+                        ],
                     },
                 ],
             },

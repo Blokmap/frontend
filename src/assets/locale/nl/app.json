@@ -88,7 +88,23 @@
             }
         },
         "authorities": {
-            "name": "Autoriteit | Autoriteiten"
+            "name": "Autoriteit | Autoriteiten",
+            "success": {
+                "created": "Autoriteit Aangemaakt",
+                "createdDetail": "De autoriteit is succesvol aangemaakt.",
+                "updated": "Autoriteit Bijgewerkt",
+                "updatedDetail": "De autoriteit is succesvol bijgewerkt.",
+                "deleted": "Autoriteit Verwijderd",
+                "deletedDetail": "De autoriteit is succesvol verwijderd."
+            },
+            "errors": {
+                "createFailed": "Aanmaken Mislukt",
+                "createFailedDetail": "Er is iets misgegaan bij het aanmaken van de autoriteit.",
+                "updateFailed": "Bijwerken Mislukt",
+                "updateFailedDetail": "Er is iets misgegaan bij het bijwerken van de autoriteit.",
+                "deleteFailed": "Verwijderen Mislukt",
+                "deleteFailedDetail": "Er is iets misgegaan bij het verwijderen van de autoriteit."
+            }
         },
         "institutions": {
             "name": "Institutie | Instituties",

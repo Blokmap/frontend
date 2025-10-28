@@ -84,14 +84,10 @@ watchEffect(() => {
  * Handles creation of a new opening time
  */
 async function onCreateOpeningTime(openingTime: OpeningTimeRequest): Promise<void> {
-    try {
-        await createOpeningTimes({
-            locationId: +props.locationId,
-            openings: [openingTime],
-        });
-    } catch {
-        // Error is handled by onError callback
-    }
+    await createOpeningTimes({
+        locationId: +props.locationId,
+        openings: [openingTime],
+    });
 }
 
 /**
@@ -102,7 +98,7 @@ async function onUpdateOpeningTime(
     openingTime: OpeningTimeRequest,
     sequence?: boolean,
 ): Promise<void> {
-    updateOpeningTime({
+    await updateOpeningTime({
         locationId: +props.locationId,
         openingTimeId,
         opening: openingTime,
@@ -114,7 +110,7 @@ async function onUpdateOpeningTime(
  * Handles deletion of an opening time
  */
 async function onDeleteOpeningTime(openingTimeId: number, sequence?: boolean): Promise<void> {
-    deleteOpeningTime({
+    await deleteOpeningTime({
         locationId: +props.locationId,
         openingTimeId,
         sequence,

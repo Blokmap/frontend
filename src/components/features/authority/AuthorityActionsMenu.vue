@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import ActionMenu from '@/components/shared/atoms/ActionMenu.vue';
+import NavigationLink from '@/components/shared/atoms/NavigationLink.vue';
 import { faUsers, faMapLocationDot, faEdit } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import type { Authority } from '@/domain/authority';
 
 const props = defineProps<{
@@ -9,29 +9,28 @@ const props = defineProps<{
     isPending?: boolean;
 }>();
 
-const actions = [
+const navigationActions = [
     {
         label: 'Leden bekijken',
         icon: faUsers,
         to: {
-            name: 'dashboard.authorities.detail',
+            name: 'dashboard.authorities.detail.members',
             params: { authorityId: props.authority.id },
-            hash: '#members',
         },
     },
     {
         label: 'Locaties bekijken',
         icon: faMapLocationDot,
         to: {
-            name: 'dashboard.locations.index',
-            query: { authorityId: props.authority.id },
+            name: 'dashboard.authorities.detail.locations',
+            params: { authorityId: props.authority.id },
         },
     },
     {
         label: 'Bewerken',
         icon: faEdit,
         to: {
-            name: 'dashboard.authorities.detail',
+            name: 'dashboard.authorities.detail.overview',
             params: { authorityId: props.authority.id },
         },
     },
@@ -46,18 +45,19 @@ const actions = [
             </slot>
         </template>
 
-        <template #content="{ hideMenu }">
-            <div class="space-y-1">
-                <RouterLink
-                    v-for="action in actions"
-                    :key="action.label"
-                    :to="action.to"
-                    class="flex w-full items-center gap-3 rounded-md px-2 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-100"
-                    @click="hideMenu">
-                    <FontAwesomeIcon :icon="action.icon" class="text-slate-700" />
-                    <span>{{ action.label }}</span>
-                </RouterLink>
-            </div>
+        <template #navigation="{ hideMenu }">
+            <NavigationLink
+                v-for="action in navigationActions"
+                :key="action.label"
+                :icon="action.icon"
+                :label="action.label"
+                :to="action.to"
+                @click="hideMenu">
+            </NavigationLink>
         </template>
     </ActionMenu>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+</style>

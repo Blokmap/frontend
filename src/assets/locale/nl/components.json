@@ -39,5 +39,11 @@
         "country": "Land",
         "createButton": "Institutie Aanmaken",
         "updateButton": "Institutie Bijwerken"
+    },
+    "authorityForm": {
+        "name": "Naam",
+        "description": "Beschrijving",
+        "createButton": "Autoriteit Aanmaken",
+        "updateButton": "Autoriteit Bijwerken"
     }
 }

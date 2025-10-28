@@ -45,7 +45,10 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
     if (authSettings?.admin && !profile.isAdmin) {
         // Seamlessly redirect to profile locations page for non-admin users
         if (to.name === 'dashboard.locations.index') {
-            return { name: 'dashboard.profiles.locations' };
+            return {
+                name: 'dashboard.profiles.detail.locations',
+                params: { profileId: profile.id },
+            };
         }
 
         toast.add({

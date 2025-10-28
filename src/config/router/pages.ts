@@ -38,6 +38,16 @@ export const ProfileInstitutionsPage = () =>
     import('@/pages/dashboard/profiles/ProfileInstitutionsPage.vue');
 
 // Dashboard Authorities
+export const AuthorityIndexPage = () =>
+    import('@/pages/dashboard/authorities/AuthorityIndexPage.vue');
+export const AuthorityCreatePage = () =>
+    import('@/pages/dashboard/authorities/AuthorityCreatePage.vue');
+export const AuthorityOverviewPage = () =>
+    import('@/pages/dashboard/authorities/AuthorityOverviewPage.vue');
+export const AuthorityMembersPage = () =>
+    import('@/pages/dashboard/authorities/AuthorityMembersPage.vue');
+export const AuthorityLocationsPage = () =>
+    import('@/pages/dashboard/authorities/AuthorityLocationsPage.vue');
 export const DashboardAuthoritiesPage = () =>
     import('@/pages/dashboard/authorities/AuthoritiesPage.vue');
 export const DashboardAuthorityPage = () =>

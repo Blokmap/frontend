@@ -39,5 +39,11 @@
         "country": "Country",
         "createButton": "Create Institution",
         "updateButton": "Update Institution"
+    },
+    "authorityForm": {
+        "name": "Name",
+        "description": "Description",
+        "createButton": "Create Authority",
+        "updateButton": "Update Authority"
     }
 }

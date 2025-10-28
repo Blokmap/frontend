@@ -10,3 +10,8 @@ export type Authority = {
     members?: Profile[];
     locations?: Location[];
 };
+
+export type AuthorityRequest = {
+    name: string;
+    description: string | null;
+};

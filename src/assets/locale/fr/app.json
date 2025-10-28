@@ -88,7 +88,23 @@
             }
         },
         "authorities": {
-            "name": "Autorité | Autorités"
+            "name": "Autorité | Autorités",
+            "success": {
+                "created": "Autorité Créée",
+                "createdDetail": "L'autorité a été créée avec succès.",
+                "updated": "Autorité Mise à Jour",
+                "updatedDetail": "L'autorité a été mise à jour avec succès.",
+                "deleted": "Autorité Supprimée",
+                "deletedDetail": "L'autorité a été supprimée avec succès."
+            },
+            "errors": {
+                "createFailed": "Échec de Création",
+                "createFailedDetail": "Une erreur s'est produite lors de la création de l'autorité.",
+                "updateFailed": "Échec de Mise à Jour",
+                "updateFailedDetail": "Une erreur s'est produite lors de la mise à jour de l'autorité.",
+                "deleteFailed": "Échec de Suppression",
+                "deleteFailedDetail": "Une erreur s'est produite lors de la suppression de l'autorité."
+            }
         },
         "institutions": {
             "name": "Institution | Institutions",

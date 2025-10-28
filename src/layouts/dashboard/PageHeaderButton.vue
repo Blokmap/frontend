@@ -10,7 +10,7 @@ const props = defineProps<Props>();
 </script>
 
 <template>
-    <Button v-bind="$attrs" size="small">
+    <Button v-bind="$attrs">
         <span v-if="props.label" class="hidden md:inline">{{ props.label }}</span>
         <slot></slot>
     </Button>

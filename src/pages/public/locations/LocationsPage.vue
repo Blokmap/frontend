@@ -92,8 +92,10 @@ function onPageChange(event: { page: number }): void {
  */
 function onNearestClick(): void {
     const center = mapRef.value?.map.center.value;
-    if (!center) return;
-    flyToNearestLocation(center);
+
+    if (center) {
+        flyToNearestLocation(center);
+    }
 }
 </script>
 

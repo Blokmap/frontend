@@ -11,16 +11,18 @@ import {
     faMapLocationDot,
     faPlus,
     faSignOut,
+    faSpinner,
     faTimes,
     faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useAuthLogout } from '@/composables/data/useAuth';
 import { abbreviateCount } from '@/utils/format';
 import type { Profile } from '@/domain/profile';
+import type { RouteLocationRaw } from 'vue-router';
 
 const props = defineProps<{
     profile: Profile;
@@ -29,7 +31,7 @@ const props = defineProps<{
 const visible = defineModel<boolean>('visible', { default: false });
 
 const router = useRouter();
-// const route = useRoute();
+const navigatingTo = ref<string | null>(null);
 
 const { mutateAsync: logout } = useAuthLogout();
 
@@ -40,6 +42,13 @@ const { data: counts, isLoading: isLoadingCounts } = useAdminCounts({
 async function handleLogoutClick(): Promise<void> {
     await router.push({ name: 'auth' });
     await logout();
+}
+
+async function handleNavigation(to: RouteLocationRaw, linkId: string) {
+    navigatingTo.value = linkId;
+    await router.push(to);
+    visible.value = false;
+    navigatingTo.value = null;
 }
 
 function closeMenu() {
@@ -70,25 +79,34 @@ function closeMenu() {
                     <FontAwesomeIcon class="leading-icon" :icon="faMapLocationDot" />
                     <span>Locaties</span>
                 </h4>
-                <RouterLink
+                <a
                     class="sidebar-link"
-                    :to="{
-                        name: 'dashboard.profiles.detail.locations',
-                        params: { profileId: profile.id },
-                    }"
+                    @click.prevent="
+                        handleNavigation(
+                            {
+                                name: 'dashboard.profiles.detail.locations',
+                                params: { profileId: profile.id },
+                            },
+                            'my-locations',
+                        )
+                    "
                     data-testid="my-locations-link">
-                    <FontAwesomeIcon :icon="faList" />
+                    <FontAwesomeIcon
+                        :icon="navigatingTo === 'my-locations' ? faSpinner : faList"
+                        :class="{ 'fa-spin': navigatingTo === 'my-locations' }" />
                     <p>Mijn Locaties</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                </RouterLink>
-                <RouterLink
+                </a>
+                <a
                     class="sidebar-link"
-                    :to="{ name: 'locations.submit' }"
+                    @click.prevent="handleNavigation({ name: 'locations.submit' }, 'new-location')"
                     data-testid="new-location-link">
-                    <FontAwesomeIcon :icon="faPlus" />
+                    <FontAwesomeIcon
+                        :icon="navigatingTo === 'new-location' ? faSpinner : faPlus"
+                        :class="{ 'fa-spin': navigatingTo === 'new-location' }" />
                     <p>Nieuwe Locatie</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                </RouterLink>
+                </a>
             </div>
 
             <div class="sidebar-section">
@@ -96,16 +114,23 @@ function closeMenu() {
                     <FontAwesomeIcon class="leading-icon" :icon="faBuilding" />
                     <span>Autoriteiten</span>
                 </h4>
-                <RouterLink
+                <a
                     class="sidebar-link"
-                    :to="{
-                        name: 'dashboard.profiles.detail.authorities',
-                        params: { profileId: profile.id },
-                    }">
-                    <FontAwesomeIcon :icon="faList" />
+                    @click.prevent="
+                        handleNavigation(
+                            {
+                                name: 'dashboard.profiles.detail.authorities',
+                                params: { profileId: profile.id },
+                            },
+                            'my-authorities',
+                        )
+                    ">
+                    <FontAwesomeIcon
+                        :icon="navigatingTo === 'my-authorities' ? faSpinner : faList"
+                        :class="{ 'fa-spin': navigatingTo === 'my-authorities' }" />
                     <p>Mijn Autoriteiten</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                </RouterLink>
+                </a>
             </div>
 
             <div class="sidebar-section">
@@ -113,16 +138,23 @@ function closeMenu() {
                     <FontAwesomeIcon class="leading-icon" :icon="faCity" />
                     <span>Instituties</span>
                 </h4>
-                <RouterLink
+                <a
                     class="sidebar-link"
-                    :to="{
-                        name: 'dashboard.profiles.detail.institutions',
-                        params: { profileId: profile.id },
-                    }">
-                    <FontAwesomeIcon :icon="faList" />
+                    @click.prevent="
+                        handleNavigation(
+                            {
+                                name: 'dashboard.profiles.detail.institutions',
+                                params: { profileId: profile.id },
+                            },
+                            'my-institutions',
+                        )
+                    ">
+                    <FontAwesomeIcon
+                        :icon="navigatingTo === 'my-institutions' ? faSpinner : faList"
+                        :class="{ 'fa-spin': navigatingTo === 'my-institutions' }" />
                     <p>Mijn Instituties</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                </RouterLink>
+                </a>
             </div>
 
             <div v-if="profile.isAdmin" class="sidebar-section">
@@ -130,29 +162,53 @@ function closeMenu() {
                     <FontAwesomeIcon class="leading-icon" :icon="faChartLine" />
                     <span>Systeem</span>
                 </h4>
-                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.statistics' }">
-                    <FontAwesomeIcon :icon="faChartSimple" />
+                <a
+                    class="sidebar-link"
+                    @click.prevent="
+                        handleNavigation({ name: 'dashboard.statistics' }, 'statistics')
+                    ">
+                    <FontAwesomeIcon
+                        :icon="navigatingTo === 'statistics' ? faSpinner : faChartSimple"
+                        :class="{ 'fa-spin': navigatingTo === 'statistics' }" />
                     <p>Statistieken</p>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                </RouterLink>
-                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.institutions.index' }">
-                    <FontAwesomeIcon :icon="faCity" />
+                </a>
+                <a
+                    class="sidebar-link"
+                    @click.prevent="
+                        handleNavigation({ name: 'dashboard.institutions.index' }, 'institutions')
+                    ">
+                    <FontAwesomeIcon
+                        :icon="navigatingTo === 'institutions' ? faSpinner : faCity"
+                        :class="{ 'fa-spin': navigatingTo === 'institutions' }" />
                     <p>Instituties</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
                         ({{ abbreviateCount(counts.institutionCount) }})
                     </span>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                </RouterLink>
-                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.authorities.index' }">
-                    <FontAwesomeIcon :icon="faBuilding" />
+                </a>
+                <a
+                    class="sidebar-link"
+                    @click.prevent="
+                        handleNavigation({ name: 'dashboard.authorities.index' }, 'authorities')
+                    ">
+                    <FontAwesomeIcon
+                        :icon="navigatingTo === 'authorities' ? faSpinner : faBuilding"
+                        :class="{ 'fa-spin': navigatingTo === 'authorities' }" />
                     <p>Autoriteiten</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
                         ({{ abbreviateCount(counts.authorityCount) }})
                     </span>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                </RouterLink>
-                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.locations.index' }">
-                    <FontAwesomeIcon :icon="faMapLocationDot" />
+                </a>
+                <a
+                    class="sidebar-link"
+                    @click.prevent="
+                        handleNavigation({ name: 'dashboard.locations.index' }, 'locations')
+                    ">
+                    <FontAwesomeIcon
+                        :icon="navigatingTo === 'locations' ? faSpinner : faMapLocationDot"
+                        :class="{ 'fa-spin': navigatingTo === 'locations' }" />
                     <p>Locaties</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
                         ({{ abbreviateCount(counts.locationCount)
@@ -161,20 +217,29 @@ function closeMenu() {
                         >)
                     </span>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                </RouterLink>
-                <RouterLink class="sidebar-link" :to="{ name: 'dashboard.profiles.index' }">
-                    <FontAwesomeIcon :icon="faUsers" />
+                </a>
+                <a
+                    class="sidebar-link"
+                    @click.prevent="
+                        handleNavigation({ name: 'dashboard.profiles.index' }, 'profiles')
+                    ">
+                    <FontAwesomeIcon
+                        :icon="navigatingTo === 'profiles' ? faSpinner : faUsers"
+                        :class="{ 'fa-spin': navigatingTo === 'profiles' }" />
                     <p>Profielen</p>
                     <span v-if="counts && !isLoadingCounts" class="count">
                         ({{ abbreviateCount(counts.profileCount) }})
                     </span>
                     <FontAwesomeIcon class="arrow-icon" :icon="faArrowRight" />
-                </RouterLink>
+                </a>
             </div>
         </div>
 
         <div class="sidebar-profile">
-            <RouterLink class="sidebar-link" :to="{ name: 'profile' }" data-testid="profile-link">
+            <a
+                class="sidebar-link"
+                @click.prevent="handleNavigation({ name: 'profile' }, 'profile')"
+                data-testid="profile-link">
                 <ProfileAvatar :profile="profile" class="h-10 w-10" />
                 <div class="flex-1 space-y-1 leading-tight">
                     <div class="text-sm font-semibold text-white">
@@ -182,7 +247,7 @@ function closeMenu() {
                     </div>
                     <div class="text-xs text-slate-400">Welkom terug!</div>
                 </div>
-            </RouterLink>
+            </a>
 
             <button
                 class="sidebar-link logout-btn"
@@ -242,7 +307,7 @@ function closeMenu() {
 
     .sidebar-items .sidebar-link {
         @apply flex w-full items-center space-x-3;
-        @apply transition-colors duration-200 hover:text-slate-300;
+        @apply cursor-pointer transition-colors duration-200 hover:text-slate-300;
         @apply border-l-2 border-transparent py-1;
 
         &:hover .arrow-icon {
@@ -282,7 +347,7 @@ function closeMenu() {
 
     .sidebar-link {
         @apply flex w-full items-center;
-        @apply transition-colors duration-200 hover:text-slate-300;
+        @apply cursor-pointer transition-colors duration-200 hover:text-slate-300;
     }
 
     .sidebar-profile {

@@ -10,7 +10,7 @@
 @reference '@/assets/styles/main.css';
 
 .dashboard-content {
-    @apply w-full space-y-4;
+    @apply h-full w-full space-y-4;
     @apply md:space-y-8;
 }
 </style>

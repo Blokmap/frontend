@@ -85,8 +85,8 @@ function toggleSidebar(): void {
 
     .sidebar {
         @apply flex-shrink-0;
-        @apply fixed top-0 left-0 z-50 md:sticky md:top-0;
-        @apply h-screen w-full md:w-72;
+        @apply fixed top-0 left-0 z-50 md:sticky md:top-6;
+        @apply min-h-screen w-full md:min-h-[calc(100vh-3rem)] md:w-72;
 
         &.mobile-hidden {
             @apply hidden md:block;

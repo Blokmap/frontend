@@ -70,8 +70,8 @@ export async function updateInstitution(
  * @param slug - The slug of the institution.
  * @returns A promise that resolves to an array of profiles.
  */
-export async function listInstitutionMembers(slug: string): Promise<Profile[]> {
-    const endpoint = endpoints.institutions.members.list.replace('{id}', slug);
+export async function listInstitutionMembers(id: number): Promise<Profile[]> {
+    const endpoint = endpoints.institutions.members.list.replace('{id}', id.toString());
     const { data } = await client.get<Profile[]>(endpoint);
     return data;
 }
@@ -83,21 +83,21 @@ export async function listInstitutionMembers(slug: string): Promise<Profile[]> {
  * @param profileId - The ID of the profile to add.
  * @returns A promise that resolves when the member is added.
  */
-export async function addInstitutionMember(slug: string, profileId: string): Promise<void> {
-    const endpoint = endpoints.institutions.members.add.replace('{id}', slug);
+export async function addInstitutionMember(id: number, profileId: string): Promise<void> {
+    const endpoint = endpoints.institutions.members.add.replace('{id}', id.toString());
     await client.post(endpoint, { profileId });
 }
 
 /**
  * Remove a member from an institution.
  *
- * @param slug - The slug of the institution.
+ * @param id - The ID of the institution.
  * @param profileId - The ID of the profile to remove.
  * @returns A promise that resolves when the member is removed.
  */
-export async function removeInstitutionMember(slug: string, profileId: string): Promise<void> {
+export async function removeInstitutionMember(id: number, profileId: string): Promise<void> {
     const endpoint = endpoints.institutions.members.remove
-        .replace('{id}', slug)
+        .replace('{id}', id.toString())
         .replace('{profileId}', String(profileId));
     await client.delete(endpoint);
 }
@@ -108,8 +108,8 @@ export async function removeInstitutionMember(slug: string, profileId: string): 
  * @param slug - The slug of the institution.
  * @returns A promise that resolves to an array of authorities.
  */
-export async function listInstitutionAuthorities(slug: string): Promise<any[]> {
-    const endpoint = endpoints.institutions.authorities.list.replace('{id}', slug);
+export async function listInstitutionAuthorities(id: number): Promise<any[]> {
+    const endpoint = endpoints.institutions.authorities.list.replace('{id}', id.toString());
     const { data } = await client.get<any[]>(endpoint);
     return data;
 }
@@ -121,8 +121,8 @@ export async function listInstitutionAuthorities(slug: string): Promise<any[]> {
  * @param authorityId - The ID of the authority to add.
  * @returns A promise that resolves when the authority is added.
  */
-export async function addInstitutionAuthority(slug: string, authorityId: number): Promise<void> {
-    const endpoint = endpoints.institutions.authorities.add.replace('{id}', slug);
+export async function addInstitutionAuthority(id: number, authorityId: number): Promise<void> {
+    const endpoint = endpoints.institutions.authorities.add.replace('{id}', id.toString());
     await client.post(endpoint, { authorityId });
 }
 
@@ -133,9 +133,9 @@ export async function addInstitutionAuthority(slug: string, authorityId: number)
  * @param authorityId - The ID of the authority to remove.
  * @returns A promise that resolves when the authority is removed.
  */
-export async function removeInstitutionAuthority(slug: string, authorityId: number): Promise<void> {
+export async function removeInstitutionAuthority(id: number, authorityId: number): Promise<void> {
     const endpoint = endpoints.institutions.authorities.remove
-        .replace('{id}', slug)
+        .replace('{id}', id.toString())
         .replace('{authorityId}', String(authorityId));
     await client.delete(endpoint);
 }

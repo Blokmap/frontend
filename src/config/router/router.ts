@@ -19,7 +19,7 @@ import {
     InstitutionCreatePage,
     InstitutionIndexPage,
     InstitutionOverviewPage,
-    InstitutionUsersPage,
+    InstitutionMembersPage,
     InstitutionAuthoritiesPage,
     LocationImagesPage,
     LocationInfoPage,
@@ -324,9 +324,9 @@ const routes: RouteRecordRaw[] = [
                             {
                                 path: 'users',
                                 name: 'dashboard.institutions.detail.users',
-                                component: InstitutionUsersPage,
+                                component: InstitutionMembersPage,
                                 props: true,
-                                meta: { title: 'Institutie Gebruikers' },
+                                meta: { title: 'Institutie Leden' },
                             },
                             {
                                 path: 'authorities',

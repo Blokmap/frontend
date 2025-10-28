@@ -92,11 +92,6 @@ function onChangeStatus(profileId: string, state: ProfileState) {
                                 <ProfileStateBadge :profile="profile" />
                             </template>
                         </KeyValue>
-
-                        <!-- Is Admin -->
-                        <KeyValue key-label="Administrator">
-                            <template #value>{{ profile.isAdmin ? 'Ja' : 'Nee' }}</template>
-                        </KeyValue>
                     </div>
                 </template>
             </Card>

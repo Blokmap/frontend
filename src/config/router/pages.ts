@@ -50,8 +50,8 @@ export const InstitutionCreatePage = () =>
     import('@/pages/dashboard/institutions/InstitutionCreatePage.vue');
 export const InstitutionOverviewPage = () =>
     import('@/pages/dashboard/institutions/InstitutionOverviewPage.vue');
-export const InstitutionUsersPage = () =>
-    import('@/pages/dashboard/institutions/InstitutionUsersPage.vue');
+export const InstitutionMembersPage = () =>
+    import('@/pages/dashboard/institutions/InstitutionMembersPage.vue');
 export const InstitutionAuthoritiesPage = () =>
     import('@/pages/dashboard/institutions/InstitutionAuthoritiesPage.vue');
 

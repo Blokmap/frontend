@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import Paginator from 'primevue/paginator';
-import ProfileTable from '@/components/features/profile/ProfileTable.vue';
+import ProfileActionsMenu from '@/components/features/profile/ProfileActionsMenu.vue';
+import ProfileStateBadge from '@/components/features/profile/ProfileStateBadge.vue';
+import ProfileTableCell from '@/components/features/profile/ProfileTableCell.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
+import Table from '@/components/shared/molecules/table/Table.vue';
+import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
@@ -98,13 +102,33 @@ async function onChangeProfileStatus(profileId: string, status: ProfileState) {
                 </template>
             </DashboardPageHeader>
 
-            <ProfileTable
-                :profiles="profiles?.data"
-                :loading="isLoading"
-                :is-profile-pending="isProfilePending"
-                @click:profile="onProfileClick"
-                @change:status="onChangeProfileStatus">
-            </ProfileTable>
+            <Table :value="profiles?.data" @click:row="onProfileClick">
+                <template #row="{ data: profile }">
+                    <TableCell column="Profiel">
+                        <ProfileTableCell :profile="profile" />
+                    </TableCell>
+
+                    <TableCell column="E-mailadres">
+                        {{ profile.email }}
+                    </TableCell>
+
+                    <TableCell column="Institutie">
+                        {{ profile.institution?.name || '-' }}
+                    </TableCell>
+
+                    <TableCell column="Status">
+                        <ProfileStateBadge :profile="profile" />
+                    </TableCell>
+
+                    <TableCell column="Acties">
+                        <ProfileActionsMenu
+                            :profile="profile"
+                            :is-pending="isProfilePending(profile.id)"
+                            @change:status="onChangeProfileStatus">
+                        </ProfileActionsMenu>
+                    </TableCell>
+                </template>
+            </Table>
 
             <Paginator
                 v-if="profiles?.data?.length"

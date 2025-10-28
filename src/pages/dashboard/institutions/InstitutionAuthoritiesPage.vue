@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
-import Card from 'primevue/card';
 import AuthorityTable from '@/components/features/authority/AuthorityTable.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
@@ -55,23 +54,19 @@ function onRemoveAuthority(authority: Authority) {
             </DashboardDetailHeader>
 
             <!-- Authorities Table -->
-            <Card>
-                <template #content>
-                    <AuthorityTable
-                        :authorities="authorities"
-                        :loading="isLoading"
-                        @click:authority="onAuthorityClick">
-                        <template #actions="{ authority }">
-                            <!-- Provide a simple remove action in the slot; the real remove logic should call the appropriate composable -->
-                            <button
-                                class="text-sm text-red-600 hover:underline"
-                                @click.stop.prevent="() => onRemoveAuthority(authority)">
-                                Verwijderen
-                            </button>
-                        </template>
-                    </AuthorityTable>
+            <AuthorityTable
+                :authorities="authorities"
+                :loading="isLoading"
+                @click:authority="onAuthorityClick">
+                <template #actions="{ authority }">
+                    <!-- Provide a simple remove action in the slot; the real remove logic should call the appropriate composable -->
+                    <button
+                        class="text-sm text-red-600 hover:underline"
+                        @click.stop.prevent="() => onRemoveAuthority(authority)">
+                        Verwijderen
+                    </button>
                 </template>
-            </Card>
+            </AuthorityTable>
         </div>
     </DashboardContent>
 </template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Card from 'primevue/card';
 import InstitutionTable from '@/components/features/institution/InstitutionTable.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
@@ -38,15 +37,11 @@ function onInstitutionClick(institution: Institution): void {
             </DashboardDetailHeader>
 
             <!-- Institutions Table -->
-            <Card>
-                <template #content>
-                    <InstitutionTable
-                        :institutions="institutions"
-                        :loading="false"
-                        @click:institution="onInstitutionClick">
-                    </InstitutionTable>
-                </template>
-            </Card>
+            <InstitutionTable
+                :institutions="institutions"
+                :loading="false"
+                @click:institution="onInstitutionClick">
+            </InstitutionTable>
         </div>
     </DashboardContent>
 </template>

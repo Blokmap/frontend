@@ -83,7 +83,7 @@ function navigateToDetail(): void {
             </div>
 
             <!-- Main Content -->
-            <div class="min-w-0 flex-1 space-y-3">
+            <div class="min-w-0 flex-2 space-y-3">
                 <!-- Header with name and address -->
                 <div class="flex w-full items-center justify-between gap-3">
                     <h3 class="text-lg font-semibold text-gray-900 transition-colors md:text-xl">
@@ -92,13 +92,22 @@ function navigateToDetail(): void {
                     <LocationStateBadge :location="location" />
                 </div>
 
-                <Badge severity="contrast" class="inline-flex gap-2" v-if="location.createdBy">
-                    <FontAwesomeIcon :icon="faUser" />
-                    <span>
-                        {{ location.createdBy?.firstName }}
-                    </span>
-                    <FontAwesomeIcon :icon="faArrowRight" />
-                </Badge>
+                <RouterLink
+                    :to="{
+                        name: 'dashboard.profiles.detail.overview',
+                        params: { profileId: location.createdBy?.id },
+                    }"
+                    @click.stop
+                    v-if="location.createdBy"
+                    class="mb-4 block">
+                    <Badge severity="contrast" class="inline-flex gap-2">
+                        <FontAwesomeIcon :icon="faUser" />
+                        <span>
+                            {{ location.createdBy.firstName }}
+                        </span>
+                        <FontAwesomeIcon :icon="faArrowRight" />
+                    </Badge>
+                </RouterLink>
 
                 <LocationLanguagesList :location="location" />
 

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import InstitutionActionsMenu from '@/components/features/institution/InstitutionActionsMenu.vue';
+import InstitutionLogo from '@/components/features/institution/InstitutionLogo.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import { useI18n } from 'vue-i18n';
@@ -26,11 +27,8 @@ const onInstitutionClick = (institution: Institution) => {
         <template #row="{ data: institution }">
             <TableCell column="Institutie">
                 <div class="flex items-center space-x-3">
-                    <div class="h-12 w-12 flex-shrink-0">
-                        <!-- <img
-                            :src="institution.logo.url"
-                            :alt="institution.name[locale] || 'Institution logo'"
-                            class="h-12 w-12 rounded-lg object-contain" /> -->
+                    <div class="h-16 w-16 flex-shrink-0">
+                        <InstitutionLogo :slug="institution.slug" />
                     </div>
                     <div class="min-w-0 flex-1">
                         <div class="truncate text-sm font-medium text-slate-900">

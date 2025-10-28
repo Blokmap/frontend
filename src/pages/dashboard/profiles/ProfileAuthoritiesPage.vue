@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Card from 'primevue/card';
 import AuthorityTable from '@/components/features/authority/AuthorityTable.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
@@ -35,16 +34,12 @@ function onAuthorityClick(authority: Authority): void {
             </DashboardDetailHeader>
 
             <!-- Authorities Table -->
-            <Card>
-                <template #content>
-                    <AuthorityTable
-                        :authorities="authorities"
-                        :loading="false"
-                        empty-message="Dit profiel is niet gekoppeld aan autoriteiten."
-                        @click:authority="onAuthorityClick">
-                    </AuthorityTable>
-                </template>
-            </Card>
+            <AuthorityTable
+                :authorities="authorities"
+                :loading="false"
+                empty-message="Dit profiel is niet gekoppeld aan autoriteiten."
+                @click:authority="onAuthorityClick">
+            </AuthorityTable>
         </div>
     </DashboardContent>
 </template>

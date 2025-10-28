@@ -4,6 +4,7 @@ import {
     addInstitutionAuthority,
     addInstitutionMember,
     createInstitution,
+    listInstitutionMembers,
     listInstitutions,
     readInstitution,
     removeInstitutionAuthority,
@@ -13,16 +14,43 @@ import {
     type InstitutionFilter,
     type InstitutionRequest,
 } from '@/domain/institution';
+import type { Profile } from '@/domain/profile';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
 
 export const INSTITUTION_QUERY_KEYS = {
     list: (filters: MaybeRefOrGetter<Partial<InstitutionFilter>>) =>
         ['institutions', filters] as const,
-    detail: (slug: MaybeRefOrGetter<string>) => ['institutions', 'detail', slug] as const,
-    members: (slug: MaybeRefOrGetter<string>) => ['institutions', 'members', slug] as const,
-    authorities: (slug: MaybeRefOrGetter<string>) => ['institutions', 'authorities', slug] as const,
+    detail: (id: MaybeRefOrGetter<string>) => ['institutions', 'detail', id] as const,
+    members: (id: MaybeRefOrGetter<number>) => ['institutions', 'members', id] as const,
+    authorities: (id: MaybeRefOrGetter<number>) => ['institutions', 'authorities', id] as const,
 } as const;
+
+// Mutation parameter types
+export type UpdateInstitutionParams = {
+    id: number;
+    data: InstitutionRequest;
+};
+
+export type AddInstitutionMemberParams = {
+    id: number;
+    profileId: string;
+};
+
+export type RemoveInstitutionMemberParams = {
+    id: number;
+    profileId: string;
+};
+
+export type AddInstitutionAuthorityParams = {
+    id: number;
+    authorityId: number;
+};
+
+export type RemoveInstitutionAuthorityParams = {
+    id: number;
+    authorityId: number;
+};
 
 /**
  * Composable to fetch a list of institutions.
@@ -43,20 +71,20 @@ export function useReadInstitutions(
 }
 
 /**
- * Composable to fetch a single institution by slug.
+ * Composable to fetch a single institution by id.
  *
- * @param slug - The slug of the institution to fetch.
+ * @param id - The id of the institution to fetch.
  * @param options - Query options.
  * @returns An object containing the institution and its state.
  */
 export function useReadInstitution(
-    slug: MaybeRefOrGetter<string>,
+    id: MaybeRefOrGetter<string>,
     options: CompQueryOptions = {},
 ): CompQuery<Institution> {
     const institution = useQuery({
         ...options,
-        queryKey: INSTITUTION_QUERY_KEYS.detail(slug),
-        queryFn: () => readInstitution(toValue(slug)),
+        queryKey: INSTITUTION_QUERY_KEYS.detail(id),
+        queryFn: () => readInstitution(toValue(id)),
     });
 
     return institution;
@@ -64,59 +92,79 @@ export function useReadInstitution(
 
 /**
  * Composable to create a new institution.
+ *
+ * @param options - Mutation options.
+ * @returns The mutation object for creating an institution.
  */
 export function useCreateInstitution(
     options: CompMutationOptions = {},
 ): CompMutation<InstitutionRequest> {
     const mutation = useMutation({
-        mutationFn: createInstitution,
         ...options,
+        mutationFn: createInstitution,
     });
 
     return mutation;
 }
-
-export type UpdateInstitutionParams = {
-    id: number;
-    data: InstitutionRequest;
-};
 
 /**
  * Composable to update an institution.
  *
  * @param options - Mutation options.
+ * @returns The mutation object for updating an institution.
  */
 export function useUpdateInstitution(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateInstitutionParams> {
     const mutation = useMutation({
-        mutationFn: ({ id, data }: UpdateInstitutionParams) => updateInstitution(id, data),
         ...options,
+        mutationFn: ({ id, data }: UpdateInstitutionParams) => updateInstitution(id, data),
     });
 
     return mutation;
 }
 
 /**
+ * Composable to fetch members of an institution.
+ *
+ * @param id - The id of the institution.
+ * @param options - Query options.
+ * @returns The query object containing the members and their state.
+ */
+export function useListInstitutionMembers(
+    id: MaybeRefOrGetter<number>,
+    options: CompQueryOptions = {},
+): CompQuery<Profile[]> {
+    const query = useQuery({
+        ...options,
+        queryKey: INSTITUTION_QUERY_KEYS.members(id),
+        queryFn: () => listInstitutionMembers(toValue(id)),
+    });
+
+    return query;
+}
+
+/**
  * Composable to add a member to an institution.
+ *
+ * @param options - Mutation options.
+ * @returns The mutation object for adding a member.
  */
 export function useAddInstitutionMember(
     options: CompMutationOptions = {},
-): CompMutation<{ slug: string; profileId: string }> {
+): CompMutation<AddInstitutionMemberParams> {
     const queryClient = useQueryClient();
 
     const mutation = useMutation({
-        mutationFn: ({ slug, profileId }: { slug: string; profileId: string }) =>
-            addInstitutionMember(slug, profileId),
+        ...options,
+        mutationFn: ({ id, profileId }: AddInstitutionMemberParams) =>
+            addInstitutionMember(id, profileId),
         onSuccess: (data, variables, context) => {
-            // Invalidate members list and profiles list
             queryClient.invalidateQueries({
-                queryKey: INSTITUTION_QUERY_KEYS.members(variables.slug),
+                queryKey: INSTITUTION_QUERY_KEYS.members(variables.id),
             });
-            queryClient.invalidateQueries({ queryKey: ['admin', 'profiles'] });
             options.onSuccess?.(data, variables, context);
         },
-        ...options,
     });
 
     return mutation;
@@ -124,24 +172,25 @@ export function useAddInstitutionMember(
 
 /**
  * Composable to remove a member from an institution.
+ *
+ * @param options - Mutation options.
+ * @returns The mutation object for removing a member.
  */
 export function useRemoveInstitutionMember(
     options: CompMutationOptions = {},
-): CompMutation<{ slug: string; profileId: string }> {
+): CompMutation<RemoveInstitutionMemberParams> {
     const queryClient = useQueryClient();
 
     const mutation = useMutation({
-        mutationFn: ({ slug, profileId }: { slug: string; profileId: string }) =>
-            removeInstitutionMember(slug, profileId),
+        ...options,
+        mutationFn: ({ id, profileId }: RemoveInstitutionMemberParams) =>
+            removeInstitutionMember(id, profileId),
         onSuccess: (data, variables, context) => {
-            // Invalidate members list and profiles list
             queryClient.invalidateQueries({
-                queryKey: INSTITUTION_QUERY_KEYS.members(variables.slug),
+                queryKey: INSTITUTION_QUERY_KEYS.members(variables.id),
             });
-            queryClient.invalidateQueries({ queryKey: ['admin', 'profiles'] });
             options.onSuccess?.(data, variables, context);
         },
-        ...options,
     });
 
     return mutation;
@@ -149,24 +198,27 @@ export function useRemoveInstitutionMember(
 
 /**
  * Composable to add an authority to an institution.
+ *
+ * @param options - Mutation options.
+ * @returns The mutation object for adding an authority.
  */
 export function useAddInstitutionAuthority(
     options: CompMutationOptions = {},
-): CompMutation<{ slug: string; authorityId: number }> {
+): CompMutation<AddInstitutionAuthorityParams> {
     const queryClient = useQueryClient();
 
     const mutation = useMutation({
-        mutationFn: ({ slug, authorityId }: { slug: string; authorityId: number }) =>
-            addInstitutionAuthority(slug, authorityId),
+        ...options,
+        mutationFn: ({ id, authorityId }: AddInstitutionAuthorityParams) =>
+            addInstitutionAuthority(id, authorityId),
         onSuccess: (data, variables, context) => {
             // Invalidate authorities list
             queryClient.invalidateQueries({
-                queryKey: INSTITUTION_QUERY_KEYS.authorities(variables.slug),
+                queryKey: INSTITUTION_QUERY_KEYS.authorities(variables.id),
             });
             queryClient.invalidateQueries({ queryKey: ['authorities'] });
             options.onSuccess?.(data, variables, context);
         },
-        ...options,
     });
 
     return mutation;
@@ -174,24 +226,27 @@ export function useAddInstitutionAuthority(
 
 /**
  * Composable to remove an authority from an institution.
+ *
+ * @param options - Mutation options.
+ * @returns The mutation object for removing an authority.
  */
 export function useRemoveInstitutionAuthority(
     options: CompMutationOptions = {},
-): CompMutation<{ slug: string; authorityId: number }> {
+): CompMutation<RemoveInstitutionAuthorityParams> {
     const queryClient = useQueryClient();
 
     const mutation = useMutation({
-        mutationFn: ({ slug, authorityId }: { slug: string; authorityId: number }) =>
-            removeInstitutionAuthority(slug, authorityId),
+        ...options,
+        mutationFn: ({ id, authorityId }: RemoveInstitutionAuthorityParams) =>
+            removeInstitutionAuthority(id, authorityId),
         onSuccess: (data, variables, context) => {
             // Invalidate authorities list
             queryClient.invalidateQueries({
-                queryKey: INSTITUTION_QUERY_KEYS.authorities(variables.slug),
+                queryKey: INSTITUTION_QUERY_KEYS.authorities(variables.id),
             });
             queryClient.invalidateQueries({ queryKey: ['authorities'] });
             options.onSuccess?.(data, variables, context);
         },
-        ...options,
     });
 
     return mutation;

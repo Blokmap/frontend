@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import InstitutionLogo from '@/components/features/institution/InstitutionLogo.vue';
 import TabNavigation, { type TabItem } from '@/components/shared/molecules/TabNavigation.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { faBuilding, faList, faUsers } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useReadInstitutions } from '@/composables/data/useInstitutions';
@@ -84,10 +84,7 @@ const tabs = computed<TabItem[]>(() => [
                 :primary="institution?.slug"
                 :secondary="institution?.email ?? undefined">
                 <template #avatar>
-                    <!-- TODO: Add institution logo when available -->
-                    <div class="logo-placeholder">
-                        <FontAwesomeIcon :icon="faBuilding" class="text-4xl text-gray-400" />
-                    </div>
+                    <InstitutionLogo :slug="institution.slug" />
                 </template>
             </DashboardDetailHeader>
 
@@ -101,12 +98,3 @@ const tabs = computed<TabItem[]>(() => [
         </template>
     </DashboardContent>
 </template>
-
-<style scoped>
-@reference '@/assets/styles/main.css';
-
-.logo-placeholder {
-    @apply flex h-full w-full items-center justify-center;
-    @apply rounded-lg border border-gray-200 bg-gray-100;
-}
-</style>

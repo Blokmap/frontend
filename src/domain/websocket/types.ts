@@ -1,5 +1,11 @@
+export enum WebsocketChannelName {
+    Reservations = 'reservations',
+    Occupancy = 'occupancy',
+    Blokmap = 'blokmap',
+}
+
 export type WebsocketChannel = {
-    name: 'reservations' | 'occupancy' | 'blokmap';
+    name: WebsocketChannelName;
     meta?: Record<string, any>;
 };
 
@@ -17,15 +23,15 @@ export type WebsocketCommand = {
 
 // Indicates the type of message received
 export enum WebsocketMessageEvent {
-    CONNECTED = 'Connected',
-    INTERNAL_ERROR = 'InternalError',
+    Connected = 'Connected',
+    InternalError = 'InternalError',
 
-    SUSBCRIBE_SUCCESS = 'SubscribeSuccess',
-    UNSUBSCRIBE_SUCCESS = 'UnsubscribeSuccess',
+    SubscribeSuccess = 'SubscribeSuccess',
+    UnsubscribeSuccess = 'UnsubscribeSuccess',
 
-    RESERVATION_ERROR = 'ReservationError',
-    RESERVATION_CREATED = 'ReservationCreated',
-    RESERVATION_REJECTED = 'ReservationRejected',
+    ReservationError = 'ReservationError',
+    ReservationCreated = 'ReservationCreated',
+    ReservationRejected = 'ReservationRejected',
 }
 
 // Data received from the websocket

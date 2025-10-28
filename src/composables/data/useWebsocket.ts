@@ -4,6 +4,7 @@ import {
     getWebsocketChannelKey,
     isWebsocketChannelsEqual,
     WebsocketCommandEvent,
+    WebsocketMessageEvent,
     type WebsocketChannel,
     type WebsocketMessage,
 } from '@/domain/websocket';
@@ -71,6 +72,10 @@ export function useWebsocket(enabled: MaybeRef<boolean> = true) {
         ws.value.onmessage = (event) => {
             try {
                 const message = JSON.parse(event.data) as WebsocketMessage<unknown>;
+
+                if (message.event === WebsocketMessageEvent.SubscribeSuccess) {
+                    return console.log('[WebSocket] Server acknowledged subscription');
+                }
 
                 // Find matching subscription and call its handler
                 for (const subscription of subscriptions.value.values()) {

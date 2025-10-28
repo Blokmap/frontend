@@ -8,6 +8,7 @@ import ReservationBuilderLegend from '@/components/features/reservation/builder/
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import TimeInput from '@/components/shared/molecules/form/TimeInput.vue';
 import { computed, ref, watch, useTemplateRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useReadOpeningTimes } from '@/composables/data/useOpeningTimes';
@@ -15,11 +16,16 @@ import { useReadProfileReservations } from '@/composables/data/useProfile';
 import { useCreateReservations, useDeleteReservations } from '@/composables/data/useReservations';
 import { useWebsocket } from '@/composables/data/useWebsocket';
 import { useToast } from '@/composables/store/useToast';
+import { type Reservation, type ReservationRequest } from '@/domain/reservation';
+import {
+    WebsocketChannelName,
+    WebsocketMessageEvent,
+    type WebsocketMessage,
+} from '@/domain/websocket';
 import { minutesToTime, timeToMinutes, doTimeRangesOverlap } from '@/utils/time';
 import type { TimeSlot } from '@/domain/calendar';
 import type { Location } from '@/domain/location';
 import type { OpeningTime } from '@/domain/openings';
-import type { Reservation, ReservationRequest } from '@/domain/reservation';
 
 const props = defineProps<{
     location: Location;
@@ -30,6 +36,7 @@ const currentWeek = defineModel<Date>('date', { required: true });
 
 const router = useRouter();
 const toast = useToast();
+const i18n = useI18n();
 
 const { profileId } = useAuthProfile();
 
@@ -64,11 +71,33 @@ watch(
         if (isVisible && currentProfileId) {
             const unsubscribe = subscribe(
                 {
-                    name: 'reservations',
+                    name: WebsocketChannelName.Reservations,
                     meta: { profileId: currentProfileId },
                 },
-                (message) => {
-                    console.log('[Reservation Queue Update]', message);
+                (message: WebsocketMessage<any>) => {
+                    if (message.event === WebsocketMessageEvent.ReservationCreated) {
+                        toast.add({
+                            severity: 'success',
+                            summary: i18n.t('components.reservation.created.title'),
+                            detail: i18n.t('components.reservation.created.message'),
+                        });
+                    }
+
+                    if (message.event === WebsocketMessageEvent.ReservationError) {
+                        toast.add({
+                            severity: 'warn',
+                            summary: i18n.t('components.reservation.rejected.title'),
+                            detail: i18n.t('components.reservation.rejected.message'),
+                        });
+                    }
+
+                    if (message.event === WebsocketMessageEvent.ReservationError) {
+                        toast.add({
+                            severity: 'error',
+                            summary: i18n.t('components.reservation.error.title'),
+                            detail: i18n.t('components.reservation.error.message'),
+                        });
+                    }
                 },
             );
 

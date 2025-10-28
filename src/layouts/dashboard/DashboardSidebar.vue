@@ -16,7 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useAuthLogout } from '@/composables/data/useAuth';
 import { abbreviateCount } from '@/utils/format';
@@ -29,7 +29,7 @@ const props = defineProps<{
 const visible = defineModel<boolean>('visible', { default: false });
 
 const router = useRouter();
-const route = useRoute();
+// const route = useRoute();
 
 const { mutateAsync: logout } = useAuthLogout();
 
@@ -40,10 +40,6 @@ const { data: counts, isLoading: isLoadingCounts } = useAdminCounts({
 async function handleLogoutClick(): Promise<void> {
     await router.push({ name: 'auth' });
     await logout();
-}
-
-function isRouteActive(routeName: string): boolean {
-    return route.name?.toString().startsWith(routeName) || false;
 }
 
 function closeMenu() {
@@ -80,7 +76,6 @@ function handleNavigate() {
                 </h4>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.profiles.locations') }"
                     :to="{
                         name: 'dashboard.profiles.locations',
                         params: { profileId: profile.id },
@@ -93,7 +88,6 @@ function handleNavigate() {
                 </RouterLink>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('locations.submit') }"
                     :to="{ name: 'locations.submit' }"
                     data-testid="new-location-link"
                     @click="handleNavigate">
@@ -110,7 +104,6 @@ function handleNavigate() {
                 </h4>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.authorities') }"
                     :to="{ name: 'dashboard.authorities' }"
                     @click="handleNavigate">
                     <FontAwesomeIcon :icon="faList" />
@@ -126,7 +119,6 @@ function handleNavigate() {
                 </h4>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.institutions.index') }"
                     :to="{ name: 'dashboard.institutions.index' }"
                     @click="handleNavigate">
                     <FontAwesomeIcon :icon="faList" />
@@ -142,7 +134,6 @@ function handleNavigate() {
                 </h4>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.statistics') }"
                     :to="{ name: 'dashboard.statistics' }"
                     @click="handleNavigate">
                     <FontAwesomeIcon :icon="faChartSimple" />
@@ -151,7 +142,6 @@ function handleNavigate() {
                 </RouterLink>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.institutions.index') }"
                     :to="{ name: 'dashboard.institutions.index' }"
                     @click="handleNavigate">
                     <FontAwesomeIcon :icon="faCity" />
@@ -163,7 +153,6 @@ function handleNavigate() {
                 </RouterLink>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.authorities') }"
                     :to="{ name: 'dashboard.authorities' }"
                     @click="handleNavigate">
                     <FontAwesomeIcon :icon="faBuilding" />
@@ -175,7 +164,6 @@ function handleNavigate() {
                 </RouterLink>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.locations.index') }"
                     :to="{ name: 'dashboard.locations.index' }"
                     @click="handleNavigate">
                     <FontAwesomeIcon :icon="faMapLocationDot" />
@@ -190,7 +178,6 @@ function handleNavigate() {
                 </RouterLink>
                 <RouterLink
                     class="sidebar-link"
-                    :class="{ active: isRouteActive('dashboard.profiles.index') }"
                     :to="{ name: 'dashboard.profiles.index' }"
                     @click="handleNavigate">
                     <FontAwesomeIcon :icon="faUsers" />

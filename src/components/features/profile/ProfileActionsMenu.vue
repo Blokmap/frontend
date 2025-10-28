@@ -19,7 +19,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    'change:status': [profileId: number, status: ProfileState];
+    'change:status': [profileId: string, status: ProfileState];
 }>();
 
 const statusOptions = computed(() => {

@@ -12,7 +12,7 @@ export enum ReservationState {
 }
 
 export type Reservation = {
-    id: number;
+    id: string;
     state: ReservationState;
     startTime: Time;
     endTime: Time;

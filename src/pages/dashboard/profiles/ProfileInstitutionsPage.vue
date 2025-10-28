@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import AuthorityTable from '@/components/features/authority/AuthorityTable.vue';
+import Card from 'primevue/card';
+import InstitutionTable from '@/components/features/institution/InstitutionTable.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
+import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
-import type { Authority } from '@/domain/authority';
+import type { Institution } from '@/domain/institution';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -12,24 +14,39 @@ const props = defineProps<{
 
 const router = useRouter();
 
-const authorities = computed(() => props.profile.authorities || []);
+const institutions = computed(() => (props.profile.institution ? [props.profile.institution] : []));
 
 /**
- * Handle clicking on an authority to view its details.
- * @param authority The authority that was clicked.
+ * Handle clicking on an institution to view its details.
+ * @param institution The institution that was clicked.
  */
-function onAuthorityClick(authority: Authority): void {
-    router.push({ name: 'dashboard.authorities.detail', params: { authorityId: authority.id } });
+function onInstitutionClick(institution: Institution): void {
+    router.push({
+        name: 'dashboard.institutions.detail.overview',
+        params: { institutionId: institution.slug },
+    });
 }
 </script>
 
 <template>
     <DashboardContent>
-        <AuthorityTable
-            :authorities="authorities"
-            :loading="false"
-            empty-message="Dit profiel is niet gekoppeld aan autoriteiten."
-            @click:authority="onAuthorityClick">
-        </AuthorityTable>
+        <div class="space-y-6">
+            <!-- Header -->
+            <DashboardDetailHeader
+                title="Instituties"
+                secondary="Bekijk instituties gekoppeld aan dit profiel.">
+            </DashboardDetailHeader>
+
+            <!-- Institutions Table -->
+            <Card>
+                <template #content>
+                    <InstitutionTable
+                        :institutions="institutions"
+                        :loading="false"
+                        @click:institution="onInstitutionClick">
+                    </InstitutionTable>
+                </template>
+            </Card>
+        </div>
     </DashboardContent>
 </template>

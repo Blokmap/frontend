@@ -91,7 +91,32 @@
             "name": "Authority | Authorities"
         },
         "institutions": {
-            "name": "Institution | Institutions"
+            "name": "Institution | Institutions",
+            "category": {
+                "education": "Education",
+                "organisation": "Organisation",
+                "government": "Government"
+            },
+            "aclType": {
+                "whitelist": "Whitelist",
+                "blacklist": "Blacklist"
+            },
+            "success": {
+                "created": "Institution Created",
+                "createdDetail": "The institution was successfully created.",
+                "updated": "Institution Updated",
+                "updatedDetail": "The institution was successfully updated.",
+                "deleted": "Institution Deleted",
+                "deletedDetail": "The institution was successfully deleted."
+            },
+            "errors": {
+                "createFailed": "Failed to Create Institution",
+                "createFailedDetail": "Something went wrong while creating the institution.",
+                "updateFailed": "Failed to Update Institution",
+                "updateFailedDetail": "Something went wrong while updating the institution.",
+                "deleteFailed": "Failed to Delete Institution",
+                "deleteFailedDetail": "Something went wrong while deleting the institution."
+            }
         }
     }
 }

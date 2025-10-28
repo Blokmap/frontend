@@ -6,7 +6,7 @@ describe('reservation helpers', () => {
     describe('reservationToTimeSlot', () => {
         it('should convert reservation to TimeSlot', () => {
             const reservation = createMockReservation({
-                id: 42,
+                id: '42',
                 day: new Date(2024, 0, 15, 10, 30, 45),
                 startTime: { hours: 9, minutes: 0 },
                 endTime: { hours: 17, minutes: 0 },
@@ -24,7 +24,7 @@ describe('reservation helpers', () => {
 
         it('should reset time to start of day', () => {
             const reservation = createMockReservation({
-                id: 1,
+                id: '1',
                 day: new Date(2024, 0, 15, 23, 59, 59),
                 startTime: { hours: 14, minutes: 30 },
                 endTime: { hours: 16, minutes: 0 },
@@ -42,13 +42,13 @@ describe('reservation helpers', () => {
         it('should convert multiple reservations to time slots', () => {
             const reservations = [
                 createMockReservation({
-                    id: 1,
+                    id: '1',
                     day: new Date(2024, 0, 15),
                     startTime: { hours: 9, minutes: 0 },
                     endTime: { hours: 12, minutes: 0 },
                 }),
                 createMockReservation({
-                    id: 2,
+                    id: '2',
                     day: new Date(2024, 0, 16),
                     startTime: { hours: 13, minutes: 0 },
                     endTime: { hours: 17, minutes: 0 },
@@ -68,13 +68,13 @@ describe('reservation helpers', () => {
         it('should not filter when date range not provided', () => {
             const reservations = [
                 createMockReservation({
-                    id: 1,
+                    id: '1',
                     day: new Date(2024, 0, 15),
                     startTime: { hours: 9, minutes: 0 },
                     endTime: { hours: 12, minutes: 0 },
                 }),
                 createMockReservation({
-                    id: 2,
+                    id: '2',
                     day: new Date(2024, 5, 20),
                     startTime: { hours: 13, minutes: 0 },
                     endTime: { hours: 17, minutes: 0 },

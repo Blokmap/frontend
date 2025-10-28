@@ -11,6 +11,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';
 import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useReadInstitutions } from '@/composables/data/useInstitutions';
 import { abbreviateCount } from '@/utils/format';
@@ -18,6 +19,8 @@ import type { Institution, InstitutionFilter } from '@/domain/institution';
 import type { Profile } from '@/domain/profile';
 
 defineProps<{ profile: Profile }>();
+
+const router = useRouter();
 
 const filters = ref<InstitutionFilter>({
     query: '',
@@ -43,11 +46,14 @@ const onPageChange = (event: { page: number }): void => {
 };
 
 const onInstitutionClick = (institution: Institution) => {
-    console.log('Institution clicked:', institution);
+    router.push({
+        name: 'dashboard.institutions.detail.overview',
+        params: { institutionId: institution.slug },
+    });
 };
 
 const onCreateInstitution = () => {
-    console.log('Create institution clicked');
+    router.push({ name: 'dashboard.institutions.create' });
 };
 </script>
 

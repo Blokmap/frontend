@@ -1,18 +1,40 @@
 import type { Image } from '@/domain/image';
-import type { Translation } from '@/domain/translation';
+import type { Translation, TranslationRequest } from '@/domain/translation';
 
-export type InstitutionCategory = 'education' | 'organisation' | 'government';
+export enum InstitutionCategory {
+    Education = 'education',
+    Organisation = 'organisation',
+    Government = 'government',
+}
 
 export type Institution = {
+    id: number;
     slug: string;
     name: Translation;
     logo: Image;
     email: string | null;
     phone: string | null;
     street: string | null;
+    number: string | null;
     zip: string | null;
     city: string | null;
     province: string | null;
     country: string | null;
     category: InstitutionCategory;
+    aclType: 'blacklist' | 'whitelist';
+};
+
+export type InstitutionRequest = {
+    category: InstitutionCategory;
+    name: TranslationRequest;
+    slug: string;
+    aclType: 'blacklist' | 'whitelist';
+    city: string | null;
+    zip: string | null;
+    country: string | null;
+    number: string | null;
+    street: string | null;
+    province: string | null;
+    email: string | null;
+    phoneNumber: string | null;
 };

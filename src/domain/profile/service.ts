@@ -29,7 +29,7 @@ export function parseProfile(profileData: any | null): Profile {
  * @param profileId - The ID of the profile to fetch statistics for.
  * @returns A promise that resolves to the profile statistics.
  */
-export async function readProfileStats(profileId: number): Promise<ProfileStats> {
+export async function readProfileStats(profileId: string): Promise<ProfileStats> {
     const url = endpoints.profiles.stats.replace('{id}', String(profileId));
     const response = await client.get<ProfileStats>(url);
     return response.data;
@@ -43,7 +43,7 @@ export async function readProfileStats(profileId: number): Promise<ProfileStats>
  * @returns {Promise<Reservation[]>} A promise that resolves to an array of reservations.
  */
 export async function readProfileReservations(
-    profileId: number,
+    profileId: string,
     filter: Partial<ReservationFilter> = {},
     includes: ReservationIncludes[] = [],
 ): Promise<Reservation[]> {
@@ -66,7 +66,7 @@ export async function readProfileReservations(
  * @param file - The file to upload as the new avatar.
  * @returns A promise that resolves when the avatar is updated.
  */
-export async function updateProfileAvatar(profileId: number, file: File): Promise<void> {
+export async function updateProfileAvatar(profileId: string, file: File): Promise<void> {
     const url = endpoints.profiles.avatar.replace('{id}', String(profileId));
     const data = createFormDataRequest({ image: file });
 
@@ -85,7 +85,7 @@ export async function updateProfileAvatar(profileId: number, file: File): Promis
  * @returns A promise that resolves to the updated profile.
  */
 export async function updateProfile(
-    profileId: number,
+    profileId: string,
     profileData: Partial<Profile>,
 ): Promise<Profile> {
     const url = endpoints.profiles.update.replace('{id}', String(profileId));
@@ -99,7 +99,7 @@ export async function updateProfile(
  * @param profileId - The ID of the profile to delete the avatar for.
  * @returns A promise that resolves when the avatar is deleted.
  */
-export async function deleteProfileAvatar(profileId: number): Promise<void> {
+export async function deleteProfileAvatar(profileId: string): Promise<void> {
     const url = endpoints.profiles.avatar.replace('{id}', String(profileId));
     await client.delete(url);
 }
@@ -110,7 +110,7 @@ export async function deleteProfileAvatar(profileId: number): Promise<void> {
  * @param profileId - The ID of the profile to fetch.
  * @returns A promise that resolves to the fetched profile.
  */
-export async function readProfile(profileId: number): Promise<Profile> {
+export async function readProfile(profileId: string): Promise<Profile> {
     const url = endpoints.profiles.read.replace('{id}', String(profileId));
     const response = await client.get<any>(url);
     return parseProfile(response.data);
@@ -143,7 +143,7 @@ export async function listProfiles(
  * @param profileId - The ID of the profile to block.
  * @returns A promise that resolves to the blocked profile.
  */
-export async function blockProfile(profileId: number): Promise<Profile> {
+export async function blockProfile(profileId: string): Promise<Profile> {
     const response = await client.post(
         endpoints.profiles.block.replace('{id}', profileId.toString()),
     );
@@ -156,7 +156,7 @@ export async function blockProfile(profileId: number): Promise<Profile> {
  * @param profileId - The ID of the profile to unblock.
  * @returns A promise that resolves to the unblocked profile.
  */
-export async function unblockProfile(profileId: number): Promise<Profile> {
+export async function unblockProfile(profileId: string): Promise<Profile> {
     const response = await client.post(
         endpoints.profiles.unblock.replace('{id}', profileId.toString()),
     );
@@ -171,7 +171,7 @@ export async function unblockProfile(profileId: number): Promise<Profile> {
  * @returns A promise that resolves when the scan is initiated.
  */
 export async function scanProfile(
-    profileId: number,
+    profileId: string,
     request: ProfileScanRequest,
 ): Promise<Reservation[]> {
     const body = {

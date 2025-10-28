@@ -52,7 +52,10 @@ const onAuthorityClick = (authority: Authority) => {
             </TableCell>
 
             <TableCell column="Acties">
-                <AuthorityActionsMenu :authority="authority" />
+                <slot name="actions" :authority="authority">
+                    <!-- Default action menu -->
+                    <AuthorityActionsMenu :authority="authority" />
+                </slot>
             </TableCell>
         </template>
     </Table>

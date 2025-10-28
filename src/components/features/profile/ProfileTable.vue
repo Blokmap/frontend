@@ -9,19 +9,19 @@ import type { Profile, ProfileState } from '@/domain/profile';
 const props = defineProps<{
     profiles?: Profile[];
     loading?: boolean;
-    isProfilePending?: (profileId: number) => boolean;
+    isProfilePending?: (profileId: string) => boolean;
 }>();
 
 const emit = defineEmits<{
     'click:profile': [profile: Profile];
-    'change:status': [profileId: number, status: ProfileState];
+    'change:status': [profileId: string, status: ProfileState];
 }>();
 
 const onProfileClick = (profile: Profile) => {
     emit('click:profile', profile);
 };
 
-const onStatusChange = (profileId: number, status: ProfileState) => {
+const onStatusChange = (profileId: string, status: ProfileState) => {
     emit('change:status', profileId, status);
 };
 </script>
@@ -56,11 +56,17 @@ const onStatusChange = (profileId: number, status: ProfileState) => {
             </TableCell>
 
             <TableCell column="Acties">
-                <ProfileActionsMenu
+                <slot
+                    name="actions"
                     :profile="profile"
-                    :is-pending="props.isProfilePending?.(profile.id)"
-                    @change:status="onStatusChange">
-                </ProfileActionsMenu>
+                    :is-pending="props.isProfilePending?.(profile.id)">
+                    <!-- Default action menu -->
+                    <ProfileActionsMenu
+                        :profile="profile"
+                        :is-pending="props.isProfilePending?.(profile.id)"
+                        @change:status="onStatusChange">
+                    </ProfileActionsMenu>
+                </slot>
             </TableCell>
         </template>
     </Table>

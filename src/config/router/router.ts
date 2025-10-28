@@ -1,5 +1,8 @@
 import AuthLayout from '@/layouts/auth/AuthLayout.vue';
 import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
+import InstitutionDetailLayout from '@/layouts/dashboard/details/InstitutionDetailLayout.vue';
+import LocationDetailLayout from '@/layouts/dashboard/details/LocationDetailLayout.vue';
+import ProfileDetailLayout from '@/layouts/dashboard/details/ProfileDetailLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
 import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
@@ -11,11 +14,13 @@ import {
     AuthPage,
     DashboardAuthoritiesPage,
     DashboardAuthorityPage,
-    DashboardInstitutionPage,
     DashboardReviewsPage,
     DashboardStatisticsPage,
+    InstitutionCreatePage,
     InstitutionIndexPage,
-    LocationDetailLayout,
+    InstitutionOverviewPage,
+    InstitutionUsersPage,
+    InstitutionAuthoritiesPage,
     LocationImagesPage,
     LocationInfoPage,
     LocationOpeningsPage,
@@ -28,7 +33,6 @@ import {
     LocationsPage,
     ProfilePage,
     ProfileAuthoritiesPage,
-    ProfileDetailLayout,
     ProfileLocationsPage,
     ProfileOverviewPage,
     ProfilesIndexPage,
@@ -280,19 +284,58 @@ const routes: RouteRecordRaw[] = [
                         },
                     },
                     {
-                        path: ':institutionId',
-                        name: 'dashboard.institutions.detail',
-                        component: DashboardInstitutionPage,
+                        path: 'create',
+                        name: 'dashboard.institutions.create',
+                        component: InstitutionCreatePage,
                         meta: {
-                            title: 'Beheer Institutie',
+                            title: 'Nieuwe Institutie',
                             breadcrumbs: [
                                 {
-                                    label: 'Institutie Details',
-                                    to: { name: 'dashboard.institutions.detail' },
+                                    label: 'Nieuwe Institutie',
+                                    to: { name: 'dashboard.institutions.create' },
                                 },
                             ],
                         },
-                        // Note: breadcrumbs should be updated dynamically by the component to include institution name
+                    },
+                    {
+                        path: ':institutionId',
+                        component: InstitutionDetailLayout,
+                        props: true,
+                        meta: {
+                            breadcrumbs: [
+                                {
+                                    label: 'Details',
+                                    to: { name: 'dashboard.institutions.detail.overview' },
+                                },
+                            ],
+                        },
+                        children: [
+                            {
+                                path: '',
+                                redirect: { name: 'dashboard.institutions.detail.overview' },
+                            },
+                            {
+                                path: 'overview',
+                                name: 'dashboard.institutions.detail.overview',
+                                component: InstitutionOverviewPage,
+                                props: true,
+                                meta: { title: 'Institutie Overzicht' },
+                            },
+                            {
+                                path: 'users',
+                                name: 'dashboard.institutions.detail.users',
+                                component: InstitutionUsersPage,
+                                props: true,
+                                meta: { title: 'Institutie Gebruikers' },
+                            },
+                            {
+                                path: 'authorities',
+                                name: 'dashboard.institutions.detail.authorities',
+                                component: InstitutionAuthoritiesPage,
+                                props: true,
+                                meta: { title: 'Institutie Autoriteiten' },
+                            },
+                        ],
                     },
                 ],
             },

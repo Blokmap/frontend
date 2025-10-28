@@ -91,7 +91,32 @@
             "name": "Autorité | Autorités"
         },
         "institutions": {
-            "name": "Institution | Institutions"
+            "name": "Institution | Institutions",
+            "category": {
+                "education": "Éducation",
+                "organisation": "Organisation",
+                "government": "Gouvernement"
+            },
+            "aclType": {
+                "whitelist": "Liste blanche",
+                "blacklist": "Liste noire"
+            },
+            "success": {
+                "created": "Institution Créée",
+                "createdDetail": "L'institution a été créée avec succès.",
+                "updated": "Institution Mise à Jour",
+                "updatedDetail": "L'institution a été mise à jour avec succès.",
+                "deleted": "Institution Supprimée",
+                "deletedDetail": "L'institution a été supprimée avec succès."
+            },
+            "errors": {
+                "createFailed": "Échec de Création",
+                "createFailedDetail": "Une erreur s'est produite lors de la création de l'institution.",
+                "updateFailed": "Échec de Mise à Jour",
+                "updateFailedDetail": "Une erreur s'est produite lors de la mise à jour de l'institution.",
+                "deleteFailed": "Échec de Suppression",
+                "deleteFailedDetail": "Une erreur s'est produite lors de la suppression de l'institution."
+            }
         }
     }
 }

@@ -105,6 +105,10 @@
             "index": {
                 "title": "Instituties"
             },
+            "create": {
+                "title": "Nieuwe Institutie",
+                "subtitle": "Vul de onderstaande gegevens in om een nieuwe institutie aan te maken."
+            },
             "detail": {
                 "title": "Institutie Details",
                 "notFound": "Institutie Niet Gevonden",

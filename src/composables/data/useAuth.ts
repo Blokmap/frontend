@@ -19,7 +19,7 @@ export const AUTH_QUERY_KEYS = {
  */
 export function useAuthProfile(
     options: CompQueryOptions = {},
-): CompQuery<Profile | null> & { profileId: Ref<number | null> } {
+): CompQuery<Profile | null> & { profileId: Ref<string | null> } {
     const query = useQuery<Profile | null, AxiosError>({
         ...options,
         queryKey: AUTH_QUERY_KEYS.profile(),

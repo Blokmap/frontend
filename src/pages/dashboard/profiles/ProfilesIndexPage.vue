@@ -42,7 +42,7 @@ const pageTitle = computed(() =>
     ]),
 );
 
-const isProfilePending = (profileId: number): boolean => {
+const isProfilePending = (profileId: string): boolean => {
     return isUpdatingProfile.value && updateVariables.value?.profileId === profileId;
 };
 
@@ -68,7 +68,7 @@ function onProfileClick(profile: Profile): void {
  * @param profileId The ID of the profile to update.
  * @param status The new status to set.
  */
-async function onChangeProfileStatus(profileId: number, status: ProfileState) {
+async function onChangeProfileStatus(profileId: string, status: ProfileState) {
     await updateProfileState({ profileId, state: status });
     refetch();
 }

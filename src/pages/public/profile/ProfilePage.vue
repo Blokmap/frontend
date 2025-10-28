@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Chip from 'primevue/chip';
 import Skeleton from 'primevue/skeleton';
@@ -20,11 +19,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useReadProfileReservations, useReadProfileStats } from '@/composables/data/useProfile';
-
-const router = useRouter();
 
 const { isLoading: profileIsLoading, data: profile, profileId } = useAuthProfile();
 
@@ -190,24 +186,9 @@ const reservationHours = computed(() => profileStatsData.value?.totalReservation
         <!-- Current Week Activity -->
         <ProfileReservationsTable
             :reservations="reservations"
-            :loading="reservationsIsLoading || reservationsIsPending">
+            :loading="reservationsIsLoading || reservationsIsPending"
+            :empty-message="$t('pages.profile.reservations.empty')">
         </ProfileReservationsTable>
-
-        <template v-if="reservations && reservations.length === 0">
-            <div class="space-y-4 py-8 text-center text-gray-500">
-                <FontAwesomeIcon :icon="faCalendarDays" class="text-4xl" />
-                <p>
-                    {{ $t('pages.profile.reservations.empty') }}
-                </p>
-                <Button
-                    severity="secondary"
-                    outlined
-                    size="small"
-                    @click="router.push({ name: 'locations' })">
-                    {{ $t('pages.profile.reservations.exploreLocations') }}
-                </Button>
-            </div>
-        </template>
     </div>
 </template>
 

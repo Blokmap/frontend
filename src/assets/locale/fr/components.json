@@ -21,5 +21,23 @@
             "saturday": "Samedi",
             "sunday": "Dimanche"
         }
+    },
+    "institutionForm": {
+        "category": "Catégorie",
+        "aclType": "Type de Contrôle d'Accès",
+        "name": "Nom",
+        "slug": "Slug",
+        "contactInformation": "Informations de Contact",
+        "email": "Email",
+        "phone": "Numéro de Téléphone",
+        "address": "Adresse",
+        "street": "Rue",
+        "number": "Numéro",
+        "zip": "Code Postal",
+        "city": "Ville",
+        "province": "Province",
+        "country": "Pays",
+        "createButton": "Créer l'Institution",
+        "updateButton": "Mettre à Jour l'Institution"
     }
 }

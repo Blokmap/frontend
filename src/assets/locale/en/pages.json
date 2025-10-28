@@ -105,10 +105,14 @@
             "index": {
                 "title": "Institutions"
             },
+            "create": {
+                "title": "Create New Institution",
+                "subtitle": "Fill in the details below to create a new institution."
+            },
             "detail": {
                 "title": "Institution Details",
                 "notFound": "Institution Not Found",
-                "notFoundMessage": "The institution you are looking for does not exist or you don’t have access."
+                "notFoundMessage": "The institution you are looking for does not exist or you don't have access."
             }
         },
         "reviews": {

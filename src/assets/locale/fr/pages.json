@@ -19,5 +19,21 @@
         "sidebar": {
             "locate": "Aller à la position actuelle"
         }
+    },
+    "dashboard": {
+        "institutions": {
+            "index": {
+                "title": "Institutions"
+            },
+            "create": {
+                "title": "Créer une Nouvelle Institution",
+                "subtitle": "Remplissez les détails ci-dessous pour créer une nouvelle institution."
+            },
+            "detail": {
+                "title": "Détails de l'Institution",
+                "notFound": "Institution Non Trouvée",
+                "notFoundMessage": "L'institution que vous recherchez n'existe pas ou vous n'avez pas accès."
+            }
+        }
     }
 }

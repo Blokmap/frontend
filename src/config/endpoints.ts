@@ -9,7 +9,23 @@ export const endpoints = {
         logout: '/logout',
     },
     institutions: {
+        create: '/institutions',
+        read: '/institutions/{id}',
+        update: '/institutions/{id}',
         list: '/institutions',
+        members: {
+            list: '/institutions/{id}/members',
+            add: '/institutions/{id}/members',
+            remove: '/institutions/{id}/members/{profileId}',
+            permissions: {
+                update: '/institutions/{id}/members/{profileId}/permissions',
+            },
+        },
+        authorities: {
+            list: '/institutions/{id}/authorities',
+            add: '/institutions/{id}/authorities',
+            remove: '/institutions/{id}/authorities/{authorityId}',
+        },
     },
     profiles: {
         create: '/profiles',

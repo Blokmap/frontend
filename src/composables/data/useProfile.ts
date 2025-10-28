@@ -29,15 +29,15 @@ import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
 
 export const PROFILE_QUERY_KEYS = {
-    read: (profileId: MaybeRef<number>) => ['profile', 'details', profileId] as const,
+    read: (profileId: MaybeRef<string>) => ['profile', 'details', profileId] as const,
     list: (filters: MaybeRefOrGetter<Partial<ProfileFilter>>) =>
         ['admin', 'profiles', filters] as const,
-    stats: (profileId: MaybeRefOrGetter<number | null>) => ['profile', 'stats', profileId] as const,
+    stats: (profileId: MaybeRefOrGetter<string | null>) => ['profile', 'stats', profileId] as const,
     reservations: (
-        profileId: MaybeRef<number | null>,
+        profileId: MaybeRef<string | null>,
         filters: MaybeRefOrGetter<ReservationFilter>,
     ) => ['profile', 'reservations', profileId, filters] as const,
-    locations: (profileId: MaybeRef<number | null>) => ['profile', 'locations', profileId] as const,
+    locations: (profileId: MaybeRef<string | null>) => ['profile', 'locations', profileId] as const,
 } as const;
 
 /**
@@ -47,7 +47,7 @@ export const PROFILE_QUERY_KEYS = {
  * @returns The query object containing profile statistics and their state.
  */
 export function useReadProfileStats(
-    profileId: MaybeRefOrGetter<number | null>,
+    profileId: MaybeRefOrGetter<string | null>,
 ): CompQuery<ProfileStats> {
     const enabled = computed(() => toValue(profileId) !== null);
     const query = useQuery<ProfileStats, AxiosError>({
@@ -70,7 +70,7 @@ export function useReadProfileStats(
  * @returns The query object containing profile reservations and their state.
  */
 export function useReadProfileReservations(
-    profileId: MaybeRef<number | null>,
+    profileId: MaybeRef<string | null>,
     filters: MaybeRef<ReservationFilter> = {},
 ): CompQuery<Reservation[]> {
     const enabled = computed(() => toValue(profileId) !== null);
@@ -99,7 +99,7 @@ export function useReadProfileReservations(
  * @param profileId - The ID of the profile to fetch locations for.
  * @returns The query object containing profile locations and their state.
  */
-export function useReadProfileLocations(profileId: MaybeRef<number | null>): CompQuery<Location[]> {
+export function useReadProfileLocations(profileId: MaybeRef<string | null>): CompQuery<Location[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 
     const query = useQuery<Location[], AxiosError>({
@@ -119,7 +119,7 @@ export function useReadProfileLocations(profileId: MaybeRef<number | null>): Com
  * @returns The query object containing the profile data and its state.
  */
 export function useReadProfile(
-    profileId: MaybeRef<number>,
+    profileId: MaybeRef<string>,
     options: CompQueryOptions = {},
 ): CompQuery<Profile | null> {
     const query = useQuery<Profile | null, AxiosError>({
@@ -152,7 +152,7 @@ export function useReadProfiles(
 }
 
 export type UpdateAvatarParams = {
-    profileId: number;
+    profileId: string;
     file: File;
 };
 
@@ -185,7 +185,7 @@ export function useUpdateProfileAvatar(
 }
 
 export type UpdateProfileParams = {
-    profileId: number;
+    profileId: string;
     profileData: Partial<Profile>;
 };
 
@@ -219,7 +219,7 @@ export function useUpdateProfile(
 }
 
 export type ScanProfileParams = {
-    profileId: number;
+    profileId: string;
     request: ProfileScanRequest;
 };
 
@@ -246,7 +246,7 @@ export function useScanProfile(
  * @param options - Additional options for the mutation.
  * @returns The mutation object for deleting a profile avatar.
  */
-export function useDeleteProfileAvatar(options: CompMutationOptions = {}): CompMutation<number> {
+export function useDeleteProfileAvatar(options: CompMutationOptions = {}): CompMutation<string> {
     const queryClient = useQueryClient();
 
     const mutation = useMutation({
@@ -265,7 +265,7 @@ export function useDeleteProfileAvatar(options: CompMutationOptions = {}): CompM
 }
 
 type ProfileStateParams = {
-    profileId: number;
+    profileId: string;
     state: ProfileState;
 };
 

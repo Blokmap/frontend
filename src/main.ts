@@ -1,5 +1,6 @@
 import PrimeVuePlugin from 'primevue/config';
 import App from '@/App.vue';
+import { init as initSentry } from '@sentry/vue';
 import { VueQueryPlugin } from '@tanstack/vue-query';
 import { createPinia } from 'pinia';
 import { ConfirmationService, FocusTrap, Ripple, ToastService, Tooltip } from 'primevue';
@@ -26,8 +27,12 @@ app.directive('tooltip', Tooltip);
 app.directive('ripple', Ripple);
 app.directive('focustrap', FocusTrap);
 
-// Mount the app.
-app.mount('#app');
+// Initialize Sentry.
+initSentry({
+    app,
+    dsn: 'https://54b54a00bda878a7de2c7e414b434f64@o4510268643475456.ingest.de.sentry.io/4510268655534160',
+    sendDefaultPii: true,
+});
 
 // Cache busting
 // A bit of a hack but works
@@ -39,5 +44,8 @@ window.addEventListener('unhandledrejection', (event) => {
         reloaded = true;
     }
 });
+
+// Mount the app.
+app.mount('#app');
 
 export default app;

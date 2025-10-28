@@ -13,7 +13,6 @@ export const AuthPage = () => import('@/pages/auth/AuthPage.vue');
 export const DashboardPage = () => import('@/pages/dashboard/DashboardPage.vue');
 
 // Dashboard Locations
-export const LocationDetailLayout = () => import('@/layouts/dashboard/LocationDetailLayout.vue');
 export const LocationInfoPage = () => import('@/pages/dashboard/locations/LocationInfoPage.vue');
 export const LocationReservationsPage = () =>
     import('@/pages/dashboard/locations/LocationReservationsPage.vue');
@@ -28,7 +27,6 @@ export const LocationsIndexPage = () =>
     import('@/pages/dashboard/locations/LocationsIndexPage.vue');
 
 // Dashboard Profiles
-export const ProfileDetailLayout = () => import('@/layouts/dashboard/ProfileDetailLayout.vue');
 export const ProfilesIndexPage = () => import('@/pages/dashboard/profiles/ProfilesIndexPage.vue');
 export const ProfileOverviewPage = () =>
     import('@/pages/dashboard/profiles/ProfileOverviewPage.vue');
@@ -46,12 +44,16 @@ export const DashboardAuthorityPage = () =>
     import('@/pages/dashboard/authorities/AuthorityPage.vue');
 
 // Dashboard Institutions
-export const DashboardInstitutionsPage = () =>
-    import('@/pages/dashboard/institutions/InstitutionsPage.vue');
 export const InstitutionIndexPage = () =>
     import('@/pages/dashboard/institutions/InstitutionIndexPage.vue');
-export const DashboardInstitutionPage = () =>
-    import('@/pages/dashboard/institutions/InstitutionPage.vue');
+export const InstitutionCreatePage = () =>
+    import('@/pages/dashboard/institutions/InstitutionCreatePage.vue');
+export const InstitutionOverviewPage = () =>
+    import('@/pages/dashboard/institutions/InstitutionOverviewPage.vue');
+export const InstitutionUsersPage = () =>
+    import('@/pages/dashboard/institutions/InstitutionUsersPage.vue');
+export const InstitutionAuthoritiesPage = () =>
+    import('@/pages/dashboard/institutions/InstitutionAuthoritiesPage.vue');
 
 // Dashboard Statistics
 export const DashboardStatisticsPage = () =>

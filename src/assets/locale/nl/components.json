@@ -21,5 +21,23 @@
             "saturday": "Zaterdag",
             "sunday": "Zondag"
         }
+    },
+    "institutionForm": {
+        "category": "Categorie",
+        "aclType": "Toegangscontroletype",
+        "name": "Naam",
+        "slug": "Slug",
+        "contactInformation": "Contactinformatie",
+        "email": "E-mail",
+        "phone": "Telefoonnummer",
+        "address": "Adres",
+        "street": "Straat",
+        "number": "Nummer",
+        "zip": "Postcode",
+        "city": "Stad",
+        "province": "Provincie",
+        "country": "Land",
+        "createButton": "Institutie Aanmaken",
+        "updateButton": "Institutie Bijwerken"
     }
 }

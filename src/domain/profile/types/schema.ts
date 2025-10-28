@@ -6,7 +6,7 @@ import type { Time } from '@/utils/time';
 export type ProfileState = 'active' | 'disabled' | 'deleted';
 
 export type Profile = {
-    id: number;
+    id: string;
     avatarUrl: Image | null;
     username: string;
     firstName: string | null;

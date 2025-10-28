@@ -5,7 +5,8 @@ import ProfileActionsMenu from '@/components/features/profile/ProfileActionsMenu
 import ProfileStateBadge from '@/components/features/profile/ProfileStateBadge.vue';
 import KeyValue from '@/components/shared/atoms/KeyValue.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import { faChevronDown, faSpinner, faUser } from '@fortawesome/free-solid-svg-icons';
+import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
+import { faChevronDown, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -28,7 +29,7 @@ const isUpdatingProfile = computed(() => isUpdatingState.value);
  * @param profileId - ID of the profile
  * @param state - New state for the profile
  */
-function onChangeStatus(profileId: number, state: ProfileState) {
+function onChangeStatus(profileId: string, state: ProfileState) {
     updateProfileState({ profileId, state });
 }
 </script>
@@ -36,47 +37,36 @@ function onChangeStatus(profileId: number, state: ProfileState) {
 <template>
     <DashboardContent>
         <div class="space-y-6">
+            <!-- Header -->
+            <DashboardDetailHeader title="Profiel" secondary="Bekijk profielinformatie.">
+                <template #actions>
+                    <ProfileActionsMenu
+                        :profile="profile"
+                        :is-pending="isUpdatingProfile"
+                        @change:status="onChangeStatus">
+                        <template #trigger="{ toggle }">
+                            <Button
+                                severity="contrast"
+                                :disabled="isUpdatingProfile"
+                                @click="toggle"
+                                size="small">
+                                <span>Acties</span>
+                                <FontAwesomeIcon v-if="isUpdatingProfile" :icon="faSpinner" spin />
+                                <FontAwesomeIcon :icon="faChevronDown" v-else />
+                            </Button>
+                        </template>
+                    </ProfileActionsMenu>
+                </template>
+            </DashboardDetailHeader>
+
             <!-- Profile Information Card -->
             <Card>
-                <template #title>
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-2">
-                            <FontAwesomeIcon :icon="faUser" />
-                            <span>Profiel Informatie</span>
-                        </div>
-                        <ProfileActionsMenu
-                            :profile="profile"
-                            :is-pending="isUpdatingProfile"
-                            @change:status="onChangeStatus">
-                            <template #trigger="{ toggle }">
-                                <Button
-                                    severity="contrast"
-                                    :disabled="isUpdatingProfile"
-                                    @click="toggle"
-                                    size="small">
-                                    <span>Acties</span>
-                                    <FontAwesomeIcon
-                                        v-if="isUpdatingProfile"
-                                        :icon="faSpinner"
-                                        spin />
-                                    <FontAwesomeIcon :icon="faChevronDown" v-else />
-                                </Button>
-                            </template>
-                        </ProfileActionsMenu>
-                    </div>
-                </template>
                 <template #content>
                     <div class="grid grid-cols-1 gap-4 py-3 md:grid-cols-2">
                         <!-- Username -->
                         <KeyValue key-label="Gebruikersnaam">
                             <template #value>@{{ profile.username }}</template>
                         </KeyValue>
-
-                        <!-- First Name -->
-                        <KeyValue key-label="Voornaam" :value="profile.firstName || '-'" />
-
-                        <!-- Last Name -->
-                        <KeyValue key-label="Achternaam" :value="profile.lastName || '-'" />
 
                         <!-- Email -->
                         <KeyValue key-label="E-mailadres" :value="profile.email" />

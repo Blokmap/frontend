@@ -5,4 +5,6 @@ export type ProfileFilter = Pagination & {
     query?: string;
     isAdmin?: boolean;
     state?: ProfileState | null;
+    // Filter by institution slug or id
+    institution?: string | number;
 };

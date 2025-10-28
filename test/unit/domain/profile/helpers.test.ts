@@ -6,7 +6,7 @@ describe('profile helpers', () => {
     describe('getProfileInitials', () => {
         it('should return initials from first and last name', () => {
             const profile = createMockProfile({
-                id: 1,
+                id: '1',
                 firstName: 'John',
                 lastName: 'Doe',
             });
@@ -16,7 +16,7 @@ describe('profile helpers', () => {
 
         it('should handle lowercase names', () => {
             const profile = createMockProfile({
-                id: 1,
+                id: '1',
                 firstName: 'alice',
                 lastName: 'smith',
             });
@@ -26,7 +26,7 @@ describe('profile helpers', () => {
 
         it('should handle both names missing', () => {
             const profile = createMockProfile({
-                id: 1,
+                id: '1',
                 firstName: null,
                 lastName: null,
             });
@@ -36,7 +36,7 @@ describe('profile helpers', () => {
 
         it('should handle missing first name', () => {
             const profile = createMockProfile({
-                id: 1,
+                id: '1',
                 firstName: null,
                 lastName: 'Doe',
             });
@@ -46,7 +46,7 @@ describe('profile helpers', () => {
 
         it('should handle missing last name', () => {
             const profile = createMockProfile({
-                id: 1,
+                id: '1',
                 firstName: 'John',
                 lastName: null,
             });
@@ -56,7 +56,7 @@ describe('profile helpers', () => {
 
         it('should handle empty string names', () => {
             const profile = createMockProfile({
-                id: 1,
+                id: '1',
                 firstName: '',
                 lastName: '',
             });
@@ -66,7 +66,7 @@ describe('profile helpers', () => {
 
         it('should handle names with multiple words', () => {
             const profile = createMockProfile({
-                id: 1,
+                id: '1',
                 firstName: 'Mary Jane',
                 lastName: 'Watson Parker',
             });
@@ -76,7 +76,7 @@ describe('profile helpers', () => {
 
         it('should handle special characters', () => {
             const profile = createMockProfile({
-                id: 1,
+                id: '1',
                 firstName: 'Ólafur',
                 lastName: 'Þórðarson',
             });

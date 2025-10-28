@@ -91,7 +91,32 @@
             "name": "Autoriteit | Autoriteiten"
         },
         "institutions": {
-            "name": "Institutie | Instituties"
+            "name": "Institutie | Instituties",
+            "category": {
+                "education": "Onderwijs",
+                "organisation": "Organisatie",
+                "government": "Overheid"
+            },
+            "aclType": {
+                "whitelist": "Witte lijst",
+                "blacklist": "Zwarte lijst"
+            },
+            "success": {
+                "created": "Institutie Aangemaakt",
+                "createdDetail": "De institutie is succesvol aangemaakt.",
+                "updated": "Institutie Bijgewerkt",
+                "updatedDetail": "De institutie is succesvol bijgewerkt.",
+                "deleted": "Institutie Verwijderd",
+                "deletedDetail": "De institutie is succesvol verwijderd."
+            },
+            "errors": {
+                "createFailed": "Aanmaken Mislukt",
+                "createFailedDetail": "Er is iets misgegaan bij het aanmaken van de institutie.",
+                "updateFailed": "Bijwerken Mislukt",
+                "updateFailedDetail": "Er is iets misgegaan bij het bijwerken van de institutie.",
+                "deleteFailed": "Verwijderen Mislukt",
+                "deleteFailedDetail": "Er is iets misgegaan bij het verwijderen van de institutie."
+            }
         }
     }
 }

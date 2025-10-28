@@ -25,7 +25,7 @@ export function createMockTranslation(overrides?: Partial<Translation>): Transla
  */
 export function createMockProfile(overrides?: Partial<Profile>): Profile {
     return {
-        id: 1,
+        id: '1',
         avatarUrl: null,
         username: 'testuser',
         firstName: 'John',
@@ -151,7 +151,7 @@ export function createMockOpeningTimeRequest(
  */
 export function createMockReservation(overrides?: Partial<Reservation>): Reservation {
     return {
-        id: 1,
+        id: '1',
         state: 'Created' as ReservationState,
         day: new Date('2024-01-15'),
         startTime: { hours: 9, minutes: 0 },

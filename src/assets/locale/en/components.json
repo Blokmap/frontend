@@ -21,5 +21,23 @@
             "saturday": "Saturday",
             "sunday": "Sunday"
         }
+    },
+    "institutionForm": {
+        "category": "Category",
+        "aclType": "Access Control Type",
+        "name": "Name",
+        "slug": "Slug",
+        "contactInformation": "Contact Information",
+        "email": "Email",
+        "phone": "Phone Number",
+        "address": "Address",
+        "street": "Street",
+        "number": "Number",
+        "zip": "ZIP Code",
+        "city": "City",
+        "province": "Province",
+        "country": "Country",
+        "createButton": "Create Institution",
+        "updateButton": "Update Institution"
     }
 }

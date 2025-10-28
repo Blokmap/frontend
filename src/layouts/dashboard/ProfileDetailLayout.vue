@@ -4,7 +4,7 @@ import TabNavigation, { type TabItem } from '@/components/shared/molecules/TabNa
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
-import DetailHeader from '@/layouts/dashboard/DetailHeader.vue';
+import DetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { faBuilding, faCity, faIdCard, faMapLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
 import { useReadProfile } from '@/composables/data/useProfile';
@@ -15,16 +15,18 @@ const props = defineProps<{
     profile: Profile;
 }>();
 
-const profileId = computed(() => +props.profileId);
-const isOwnProfile = computed(() => String(profileId.value) === String(props.profile.id));
+const isOwnProfile = computed(() => props.profileId === props.profile.id);
 
 const {
     data: fetchedProfile,
     isLoading,
     error,
-} = useReadProfile(profileId, {
-    enabled: computed(() => !isOwnProfile.value),
-});
+} = useReadProfile(
+    computed(() => props.profileId),
+    {
+        enabled: computed(() => !isOwnProfile.value),
+    },
+);
 
 const currentProfile = computed(() => (!isOwnProfile.value ? fetchedProfile.value : props.profile));
 

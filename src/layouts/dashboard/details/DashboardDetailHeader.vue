@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import Card from 'primevue/card';
-import Skeleton from 'primevue/skeleton';
 
 defineProps<{
-    isLoading?: boolean;
     title?: string;
     primary?: string;
     secondary?: string;
     avatarShape?: 'square' | 'circle';
-    showSkeletons?: boolean;
 }>();
 </script>
 
@@ -17,48 +14,36 @@ defineProps<{
         <template #content>
             <div class="detail-header">
                 <!-- Avatar/Logo Section -->
-                <template v-if="isLoading && showSkeletons">
-                    <Skeleton :shape="avatarShape || 'square'" size="96px" />
-                </template>
-                <template v-else-if="$slots.avatar">
-                    <div class="avatar-wrapper">
-                        <slot name="avatar"></slot>
-                    </div>
-                </template>
+                <div class="avatar-wrapper" v-if="$slots.avatar">
+                    <slot name="avatar"></slot>
+                </div>
 
                 <!-- Info Section -->
                 <div class="detail-info">
-                    <template v-if="isLoading && showSkeletons">
-                        <Skeleton height="36px" width="200px" />
-                        <Skeleton height="21px" width="300px" />
-                        <Skeleton height="21px" width="250px" />
-                    </template>
-                    <template v-else>
-                        <!-- Name/Title -->
-                        <div v-if="$slots.title || title" class="detail-info__name">
-                            <h1 class="text-2xl font-bold text-gray-900">
-                                <slot name="title">{{ title }}</slot>
-                            </h1>
-                        </div>
+                    <!-- Name/Title -->
+                    <div v-if="$slots.title || title" class="detail-info__name">
+                        <h1 class="text-2xl font-bold text-gray-900">
+                            <slot name="title">{{ title }}</slot>
+                        </h1>
+                    </div>
 
-                        <!-- Primary Info -->
-                        <div
-                            v-if="$slots.primary || primary"
-                            class="flex items-center gap-2 text-gray-600 md:gap-3">
-                            <span class="text-sm text-gray-700 md:text-base">
-                                <slot name="primary">{{ primary }}</slot>
-                            </span>
-                        </div>
+                    <!-- Primary Info -->
+                    <div
+                        v-if="$slots.primary || primary"
+                        class="flex items-center gap-2 text-gray-600 md:gap-3">
+                        <span class="text-sm text-gray-700 md:text-base">
+                            <slot name="primary">{{ primary }}</slot>
+                        </span>
+                    </div>
 
-                        <!-- Secondary Info -->
-                        <div
-                            v-if="$slots.secondary || secondary"
-                            class="flex items-center gap-2 text-gray-600 md:gap-3">
-                            <span class="text-sm text-gray-500 md:text-base">
-                                <slot name="secondary">{{ secondary }}</slot>
-                            </span>
-                        </div>
-                    </template>
+                    <!-- Secondary Info -->
+                    <div
+                        v-if="$slots.secondary || secondary"
+                        class="flex items-center gap-2 text-gray-600 md:gap-3">
+                        <span class="text-sm text-gray-500 md:text-base">
+                            <slot name="secondary">{{ secondary }}</slot>
+                        </span>
+                    </div>
                 </div>
 
                 <!-- Actions Section -->

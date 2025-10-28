@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Card from 'primevue/card';
+import ProfileActionsMenu from '@/components/features/profile/ProfileActionsMenu.vue';
 import ProfileTable from '@/components/features/profile/ProfileTable.vue';
-import ActionMenu from '@/components/shared/atoms/ActionMenu.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
-import { faTrash, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
@@ -28,6 +28,7 @@ const profiles = computed(() => profilesData.value?.data || []);
 
 /**
  * Handle clicking on a profile to view its details.
+ * @param profile The profile that was clicked.
  */
 function onProfileClick(profile: Profile): void {
     router.push({
@@ -76,21 +77,11 @@ function onRemoveUser(profile: Profile): void {
                         :loading="isLoading"
                         @click:profile="onProfileClick">
                         <template #actions="{ profile }">
-                            <ActionMenu>
-                                <template #content="{ hideMenu }">
-                                    <button
-                                        class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
-                                        @click="
-                                            () => {
-                                                onRemoveUser(profile);
-                                                hideMenu();
-                                            }
-                                        ">
-                                        <FontAwesomeIcon :icon="faTrash" />
-                                        <span>Verwijderen</span>
-                                    </button>
-                                </template>
-                            </ActionMenu>
+                            <ProfileActionsMenu
+                                :profile="profile"
+                                :show-remove="true"
+                                @remove="onRemoveUser(profile)">
+                            </ProfileActionsMenu>
                         </template>
                     </ProfileTable>
                 </template>

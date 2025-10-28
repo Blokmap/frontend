@@ -3,7 +3,7 @@ import TabNavigation, { type TabItem } from '@/components/shared/molecules/TabNa
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
-import DetailHeader from '@/layouts/dashboard/DetailHeader.vue';
+import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { faBuilding, faList, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
@@ -76,10 +76,7 @@ const tabs = computed<TabItem[]>(() => [
         <!-- Content -->
         <template v-else>
             <!-- Institution Header -->
-            <DetailHeader
-                :is-loading="isLoading"
-                :show-skeletons="true"
-                avatar-shape="square"
+            <DashboardDetailHeader
                 :title="institution?.name[locale] ?? undefined"
                 :primary="institution?.slug"
                 :secondary="institution?.email ?? undefined">
@@ -89,7 +86,7 @@ const tabs = computed<TabItem[]>(() => [
                         <FontAwesomeIcon :icon="faBuilding" class="text-4xl text-gray-400" />
                     </div>
                 </template>
-            </DetailHeader>
+            </DashboardDetailHeader>
 
             <!-- Tabs -->
             <TabNavigation :tabs="tabs" />

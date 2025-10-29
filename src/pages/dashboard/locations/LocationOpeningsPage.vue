@@ -8,7 +8,6 @@ import {
     useDeleteOpeningTime,
     useUpdateOpeningTime,
 } from '@/composables/data/useOpeningTimes';
-import { useLocationEditing } from '@/composables/store/useLocationEditing';
 import { useToast } from '@/composables/store/useToast';
 import { openingToRequest } from '@/domain/openings';
 import type { Location } from '@/domain/location';
@@ -20,7 +19,6 @@ const props = defineProps<{
 
 const toast = useToast();
 const { t } = useI18n();
-const editingStore = useLocationEditing();
 
 const { mutateAsync: createOpeningTimes } = useCreateOpeningTimes({
     onSuccess: () => {
@@ -76,8 +74,8 @@ const { mutateAsync: deleteOpeningTime } = useDeleteOpeningTime({
 const openingsForm = ref<OpeningTimeRequest[]>([]);
 
 watchEffect(() => {
-    if (!editingStore.location) return;
-    const mappedOpenings = (editingStore.location.openingTimes || []).map(openingToRequest);
+    if (!props.location) return;
+    const mappedOpenings = (props.location.openingTimes || []).map(openingToRequest);
     openingsForm.value = mappedOpenings;
 });
 

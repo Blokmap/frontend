@@ -30,13 +30,11 @@ import {
     InstitutionOverviewPage,
     InstitutionRolesPage,
     LocationAccessPage,
-    LocationImagesPage,
     LocationInfoPage,
     LocationOpeningsPage,
     LocationReservationsPage,
     LocationRolesPage,
     LocationScanPage,
-    LocationSettingsPage,
     LocationPage,
     LocationSubmitPage,
     LocationIndexPage,
@@ -206,36 +204,6 @@ const routes: RouteRecordRaw[] = [
                                         {
                                             label: 'Openingstijden',
                                             to: { name: 'dashboard.locations.detail.openings' },
-                                        },
-                                    ],
-                                },
-                            },
-                            {
-                                path: 'images',
-                                name: 'dashboard.locations.detail.images',
-                                component: LocationImagesPage,
-                                props: true,
-                                meta: {
-                                    title: 'Locatie Afbeeldingen',
-                                    breadcrumbs: [
-                                        {
-                                            label: 'Afbeeldingen',
-                                            to: { name: 'dashboard.locations.detail.images' },
-                                        },
-                                    ],
-                                },
-                            },
-                            {
-                                path: 'settings',
-                                name: 'dashboard.locations.detail.settings',
-                                component: LocationSettingsPage,
-                                props: true,
-                                meta: {
-                                    title: 'Locatie Instellingen',
-                                    breadcrumbs: [
-                                        {
-                                            label: 'Instellingen',
-                                            to: { name: 'dashboard.locations.detail.settings' },
                                         },
                                     ],
                                 },

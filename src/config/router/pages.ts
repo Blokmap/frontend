@@ -19,10 +19,6 @@ export const LocationReservationsPage = () =>
 export const LocationScanPage = () => import('@/pages/dashboard/locations/LocationScanPage.vue');
 export const LocationOpeningsPage = () =>
     import('@/pages/dashboard/locations/LocationOpeningsPage.vue');
-export const LocationImagesPage = () =>
-    import('@/pages/dashboard/locations/LocationImagesPage.vue');
-export const LocationSettingsPage = () =>
-    import('@/pages/dashboard/locations/LocationSettingsPage.vue');
 export const LocationAccessPage = () =>
     import('@/pages/dashboard/locations/LocationAccessPage.vue');
 export const LocationRolesPage = () => import('@/pages/dashboard/locations/LocationRolesPage.vue');

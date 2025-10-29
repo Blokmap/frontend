@@ -106,8 +106,8 @@ export async function readLocations(
     const endpoint = endpoints.admin.locations.list;
 
     const params = {
+        includes,
         ...formatFilters(filters),
-        ...formatIncludes(includes),
     };
 
     const transformResponse = transformPaginatedResponseFactory(parseLocationResponse);

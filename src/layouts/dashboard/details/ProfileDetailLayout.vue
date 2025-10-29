@@ -6,17 +6,14 @@ import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { faBuilding, faCity, faIdCard, faMapLocationDot } from '@fortawesome/free-solid-svg-icons';
-import { computed, watchEffect } from 'vue';
+import { computed } from 'vue';
 import { useReadProfile } from '@/composables/data/useProfile';
-import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
     profileId: string;
     profile: Profile;
 }>();
-
-const { addBreadcrumbs } = useBreadcrumbStore();
 
 const isOwnProfile = computed(() => props.profileId === props.profile.id);
 
@@ -71,20 +68,6 @@ const tabs = computed<TabItem[]>(() => [
         },
     },
 ]);
-
-watchEffect(() => {
-    if (!currentProfile.value) {
-        return;
-    }
-
-    addBreadcrumbs({
-        label: isOwnProfile.value ? 'Mijn Profiel' : (currentProfile.value?.firstName ?? ''),
-        to: {
-            name: 'dashboard.profiles.detail.overview',
-            params: { profileId: props.profile.id },
-        },
-    });
-});
 </script>
 
 <template>

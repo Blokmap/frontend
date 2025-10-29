@@ -2,12 +2,10 @@ import { useQueryClient } from '@tanstack/vue-query';
 import { computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { AUTH_QUERY_KEYS, useAuthProfile } from '@/composables/data/useAuth';
-import { useBreadcrumbStore } from '@/composables/store/useBreadcrumbs';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useToast } from '@/composables/store/useToast';
 import { pushRedirectUrl, readAuthProfile } from '@/domain/auth';
 import { router } from './router';
-import type { Breadcrumbs } from '@/utils/breadcrumb';
 import type { NavigationGuardReturn, RouteLocationNormalized } from 'vue-router';
 
 /**
@@ -58,34 +56,6 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
         });
 
         return { name: 'dashboard' };
-    }
-}
-
-/**
- * Guard that configures the breadcrumb store based on the route meta.
- * Automatically collects breadcrumbs from parent routes and prepends them to child breadcrumbs.
- *
- * @param to Route to which we are navigating
- */
-export async function breadcrumbRouterGuard(
-    to: RouteLocationNormalized,
-): Promise<NavigationGuardReturn> {
-    const { setBreadcrumbs, clearBreadcrumbs } = useBreadcrumbStore();
-
-    // Collect breadcrumbs from all matched routes (parents and current)
-    const allBreadcrumbs: Breadcrumbs = [];
-
-    for (const record of to.matched) {
-        if (record.meta.breadcrumbs) {
-            const breadcrumbs = record.meta.breadcrumbs as Breadcrumbs;
-            allBreadcrumbs.push(...breadcrumbs);
-        }
-    }
-
-    if (allBreadcrumbs.length > 0) {
-        setBreadcrumbs(allBreadcrumbs);
-    } else {
-        clearBreadcrumbs();
     }
 }
 

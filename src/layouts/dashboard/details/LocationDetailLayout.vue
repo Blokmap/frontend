@@ -15,6 +15,7 @@ import {
     faSave,
     faSpinner,
     faUsers,
+    faUsersGear,
     faWarning,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -77,10 +78,20 @@ const tabs = computed<TabItem[]>(() => [
     {
         value: 'settings',
         label: 'Instellingen',
-        class: 'ml-auto',
+        align: 'right',
         icon: faCog,
         route: {
             name: 'dashboard.locations.detail.settings',
+            params: { locationId: props.locationId },
+        },
+    },
+    {
+        value: 'access',
+        label: 'Toegangsbeheer',
+        align: 'right',
+        icon: faUsersGear,
+        route: {
+            name: 'dashboard.locations.detail.access',
             params: { locationId: props.locationId },
         },
     },

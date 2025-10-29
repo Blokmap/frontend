@@ -25,10 +25,12 @@ import {
     InstitutionOverviewPage,
     InstitutionMembersPage,
     InstitutionAuthoritiesPage,
+    LocationAccessPage,
     LocationImagesPage,
     LocationInfoPage,
     LocationOpeningsPage,
     LocationReservationsPage,
+    LocationRolesPage,
     LocationScanPage,
     LocationSettingsPage,
     LocationPage,
@@ -234,7 +236,42 @@ const routes: RouteRecordRaw[] = [
                                     ],
                                 },
                             },
+                            {
+                                path: 'access',
+                                name: 'dashboard.locations.detail.access',
+                                component: LocationAccessPage,
+                                props: true,
+                                meta: {
+                                    title: 'Toegangsbeheer',
+                                    breadcrumbs: [
+                                        {
+                                            label: 'Toegangsbeheer',
+                                            to: { name: 'dashboard.locations.detail.access' },
+                                        },
+                                    ],
+                                },
+                            },
                         ],
+                    },
+                    {
+                        path: ':locationId/roles',
+                        name: 'dashboard.locations.detail.roles',
+                        component: LocationRolesPage,
+                        props: true,
+                        meta: {
+                            title: 'Rollen beheren',
+                            breadcrumbs: [
+                                { label: 'Locaties', to: { name: 'dashboard.locations.index' } },
+                                {
+                                    label: 'Details',
+                                    to: { name: 'dashboard.locations.detail.info' },
+                                },
+                                {
+                                    label: 'Rollen beheren',
+                                    to: { name: 'dashboard.locations.detail.roles' },
+                                },
+                            ],
+                        },
                     },
                 ],
             },

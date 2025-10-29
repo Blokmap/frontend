@@ -13,6 +13,7 @@ export const endpoints = {
         read: '/institutions/{id}',
         update: '/institutions/{id}',
         list: '/institutions',
+        roles: '/institutions/{id}/roles',
         members: {
             list: '/institutions/{id}/members',
             add: '/institutions/{id}/members',
@@ -55,6 +56,7 @@ export const endpoints = {
         read: '/authorities/{id}',
         update: '/authorities/{id}',
         list: '/authorities',
+        roles: '/authorities/{id}/roles',
         locations: {
             list: '/authorities/{id}/locations',
             create: '/authorities/{id}/locations',
@@ -82,6 +84,7 @@ export const endpoints = {
         permissions: '/locations/permissions',
         nearest: '/locations/nearest',
         scan: '/locations/{id}/scan',
+        roles: '/locations/{id}/roles',
         openingTimes: {
             createMany: '/locations/{id}/opening-times',
             updateOne: '/locations/{id}/opening-times/{openingTimeId}',

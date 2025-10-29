@@ -17,7 +17,7 @@ import { useAuthLogin, useAuthRegister } from '@/composables/data/useAuth';
 import { useReadInstitutions } from '@/composables/data/useInstitutions';
 import { useToast } from '@/composables/store/useToast';
 import { endpoints } from '@/config/endpoints';
-import { authIdentityProviders, pullRedirectUrl } from '@/domain/auth';
+import { AUTH_IDPS, pullRedirectUrl } from '@/domain/auth';
 
 const { locale, t } = useI18n();
 const toast = useToast();
@@ -171,7 +171,7 @@ function switchToRegister(): void {
             </template>
         </Select>
     </IconField>
-    <template v-for="idp in authIdentityProviders" :key="idp.name">
+    <template v-for="idp in AUTH_IDPS" :key="idp.name">
         <a :href="'/api/' + endpoints.auth.sso.replace('{provider}', idp.id)">
             <Button
                 class="w-[300px]"

@@ -1,63 +1,77 @@
 import { describe, expect, it } from 'vitest';
-import { checkPermissions, LocationPermissions, AuthorityPermissions, InstitutionPermissions } from '@/domain/permission';
+import {
+    checkPermissions,
+    LocationPermission,
+    AuthorityPermission,
+    InstitutionPermission,
+} from '@/domain/auth';
 
 describe('Permission Helpers', () => {
     describe('checkPermissions', () => {
-        describe('LocationPermissions', () => {
+        describe('LocationPermission', () => {
             it('should return true when user has the exact permission', () => {
-                const actual = LocationPermissions.ManageImages;
-                const expected = LocationPermissions.ManageImages;
+                const actual = LocationPermission.ManageImages;
+                const expected = LocationPermission.ManageImages;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
 
             it('should return false when user does not have the permission', () => {
-                const actual = LocationPermissions.ManageImages;
-                const expected = LocationPermissions.ManageOpeningTimes;
+                const actual = LocationPermission.ManageImages;
+                const expected = LocationPermission.ManageOpeningTimes;
                 expect(checkPermissions(actual, expected)).toBe(false);
             });
 
             it('should return true when user has Administrator permission', () => {
-                const actual = LocationPermissions.Administrator;
-                const expected = LocationPermissions.ManageImages;
+                const actual = LocationPermission.Administrator;
+                const expected = LocationPermission.ManageImages;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
 
             it('should return true when user has multiple permissions including the expected one', () => {
-                const actual = LocationPermissions.ManageImages | LocationPermissions.ManageOpeningTimes;
-                const expected = LocationPermissions.ManageImages;
+                const actual =
+                    LocationPermission.ManageImages | LocationPermission.ManageOpeningTimes;
+                const expected = LocationPermission.ManageImages;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
 
             it('should return false when user has multiple permissions but not the expected one', () => {
-                const actual = LocationPermissions.ManageImages | LocationPermissions.ManageOpeningTimes;
-                const expected = LocationPermissions.ManageMembers;
+                const actual =
+                    LocationPermission.ManageImages | LocationPermission.ManageOpeningTimes;
+                const expected = LocationPermission.ManageMembers;
                 expect(checkPermissions(actual, expected)).toBe(false);
             });
 
             it('should return true when user has all expected multiple permissions', () => {
-                const actual = LocationPermissions.ManageImages | LocationPermissions.ManageOpeningTimes | LocationPermissions.ManageMembers;
-                const expected = LocationPermissions.ManageImages | LocationPermissions.ManageOpeningTimes;
+                const actual =
+                    LocationPermission.ManageImages |
+                    LocationPermission.ManageOpeningTimes |
+                    LocationPermission.ManageMembers;
+                const expected =
+                    LocationPermission.ManageImages | LocationPermission.ManageOpeningTimes;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
 
             it('should return false when user has only some of the expected multiple permissions', () => {
-                const actual = LocationPermissions.ManageImages;
-                const expected = LocationPermissions.ManageImages | LocationPermissions.ManageOpeningTimes;
+                const actual = LocationPermission.ManageImages;
+                const expected =
+                    LocationPermission.ManageImages | LocationPermission.ManageOpeningTimes;
                 expect(checkPermissions(actual, expected)).toBe(false);
             });
 
             it('should return true when user has all location permissions', () => {
-                const actual = LocationPermissions.Administrator |
-                    LocationPermissions.ManageImages |
-                    LocationPermissions.ManageOpeningTimes |
-                    LocationPermissions.ManageMembers |
-                    LocationPermissions.ManageReservations;
-                const expected = LocationPermissions.ManageImages | LocationPermissions.ManageReservations;
+                const actual =
+                    LocationPermission.Administrator |
+                    LocationPermission.ManageImages |
+                    LocationPermission.ManageOpeningTimes |
+                    LocationPermission.ManageMembers |
+                    LocationPermission.ManageReservations;
+                const expected =
+                    LocationPermission.ManageImages | LocationPermission.ManageReservations;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
 
             it('should return true when checking for no permissions (0)', () => {
-                const actual = LocationPermissions.ManageImages;
+                const actual = LocationPermission.ManageImages;
                 const expected = 0;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
@@ -69,109 +83,127 @@ describe('Permission Helpers', () => {
             });
         });
 
-        describe('AuthorityPermissions', () => {
+        describe('AuthorityPermission', () => {
             it('should return true when user has the exact permission', () => {
-                const actual = AuthorityPermissions.AddLocations;
-                const expected = AuthorityPermissions.AddLocations;
+                const actual = AuthorityPermission.AddLocations;
+                const expected = AuthorityPermission.AddLocations;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
 
             it('should return false when user does not have the permission', () => {
-                const actual = AuthorityPermissions.AddLocations;
-                const expected = AuthorityPermissions.ApproveLocations;
+                const actual = AuthorityPermission.AddLocations;
+                const expected = AuthorityPermission.ApproveLocations;
                 expect(checkPermissions(actual, expected)).toBe(false);
             });
 
             it('should return true when user has Administrator permission', () => {
-                const actual = AuthorityPermissions.Administrator;
-                const expected = AuthorityPermissions.AddLocations;
+                const actual = AuthorityPermission.Administrator;
+                const expected = AuthorityPermission.AddLocations;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
 
             it('should return true when user has multiple permissions including the expected one', () => {
-                const actual = AuthorityPermissions.AddLocations | AuthorityPermissions.ApproveLocations;
-                const expected = AuthorityPermissions.AddLocations;
+                const actual =
+                    AuthorityPermission.AddLocations | AuthorityPermission.ApproveLocations;
+                const expected = AuthorityPermission.AddLocations;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
 
             it('should return false when user has multiple permissions but not the expected one', () => {
-                const actual = AuthorityPermissions.AddLocations | AuthorityPermissions.ApproveLocations;
-                const expected = AuthorityPermissions.ManageMembers;
+                const actual =
+                    AuthorityPermission.AddLocations | AuthorityPermission.ApproveLocations;
+                const expected = AuthorityPermission.ManageMembers;
                 expect(checkPermissions(actual, expected)).toBe(false);
             });
 
             it('should return true when user has all expected multiple permissions', () => {
-                const actual = AuthorityPermissions.AddLocations | AuthorityPermissions.ApproveLocations | AuthorityPermissions.DeleteLocations;
-                const expected = AuthorityPermissions.AddLocations | AuthorityPermissions.ApproveLocations;
+                const actual =
+                    AuthorityPermission.AddLocations |
+                    AuthorityPermission.ApproveLocations |
+                    AuthorityPermission.DeleteLocations;
+                const expected =
+                    AuthorityPermission.AddLocations | AuthorityPermission.ApproveLocations;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
 
             it('should return false when user has only some of the expected multiple permissions', () => {
-                const actual = AuthorityPermissions.AddLocations;
-                const expected = AuthorityPermissions.AddLocations | AuthorityPermissions.DeleteLocations;
+                const actual = AuthorityPermission.AddLocations;
+                const expected =
+                    AuthorityPermission.AddLocations | AuthorityPermission.DeleteLocations;
                 expect(checkPermissions(actual, expected)).toBe(false);
             });
 
             it('should return true when user has all authority permissions', () => {
-                const actual = AuthorityPermissions.Administrator |
-                    AuthorityPermissions.AddLocations |
-                    AuthorityPermissions.ApproveLocations |
-                    AuthorityPermissions.DeleteLocations |
-                    AuthorityPermissions.ManageMembers;
-                const expected = AuthorityPermissions.ApproveLocations | AuthorityPermissions.DeleteLocations;
+                const actual =
+                    AuthorityPermission.Administrator |
+                    AuthorityPermission.AddLocations |
+                    AuthorityPermission.ApproveLocations |
+                    AuthorityPermission.DeleteLocations |
+                    AuthorityPermission.ManageMembers;
+                const expected =
+                    AuthorityPermission.ApproveLocations | AuthorityPermission.DeleteLocations;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
         });
 
-        describe('InstitutionPermissions', () => {
+        describe('InstitutionPermission', () => {
             it('should return true when user has the exact permission', () => {
-                const actual = InstitutionPermissions.AddAuthority;
-                const expected = InstitutionPermissions.AddAuthority;
+                const actual = InstitutionPermission.AddAuthority;
+                const expected = InstitutionPermission.AddAuthority;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
 
             it('should return false when user does not have the permission', () => {
-                const actual = InstitutionPermissions.AddAuthority;
-                const expected = InstitutionPermissions.DeleteAuthority;
+                const actual = InstitutionPermission.AddAuthority;
+                const expected = InstitutionPermission.DeleteAuthority;
                 expect(checkPermissions(actual, expected)).toBe(false);
             });
 
             it('should return true when user has Administrator permission', () => {
-                const actual = InstitutionPermissions.Administrator;
-                const expected = InstitutionPermissions.AddAuthority;
+                const actual = InstitutionPermission.Administrator;
+                const expected = InstitutionPermission.AddAuthority;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
 
             it('should return true when user has multiple permissions including the expected one', () => {
-                const actual = InstitutionPermissions.AddAuthority | InstitutionPermissions.DeleteAuthority;
-                const expected = InstitutionPermissions.AddAuthority;
+                const actual =
+                    InstitutionPermission.AddAuthority | InstitutionPermission.DeleteAuthority;
+                const expected = InstitutionPermission.AddAuthority;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
 
             it('should return false when user has multiple permissions but not the expected one', () => {
-                const actual = InstitutionPermissions.AddAuthority | InstitutionPermissions.DeleteAuthority;
-                const expected = InstitutionPermissions.ManageMembers;
+                const actual =
+                    InstitutionPermission.AddAuthority | InstitutionPermission.DeleteAuthority;
+                const expected = InstitutionPermission.ManageMembers;
                 expect(checkPermissions(actual, expected)).toBe(false);
             });
 
             it('should return true when user has all expected multiple permissions', () => {
-                const actual = InstitutionPermissions.AddAuthority | InstitutionPermissions.DeleteAuthority | InstitutionPermissions.ManageMembers;
-                const expected = InstitutionPermissions.AddAuthority | InstitutionPermissions.DeleteAuthority;
+                const actual =
+                    InstitutionPermission.AddAuthority |
+                    InstitutionPermission.DeleteAuthority |
+                    InstitutionPermission.ManageMembers;
+                const expected =
+                    InstitutionPermission.AddAuthority | InstitutionPermission.DeleteAuthority;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
 
             it('should return false when user has only some of the expected multiple permissions', () => {
-                const actual = InstitutionPermissions.AddAuthority;
-                const expected = InstitutionPermissions.AddAuthority | InstitutionPermissions.ManageMembers;
+                const actual = InstitutionPermission.AddAuthority;
+                const expected =
+                    InstitutionPermission.AddAuthority | InstitutionPermission.ManageMembers;
                 expect(checkPermissions(actual, expected)).toBe(false);
             });
 
             it('should return true when user has all institution permissions', () => {
-                const actual = InstitutionPermissions.Administrator |
-                    InstitutionPermissions.AddAuthority |
-                    InstitutionPermissions.DeleteAuthority |
-                    InstitutionPermissions.ManageMembers;
-                const expected = InstitutionPermissions.AddAuthority | InstitutionPermissions.DeleteAuthority;
+                const actual =
+                    InstitutionPermission.Administrator |
+                    InstitutionPermission.AddAuthority |
+                    InstitutionPermission.DeleteAuthority |
+                    InstitutionPermission.ManageMembers;
+                const expected =
+                    InstitutionPermission.AddAuthority | InstitutionPermission.DeleteAuthority;
                 expect(checkPermissions(actual, expected)).toBe(true);
             });
         });
@@ -200,14 +232,14 @@ describe('Permission Helpers', () => {
                 const actual = 0b1111; // All first 4 bits set
                 const expected = 0b0101; // Bits 0 and 2 set
                 expect(checkPermissions(actual, expected)).toBe(true);
-                expect((actual & expected)).toBe(expected);
+                expect(actual & expected).toBe(expected);
             });
 
             it('should fail when bitwise AND does not equal expected', () => {
                 const actual = 0b1010; // Bits 1 and 3 set
                 const expected = 0b0101; // Bits 0 and 2 set
                 expect(checkPermissions(actual, expected)).toBe(false);
-                expect((actual & expected)).not.toBe(expected);
+                expect(actual & expected).not.toBe(expected);
             });
         });
     });

@@ -12,6 +12,7 @@ export type TabItem = {
     label: string;
     icon?: IconDefinition;
     class?: string | string[];
+    align?: 'left' | 'right';
     route: {
         name: string;
         params?: Record<string, any>;
@@ -25,6 +26,9 @@ const { tabs } = defineProps<{
 
 const route = useRoute();
 const router = useRouter();
+
+const leftTabs = computed(() => tabs.filter((tab) => tab.align !== 'right'));
+const rightTabs = computed(() => tabs.filter((tab) => tab.align === 'right'));
 
 const activeTab = computed({
     get: () => {
@@ -45,12 +49,22 @@ const activeTab = computed({
     <div class="tabs-wrapper">
         <Tabs :value="activeTab" @update:value="activeTab = $event.toString()" class="text-sm">
             <TabList>
-                <slot name="tab" v-for="tab in tabs" :key="tab.value" :tab="tab">
-                    <Tab :value="tab.value" :class="tab.class">
-                        <FontAwesomeIcon v-if="tab.icon" :icon="tab.icon" class="tab-icon" />
-                        <span class="tab-label">{{ tab.label }}</span>
-                    </Tab>
-                </slot>
+                <div class="mr-auto">
+                    <slot name="tab" v-for="tab in leftTabs" :key="tab.value" :tab="tab">
+                        <Tab :value="tab.value" :class="tab.class">
+                            <FontAwesomeIcon v-if="tab.icon" :icon="tab.icon" class="tab-icon" />
+                            <span class="tab-label">{{ tab.label }}</span>
+                        </Tab>
+                    </slot>
+                </div>
+                <div class="ml-auto">
+                    <slot name="tab" v-for="tab in rightTabs" :key="tab.value" :tab="tab">
+                        <Tab :value="tab.value" :class="tab.class">
+                            <FontAwesomeIcon v-if="tab.icon" :icon="tab.icon" class="tab-icon" />
+                            <span class="tab-label">{{ tab.label }}</span>
+                        </Tab>
+                    </slot>
+                </div>
             </TabList>
         </Tabs>
     </div>

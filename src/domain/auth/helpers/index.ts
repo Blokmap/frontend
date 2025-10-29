@@ -1,3 +1,5 @@
+export * from './permission';
+
 const REDIRECT_URL_KEY = 'redirectAfterLogin';
 
 /**

@@ -14,7 +14,7 @@ export const useBreadcrumbStore = defineStore('breadcrumbs', () => {
     }
 
     function addBreadcrumbs(...crumbs: Breadcrumbs): void {
-        breadcrumbs.value.concat(crumbs);
+        breadcrumbs.value.push(...crumbs);
     }
 
     return { breadcrumbs, setBreadcrumbs, clearBreadcrumbs, addBreadcrumbs };

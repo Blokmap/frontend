@@ -1,7 +1,7 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { transformResponse } from '@/utils/service';
-import type { LoginRequest, RegisterRequest } from './types';
+import type { LoginRequest, Membership, RegisterRequest, Role } from './types';
 import type { Profile } from '@/domain/profile';
 
 /**
@@ -51,4 +51,100 @@ export async function login(request: LoginRequest): Promise<void> {
 export async function logout(): Promise<void> {
     const endpoint = endpoints.auth.logout;
     await client.post(endpoint);
+}
+
+/**
+ * Fetches the roles for a specific location.
+ *
+ * @param locationId - The ID of the location.
+ * @returns A promise that resolves to an array of roles for the specified location.
+ */
+export async function readLocationRoles(locationId: number): Promise<Role[]> {
+    const endpoint = endpoints.locations.roles.replace('{id}', locationId.toString());
+
+    const { data } = await client.get(endpoint, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Fetches the members for a specific location.
+ *
+ * @param locationId - The ID of the location.
+ * @returns A promise that resolves to an array of memberships for the specified location.
+ */
+export async function readLocationMembers(locationId: number): Promise<Membership[]> {
+    const endpoint = endpoints.locations.members.list.replace('{id}', locationId.toString());
+
+    const { data } = await client.get(endpoint, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Fetches the roles for a specific institution.
+ *
+ * @param institutionId - The ID of the institution.
+ * @returns A promise that resolves to an array of roles for the specified institution.
+ */
+export async function readAuthorityRoles(authorityId: number): Promise<Role[]> {
+    const endpoint = endpoints.authorities.roles.replace('{id}', authorityId.toString());
+
+    const { data } = await client.get(endpoint, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Fetches the members for a specific authority.
+ *
+ * @param authorityId - The ID of the authority.
+ * @returns A promise that resolves to an array of memberships for the specified authority.
+ */
+export async function readAuthorityMembers(authorityId: number): Promise<Membership[]> {
+    const endpoint = endpoints.authorities.members.list.replace('{id}', authorityId.toString());
+
+    const { data } = await client.get(endpoint, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Fetches the roles for a specific institution.
+ *
+ * @param institutionId - The ID of the institution.
+ * @returns A promise that resolves to an array of roles for the specified institution.
+ */
+export async function readInstitutionRoles(institutionId: number): Promise<Role[]> {
+    const endpoint = endpoints.institutions.roles.replace('{id}', institutionId.toString());
+
+    const { data } = await client.get(endpoint, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Fetches the members for a specific institution.
+ *
+ * @param institutionId - The ID of the institution.
+ * @returns A promise that resolves to an array of memberships for the specified institution.
+ */
+export async function readInstitutionMembers(institutionId: number): Promise<Membership[]> {
+    const endpoint = endpoints.institutions.members.list.replace('{id}', institutionId.toString());
+
+    const { data } = await client.get(endpoint, {
+        transformResponse,
+    });
+
+    return data;
 }

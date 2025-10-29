@@ -5,7 +5,8 @@ import { faCircleQuestion, faClock, faUsers } from '@fortawesome/free-solid-svg-
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { watchEffect } from 'vue';
 import LocationBuilderCard from '../LocationBuilderCard.vue';
-import type { BuilderSubstep, LocationRequest } from '@/domain/location';
+import type { BuilderSubstep } from '..';
+import type { LocationRequest } from '@/domain/location';
 
 const form = defineModel<LocationRequest>('form', { required: true });
 const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
@@ -61,9 +62,9 @@ watchEffect(() => {
                     </p>
                 </div>
 
-                <div class="checkbox" @click="form.isVisible = !form.isVisible">
+                <div class="checkbox" @click.stop="form.isVisible = !form.isVisible">
                     <div class="flex gap-3">
-                        <Checkbox v-model="form.isVisible" input-id="visible" binary />
+                        <Checkbox v-model="form.isVisible" input-id="visible" @click.stop binary />
                         <label for="visible"> Meteen zichtbaar maken </label>
                     </div>
                     <p>
@@ -81,9 +82,13 @@ watchEffect(() => {
                 </p>
             </template>
             <template #default>
-                <div class="checkbox" @click="form.isReservable = !form.isReservable">
+                <div class="checkbox" @click.stop="form.isReservable = !form.isReservable">
                     <div class="flex gap-3">
-                        <Checkbox v-model="form.isReservable" input-id="reservable" binary />
+                        <Checkbox
+                            v-model="form.isReservable"
+                            input-id="reservable"
+                            @click.stop
+                            binary />
                         <label for="reservable"> De locatie is reserveerbaar </label>
                     </div>
                     <p>Vink dit aan om gebruik te maken van het reservatiesysteem.</p>

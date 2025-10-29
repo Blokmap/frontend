@@ -23,6 +23,9 @@ export const LocationImagesPage = () =>
     import('@/pages/dashboard/locations/LocationImagesPage.vue');
 export const LocationSettingsPage = () =>
     import('@/pages/dashboard/locations/LocationSettingsPage.vue');
+export const LocationAccessPage = () =>
+    import('@/pages/dashboard/locations/LocationAccessPage.vue');
+export const LocationRolesPage = () => import('@/pages/dashboard/locations/LocationRolesPage.vue');
 export const LocationsIndexPage = () =>
     import('@/pages/dashboard/locations/LocationsIndexPage.vue');
 

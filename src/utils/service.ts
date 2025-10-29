@@ -145,7 +145,7 @@ export function transformPaginatedResponse<T>(data: string): Paginated<T> {
 export function transformResponse<T>(data: string): T | T[] | null {
     const parsed = JSON.parse(data);
 
-    if (!data) return null;
+    if (!parsed) return null;
 
     if (Array.isArray(parsed)) {
         return parsed.map(formatResponse);

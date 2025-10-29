@@ -1,14 +1,23 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { readAuthProfile, login, logout, register } from '@/domain/auth';
-import type { LoginRequest, RegisterRequest } from '@/domain/auth';
+import {
+    readAuthProfile,
+    login,
+    logout,
+    register,
+    readLocationMembers,
+    readLocationRoles,
+} from '@/domain/auth';
+import type { LoginRequest, RegisterRequest, Membership, Role } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { AxiosError } from 'axios';
 
 export const AUTH_QUERY_KEYS = {
     profile: () => ['profile', 'details'],
+    locationMembers: (locationId: number) => ['location', locationId, 'members'],
+    locationRoles: (locationId: number) => ['location', locationId, 'roles'],
 };
 
 /**
@@ -102,4 +111,44 @@ export function useAuthRegister(options: CompMutationOptions = {}): CompMutation
     });
 
     return mutation;
+}
+
+/**
+ * Composable to fetch members for a specific location.
+ *
+ * @param locationId - The ID of the location.
+ * @param options - Optional query options.
+ * @returns The query object containing the members data and its state.
+ */
+export function useReadLocationMembers(
+    locationId: Ref<number>,
+    options: CompQueryOptions = {},
+): CompQuery<Membership[]> {
+    const query = useQuery<Membership[], AxiosError>({
+        ...options,
+        queryKey: computed(() => AUTH_QUERY_KEYS.locationMembers(locationId.value)),
+        queryFn: () => readLocationMembers(locationId.value),
+    });
+
+    return query;
+}
+
+/**
+ * Composable to fetch roles for a specific location.
+ *
+ * @param locationId - The ID of the location.
+ * @param options - Optional query options.
+ * @returns The query object containing the roles data and its state.
+ */
+export function useReadLocationRoles(
+    locationId: Ref<number>,
+    options: CompQueryOptions = {},
+): CompQuery<Role[]> {
+    const query = useQuery<Role[], AxiosError>({
+        ...options,
+        queryKey: computed(() => AUTH_QUERY_KEYS.locationRoles(locationId.value)),
+        queryFn: () => readLocationRoles(locationId.value),
+    });
+
+    return query;
 }

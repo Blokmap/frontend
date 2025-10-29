@@ -1,4 +1,4 @@
-export enum LocationPermissions {
+export enum LocationPermission {
     // Admin privileges, member can do everything
     Administrator = 1 << 0,
 
@@ -24,7 +24,7 @@ export enum LocationPermissions {
     ManageReservations = 1 << 4,
 }
 
-export enum AuthorityPermissions {
+export enum AuthorityPermission {
     // Admin privileges, member can do everything
     Administrator = 1 << 0,
 
@@ -42,7 +42,7 @@ export enum AuthorityPermissions {
     ManageMembers = 1 << 4,
 }
 
-export enum InstitutionPermissions {
+export enum InstitutionPermission {
     // Admin privileges, member can do everything
     Administrator = 1 << 0,
 

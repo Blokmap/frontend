@@ -2,13 +2,8 @@ import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { stringToDate } from '@/utils/date';
 import { formatFilters } from '@/utils/filter';
-import {
-    formatIncludes,
-    formatRequest,
-    transformPaginatedResponseFactory,
-    transformResponseFactory,
-} from '@/utils/service';
-import { type Time } from '@/utils/time';
+import { formatIncludes, formatRequest, transformResponseFactory } from '@/utils/service';
+import { stringToTime, type Time } from '@/utils/time';
 import { parseProfileResponse } from '../auth';
 import { parseLocationResponse } from '../location';
 import { parseOpeningTimeResponse } from '../openings';
@@ -26,6 +21,8 @@ export function parseReservationResponse(data: any): Reservation {
     const result: Reservation = {
         ...data,
         day: stringToDate(data.day),
+        startTime: stringToTime(data.startTime),
+        endTime: stringToTime(data.endTime),
         createdAt: stringToDate(data.createdAt),
         updatedAt: stringToDate(data.updatedAt),
     };
@@ -196,7 +193,7 @@ export async function readProfileReservations(
         ...formatIncludes(includes),
     };
 
-    const transformResponse = transformPaginatedResponseFactory(parseReservationResponse);
+    const transformResponse = transformResponseFactory(parseReservationResponse);
 
     const { data } = await client.get(endpoint, {
         params,

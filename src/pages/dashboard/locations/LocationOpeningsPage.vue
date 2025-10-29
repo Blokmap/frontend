@@ -11,10 +11,11 @@ import {
 import { useLocationEditing } from '@/composables/store/useLocationEditing';
 import { useToast } from '@/composables/store/useToast';
 import { openingToRequest } from '@/domain/openings';
+import type { Location } from '@/domain/location';
 import type { OpeningTimeRequest } from '@/domain/openings';
 
 const props = defineProps<{
-    locationId: string;
+    location: Location;
 }>();
 
 const toast = useToast();
@@ -85,7 +86,7 @@ watchEffect(() => {
  */
 async function onCreateOpeningTime(openingTime: OpeningTimeRequest): Promise<void> {
     await createOpeningTimes({
-        locationId: +props.locationId,
+        locationId: props.location.id,
         openings: [openingTime],
     });
 }
@@ -99,7 +100,7 @@ async function onUpdateOpeningTime(
     sequence?: boolean,
 ): Promise<void> {
     await updateOpeningTime({
-        locationId: +props.locationId,
+        locationId: props.location.id,
         openingTimeId,
         opening: openingTime,
         sequence,
@@ -111,7 +112,7 @@ async function onUpdateOpeningTime(
  */
 async function onDeleteOpeningTime(openingTimeId: number, sequence?: boolean): Promise<void> {
     await deleteOpeningTime({
-        locationId: +props.locationId,
+        locationId: props.location.id,
         openingTimeId,
         sequence,
     });
@@ -121,6 +122,7 @@ async function onDeleteOpeningTime(openingTimeId: number, sequence?: boolean): P
 <template>
     <DashboardContent>
         <LocationOpeningBuilder
+            :location="location"
             :opening-times="openingsForm"
             @create="onCreateOpeningTime"
             @update="onUpdateOpeningTime"

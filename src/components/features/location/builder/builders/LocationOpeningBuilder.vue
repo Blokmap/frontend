@@ -6,8 +6,10 @@ import { ref } from 'vue';
 import { useRouteDate } from '@/composables/useRouteDate';
 import { DEFAULT_OPENING_TIME_REQUEST, type OpeningTimeRequest } from '@/domain/openings';
 import type { TimeCell, TimeSlot } from '@/domain/calendar';
+import type { Location } from '@/domain/location';
 
-defineProps<{
+const props = defineProps<{
+    location: Location;
     openingTimes: OpeningTimeRequest[];
 }>();
 
@@ -40,9 +42,13 @@ function onCreateClick(timeCell?: TimeCell): void {
             day: timeCell.day,
             startTime: timeCell.startTime,
             endTime: timeCell.endTime,
+            seatCount: props.location.seatCount,
         };
     } else {
-        editingOpeningTime.value = { ...DEFAULT_OPENING_TIME_REQUEST };
+        editingOpeningTime.value = {
+            ...DEFAULT_OPENING_TIME_REQUEST,
+            seatCount: props.location.seatCount,
+        };
     }
 
     isEditing.value = false;

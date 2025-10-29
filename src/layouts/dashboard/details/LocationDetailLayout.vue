@@ -211,7 +211,7 @@ async function saveChanges(): Promise<void> {
 
             <!-- Page Content -->
             <div class="tab-content">
-                <RouterView />
+                <RouterView :location="location" />
             </div>
         </template>
     </DashboardContent>

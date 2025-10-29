@@ -35,13 +35,13 @@ import {
     LocationSettingsPage,
     LocationPage,
     LocationSubmitPage,
-    LocationsIndexPage,
+    LocationIndexPage,
     LocationsPage,
     ProfilePage,
     ProfileAuthoritiesPage,
     ProfileLocationsPage,
     ProfileOverviewPage,
-    ProfilesIndexPage,
+    ProfileIndexPage,
     ProfileInstitutionsPage,
 } from './pages';
 
@@ -129,7 +129,7 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: '',
                         name: 'dashboard.locations.index',
-                        component: LocationsIndexPage,
+                        component: LocationIndexPage,
                         meta: {
                             auth: { admin: true },
                             title: 'Beheer Locaties',
@@ -428,7 +428,7 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: '',
                         name: 'dashboard.profiles.index',
-                        component: ProfilesIndexPage,
+                        component: ProfileIndexPage,
                         meta: {
                             auth: { admin: true },
                             title: 'Beheer Profielen',

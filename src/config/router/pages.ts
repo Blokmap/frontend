@@ -26,11 +26,10 @@ export const LocationSettingsPage = () =>
 export const LocationAccessPage = () =>
     import('@/pages/dashboard/locations/LocationAccessPage.vue');
 export const LocationRolesPage = () => import('@/pages/dashboard/locations/LocationRolesPage.vue');
-export const LocationsIndexPage = () =>
-    import('@/pages/dashboard/locations/LocationsIndexPage.vue');
+export const LocationIndexPage = () => import('@/pages/dashboard/locations/LocationIndexPage.vue');
 
 // Dashboard Profiles
-export const ProfilesIndexPage = () => import('@/pages/dashboard/profiles/ProfilesIndexPage.vue');
+export const ProfileIndexPage = () => import('@/pages/dashboard/profiles/ProfileIndexPage.vue');
 export const ProfileOverviewPage = () =>
     import('@/pages/dashboard/profiles/ProfileOverviewPage.vue');
 export const ProfileLocationsPage = () =>

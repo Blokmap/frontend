@@ -19,7 +19,7 @@ export async function readInstitutions(
 
     const { data } = await client.get<Paginated<Institution>>(endpoint, {
         params: filters,
-        transformRequest: transformPaginatedResponse,
+        transformResponse: transformPaginatedResponse,
     });
 
     return data;

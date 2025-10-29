@@ -1,10 +1,49 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { formatRequest, transformResponse } from '@/utils/service';
+import { stringToDate } from '@/utils/date';
+import { formatFilters } from '@/utils/filter';
+import {
+    formatIncludes,
+    formatRequest,
+    transformPaginatedResponseFactory,
+    transformResponseFactory,
+} from '@/utils/service';
 import { type Time } from '@/utils/time';
-import type { Reservation, ReservationRequest } from './types';
+import { parseProfileResponse } from '../auth';
+import { parseLocationResponse } from '../location';
+import { parseOpeningTimeResponse } from '../openings';
+import type { Reservation, ReservationRequest, ReservationFilter } from './types';
 
 export type ReservationIncludes = 'profile' | 'location' | 'openingTime' | 'confirmedBy';
+
+/**
+ * Parses a Reservation response object.
+ *
+ * @param data - The raw reservation data from the API.
+ * @returns The parsed Reservation object.
+ */
+export function parseReservationResponse(data: any): Reservation {
+    const result: Reservation = {
+        ...data,
+        day: stringToDate(data.day),
+        createdAt: stringToDate(data.createdAt),
+        updatedAt: stringToDate(data.updatedAt),
+    };
+
+    if (data.createdBy) {
+        result.createdBy = parseProfileResponse(data.createdBy);
+    }
+
+    if (data.location) {
+        result.location = parseLocationResponse(data.location);
+    }
+
+    if (data.openingTime) {
+        result.openingTime = parseOpeningTimeResponse(data.openingTime);
+    }
+
+    return result;
+}
 
 /**
  * Create a reservation for a specific opening time.
@@ -29,6 +68,8 @@ export async function createReservation(
         startTime,
         endTime,
     });
+
+    const transformResponse = transformResponseFactory(parseReservationResponse);
 
     const { data } = await client.post(endpoint, request, {
         transformResponse,
@@ -63,6 +104,8 @@ export async function updateReservation(
 ): Promise<Reservation> {
     const endpoint = endpoints.reservations.update.replace('{id}', reservationId.toString());
 
+    const transformResponse = transformResponseFactory(parseReservationResponse);
+
     const { data } = await client.patch(endpoint, request, {
         transformResponse,
     });
@@ -84,6 +127,8 @@ export async function confirmReservation(
     const endpoint = endpoints.locations.reservations.confirm
         .replace('{id}', locationId.toString())
         .replace('{reservationId}', reservationId.toString());
+
+    const transformResponse = transformResponseFactory(parseReservationResponse);
 
     const { data } = await client.post(endpoint, {
         transformResponse,
@@ -107,6 +152,8 @@ export async function createReservations(
 
     const request = requests.map((d) => formatRequest(d));
 
+    const transformResponse = transformResponseFactory(parseReservationResponse);
+
     const { data } = await client.post(endpoint, request, {
         transformResponse,
     });
@@ -128,4 +175,63 @@ export async function deleteReservations(
     const endpoint = endpoints.locations.reservations.delete.replace('{id}', locationId.toString());
 
     await client.delete(endpoint, { data: reservationIds });
+}
+
+/**
+ * Get reservations for a specific profile on a given date.
+ *
+ * @param {number} profileId - The ID of the profile to fetch reservations for.
+ * @param {ReservationFilter} filter - The filters to apply when fetching reservations.
+ * @returns {Promise<Reservation[]>} A promise that resolves to an array of reservations.
+ */
+export async function readProfileReservations(
+    profileId: string,
+    filter: Partial<ReservationFilter> = {},
+    includes: ReservationIncludes[] = [],
+): Promise<Reservation[]> {
+    const endpoint = endpoints.profiles.reservations.list.replace('{id}', profileId.toString());
+
+    const params = {
+        ...formatFilters(filter, ['inWeekOf']),
+        ...formatIncludes(includes),
+    };
+
+    const transformResponse = transformPaginatedResponseFactory(parseReservationResponse);
+
+    const { data } = await client.get(endpoint, {
+        params,
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Get reservations for a specific location.
+ *
+ * @param locationId - The ID of the location to fetch reservations for.
+ * @param filters - The filters to apply when fetching reservations.
+ * @param includes - The related data to include in the response.
+ * @returns A promise that resolves to an array of reservations.
+ */
+export async function readLocationReservations(
+    locationId: number,
+    filters: Partial<ReservationFilter> = {},
+    includes: ReservationIncludes[] = [],
+): Promise<Reservation[]> {
+    const endpoint = endpoints.locations.reservations.list.replace('{id}', locationId.toString());
+
+    const params = {
+        ...formatFilters(filters, ['inWeekOf', 'day']),
+        ...formatIncludes(includes),
+    };
+
+    const transformResponse = transformResponseFactory(parseReservationResponse);
+
+    const { data } = await client.get(endpoint, {
+        params,
+        transformResponse,
+    });
+
+    return data;
 }

@@ -81,7 +81,7 @@ defineProps<{
     }
 
     .detail-actions {
-        @apply ml-auto flex-shrink-0;
+        @apply ml-auto flex flex-shrink-0 gap-3;
     }
 }
 </style>

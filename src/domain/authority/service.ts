@@ -1,9 +1,41 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { transformPaginatedResponse, transformResponse } from '@/utils/service';
-import { type Profile } from '../profile';
+import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/service';
+import { parseProfileResponse } from '../auth';
+import { parseLocationResponse } from '../location';
+import type { Profile } from '../profile';
 import type { Authority, AuthorityFilter, AuthorityRequest } from './types';
 import type { Paginated } from '@/utils/pagination';
+
+/**
+ * Parses an Authority response object.
+ *
+ * @param data - The raw authority data from the API.
+ * @returns The parsed Authority object.
+ */
+export function parseAuthorityResponse(data: any): Authority {
+    const result: Authority = {
+        ...data,
+    };
+
+    if (data.createdBy) {
+        result.createdBy = parseProfileResponse(data.createdBy);
+    }
+
+    if (data.updatedBy) {
+        result.updatedBy = parseProfileResponse(data.updatedBy);
+    }
+
+    if (data.members) {
+        result.members = data.members.map(parseProfileResponse);
+    }
+
+    if (data.locations) {
+        result.locations = data.locations.map(parseLocationResponse);
+    }
+
+    return result;
+}
 
 /**
  * Read authorities with optional filters (returns paginated list).
@@ -16,9 +48,11 @@ export async function readAuthorities(
 ): Promise<Paginated<Authority>> {
     const endpoint = endpoints.authorities.list;
 
+    const transformResponse = transformPaginatedResponseFactory(parseAuthorityResponse);
+
     const { data } = await client.get<Paginated<Authority>>(endpoint, {
         params: filters,
-        transformResponse: transformPaginatedResponse,
+        transformResponse,
     });
 
     return data;
@@ -32,6 +66,8 @@ export async function readAuthorities(
  */
 export async function readAuthority(id: number): Promise<Authority> {
     const endpoint = endpoints.authorities.read.replace('{id}', id.toString());
+
+    const transformResponse = transformResponseFactory(parseAuthorityResponse);
 
     const { data } = await client.get<Authority>(endpoint, {
         transformResponse,
@@ -48,6 +84,8 @@ export async function readAuthority(id: number): Promise<Authority> {
  */
 export async function createAuthority(request: AuthorityRequest): Promise<Authority> {
     const endpoint = endpoints.authorities.create.toString();
+
+    const transformResponse = transformResponseFactory(parseAuthorityResponse);
 
     const { data } = await client.post<Authority>(endpoint, request, {
         transformResponse,
@@ -69,6 +107,8 @@ export async function updateAuthority(
 ): Promise<Authority> {
     const endpoint = endpoints.authorities.update.replace('{id}', id.toString());
 
+    const transformResponse = transformResponseFactory(parseAuthorityResponse);
+
     const { data } = await client.patch<Authority>(endpoint, request, {
         transformResponse,
     });
@@ -84,6 +124,8 @@ export async function updateAuthority(
  */
 export async function readAuthorityMembers(id: number): Promise<Profile[]> {
     const endpoint = endpoints.authorities.members.list.replace('{id}', id.toString());
+
+    const transformResponse = transformResponseFactory(parseProfileResponse);
 
     const { data } = await client.get<Profile[]>(endpoint, {
         transformResponse,

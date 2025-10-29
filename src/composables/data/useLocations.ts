@@ -22,10 +22,9 @@ import {
     updateLocation,
     deleteLocationImage,
     reorderLocationImages,
-    readLocationReservations,
+    readProfileLocations,
 } from '@/domain/location';
-import { readProfileLocations } from '@/domain/profile';
-import { type Reservation } from '@/domain/reservation';
+import { readLocationReservations, type Reservation } from '@/domain/reservation';
 import type { ImageReorderRequest, ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
@@ -524,10 +523,14 @@ export function useReadLocationReservations(
  * @param profileId - The ID of the profile to fetch locations for.
  * @returns The query object containing profile locations and their state.
  */
-export function useReadProfileLocations(profileId: MaybeRef<string | null>): CompQuery<Location[]> {
+export function useReadProfileLocations(
+    profileId: MaybeRef<string | null>,
+    options: CompQueryOptions = {},
+): CompQuery<Location[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 
     const query = useQuery<Location[], AxiosError>({
+        ...options,
         queryKey: LOCATION_QUERY_KEYS.profileLocations(profileId),
         enabled,
         queryFn: () => readProfileLocations(toValue(profileId)!),

@@ -1,17 +1,17 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import {
-    type Reservation,
-    type ReservationFilter,
-    type ReservationIncludes,
-} from '@/domain/reservation';
+import { stringToDate } from '@/utils/date';
 import { formatFilters, formatLocationSearchFilters } from '@/utils/filter';
 import {
-    createFormDataRequest,
+    formatFormDataRequest,
     formatIncludes,
-    transformPaginatedResponse,
-    transformResponse,
+    transformPaginatedResponseFactory,
+    transformResponseFactory,
 } from '@/utils/service';
+import { parseProfileResponse } from '../auth';
+import { parseImageResponse } from '../image';
+import { parseOpeningTimeResponse } from '../openings';
+import { parseTranslationResponse } from '../translation';
 import type {
     Location,
     LocationSearchFilter,
@@ -26,6 +26,50 @@ import type { Paginated } from '@/utils/pagination';
 export type LocationIncludes = 'images' | 'createdBy';
 
 /**
+ * Transform a Location response object.
+ *
+ * @param data - The raw location data from the API.
+ * @returns The parsed Location object.
+ */
+export function parseLocationResponse(data: any): Location {
+    const result: Location = {
+        ...data,
+        excerpt: parseTranslationResponse(data.excerpt),
+        description: parseTranslationResponse(data.description),
+        approvedAt: stringToDate(data.approvedAt),
+        createdAt: stringToDate(data.createdAt),
+        updatedAt: stringToDate(data.updatedAt),
+        rejectedAt: stringToDate(data.rejectedAt),
+    };
+
+    if (data.openingTimes) {
+        result.openingTimes = data.openingTimes.map(parseOpeningTimeResponse);
+    }
+
+    if (data.images) {
+        result.images = data.images.map(parseImageResponse);
+    }
+
+    if (data.createdBy) {
+        result.createdBy = parseProfileResponse(data.createdBy);
+    }
+
+    if (data.updatedBy) {
+        result.updatedBy = parseProfileResponse(data.updatedBy);
+    }
+
+    if (data.approvedBy) {
+        result.approvedBy = parseProfileResponse(data.approvedBy);
+    }
+
+    if (data.rejectedBy) {
+        result.rejectedBy = parseProfileResponse(data.rejectedBy);
+    }
+
+    return result;
+}
+
+/**
  * Search for locations based on filters.
  *
  * @param {LocationSearchFilter} [filters] - The filters to apply when searching for locations.
@@ -38,9 +82,11 @@ export async function searchLocations(
 
     const params = formatLocationSearchFilters(filters ?? {});
 
+    const transformResponse = transformPaginatedResponseFactory(parseLocationResponse);
+
     const { data } = await client.get(endpoint, {
         params,
-        transformResponse: transformPaginatedResponse,
+        transformResponse,
     });
 
     return data;
@@ -64,9 +110,11 @@ export async function readLocations(
         ...formatIncludes(includes),
     };
 
+    const transformResponse = transformPaginatedResponseFactory(parseLocationResponse);
+
     const { data } = await client.get(endpoint, {
         params,
-        transformResponse: transformPaginatedResponse,
+        transformResponse,
     });
 
     return data;
@@ -100,6 +148,8 @@ export async function readLocation(
     const endpoint = endpoints.locations.read.replace('{id}', id.toString());
 
     const params = formatIncludes(includes);
+
+    const transformResponse = transformResponseFactory(parseLocationResponse);
 
     const { data } = await client.get(endpoint, {
         params,
@@ -136,6 +186,8 @@ export async function readNearestLocation(center: LngLat): Promise<NearestLocati
 export async function createLocation(locationData: LocationRequest): Promise<Location> {
     const endpoint = endpoints.locations.create;
 
+    const transformResponse = transformResponseFactory(parseLocationResponse);
+
     const { data } = await client.post(endpoint, locationData, {
         transformResponse,
     });
@@ -156,10 +208,12 @@ export async function createLocationImage(
 ): Promise<Location> {
     const endpoint = endpoints.locations.images.createOne.replace('{id}', locationId.toString());
 
-    const request = createFormDataRequest({
+    const request = formatFormDataRequest({
         image: image.file,
         index: image.index,
     });
+
+    const transformResponse = transformResponseFactory(parseLocationResponse);
 
     const { data } = await client.post(endpoint, request, {
         transformResponse,
@@ -178,6 +232,8 @@ export async function createLocationImage(
 export async function updateLocation(id: number, locationData: LocationRequest): Promise<Location> {
     const endpoint = endpoints.locations.update.replace('{id}', id.toString());
 
+    const transformResponse = transformResponseFactory(parseLocationResponse);
+
     const { data } = await client.patch(endpoint, locationData, {
         transformResponse,
     });
@@ -193,6 +249,7 @@ export async function updateLocation(id: number, locationData: LocationRequest):
  */
 export async function deleteLocation(id: number): Promise<void> {
     const endpoint = endpoints.locations.delete.replace('{id}', id.toString());
+
     await client.delete(endpoint);
 }
 
@@ -219,6 +276,7 @@ export async function deleteLocationOpenings(locationId: number): Promise<void> 
  */
 export async function deleteLocationImages(locationId: number): Promise<void> {
     const endpoint = endpoints.locations.images.deleteAll.replace('{id}', locationId.toString());
+
     await client.delete(endpoint);
 }
 
@@ -230,6 +288,8 @@ export async function deleteLocationImages(locationId: number): Promise<void> {
  */
 export async function approveLocation(id: number): Promise<Location> {
     const endpoint = endpoints.locations.approve.replace('{id}', id.toString());
+
+    const transformResponse = transformResponseFactory(parseLocationResponse);
 
     const { data } = await client.post(endpoint, {
         transformResponse,
@@ -248,6 +308,8 @@ export async function approveLocation(id: number): Promise<Location> {
 export async function rejectLocation(id: number, reason?: string | null): Promise<Location> {
     const endpoint = endpoints.locations.reject.replace('{id}', id.toString());
 
+    const transformResponse = transformResponseFactory(parseLocationResponse);
+
     const { data } = await client.post(endpoint, {
         reason,
         transformResponse,
@@ -264,6 +326,8 @@ export async function rejectLocation(id: number, reason?: string | null): Promis
  */
 export async function pendLocation(id: number): Promise<Location> {
     const endpoint = endpoints.locations.pend.replace('{id}', id.toString());
+
+    const transformResponse = transformResponseFactory(parseLocationResponse);
 
     const { data } = await client.post(endpoint, {
         transformResponse,
@@ -304,27 +368,17 @@ export async function reorderLocationImages(
 }
 
 /**
- * Get reservations for a specific location.
+ * Fetches the locations associated with a specific profile.
  *
- * @param locationId - The ID of the location to fetch reservations for.
- * @param filters - The filters to apply when fetching reservations.
- * @param includes - The related data to include in the response.
- * @returns A promise that resolves to an array of reservations.
+ * @param profileId - The ID of the profile whose locations are to be fetched.
+ * @returns A promise that resolves to a paginated list of locations.
  */
-export async function readLocationReservations(
-    locationId: number,
-    filters: Partial<ReservationFilter> = {},
-    includes: ReservationIncludes[] = [],
-): Promise<Reservation[]> {
-    const endpoint = endpoints.locations.reservations.list.replace('{id}', locationId.toString());
+export async function readProfileLocations(profileId: string): Promise<Location[]> {
+    const endpoint = endpoints.profiles.locations.list.replace('{id}', profileId.toString());
 
-    const params = {
-        ...formatFilters(filters, ['inWeekOf', 'day']),
-        ...formatIncludes(includes),
-    };
+    const transformResponse = transformResponseFactory(parseLocationResponse);
 
-    const { data } = await client.get(endpoint, {
-        params,
+    const { data } = await client.get<Location[]>(endpoint, {
         transformResponse,
     });
 

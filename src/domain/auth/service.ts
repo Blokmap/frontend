@@ -1,9 +1,77 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { transformResponse } from '@/utils/service';
+import { stringToDate } from '@/utils/date';
+import { transformResponseFactory, transformPaginatedResponseFactory } from '@/utils/service';
+import { parseAuthorityResponse } from '../authority';
+import { parseImageResponse } from '../image';
+import { parseInstitutionResponse } from '../institution';
 import type { LoginRequest, Membership, RegisterRequest, Role } from './types';
 import type { Profile } from '@/domain/profile';
 import type { Paginated } from '@/utils/pagination';
+
+/**
+ * Parses a Role response object.
+ *
+ * @param data - The raw role data from the API.
+ * @returns The parsed Role object.
+ */
+export function parseRoleResponse(data: any): Role {
+    if (!data) return data;
+
+    const result: Role = {
+        ...data,
+        createdAt: stringToDate(data.createdAt),
+        updatedAt: stringToDate(data.updatedAt),
+    };
+
+    return result;
+}
+
+/**
+ * Parses a Membership response object.
+ *
+ * @param data - The raw membership data from the API.
+ * @returns The parsed Membership object.
+ */
+export function parseMembershipResponse(data: any): Membership {
+    if (!data) return data;
+
+    const result: Membership = {
+        ...data,
+        assignedAt: stringToDate(data.assignedAt),
+        role: parseRoleResponse(data.role),
+        profile: parseProfileResponse(data.profile),
+    };
+
+    return result;
+}
+
+/**
+ * Parses a profile response object.
+ *
+ * @param data - The raw profile data from the API.
+ * @returns The parsed Profile object.
+ */
+export function parseProfileResponse(data: any): Profile {
+    if (!data) return data;
+
+    const result: Profile = {
+        ...data,
+        avatarUrl: parseImageResponse(data.avatarUrl),
+        createdAt: stringToDate(data.createdAt),
+        updatedAt: stringToDate(data.updatedAt),
+    };
+
+    if (data.institution) {
+        result.institution = parseInstitutionResponse(data.institution);
+    }
+
+    if (data.authorities) {
+        result.authorities = data.authorities.map(parseAuthorityResponse);
+    }
+
+    return result;
+}
 
 /**
  * Fetches the authenticated user's profile.
@@ -12,6 +80,8 @@ import type { Paginated } from '@/utils/pagination';
  */
 export async function readAuthProfile(): Promise<Profile | null> {
     const endpoint = endpoints.auth.current;
+
+    const transformResponse = transformResponseFactory(parseProfileResponse);
 
     const { data } = await client.get(endpoint, {
         transformResponse,
@@ -63,6 +133,8 @@ export async function logout(): Promise<void> {
 export async function readLocationRoles(locationId: number): Promise<Role[]> {
     const endpoint = endpoints.locations.roles.replace('{id}', locationId.toString());
 
+    const transformResponse = transformResponseFactory(parseRoleResponse);
+
     const { data } = await client.get(endpoint, {
         transformResponse,
     });
@@ -78,6 +150,8 @@ export async function readLocationRoles(locationId: number): Promise<Role[]> {
  */
 export async function readLocationMembers(locationId: number): Promise<Paginated<Membership>> {
     const endpoint = endpoints.locations.members.list.replace('{id}', locationId.toString());
+
+    const transformResponse = transformPaginatedResponseFactory(parseMembershipResponse);
 
     const { data } = await client.get(endpoint, {
         transformResponse,
@@ -95,6 +169,8 @@ export async function readLocationMembers(locationId: number): Promise<Paginated
 export async function readAuthorityRoles(authorityId: number): Promise<Role[]> {
     const endpoint = endpoints.authorities.roles.replace('{id}', authorityId.toString());
 
+    const transformResponse = transformResponseFactory(parseRoleResponse);
+
     const { data } = await client.get(endpoint, {
         transformResponse,
     });
@@ -111,6 +187,8 @@ export async function readAuthorityRoles(authorityId: number): Promise<Role[]> {
 export async function readAuthorityMembers(authorityId: number): Promise<Paginated<Membership>> {
     const endpoint = endpoints.authorities.members.list.replace('{id}', authorityId.toString());
 
+    const transformResponse = transformPaginatedResponseFactory(parseMembershipResponse);
+
     const { data } = await client.get(endpoint, {
         transformResponse,
     });
@@ -126,6 +204,8 @@ export async function readAuthorityMembers(authorityId: number): Promise<Paginat
  */
 export async function readInstitutionRoles(institutionId: number): Promise<Role[]> {
     const endpoint = endpoints.institutions.roles.replace('{id}', institutionId.toString());
+
+    const transformResponse = transformResponseFactory(parseRoleResponse);
 
     const { data } = await client.get(endpoint, {
         transformResponse,
@@ -144,6 +224,8 @@ export async function readInstitutionMembers(
     institutionId: number,
 ): Promise<Paginated<Membership>> {
     const endpoint = endpoints.institutions.members.list.replace('{id}', institutionId.toString());
+
+    const transformResponse = transformPaginatedResponseFactory(parseMembershipResponse);
 
     const { data } = await client.get(endpoint, {
         transformResponse,

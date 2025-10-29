@@ -2,8 +2,9 @@
 import Select, { type SelectChangeEvent } from 'primevue/select';
 import ActionMenu from '@/components/shared/atoms/ActionMenu.vue';
 import NavigationLink from '@/components/shared/atoms/NavigationLink.vue';
-import { faTrash, faUserEdit } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
+import RoleLabel from './roles/RoleLabel.vue';
 import type { Membership, Role } from '@/domain/auth';
 
 const props = defineProps<{
@@ -20,28 +21,34 @@ const emit = defineEmits<{
 const roleOptions = computed(() => {
     return props.availableRoles.map((role) => ({
         label: role.name,
-        value: role.name,
-        colour: role.colour,
+        value: role,
     }));
 });
 
-const selectedRole = computed(() => {
-    return roleOptions.value.find((opt) => opt.value === props.member.role.name) || null;
-});
-
-const onRoleChange = async (event: SelectChangeEvent, hideMenu: () => void) => {
-    const roleName = event.value as string;
+/**
+ * Handle changing the member's role.
+ *
+ * @param event - The select change event.
+ * @param hideMenu - Function to hide the action menu.
+ */
+async function onRoleChange(event: SelectChangeEvent, hideMenu: () => void) {
+    const roleName = event.value;
 
     if (roleName && roleName !== props.member.role.name) {
         hideMenu();
         emit('change:role', props.member.profile.id, roleName);
     }
-};
+}
 
-const onRemoveMember = (hideMenu: () => void) => {
+/**
+ * Handle removing the member.
+ *
+ * @param hideMenu - Function to hide the action menu.
+ */
+function onRemoveMember(hideMenu: () => void) {
     hideMenu();
     emit('remove', props.member.profile.id);
-};
+}
 </script>
 
 <template>
@@ -65,35 +72,16 @@ const onRemoveMember = (hideMenu: () => void) => {
                     class="w-full min-w-[200px]"
                     @change="(event) => onRoleChange(event, hideMenu)">
                     <template #option="{ option }">
-                        <div class="flex items-center gap-2 text-sm">
-                            <span
-                                class="inline-block h-3 w-3 rounded-full"
-                                :style="{ backgroundColor: option.colour }"></span>
-                            <span>{{ option.label }}</span>
-                        </div>
+                        <RoleLabel :role="option.value" :clickable="false" />
                     </template>
-                    <template #value="{ value }">
-                        <div v-if="value && selectedRole" class="flex items-center gap-2 text-sm">
-                            <span
-                                class="inline-block h-3 w-3 rounded-full"
-                                :style="{ backgroundColor: selectedRole.colour }"></span>
-                            <span>{{ selectedRole.label }}</span>
-                        </div>
+                    <template #value>
+                        <RoleLabel :role="member.role" :clickable="false" />
                     </template>
                 </Select>
             </div>
         </template>
 
         <template #navigation="{ hideMenu }">
-            <NavigationLink
-                :icon="faUserEdit"
-                label="Profiel bekijken"
-                :to="{
-                    name: 'dashboard.profiles.detail.overview',
-                    params: { profileId: member.profile.id },
-                }"
-                @click="hideMenu">
-            </NavigationLink>
             <NavigationLink
                 :icon="faTrash"
                 label="Verwijderen"

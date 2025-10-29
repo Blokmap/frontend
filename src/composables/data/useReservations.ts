@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { toValue, type MaybeRef, computed } from 'vue';
-import { readLocationReservations } from '@/domain/location';
-import { readProfileReservations } from '@/domain/profile';
 import {
     confirmReservation,
     createReservation,
     createReservations,
     deleteReservation,
     deleteReservations,
+    readLocationReservations,
+    readProfileReservations,
     updateReservation,
     type Reservation,
     type ReservationFilter,

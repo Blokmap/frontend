@@ -1,17 +1,15 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { formatFilters } from '@/utils/filter';
+import { parseAuthorityResponse, type Authority } from '@/domain/authority';
+import { parseReservationResponse, type Reservation } from '@/domain/reservation';
 import {
-    createFormDataRequest,
-    formatIncludes,
+    formatFormDataRequest,
     formatRequest,
-    transformPaginatedResponse,
-    transformResponse,
+    transformPaginatedResponseFactory,
+    transformResponseFactory,
 } from '@/utils/service';
-import { type Authority } from '../authority';
-import { type Location } from '../location';
+import { parseProfileResponse } from '../auth';
 import type { Profile, ProfileStats, ProfileFilter, ProfileScanRequest } from './types';
-import type { Reservation, ReservationFilter, ReservationIncludes } from '@/domain/reservation';
 import type { Paginated } from '@/utils/pagination';
 
 /**
@@ -29,33 +27,6 @@ export async function readProfileStats(profileId: string): Promise<ProfileStats>
 }
 
 /**
- * Get reservations for a specific profile on a given date.
- *
- * @param {number} profileId - The ID of the profile to fetch reservations for.
- * @param {ReservationFilter} filter - The filters to apply when fetching reservations.
- * @returns {Promise<Reservation[]>} A promise that resolves to an array of reservations.
- */
-export async function readProfileReservations(
-    profileId: string,
-    filter: Partial<ReservationFilter> = {},
-    includes: ReservationIncludes[] = [],
-): Promise<Reservation[]> {
-    const endpoint = endpoints.profiles.reservations.list.replace('{id}', profileId.toString());
-
-    const params = {
-        ...formatFilters(filter, ['inWeekOf']),
-        ...formatIncludes(includes),
-    };
-
-    const { data } = await client.get(endpoint, {
-        params,
-        transformResponse,
-    });
-
-    return data;
-}
-
-/**
  * Updates the profile avatar for a given profile ID.
  *
  * @param profileId - The ID of the profile to update the avatar for.
@@ -64,7 +35,7 @@ export async function readProfileReservations(
  */
 export async function updateProfileAvatar(profileId: string, file: File): Promise<void> {
     const endpoint = endpoints.profiles.avatar.replace('{id}', String(profileId));
-    const data = createFormDataRequest({ image: file });
+    const data = formatFormDataRequest({ image: file });
 
     await client.post(endpoint, data, {
         headers: {
@@ -86,6 +57,8 @@ export async function updateProfile(
 ): Promise<Profile> {
     const endpoint = endpoints.profiles.update.replace('{id}', String(profileId));
 
+    const transformResponse = transformResponseFactory(parseProfileResponse);
+
     const { data } = await client.patch<any>(endpoint, profileData, {
         transformResponse,
     });
@@ -101,6 +74,7 @@ export async function updateProfile(
  */
 export async function deleteProfileAvatar(profileId: string): Promise<void> {
     const endpoint = endpoints.profiles.avatar.replace('{id}', String(profileId));
+
     await client.delete(endpoint);
 }
 
@@ -112,6 +86,8 @@ export async function deleteProfileAvatar(profileId: string): Promise<void> {
  */
 export async function readProfile(profileId: string): Promise<Profile> {
     const endpoint = endpoints.profiles.read.replace('{id}', String(profileId));
+
+    const transformResponse = transformResponseFactory(parseProfileResponse);
 
     const { data } = await client.get<any>(endpoint, {
         transformResponse,
@@ -131,6 +107,8 @@ export async function readProfiles(
 ): Promise<Paginated<Profile>> {
     const endpoint = endpoints.admin.profiles.list;
 
+    const transformResponse = transformPaginatedResponseFactory(parseProfileResponse);
+
     const { data } = await client.get(endpoint, {
         params: filters,
         transformResponse,
@@ -148,11 +126,13 @@ export async function readProfiles(
 export async function blockProfile(profileId: string): Promise<Profile> {
     const endpoint = endpoints.profiles.block.replace('{id}', profileId.toString());
 
+    const transformResponse = transformResponseFactory(parseProfileResponse);
+
     const { data } = await client.post(
         endpoint,
         {},
         {
-            transformResponse: transformPaginatedResponse,
+            transformResponse,
         },
     );
 
@@ -167,6 +147,8 @@ export async function blockProfile(profileId: string): Promise<Profile> {
  */
 export async function unblockProfile(profileId: string): Promise<Profile> {
     const endpoint = endpoints.profiles.unblock.replace('{id}', profileId.toString());
+
+    const transformResponse = transformResponseFactory(parseProfileResponse);
 
     const { data } = await client.post(
         endpoint,
@@ -195,23 +177,9 @@ export async function scanProfile(
         ...formatRequest(request, ['day']),
     };
 
+    const transformResponse = transformResponseFactory(parseReservationResponse);
+
     const { data } = await client.post(endpoint, body, {
-        transformResponse,
-    });
-
-    return data;
-}
-
-/**
- * Fetches the locations associated with a specific profile.
- *
- * @param profileId - The ID of the profile whose locations are to be fetched.
- * @returns A promise that resolves to a paginated list of locations.
- */
-export async function readProfileLocations(profileId: string): Promise<Location[]> {
-    const endpoint = endpoints.profiles.locations.list.replace('{id}', profileId.toString());
-
-    const { data } = await client.get<Location[]>(endpoint, {
         transformResponse,
     });
 
@@ -226,6 +194,8 @@ export async function readProfileLocations(profileId: string): Promise<Location[
  */
 export async function readProfileAuthorities(profileId: string): Promise<Authority[]> {
     const endpoint = endpoints.profiles.authorities.list.replace('{id}', profileId.toString());
+
+    const transformResponse = transformResponseFactory(parseAuthorityResponse);
 
     const { data } = await client.get<Authority[]>(endpoint, {
         transformResponse,

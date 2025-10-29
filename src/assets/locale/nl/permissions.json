@@ -1,0 +1,64 @@
+{
+    "location": {
+        "Administrator": {
+            "name": "Beheerder",
+            "description": "Volledige toegang tot alle locatie functies en instellingen"
+        },
+        "ManageImages": {
+            "name": "Afbeeldingen Beheren",
+            "description": "Afbeeldingen uploaden, herschikken en verwijderen"
+        },
+        "ManageOpeningTimes": {
+            "name": "Openingstijden Beheren",
+            "description": "Openingstijden aanmaken, bijwerken en verwijderen"
+        },
+        "ManageMembers": {
+            "name": "Leden Beheren",
+            "description": "Leden toevoegen, rollen bijwerken en toegang verwijderen"
+        },
+        "ManageReservations": {
+            "name": "Reserveringen Beheren",
+            "description": "Alle locatie reserveringen bekijken en beheren"
+        }
+    },
+    "authority": {
+        "Administrator": {
+            "name": "Beheerder",
+            "description": "Volledige toegang tot alle autoriteit functies en instellingen"
+        },
+        "AddLocations": {
+            "name": "Locaties Toevoegen",
+            "description": "Nieuwe locaties indienen onder deze autoriteit"
+        },
+        "ApproveLocations": {
+            "name": "Locaties Goedkeuren",
+            "description": "Locatie inzendingen beoordelen en goedkeuren of afwijzen"
+        },
+        "DeleteLocations": {
+            "name": "Locaties Verwijderen",
+            "description": "Locaties verwijderen van de autoriteit"
+        },
+        "ManageMembers": {
+            "name": "Leden Beheren",
+            "description": "Leden toevoegen, rollen bijwerken en toegang verwijderen"
+        }
+    },
+    "institution": {
+        "Administrator": {
+            "name": "Beheerder",
+            "description": "Volledige toegang tot alle institutie functies en instellingen"
+        },
+        "AddAuthority": {
+            "name": "Autoriteit Toevoegen",
+            "description": "Nieuwe autoriteiten aanmaken of koppelen aan de institutie"
+        },
+        "DeleteAuthority": {
+            "name": "Autoriteit Verwijderen",
+            "description": "Autoriteiten verwijderen van de institutie"
+        },
+        "ManageMembers": {
+            "name": "Leden Beheren",
+            "description": "Leden toevoegen, rollen bijwerken en toegang verwijderen"
+        }
+    }
+}

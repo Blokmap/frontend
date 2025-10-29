@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import RoleActionsMenu from '@/components/features/auth/RoleActionsMenu.vue';
+import RoleLabel from '@/components/features/auth/roles/RoleLabel.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
@@ -59,15 +60,7 @@ function onDeleteRole(role: Role): void {
         <Table :value="roles" :loading="isLoading">
             <template #row="{ data: role }">
                 <TableCell column="Rol">
-                    <div class="flex items-center gap-2">
-                        <span
-                            class="inline-block h-3 w-3 rounded-full"
-                            :style="{ backgroundColor: role.colour }">
-                        </span>
-                        <span class="font-medium" :style="{ color: role.colour }">
-                            {{ role.name }}
-                        </span>
-                    </div>
+                    <RoleLabel :role="role" type="location" />
                 </TableCell>
 
                 <TableCell column="Permissies">

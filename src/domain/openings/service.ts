@@ -1,8 +1,40 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
+import { stringToDate } from '@/utils/date';
 import { formatFilters } from '@/utils/filter';
-import { formatRequest, transformResponse } from '@/utils/service';
+import { formatRequest, transformResponseFactory } from '@/utils/service';
+import { stringToTime } from '@/utils/time';
+import { parseProfileResponse } from '../auth';
 import type { OpeningTime, OpeningTimeRequest, OpeningTimeFilter } from './types';
+
+/**
+ * Parses an OpeningTime response object.
+ *
+ * @param data - The raw opening time data from the API.
+ * @returns The parsed OpeningTime object.
+ */
+export function parseOpeningTimeResponse(data: any): OpeningTime {
+    const result: OpeningTime = {
+        ...data,
+        day: stringToDate(data.day),
+        reservableFrom: stringToDate(data.reservableFrom),
+        reservableUntil: stringToDate(data.reservableUntil),
+        startTime: stringToTime(data.startTime),
+        endTime: stringToTime(data.endTime),
+        createdAt: stringToDate(data.createdAt),
+        updatedAt: stringToDate(data.updatedAt),
+    };
+
+    if (data.createdBy) {
+        result.createdBy = parseProfileResponse(data.createdBy);
+    }
+
+    if (data.updatedBy) {
+        result.updatedBy = parseProfileResponse(data.updatedBy);
+    }
+
+    return result;
+}
 
 /**
  * Fetch opening times for a specific location and date range.
@@ -23,6 +55,8 @@ export async function readOpeningTimes(
     const params = {
         ...formatFilters(filters, ['inWeekOf']),
     };
+
+    const transformResponse = transformResponseFactory(parseOpeningTimeResponse);
 
     const { data } = await client.get(endpoint, {
         params,
@@ -58,6 +92,8 @@ export async function createOpeningTimes(
         return result;
     });
 
+    const transformResponse = transformResponseFactory(parseOpeningTimeResponse);
+
     const { data } = await client.post(endpoint, requests, {
         transformResponse,
     });
@@ -86,6 +122,8 @@ export async function updateOpeningTime(
     const request = {
         ...formatRequest(opening, ['day']),
     };
+
+    const transformResponse = transformResponseFactory(parseOpeningTimeResponse);
 
     const { data } = await client.patch(endpoint, request, {
         params: { sequence },

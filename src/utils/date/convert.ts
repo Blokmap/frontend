@@ -9,10 +9,10 @@ import type { DateGranularity } from './types';
  */
 export function isDateString(value: string): boolean {
     // regex to match YYYY-MM-DD or ISO 8601 date strings
-    return (
+    const is =
         /^\d{4}-\d{2}-\d{2}$/.test(value) ||
-        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?$/.test(value)
-    );
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?$/.test(value);
+    return is;
 }
 
 /**

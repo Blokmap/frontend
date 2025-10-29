@@ -33,7 +33,7 @@ const rightTabs = computed(() => tabs.filter((tab) => tab.align === 'right'));
 const activeTab = computed({
     get: () => {
         const currentTab = tabs.find((tab) => tab.route.name === route.name);
-        return currentTab ? currentTab.value : tabs[0]?.value;
+        return currentTab?.value ?? '';
     },
     set: (value: string) => {
         const selectedTab = tabs.find((tab) => tab.value === value);

@@ -80,7 +80,7 @@ input.p-select-label {
 }
 
 .p-select-list {
-    @apply m-0 flex list-none flex-col gap-[2px] p-1;
+    @apply m-0 flex list-none flex-col gap-[2px];
 }
 
 .p-select-option {

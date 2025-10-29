@@ -3,6 +3,7 @@ import LocationDataItem from '@/components/features/location/LocationDataItem.vu
 import LocationDataList from '@/components/features/location/LocationDataList.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
+import { computed } from 'vue';
 import {
     useDeleteLocation,
     useLocationState,
@@ -20,7 +21,11 @@ const props = defineProps<{
 
 const toast = useToast();
 
-const { data: locations, refetch, isLoading } = useReadProfileLocations(props.profile.id);
+const {
+    data: locations,
+    refetch,
+    isLoading,
+} = useReadProfileLocations(computed(() => props.profile.id));
 
 const {
     mutateAsync: updateLocationState,

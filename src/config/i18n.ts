@@ -34,16 +34,19 @@ const localeLoaders: Record<SupportedLocale, Record<string, () => Promise<object
         app: () => import('@/assets/locale/nl/app.json'),
         pages: () => import('@/assets/locale/nl/pages.json'),
         components: () => import('@/assets/locale/nl/components.json'),
+        permissions: () => import('@/assets/locale/nl/permissions.json'),
     },
     en: {
         app: () => import('@/assets/locale/en/app.json'),
         pages: () => import('@/assets/locale/en/pages.json'),
         components: () => import('@/assets/locale/en/components.json'),
+        permissions: () => import('@/assets/locale/nl/permissions.json'),
     },
     fr: {
         app: () => import('@/assets/locale/fr/app.json'),
         pages: () => import('@/assets/locale/fr/pages.json'),
         components: () => import('@/assets/locale/fr/components.json'),
+        permissions: () => import('@/assets/locale/nl/permissions.json'),
     },
 };
 
@@ -85,6 +88,7 @@ async function loadLocaleMessages(targetLocale: SupportedLocale): Promise<void> 
         loaders.app(),
         loaders.pages(),
         loaders.components(),
+        loaders.permissions(),
     ]);
 
     // Merge all namespaces into a single locale object

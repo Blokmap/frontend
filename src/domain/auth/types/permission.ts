@@ -1,3 +1,5 @@
+export type PermissionType = 'location' | 'authority' | 'institution';
+
 export enum LocationPermission {
     // Admin privileges, member can do everything
     Administrator = 1 << 0,

@@ -1,10 +1,30 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { transformPaginatedResponse, transformResponse } from '@/utils/service';
-import { type Authority } from '../authority';
-import { type Profile } from '../profile';
+import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/service';
+import { parseProfileResponse } from '../auth';
+import { parseAuthorityResponse } from '../authority';
+import { parseImageResponse } from '../image';
+import { parseTranslationResponse } from '../translation';
+import type { Authority } from '../authority';
+import type { Profile } from '../profile';
 import type { Institution, InstitutionFilter, InstitutionRequest } from './types';
 import type { Paginated } from '@/utils/pagination';
+
+/**
+ * Parses an Institution response object.
+ *
+ * @param data - The raw institution data from the API.
+ * @returns The parsed Institution object.
+ */
+export function parseInstitutionResponse(data: any): Institution {
+    const result: Institution = {
+        ...data,
+        name: parseTranslationResponse(data.name),
+        logo: parseImageResponse(data.logo),
+    };
+
+    return result;
+}
 
 /**
  * Read institutions with optional filters (returns paginated list).
@@ -17,9 +37,11 @@ export async function readInstitutions(
 ): Promise<Paginated<Institution>> {
     const endpoint = endpoints.institutions.list;
 
+    const transformResponse = transformPaginatedResponseFactory(parseInstitutionResponse);
+
     const { data } = await client.get<Paginated<Institution>>(endpoint, {
         params: filters,
-        transformResponse: transformPaginatedResponse,
+        transformResponse,
     });
 
     return data;
@@ -33,6 +55,8 @@ export async function readInstitutions(
  */
 export async function readInstitution(slug: string): Promise<Institution> {
     const endpoint = endpoints.institutions.read.replace('{id}', slug);
+
+    const transformResponse = transformResponseFactory(parseInstitutionResponse);
 
     const { data } = await client.get<Institution>(endpoint, {
         transformResponse,
@@ -49,6 +73,8 @@ export async function readInstitution(slug: string): Promise<Institution> {
  */
 export async function createInstitution(request: InstitutionRequest): Promise<Institution> {
     const endpoint = endpoints.institutions.create.toString();
+
+    const transformResponse = transformResponseFactory(parseInstitutionResponse);
 
     const { data } = await client.post<Institution>(endpoint, request, {
         transformResponse,
@@ -70,6 +96,8 @@ export async function updateInstitution(
 ): Promise<Institution> {
     const endpoint = endpoints.institutions.update.replace('{id}', id.toString());
 
+    const transformResponse = transformResponseFactory(parseInstitutionResponse);
+
     const { data } = await client.patch<Institution>(endpoint, request, {
         transformResponse,
     });
@@ -86,8 +114,10 @@ export async function updateInstitution(
 export async function readInstitutionMembers(id: number): Promise<Paginated<Profile>> {
     const endpoint = endpoints.institutions.members.list.replace('{id}', id.toString());
 
+    const transformResponse = transformPaginatedResponseFactory(parseProfileResponse);
+
     const { data } = await client.get<Paginated<Profile>>(endpoint, {
-        transformResponse: transformPaginatedResponse,
+        transformResponse,
     });
 
     return data;
@@ -129,8 +159,10 @@ export async function removeInstitutionMember(id: number, profileId: string): Pr
 export async function readInstitutionAuthorities(id: number): Promise<Paginated<Authority>> {
     const endpoint = endpoints.institutions.authorities.list.replace('{id}', id.toString());
 
+    const transformResponse = transformPaginatedResponseFactory(parseAuthorityResponse);
+
     const { data } = await client.get<Paginated<Authority>>(endpoint, {
-        transformResponse: transformPaginatedResponse,
+        transformResponse,
     });
 
     return data;

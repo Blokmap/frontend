@@ -318,9 +318,10 @@ function onLoginClick(): void {
 
         <!-- Reservation Builder Dialog -->
         <ReservationBuilderDialog
-            v-if="location"
+            v-if="location && openingTimes"
             v-model:date="currentWeek"
             v-model:visible="showReservationDialog"
+            :openings="openingTimes"
             :location="location">
         </ReservationBuilderDialog>
     </template>

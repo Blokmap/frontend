@@ -11,7 +11,6 @@ import { computed, ref, watch, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
-import { useReadOpeningTimes } from '@/composables/data/useOpeningTimes';
 import {
     useCreateReservations,
     useDeleteReservations,
@@ -32,6 +31,7 @@ import type { OpeningTime } from '@/domain/openings';
 
 const props = defineProps<{
     location: Location;
+    openings: OpeningTime[];
 }>();
 
 const visible = defineModel<boolean>('visible', { required: true });
@@ -48,20 +48,11 @@ const reservationFilters = computed(() => ({
     locationId: props.location.id,
 }));
 
-const openingFilters = computed(() => ({
-    inWeekOf: currentWeek.value,
-}));
-
 const {
     data: reservations,
     isPending: isLoadingReservations,
     refetch: refetchReservations,
 } = useReadProfileReservations(profileId, reservationFilters);
-
-const { data: openings, isPending: isLoadingOpenings } = useReadOpeningTimes(
-    computed(() => props.location.id),
-    openingFilters,
-);
 
 const { mutateAsync: createReservations } = useCreateReservations();
 const { mutateAsync: deleteReservations } = useDeleteReservations();
@@ -122,7 +113,7 @@ const activeRequest = ref<ReservationRequest | null>(null);
 const activeOpeningTimeSlot = ref<TimeSlot<OpeningTime> | null>(null);
 
 const isSaving = ref<boolean>(false);
-const isLoading = computed<boolean>(() => isLoadingReservations.value || isLoadingOpenings.value);
+const isLoading = computed<boolean>(() => isLoadingReservations.value);
 
 const hasPendingChanges = computed(
     () => reservationsToCreate.value.length + reservationsToDelete.value.length > 0,

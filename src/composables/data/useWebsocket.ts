@@ -92,9 +92,9 @@ export function useWebsocket(enabled: MaybeRef<boolean> = true) {
             console.error('[WebSocket] Error:', error);
         };
 
-        ws.value.onclose = () => {
+        ws.value.onclose = (ev) => {
             isConnected.value = false;
-            console.log('[WebSocket] Disconnected');
+            console.log('[WebSocket] Disconnected', ev);
         };
     }
 

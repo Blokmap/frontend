@@ -30,15 +30,3 @@ router.afterEach(() => {
         <component :is="Component" />
     </RouterView>
 </template>
-
-<style>
-@reference '@/assets/styles/main.css';
-
-.fade-enter-active {
-    @apply !duration-150;
-}
-
-.fade-leave-active {
-    @apply !duration-150;
-}
-</style>

@@ -57,10 +57,6 @@ export function formatRequest<T extends Record<string, any>>(
             result[key] = formatRequest(value);
             continue;
         }
-
-        if (Array.isArray(value)) {
-            result[key] = value.map((d) => formatRequest(d, dayOnlyOverrides));
-        }
     }
 
     return result;
@@ -90,11 +86,6 @@ export function formatResponse<T extends Record<string, any>>(data: T): T {
 
         if (isTimeString(value)) {
             result[key] = stringToTime(value);
-            continue;
-        }
-
-        if (Array.isArray(value)) {
-            result[key] = value.map(formatResponse);
             continue;
         }
 

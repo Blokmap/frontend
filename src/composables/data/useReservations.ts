@@ -8,6 +8,7 @@ import {
     createReservations,
     deleteReservation,
     deleteReservations,
+    updateReservation,
     type Reservation,
     type ReservationFilter,
     type ReservationIncludes,
@@ -212,7 +213,6 @@ export function useConfirmReservation(
 }
 
 type ReservationStateParams = {
-    locationId: number;
     reservationId: string;
     state: ReservationState;
 };
@@ -228,35 +228,12 @@ type ReservationStateParams = {
 export function useReservationState(
     options: CompMutationOptions = {},
 ): CompMutation<ReservationStateParams, Reservation> {
-    const queryClient = useQueryClient();
-
     const mutation = useMutation({
         ...options,
-        onSuccess: (data, variables, context) => {
-            // Invalidate location reservations queries
-            queryClient.invalidateQueries({
-                queryKey: ['location', 'reservations'],
+        mutationFn: ({ reservationId, state }: ReservationStateParams) => {
+            return updateReservation(reservationId, {
+                state,
             });
-
-            // Invalidate all profile reservations queries
-            queryClient.invalidateQueries({
-                queryKey: ['profile', 'reservations'],
-            });
-
-            options.onSuccess?.(data, variables, context);
-        },
-        mutationFn: ({ locationId, reservationId, state }: ReservationStateParams) => {
-            // Currently only present state is supported via confirmReservation
-            if (state === 'present') {
-                return confirmReservation(locationId, reservationId);
-            }
-
-            // TODO: Add support for other states when service methods are available:
-            // - Absent: absentReservation(locationId, reservationId)
-            // - Cancelled: cancelReservation(locationId, reservationId)
-            // - Created: resetReservation(locationId, reservationId)
-
-            throw new Error(`State change to "${state}" is not yet supported`);
         },
     });
 

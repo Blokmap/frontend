@@ -23,14 +23,20 @@ const toast = useToast();
 const selectedDay = useRouteDate();
 
 // Fetch reservations for the selected date
-const { data: reservations, isLoading } = useReadLocationReservations(
+const {
+    data: reservations,
+    refetch,
+    isLoading,
+} = useReadLocationReservations(
     computed(() => +props.locationId),
     computed(() => ({ day: selectedDay.value })),
 );
 
 // Mutation for changing reservation state
 const { mutateAsync: changeReservationState } = useReservationState({
-    onSuccess: () => {
+    onSuccess: async () => {
+        await refetch();
+
         toast.add({
             severity: 'success',
             summary: 'Status gewijzigd',
@@ -90,7 +96,6 @@ async function onStatusChange(reservationId: string, state: ReservationState): P
         pendingStatusChanges.value.add(reservationId);
 
         await changeReservationState({
-            locationId: +props.locationId,
             reservationId,
             state,
         });

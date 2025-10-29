@@ -52,6 +52,25 @@ export async function deleteReservation(reservationId: string): Promise<void> {
 }
 
 /**
+ * Update a reservation.
+ *
+ * @param reservationId - The ID of the reservation to update.
+ * @returns A promise that resolves to the updated reservation.
+ */
+export async function updateReservation(
+    reservationId: string,
+    request: Partial<ReservationRequest>,
+): Promise<Reservation> {
+    const endpoint = endpoints.reservations.update.replace('{id}', reservationId.toString());
+
+    const { data } = await client.patch(endpoint, request, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
  * Confirm a reservation.
  *
  * @param locationId - The ID of the location.

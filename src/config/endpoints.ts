@@ -131,6 +131,7 @@ export const endpoints = {
     },
     reservations: {
         delete: '/reservations/{id}',
+        update: '/reservations/{id}',
     },
     tags: {
         list: '/tags',

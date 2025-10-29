@@ -31,6 +31,7 @@ export type ReservationGroup = {
 
 export type ReservationRequest = {
     openingTimeId: number;
+    state: ReservationState;
     day: Date;
     startTime: Time;
     endTime: Time;
@@ -38,5 +39,5 @@ export type ReservationRequest = {
 
 export type ReservationQueueResponse = {
     reservationId: string;
-    state: string;
+    state: ReservationState;
 };

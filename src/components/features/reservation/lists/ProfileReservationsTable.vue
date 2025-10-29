@@ -91,7 +91,7 @@ const getTotalDuration = (reservations: Reservation[]) => {
 <template>
     <Table
         :grouped="groupedReservations"
-        :is-loading="loading"
+        :loading="loading"
         empty-message="Geen reservaties deze week.">
         <template #group="{ data, items }">
             <div class="flex items-center justify-between">

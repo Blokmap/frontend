@@ -53,7 +53,7 @@ async function handleUpdate(form: InstitutionRequest): Promise<void> {
             <template #content>
                 <InstitutionForm
                     :institution="institution"
-                    :is-loading="isUpdating"
+                    :loading="isUpdating"
                     @click:save="handleUpdate">
                 </InstitutionForm>
             </template>

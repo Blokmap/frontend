@@ -25,7 +25,7 @@ import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useRouteDate } from '@/composables/useRouteDate';
 import { pushRedirectUrl } from '@/domain/auth';
 
-const { locationId } = defineProps<{ locationId: number }>();
+const { locationId } = defineProps<{ locationId: string }>();
 
 const { locale } = useI18n();
 const { setPageTitle } = usePageTitleStore();
@@ -281,7 +281,7 @@ function onLoginClick(): void {
                                     <OpeningsTable
                                         :opening-times="openingTimes"
                                         :current-week="currentWeek"
-                                        :is-loading="openingTimesIsPending">
+                                        :loading="openingTimesIsPending">
                                     </OpeningsTable>
                                 </div>
                                 <OpeningsTableSkeleton v-else-if="isPending" />

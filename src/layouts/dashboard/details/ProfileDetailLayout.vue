@@ -86,7 +86,7 @@ const tabs = computed<TabItem[]>(() => [
         <template v-else>
             <!-- Profile Header -->
             <DashboardDetailHeader
-                :is-loading="isLoading"
+                :loading="isLoading"
                 :show-skeletons="true"
                 avatar-shape="circle"
                 :title="`${currentProfile?.firstName} ${currentProfile?.lastName}`"

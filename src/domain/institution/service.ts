@@ -1,7 +1,9 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
+import { transformPaginatedResponse, transformResponse } from '@/utils/service';
+import { type Authority } from '../authority';
+import { type Profile } from '../profile';
 import type { Institution, InstitutionFilter, InstitutionRequest } from './types';
-import type { Profile } from '../profile';
 import type { Paginated } from '@/utils/pagination';
 
 /**
@@ -13,15 +15,14 @@ import type { Paginated } from '@/utils/pagination';
 export async function readInstitutions(
     filters: Partial<InstitutionFilter> = {},
 ): Promise<Paginated<Institution>> {
-    const params = {
-        ...filters,
-    };
+    const endpoint = endpoints.institutions.list;
 
-    const response = await client.get<Paginated<Institution>>(endpoints.institutions.list, {
-        params,
+    const { data } = await client.get<Paginated<Institution>>(endpoint, {
+        params: filters,
+        transformRequest: transformPaginatedResponse,
     });
 
-    return response.data;
+    return data;
 }
 
 /**
@@ -32,7 +33,11 @@ export async function readInstitutions(
  */
 export async function readInstitution(slug: string): Promise<Institution> {
     const endpoint = endpoints.institutions.read.replace('{id}', slug);
-    const { data } = await client.get<Institution>(endpoint);
+
+    const { data } = await client.get<Institution>(endpoint, {
+        transformResponse,
+    });
+
     return data;
 }
 
@@ -44,7 +49,11 @@ export async function readInstitution(slug: string): Promise<Institution> {
  */
 export async function createInstitution(request: InstitutionRequest): Promise<Institution> {
     const endpoint = endpoints.institutions.create.toString();
-    const { data } = await client.post<Institution>(endpoint, request);
+
+    const { data } = await client.post<Institution>(endpoint, request, {
+        transformResponse,
+    });
+
     return data;
 }
 
@@ -60,7 +69,11 @@ export async function updateInstitution(
     request: Partial<InstitutionRequest>,
 ): Promise<Institution> {
     const endpoint = endpoints.institutions.update.replace('{id}', id.toString());
-    const { data } = await client.patch<Institution>(endpoint, request);
+
+    const { data } = await client.patch<Institution>(endpoint, request, {
+        transformResponse,
+    });
+
     return data;
 }
 
@@ -72,7 +85,11 @@ export async function updateInstitution(
  */
 export async function readInstitutionMembers(id: number): Promise<Profile[]> {
     const endpoint = endpoints.institutions.members.list.replace('{id}', id.toString());
-    const { data } = await client.get<Profile[]>(endpoint);
+
+    const { data } = await client.get<Profile[]>(endpoint, {
+        transformResponse,
+    });
+
     return data;
 }
 
@@ -99,6 +116,7 @@ export async function removeInstitutionMember(id: number, profileId: string): Pr
     const endpoint = endpoints.institutions.members.remove
         .replace('{id}', id.toString())
         .replace('{profileId}', String(profileId));
+
     await client.delete(endpoint);
 }
 
@@ -108,9 +126,13 @@ export async function removeInstitutionMember(id: number, profileId: string): Pr
  * @param slug - The slug of the institution.
  * @returns A promise that resolves to an array of authorities.
  */
-export async function readInstitutionAuthorities(id: number): Promise<any[]> {
+export async function readInstitutionAuthorities(id: number): Promise<Paginated<Authority>> {
     const endpoint = endpoints.institutions.authorities.list.replace('{id}', id.toString());
-    const { data } = await client.get<any[]>(endpoint);
+
+    const { data } = await client.get<Paginated<Authority>>(endpoint, {
+        transformResponse: transformPaginatedResponse,
+    });
+
     return data;
 }
 
@@ -123,6 +145,7 @@ export async function readInstitutionAuthorities(id: number): Promise<any[]> {
  */
 export async function addInstitutionAuthority(id: number, authorityId: number): Promise<void> {
     const endpoint = endpoints.institutions.authorities.add.replace('{id}', id.toString());
+
     await client.post(endpoint, { authorityId });
 }
 
@@ -137,5 +160,6 @@ export async function removeInstitutionAuthority(id: number, authorityId: number
     const endpoint = endpoints.institutions.authorities.remove
         .replace('{id}', id.toString())
         .replace('{authorityId}', String(authorityId));
+
     await client.delete(endpoint);
 }

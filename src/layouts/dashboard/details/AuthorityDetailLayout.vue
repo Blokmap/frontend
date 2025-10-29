@@ -63,7 +63,6 @@ const tabs = computed<TabItem[]>(() => [
             <!-- Authority Header -->
             <DashboardDetailHeader
                 :title="authority?.name ?? undefined"
-                :primary="`ID: ${authority?.id}`"
                 :secondary="authority?.description ?? undefined">
                 <template #avatar>
                     <div class="logo-placeholder">

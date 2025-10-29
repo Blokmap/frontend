@@ -102,7 +102,7 @@ function getSelectedStatusOption(reservation: Reservation) {
 <template>
     <Table
         :grouped="groupedReservations"
-        :is-loading="loading"
+        :loading="loading"
         empty-message="Geen reservaties gevonden voor deze datum.">
         <template #group="{ data, items }">
             <RouterLink

@@ -6,7 +6,7 @@ import type { Profile } from '@/domain/profile';
 
 defineProps<{
     profiles?: Profile[];
-    loading?: boolean;
+    isLoading?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -19,7 +19,7 @@ const onProfileClick = (profile: Profile) => {
 </script>
 
 <template>
-    <Table :value="profiles" :loading="loading" @click:row="onProfileClick">
+    <Table :value="profiles" :loading="isLoading" @click:row="onProfileClick">
         <template #row="{ data: profile }">
             <TableCell column="Profiel">
                 <ProfileTableCell :profile="profile" />

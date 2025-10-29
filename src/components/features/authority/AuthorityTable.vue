@@ -23,37 +23,21 @@ const onAuthorityClick = (authority: Authority) => {
 <template>
     <Table
         :value="props.authorities"
-        :is-loading="props.loading"
+        :loading="props.loading"
         :empty-message="props.emptyMessage"
         :empty-title="props.emptyTitle"
         @click:row="onAuthorityClick">
         <template #row="{ data: authority }">
             <TableCell column="Autoriteit">
-                <div class="flex items-center space-x-3">
-                    <div class="min-w-0 flex-1">
-                        <div class="truncate text-sm font-medium text-slate-900">
-                            {{ authority.name }}
-                        </div>
-                        <div class="truncate text-xs text-slate-500">ID: {{ authority.id }}</div>
-                    </div>
-                </div>
+                {{ authority.name }}
             </TableCell>
 
             <TableCell column="Beschrijving">
                 {{ authority.description || '-' }}
             </TableCell>
 
-            <TableCell column="Leden">
-                {{ authority.members?.length || 0 }}
-            </TableCell>
-
-            <TableCell column="Locaties">
-                {{ authority.locations?.length || 0 }}
-            </TableCell>
-
             <TableCell column="Acties">
                 <slot name="actions" :authority="authority">
-                    <!-- Default action menu -->
                     <AuthorityActionsMenu :authority="authority" />
                 </slot>
             </TableCell>

@@ -77,7 +77,7 @@ const tabs = computed<TabItem[]>(() => [
         <template v-else>
             <!-- Institution Header -->
             <DashboardDetailHeader
-                :is-loading="isLoading"
+                :loading="isLoading"
                 :show-skeletons="true"
                 avatar-shape="square"
                 :title="institution?.name[locale] ?? undefined"

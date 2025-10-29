@@ -1,33 +1,18 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { parseReservation } from '@/domain/reservation';
-import { dateToString, stringToDate } from '@/utils/date';
 import { formatFilters } from '@/utils/filter';
 import {
     createFormDataRequest,
     formatIncludes,
+    formatRequest,
     transformPaginatedResponse,
     transformResponse,
 } from '@/utils/service';
-import { timeToString } from '@/utils/time';
-import { parseAuthority, type Authority } from '../authority';
-import { parseLocation, type Location } from '../location';
+import { type Authority } from '../authority';
+import { type Location } from '../location';
 import type { Profile, ProfileStats, ProfileFilter, ProfileScanRequest } from './types';
 import type { Reservation, ReservationFilter, ReservationIncludes } from '@/domain/reservation';
 import type { Paginated } from '@/utils/pagination';
-
-/**
- * Parse a profile object from the API by converting string dates to Date objects
- *
- * @param profileData - The raw profile data from the API
- * @returns The parsed profile object
- */
-export function parseProfile(profileData: any | null): Profile {
-    return {
-        ...profileData,
-        createdAt: stringToDate(profileData.createdAt, true),
-    };
-}
 
 /**
  * Fetches the profile statistics for a given profile ID.
@@ -64,7 +49,7 @@ export async function readProfileReservations(
 
     const { data } = await client.get(endpoint, {
         params,
-        transformResponse: transformResponse(parseReservation),
+        transformResponse,
     });
 
     return data;
@@ -102,7 +87,7 @@ export async function updateProfile(
     const endpoint = endpoints.profiles.update.replace('{id}', String(profileId));
 
     const { data } = await client.patch<any>(endpoint, profileData, {
-        transformResponse: transformResponse(parseProfile),
+        transformResponse,
     });
 
     return data;
@@ -129,7 +114,7 @@ export async function readProfile(profileId: string): Promise<Profile> {
     const endpoint = endpoints.profiles.read.replace('{id}', String(profileId));
 
     const { data } = await client.get<any>(endpoint, {
-        transformResponse: transformResponse(parseProfile),
+        transformResponse,
     });
 
     return data;
@@ -148,7 +133,7 @@ export async function readProfiles(
 
     const { data } = await client.get(endpoint, {
         params: filters,
-        transformResponse: transformPaginatedResponse(parseProfile),
+        transformResponse,
     });
 
     return data;
@@ -167,7 +152,7 @@ export async function blockProfile(profileId: string): Promise<Profile> {
         endpoint,
         {},
         {
-            transformResponse: transformPaginatedResponse(parseProfile),
+            transformResponse: transformPaginatedResponse,
         },
     );
 
@@ -187,7 +172,7 @@ export async function unblockProfile(profileId: string): Promise<Profile> {
         endpoint,
         {},
         {
-            transformResponse: transformResponse(parseProfile),
+            transformResponse,
         },
     );
 
@@ -204,19 +189,15 @@ export async function scanProfile(
     profileId: string,
     request: ProfileScanRequest,
 ): Promise<Reservation[]> {
+    const endpoint = endpoints.profiles.scan.replace('{id}', profileId.toString());
+
     const body = {
-        ...request,
-        day: dateToString(request.day, true),
-        time: timeToString(request.time),
+        ...formatRequest(request, ['day']),
     };
 
-    const { data } = await client.post(
-        endpoints.profiles.scan.replace('{id}', profileId.toString()),
-        body,
-        {
-            transformResponse: transformResponse(parseReservation),
-        },
-    );
+    const { data } = await client.post(endpoint, body, {
+        transformResponse,
+    });
 
     return data;
 }
@@ -231,7 +212,7 @@ export async function readProfileLocations(profileId: string): Promise<Location[
     const endpoint = endpoints.profiles.locations.list.replace('{id}', profileId.toString());
 
     const { data } = await client.get<Location[]>(endpoint, {
-        transformResponse: transformResponse(parseLocation),
+        transformResponse,
     });
 
     return data;
@@ -247,7 +228,7 @@ export async function readProfileAuthorities(profileId: string): Promise<Authori
     const endpoint = endpoints.profiles.authorities.list.replace('{id}', profileId.toString());
 
     const { data } = await client.get<Authority[]>(endpoint, {
-        transformResponse: transformResponse(parseAuthority),
+        transformResponse,
     });
 
     return data;

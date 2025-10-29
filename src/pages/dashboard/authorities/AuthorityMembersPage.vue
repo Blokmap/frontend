@@ -26,30 +26,23 @@ const props = defineProps<{
 const router = useRouter();
 const toast = useToast();
 
-// Fetch members for this authority
-const {
-    data: members,
-    isLoading,
-    refetch: refetchMembers,
-} = useReadAuthorityMembers(computed(() => props.authority.id));
-
-const showSelectorDialog = ref(false);
-
-// Search filters with pagination for the profile selector dialog
 const searchFilters = ref<ProfileFilter>({
     query: '',
     page: 1,
     perPage: 25,
 });
 
-// Fetch profiles for the selector dialog
+const {
+    data: members,
+    isLoading,
+    refetch: refetchMembers,
+} = useReadAuthorityMembers(computed(() => props.authority.id));
+
 const { data: searchResults, isLoading: isSearching } = useReadProfiles(searchFilters);
-
-// Add member mutation
 const { mutateAsync: addMember, isPending: isAdding } = useAddAuthorityMember();
-
-// Remove member mutation
 const { mutateAsync: removeMember, isPending: isRemoving } = useRemoveAuthorityMember();
+
+const showSelectorDialog = ref(false);
 
 /**
  * Handle clicking on a profile to view its details.
@@ -188,40 +181,40 @@ async function onRemoveUser(profile: Profile): Promise<void> {
                 </TableCell>
             </template>
         </Table>
-    </DashboardContent>
-    <Teleport to="body">
-        <!-- Profile Selector Dialog -->
-        <ProfileSelectorDialog
-            v-model:visible="showSelectorDialog"
-            :profiles="searchResults?.data"
-            :loading="isSearching"
-            @search="onSearchProfiles">
-            <template #table="{ profiles: dialogProfiles, onSelect }">
-                <ProfileSelectorTable
-                    :profiles="dialogProfiles"
-                    :loading="isSearching"
-                    @click:profile="onSelect">
-                    <template #actions="{ profile }">
-                        <Button
-                            size="small"
-                            severity="primary"
-                            outlined
-                            :loading="isAdding"
-                            @click.stop="onSelectProfile(profile)">
-                            <FontAwesomeIcon :icon="faUserPlus" class="mr-1" />
-                            Toevoegen
-                        </Button>
-                    </template>
-                </ProfileSelectorTable>
+        <Teleport to="body">
+            <!-- Profile Selector Dialog -->
+            <ProfileSelectorDialog
+                v-model:visible="showSelectorDialog"
+                :profiles="searchResults?.data"
+                :loading="isSearching"
+                @search="onSearchProfiles">
+                <template #table="{ profiles: dialogProfiles, onSelect }">
+                    <ProfileSelectorTable
+                        :profiles="dialogProfiles"
+                        :loading="isSearching"
+                        @click:profile="onSelect">
+                        <template #actions="{ profile }">
+                            <Button
+                                size="small"
+                                severity="primary"
+                                outlined
+                                :loading="isAdding"
+                                @click.stop="onSelectProfile(profile)">
+                                <FontAwesomeIcon :icon="faUserPlus" class="mr-1" />
+                                Toevoegen
+                            </Button>
+                        </template>
+                    </ProfileSelectorTable>
 
-                <Paginator
-                    v-if="searchResults?.data?.length"
-                    :first="searchResults.perPage * (searchResults.page - 1)"
-                    :rows="searchResults.perPage"
-                    :total-records="searchResults.total"
-                    @page="onSelectorPageChange">
-                </Paginator>
-            </template>
-        </ProfileSelectorDialog>
-    </Teleport>
+                    <Paginator
+                        v-if="searchResults?.data?.length"
+                        :first="searchResults.perPage * (searchResults.page - 1)"
+                        :rows="searchResults.perPage"
+                        :total-records="searchResults.total"
+                        @page="onSelectorPageChange">
+                    </Paginator>
+                </template>
+            </ProfileSelectorDialog>
+        </Teleport>
+    </DashboardContent>
 </template>

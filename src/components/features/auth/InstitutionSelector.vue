@@ -11,7 +11,7 @@ import type { Institution } from '@/domain/institution';
 
 defineProps<{
     institutions?: Institution[];
-    isLoading: boolean;
+    loading: boolean;
 }>();
 
 const toast = useToast();
@@ -34,7 +34,7 @@ function handleInstitutionSelection(institution: Institution): void {
         <InputText class="w-full" placeholder="Search for your institution" />
     </IconField>
     <div class="my-6 grid grid-cols-2 gap-3">
-        <template v-if="isLoading">
+        <template v-if="loading">
             <Skeleton v-for="index in 9" :key="index" height="96px" />
         </template>
         <template v-for="institution in institutions" v-else :key="institution.name">
@@ -48,7 +48,7 @@ function handleInstitutionSelection(institution: Institution): void {
                         {{ institution.name[locale] }}
                     </h3>
                     <p class="text-sm text-gray-600">
-                        {{ institution.slug[locale] }}
+                        {{ institution.slug }}
                     </p>
                 </div>
             </div>

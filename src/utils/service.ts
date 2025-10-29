@@ -1,5 +1,5 @@
-import { dateToString } from './date';
-import { timeToString } from './time';
+import { dateToString, isDateObject, isDateString, stringToDate } from './date';
+import { timeToString, stringToTime, isTimeString, isTimeObject } from './time';
 import type { Paginated } from '@/utils/pagination';
 
 /**
@@ -39,16 +39,68 @@ export function formatRequest<T extends Record<string, any>>(
             continue;
         }
 
-        if (value instanceof Date) {
+        if (isDateObject(value)) {
             result[key] = dateToString(value, dayOnlyOverrides.includes(key));
+            continue;
         }
 
-        if (typeof value === 'object' && 'hours' in value && 'minutes' in value) {
+        if (isTimeObject(value)) {
             result[key] = timeToString(value);
+            continue;
+        }
+
+        if (typeof value === 'object' && !Array.isArray(value)) {
+            result[key] = formatRequest(value);
+            continue;
+        }
+
+        if (Array.isArray(value)) {
+            result[key] = value.map((d) => formatRequest(d, dayOnlyOverrides));
         }
     }
 
     return result;
+}
+
+/**
+ * Formats a response object by converting date strings to Date objects and time strings to Time objects.
+ * Inverse of formatRequest.
+ *
+ * @param data - The response data object to format.
+ * @returns The formatted response data object.
+ */
+export function formatResponse<T extends Record<string, any>>(data: T): T {
+    const result: Record<string, any> = { ...data };
+
+    for (const key in result) {
+        const value = result[key];
+
+        if (value === null || value === undefined) {
+            continue;
+        }
+
+        if (isDateString(value)) {
+            result[key] = stringToDate(value, true);
+            continue;
+        }
+
+        if (isTimeString(value)) {
+            result[key] = stringToTime(value);
+            continue;
+        }
+
+        if (Array.isArray(value)) {
+            result[key] = value.map(formatResponse);
+            continue;
+        }
+
+        if (typeof value === 'object') {
+            result[key] = formatResponse(value);
+            continue;
+        }
+    }
+
+    return result as T;
 }
 
 /**
@@ -75,16 +127,12 @@ export function createFormDataRequest(data: Record<string, any>): FormData {
  * @param parser - A function that takes an item and returns the parsed item.
  * @returns A function that takes a JSON string and returns a Paginated object with parsed items.
  */
-export function transformPaginatedResponse<T>(
-    parser: (item: any) => T,
-): (data: string) => Paginated<T> {
-    return (data: string) => {
-        const parsed = JSON.parse(data);
-        const items = parsed.data.map(parser);
-        return {
-            ...parsed,
-            data: items,
-        };
+export function transformPaginatedResponse<T>(data: string): Paginated<T> {
+    const parsed = JSON.parse(data);
+    const items = parsed.data.map(formatResponse);
+    return {
+        ...parsed,
+        data: items,
     };
 }
 
@@ -94,13 +142,14 @@ export function transformPaginatedResponse<T>(
  * @param parser - A function that takes an item and returns the parsed item.
  * @returns A function that takes a JSON string and returns the parsed item or array of items.
  */
-export function transformResponse<T>(parser: (item: any) => T): (data: string) => T | T[] {
-    return (data: string) => {
-        const parsed = JSON.parse(data);
-        if (Array.isArray(parsed)) {
-            return parsed.map(parser);
-        } else {
-            return parser(parsed);
-        }
-    };
+export function transformResponse<T>(data: string): T | T[] | null {
+    const parsed = JSON.parse(data);
+
+    if (!data) return null;
+
+    if (Array.isArray(parsed)) {
+        return parsed.map(formatResponse);
+    } else {
+        return formatResponse(parsed);
+    }
 }

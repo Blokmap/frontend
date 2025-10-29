@@ -49,7 +49,7 @@ async function handleSave(form: AuthorityRequest): Promise<void> {
 
         <Card class="max-w-4xl">
             <template #content>
-                <AuthorityForm :is-loading="isPending" @click:save="handleSave" />
+                <AuthorityForm :loading="isPending" @click:save="handleSave" />
             </template>
         </Card>
     </DashboardContent>

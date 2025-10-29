@@ -10,6 +10,7 @@ import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
     profile: Profile;
+    isOwnProfile: boolean;
 }>();
 
 const router = useRouter();
@@ -30,9 +31,15 @@ function onAuthorityClick(authority: Authority): void {
 <template>
     <DashboardContent>
         <!-- Header -->
-        <DashboardDetailHeader
-            title="Autoriteiten"
-            secondary="Bekijk autoriteiten gekoppeld aan dit profiel.">
+        <DashboardDetailHeader title="Autoriteiten">
+            <template #secondary>
+                <span v-if="isOwnProfile">
+                    Bekijk en beheer autoriteiten gekoppeld aan jouw profiel.
+                </span>
+                <span v-else>
+                    Bekijk en beheer autoriteiten gekoppeld aan {{ profile.firstName }}'s profiel.
+                </span>
+            </template>
         </DashboardDetailHeader>
 
         <!-- Authorities Table -->

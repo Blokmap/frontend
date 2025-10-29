@@ -53,7 +53,7 @@ async function handleUpdate(form: AuthorityRequest): Promise<void> {
             <template #content>
                 <AuthorityForm
                     :authority="authority"
-                    :is-loading="isUpdating"
+                    :loading="isUpdating"
                     @click:save="handleUpdate">
                 </AuthorityForm>
             </template>

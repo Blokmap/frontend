@@ -1,16 +1,17 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { parseOpeningTime } from '@/domain/openings';
-import { parseProfile } from '@/domain/profile';
 import {
-    parseReservation,
     type Reservation,
     type ReservationFilter,
     type ReservationIncludes,
 } from '@/domain/reservation';
-import { stringToDate } from '@/utils/date';
 import { formatFilters, formatLocationSearchFilters } from '@/utils/filter';
-import { createFormDataRequest, formatIncludes, transformPaginatedResponse } from '@/utils/service';
+import {
+    createFormDataRequest,
+    formatIncludes,
+    transformPaginatedResponse,
+    transformResponse,
+} from '@/utils/service';
 import type {
     Location,
     LocationSearchFilter,
@@ -25,33 +26,6 @@ import type { Paginated } from '@/utils/pagination';
 export type LocationIncludes = 'images' | 'createdBy';
 
 /**
- * Parse location data from the API by converting string times to Time objects
- *
- * @param locationData - The raw location data from the API
- * @returns The parsed Location object with proper types
- */
-export function parseLocation(locationData: any): Location {
-    const location = { ...locationData };
-
-    location.createdAt = stringToDate(location.createdAt, true);
-    location.updatedAt = stringToDate(location.updatedAt, true);
-
-    if (location.openingTimes) {
-        location.openingTimes = location.openingTimes.map(parseOpeningTime);
-    }
-
-    if (location.approvedAt) {
-        location.approvedAt = stringToDate(location.approvedAt, true);
-    }
-
-    if (location.createdBy) {
-        location.createdBy = parseProfile(location.createdBy);
-    }
-
-    return location;
-}
-
-/**
  * Search for locations based on filters.
  *
  * @param {LocationSearchFilter} [filters] - The filters to apply when searching for locations.
@@ -60,14 +34,16 @@ export function parseLocation(locationData: any): Location {
 export async function searchLocations(
     filters?: Partial<LocationSearchFilter>,
 ): Promise<Paginated<Location>> {
+    const endpoint = endpoints.locations.search;
+
     const params = formatLocationSearchFilters(filters ?? {});
 
-    const response = await client.get(endpoints.locations.search, {
+    const { data } = await client.get(endpoint, {
         params,
-        transformResponse: transformPaginatedResponse(parseLocation),
+        transformResponse: transformPaginatedResponse,
     });
 
-    return response.data;
+    return data;
 }
 
 /**
@@ -81,17 +57,19 @@ export async function readLocations(
     filters: Partial<LocationFilter> = {},
     includes: LocationIncludes[] = [],
 ): Promise<Paginated<Location>> {
+    const endpoint = endpoints.admin.locations.list;
+
     const params = {
         ...formatFilters(filters),
         ...formatIncludes(includes),
     };
 
-    const response = await client.get(endpoints.admin.locations.list, {
+    const { data } = await client.get(endpoint, {
         params,
-        transformResponse: transformPaginatedResponse(parseLocation),
+        transformResponse: transformPaginatedResponse,
     });
 
-    return response.data;
+    return data;
 }
 
 /**
@@ -101,11 +79,11 @@ export async function readLocations(
  * @returns {Promise<string[]>} A promise that resolves to an array of image URLs.
  */
 export async function readLocationImages(locationId: number): Promise<Image[]> {
-    const response = await client.get(
-        endpoints.locations.images.read.replace('{id}', locationId.toString()),
-    );
+    const endpoint = endpoints.locations.images.read.replace('{id}', locationId.toString());
 
-    return response.data;
+    const { data } = await client.get(endpoint);
+
+    return data;
 }
 
 /**
@@ -119,13 +97,16 @@ export async function readLocation(
     id: number,
     includes: LocationIncludes[] = [],
 ): Promise<Location> {
+    const endpoint = endpoints.locations.read.replace('{id}', id.toString());
+
     const params = formatIncludes(includes);
 
-    const response = await client.get(endpoints.locations.read.replace('{id}', id.toString()), {
+    const { data } = await client.get(endpoint, {
         params,
+        transformResponse,
     });
 
-    return parseLocation(response.data);
+    return data;
 }
 
 /** Get the nearest location based on a center point.
@@ -134,14 +115,16 @@ export async function readLocation(
  * @returns {Promise<NearestLocation>} A promise that resolves to the nearest location data.
  */
 export async function readNearestLocation(center: LngLat): Promise<NearestLocation> {
-    const response = await client.get(endpoints.locations.nearest, {
+    const endpoint = endpoints.locations.nearest;
+
+    const { data } = await client.get(endpoint, {
         params: {
             centerLng: center[0],
             centerLat: center[1],
         },
     });
 
-    return response.data;
+    return data;
 }
 
 /**
@@ -151,8 +134,13 @@ export async function readNearestLocation(center: LngLat): Promise<NearestLocati
  * @returns {Promise<Location>} A promise that resolves to the created location.
  */
 export async function createLocation(locationData: LocationRequest): Promise<Location> {
-    const response = await client.post(endpoints.locations.create, locationData);
-    return parseLocation(response.data);
+    const endpoint = endpoints.locations.create;
+
+    const { data } = await client.post(endpoint, locationData, {
+        transformResponse,
+    });
+
+    return data;
 }
 
 /**
@@ -173,9 +161,11 @@ export async function createLocationImage(
         index: image.index,
     });
 
-    const { data } = await client.post(endpoint, request);
+    const { data } = await client.post(endpoint, request, {
+        transformResponse,
+    });
 
-    return parseLocation(data);
+    return data;
 }
 
 /**
@@ -186,12 +176,13 @@ export async function createLocationImage(
  * @returns {Promise<Location>} A promise that resolves to the updated location.
  */
 export async function updateLocation(id: number, locationData: LocationRequest): Promise<Location> {
-    const { data } = await client.patch(
-        endpoints.locations.update.replace('{id}', id.toString()),
-        locationData,
-    );
+    const endpoint = endpoints.locations.update.replace('{id}', id.toString());
 
-    return parseLocation(data);
+    const { data } = await client.patch(endpoint, locationData, {
+        transformResponse,
+    });
+
+    return data;
 }
 
 /**
@@ -201,7 +192,8 @@ export async function updateLocation(id: number, locationData: LocationRequest):
  * @returns {Promise<void>} A promise that resolves when the deletion is complete.
  */
 export async function deleteLocation(id: number): Promise<void> {
-    await client.delete(endpoints.locations.delete.replace('{id}', id.toString()));
+    const endpoint = endpoints.locations.delete.replace('{id}', id.toString());
+    await client.delete(endpoint);
 }
 
 /**
@@ -211,9 +203,12 @@ export async function deleteLocation(id: number): Promise<void> {
  * @returns {Promise<void>} A promise that resolves when the deletion is complete.
  */
 export async function deleteLocationOpenings(locationId: number): Promise<void> {
-    await client.delete(
-        endpoints.locations.openingTimes.deleteAll.replace('{id}', locationId.toString()),
+    const endpoint = endpoints.locations.openingTimes.deleteAll.replace(
+        '{id}',
+        locationId.toString(),
     );
+
+    await client.delete(endpoint);
 }
 
 /**
@@ -223,9 +218,8 @@ export async function deleteLocationOpenings(locationId: number): Promise<void> 
  * @returns {Promise<void>} A promise that resolves when the deletion is complete.
  */
 export async function deleteLocationImages(locationId: number): Promise<void> {
-    await client.delete(
-        endpoints.locations.images.deleteAll.replace('{id}', locationId.toString()),
-    );
+    const endpoint = endpoints.locations.images.deleteAll.replace('{id}', locationId.toString());
+    await client.delete(endpoint);
 }
 
 /**
@@ -235,9 +229,13 @@ export async function deleteLocationImages(locationId: number): Promise<void> {
  * @returns {Promise<Location>} A promise that resolves to the approved location.
  */
 export async function approveLocation(id: number): Promise<Location> {
-    const { data } = await client.post(endpoints.locations.approve.replace('{id}', id.toString()));
+    const endpoint = endpoints.locations.approve.replace('{id}', id.toString());
 
-    return parseLocation(data);
+    const { data } = await client.post(endpoint, {
+        transformResponse,
+    });
+
+    return data;
 }
 
 /**
@@ -248,11 +246,14 @@ export async function approveLocation(id: number): Promise<Location> {
  * @returns {Promise<Location>} A promise that resolves to the rejected location.
  */
 export async function rejectLocation(id: number, reason?: string | null): Promise<Location> {
-    const { data } = await client.post(endpoints.locations.reject.replace('{id}', id.toString()), {
+    const endpoint = endpoints.locations.reject.replace('{id}', id.toString());
+
+    const { data } = await client.post(endpoint, {
         reason,
+        transformResponse,
     });
 
-    return parseLocation(data);
+    return data;
 }
 
 /**
@@ -262,8 +263,13 @@ export async function rejectLocation(id: number, reason?: string | null): Promis
  * @returns {Promise<Location>} A promise that resolves to the pended location.
  */
 export async function pendLocation(id: number): Promise<Location> {
-    const { data } = await client.post(endpoints.locations.pend.replace('{id}', id.toString()));
-    return parseLocation(data);
+    const endpoint = endpoints.locations.pend.replace('{id}', id.toString());
+
+    const { data } = await client.post(endpoint, {
+        transformResponse,
+    });
+
+    return data;
 }
 
 /**
@@ -292,10 +298,9 @@ export async function reorderLocationImages(
     locationId: number,
     images: ImageReorderRequest[],
 ): Promise<void> {
-    await client.post(
-        endpoints.locations.images.reorder.replace('{id}', locationId.toString()),
-        images,
-    );
+    const endpoint = endpoints.locations.images.reorder.replace('{id}', locationId.toString());
+
+    await client.post(endpoint, images);
 }
 
 /**
@@ -313,12 +318,15 @@ export async function readLocationReservations(
 ): Promise<Reservation[]> {
     const endpoint = endpoints.locations.reservations.list.replace('{id}', locationId.toString());
 
-    const params: Record<string, any> = {
+    const params = {
         ...formatFilters(filters, ['inWeekOf', 'day']),
         ...formatIncludes(includes),
     };
 
-    const response = await client.get(endpoint, { params });
+    const { data } = await client.get(endpoint, {
+        params,
+        transformResponse,
+    });
 
-    return response.data.map(parseReservation);
+    return data;
 }

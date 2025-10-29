@@ -10,7 +10,7 @@ import { useToast } from '@/composables/store/useToast';
 import type { Result } from '@zxing/library';
 
 const props = defineProps<{
-    locationId: number;
+    locationId: string;
 }>();
 
 const router = useRouter();
@@ -18,7 +18,7 @@ const toast = useToast();
 const { t } = useI18n();
 const sound = useSound(ping, { volume: 3 });
 
-const successfullProfileScans = ref<number[]>([]);
+const successfullProfileScans = ref<string[]>([]);
 
 const { mutateAsync: scanProfile, isPending } = useScanProfile({
     onSuccess: onScanSuccess,
@@ -37,7 +37,7 @@ const { mutateAsync: scanProfile, isPending } = useScanProfile({
  * @param result - Scanned QR code result
  */
 async function onScan(result: Result): Promise<void> {
-    const profileId = +result.getText();
+    const profileId = result.getText();
     const locationId = +props.locationId;
 
     // Ignore scan if already processing
@@ -66,7 +66,7 @@ async function onScan(result: Result): Promise<void> {
  *
  * @param id - Scanned profile ID
  */
-function onScanSuccess(id: number): void {
+function onScanSuccess(id: string): void {
     const toastId = `scan-success-${id}`;
 
     if (toast.hasVisibleToast(toastId)) {

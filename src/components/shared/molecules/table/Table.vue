@@ -8,12 +8,12 @@ const props = withDefaults(
     defineProps<{
         value?: T[];
         grouped?: TableGroup<T, G>[];
-        isLoading?: boolean;
+        loading?: boolean;
         emptyMessage?: string;
         emptyTitle?: string;
     }>(),
     {
-        isLoading: false,
+        loading: false,
         emptyMessage: 'Geen resultaten gevonden',
     },
 );
@@ -60,7 +60,7 @@ provide('registerColumn', (column: string) => {
 
 <template>
     <!-- Loading State -->
-    <TableLoadingState v-if="isLoading" :columns="columns.length || 4" />
+    <TableLoadingState v-if="loading" :columns="columns.length || 4" />
 
     <!-- Empty State -->
     <EmptyState v-else-if="isEmpty" :message="emptyMessage" :title="emptyTitle">

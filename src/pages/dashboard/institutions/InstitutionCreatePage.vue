@@ -49,7 +49,7 @@ async function handleSave(form: InstitutionRequest): Promise<void> {
 
         <Card class="max-w-4xl">
             <template #content>
-                <InstitutionForm :is-loading="isPending" @click:save="handleSave" />
+                <InstitutionForm :loading="isPending" @click:save="handleSave" />
             </template>
         </Card>
     </DashboardContent>

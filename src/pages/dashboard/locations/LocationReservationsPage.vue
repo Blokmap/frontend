@@ -16,7 +16,7 @@ import { useRouteDate } from '@/composables/useRouteDate';
 import type { Reservation, ReservationState } from '@/domain/reservation';
 
 const props = defineProps<{
-    locationId: number;
+    locationId: string;
 }>();
 
 const toast = useToast();
@@ -49,7 +49,7 @@ const { mutateAsync: changeReservationState } = useReservationState({
 });
 
 const searchQuery = ref<string>('');
-const pendingStatusChanges = ref<Set<number>>(new Set());
+const pendingStatusChanges = ref<Set<string>>(new Set());
 
 // Filter reservations based on search query
 const filteredReservations = computed(() => {

@@ -4,6 +4,8 @@ import type { LngLat } from './types';
 
 /**
  * Convert an address string to coordinates using Mapbox Geocoding API
+ * @param address - The address to geocode.
+ * @returns A promise that resolves to the [longitude, latitude] coordinates.
  */
 export async function geocodeAddress(address: string): Promise<LngLat> {
     try {

@@ -1,39 +1,8 @@
-import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { stringToDate } from '@/utils/date';
 import { formatFilters } from '@/utils/filter';
-import { formatRequest } from '@/utils/service';
-import { stringToTime, timeToString } from '@/utils/time';
+import { formatRequest, transformResponse } from '@/utils/service';
 import type { OpeningTime, OpeningTimeRequest, OpeningTimeFilter } from './types';
-
-/**
- * Parse an opening time object from the API response.
- * Ensures that Date and Time objects are properly formatted.
- *
- * @param openingTimeData - The opening time data from the API.
- * @returns The parsed opening time object with proper types.
- */
-export function parseOpeningTime(openingTimeData: any): OpeningTime {
-    const reservableFrom = openingTimeData.reservableFrom
-        ? stringToDate(openingTimeData.reservableFrom, true)
-        : null;
-
-    const reservableUntil = openingTimeData.reservableUntil
-        ? stringToDate(openingTimeData.reservableUntil, true)
-        : null;
-
-    return {
-        ...openingTimeData,
-        day: stringToDate(openingTimeData.day, true),
-        startTime: stringToTime(openingTimeData.startTime),
-        endTime: stringToTime(openingTimeData.endTime),
-        createdAt: stringToDate(openingTimeData.createdAt, true),
-        updatedAt: stringToDate(openingTimeData.updatedAt, true),
-        reservableFrom,
-        reservableUntil,
-    };
-}
 
 /**
  * Fetch opening times for a specific location and date range.
@@ -51,13 +20,16 @@ export async function readOpeningTimes(
         locationId.toString(),
     );
 
-    const params: Record<string, any> = {
+    const params = {
         ...formatFilters(filters, ['inWeekOf']),
     };
 
-    const response = await client.get(endpoint, { params });
+    const { data } = await client.get(endpoint, {
+        params,
+        transformResponse,
+    });
 
-    return response.data.map(parseOpeningTime);
+    return data;
 }
 
 /**
@@ -71,7 +43,12 @@ export async function createOpeningTimes(
     locationId: number,
     openings: OpeningTimeRequest[],
 ): Promise<OpeningTime[]> {
-    const formatted = openings.map((opening) => {
+    const endpoint = endpoints.locations.openingTimes.createMany.replace(
+        '{id}',
+        locationId.toString(),
+    );
+
+    const requests = openings.map((opening) => {
         const result = formatRequest(opening, ['day']);
 
         if (opening.repetition) {
@@ -81,14 +58,11 @@ export async function createOpeningTimes(
         return result;
     });
 
-    const endpoint = endpoints.locations.openingTimes.createMany.replace(
-        '{id}',
-        locationId.toString(),
-    );
+    const { data } = await client.post(endpoint, requests, {
+        transformResponse,
+    });
 
-    const response = await client.post(endpoint, formatted);
-
-    return response.data.map(parseOpeningTime);
+    return data;
 }
 
 /**
@@ -105,32 +79,20 @@ export async function updateOpeningTime(
     opening: OpeningTimeRequest,
     sequence?: boolean,
 ): Promise<OpeningTime> {
-    const reservableFrom = opening.reservableFrom
-        ? formatDate(opening.reservableFrom, 'YYYY-MM-DDTHH:mm:ss')
-        : null;
-
-    const reservableUntil = opening.reservableUntil
-        ? formatDate(opening.reservableUntil, 'YYYY-MM-DDTHH:mm:ss')
-        : null;
-
-    const formatted = {
-        ...opening,
-        day: formatDate(opening.day, 'YYYY-MM-DD'),
-        startTime: timeToString(opening.startTime),
-        endTime: timeToString(opening.endTime),
-        reservableFrom,
-        reservableUntil,
-    };
-
     const endpoint = endpoints.locations.openingTimes.updateOne
         .replace('{id}', locationId.toString())
         .replace('{openingTimeId}', openingTimeId.toString());
 
-    const response = await client.patch(endpoint, formatted, {
+    const request = {
+        ...formatRequest(opening, ['day']),
+    };
+
+    const { data } = await client.patch(endpoint, request, {
         params: { sequence },
+        transformResponse,
     });
 
-    return parseOpeningTime(response.data);
+    return data;
 }
 
 /**

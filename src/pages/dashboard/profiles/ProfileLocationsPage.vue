@@ -89,9 +89,16 @@ function onDeleteLocation(locationId: number) {
 <template>
     <DashboardContent>
         <!-- Header -->
-        <DashboardDetailHeader
-            title="Locaties"
-            secondary="Bekijk en beheer locaties gekoppeld aan dit profiel.">
+        <DashboardDetailHeader title="Locaties">
+            <template #secondary>
+                <span v-if="isOwnProfile">
+                    Een lijst van alle locaties die jij hebt ingediend.
+                </span>
+                <span v-else>
+                    Een lijst van alle locaties die door {{ props.profile.firstName }} zijn
+                    ingediend.
+                </span>
+            </template>
         </DashboardDetailHeader>
 
         <!-- Locations List -->

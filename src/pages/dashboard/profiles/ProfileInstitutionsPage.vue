@@ -9,6 +9,7 @@ import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
     profile: Profile;
+    isOwnProfile: boolean;
 }>();
 
 const router = useRouter();
@@ -30,9 +31,15 @@ function onInstitutionClick(institution: Institution): void {
 <template>
     <DashboardContent>
         <!-- Header -->
-        <DashboardDetailHeader
-            title="Instituties"
-            secondary="Bekijk instituties gekoppeld aan dit profiel.">
+        <DashboardDetailHeader title="Instituties">
+            <template #secondary>
+                <span v-if="isOwnProfile">
+                    Bekijk en beheer instituties gekoppeld aan jouw profiel.
+                </span>
+                <span v-else>
+                    Bekijk en beheer instituties gekoppeld aan {{ profile.firstName }}'s profiel.
+                </span>
+            </template>
         </DashboardDetailHeader>
 
         <!-- Institutions Table -->

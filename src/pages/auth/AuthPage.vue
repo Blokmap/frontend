@@ -9,6 +9,7 @@ import LoginForm from '@/components/features/auth/forms/LoginForm.vue';
 import RegisterForm from '@/components/features/auth/forms/RegisterForm.vue';
 import { faArrowRight, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { isAxiosError } from 'axios';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
@@ -31,11 +32,13 @@ const {
     error: loginError,
 } = useAuthLogin({
     onError: (error) => {
-        toast.add({
-            severity: 'error',
-            summary: t('domains.auth.errors.loginFailed'),
-            detail: error.response?.data,
-        });
+        if (isAxiosError(error)) {
+            toast.add({
+                severity: 'error',
+                summary: t('domains.auth.errors.loginFailed'),
+                detail: error.response?.data,
+            });
+        }
     },
     onSuccess: () => {
         const redirect = pullRedirectUrl();
@@ -60,11 +63,13 @@ const {
     error: registerError,
 } = useAuthRegister({
     onError: (error) => {
-        toast.add({
-            severity: 'error',
-            summary: t('domains.auth.errors.registerFailed'),
-            detail: error.response?.data,
-        });
+        if (isAxiosError(error)) {
+            toast.add({
+                severity: 'error',
+                summary: t('domains.auth.errors.registerFailed'),
+                detail: error.response?.data,
+            });
+        }
     },
     onSuccess: () => {
         toast.add({
@@ -207,7 +212,7 @@ function switchToRegister(): void {
         </template>
         <template #default>
             <template v-if="route.params.action === 'login'">
-                <LoginForm :is-loading="loginIsLoading" :error="loginError" @submit="login" />
+                <LoginForm :loading="loginIsLoading" :error="loginError" @submit="login" />
                 <span
                     class="mt-4 block cursor-pointer text-center hover:underline"
                     @click="switchToRegister">
@@ -216,7 +221,7 @@ function switchToRegister(): void {
             </template>
             <template v-else-if="route.params.action === 'register'">
                 <RegisterForm
-                    :is-loading="registerIsLoading"
+                    :loading="registerIsLoading"
                     :error="registerError"
                     @submit="register" />
                 <span

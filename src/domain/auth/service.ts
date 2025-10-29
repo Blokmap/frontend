@@ -1,6 +1,6 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { parseProfile } from '@/domain/profile';
+import { transformResponse } from '@/utils/service';
 import type { LoginRequest, RegisterRequest } from './types';
 import type { Profile } from '@/domain/profile';
 
@@ -10,13 +10,15 @@ import type { Profile } from '@/domain/profile';
  * @returns The authenticated user's profile or null if not authenticated.
  */
 export async function readAuthProfile(): Promise<Profile | null> {
-    const { data } = await client.get(endpoints.auth.current);
+    const endpoint = endpoints.auth.current;
 
-    if (data === null) {
-        return null;
-    }
+    const { data } = await client.get(endpoint, {
+        transformResponse,
+    });
 
-    return parseProfile(data);
+    if (data === null) return null;
+
+    return data;
 }
 
 /**
@@ -26,7 +28,8 @@ export async function readAuthProfile(): Promise<Profile | null> {
  * @returns A promise that resolves when the registration is successful.
  */
 export async function register(request: RegisterRequest): Promise<void> {
-    await client.post(endpoints.auth.register, request);
+    const endpoint = endpoints.auth.register;
+    await client.post(endpoint, request);
 }
 
 /**
@@ -36,7 +39,8 @@ export async function register(request: RegisterRequest): Promise<void> {
  * @returns A promise that resolves when the login is successful.
  */
 export async function login(request: LoginRequest): Promise<void> {
-    await client.post(endpoints.auth.login, request);
+    const endpoint = endpoints.auth.login;
+    await client.post(endpoint, request);
 }
 
 /**
@@ -45,5 +49,6 @@ export async function login(request: LoginRequest): Promise<void> {
  * @returns A promise that resolves when the logout is successful.
  */
 export async function logout(): Promise<void> {
-    await client.post(endpoints.auth.logout);
+    const endpoint = endpoints.auth.logout;
+    await client.post(endpoint);
 }

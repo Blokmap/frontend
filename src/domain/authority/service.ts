@@ -1,23 +1,9 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { transformPaginatedResponse } from '@/utils/service';
+import { transformPaginatedResponse, transformResponse } from '@/utils/service';
+import { type Profile } from '../profile';
 import type { Authority, AuthorityFilter, AuthorityRequest } from './types';
-import type { Profile } from '../profile';
 import type { Paginated } from '@/utils/pagination';
-
-/**
- * Parse an authority object from the API by converting string dates to Date objects
- *
- * @param authorityData - The raw authority data from the API
- * @returns The parsed authority object
- */
-export function parseAuthority(authorityData: any | null): Authority {
-    return {
-        ...authorityData,
-        createdAt: new Date(authorityData.createdAt),
-        updatedAt: new Date(authorityData.updatedAt),
-    };
-}
 
 /**
  * Read authorities with optional filters (returns paginated list).
@@ -28,13 +14,11 @@ export function parseAuthority(authorityData: any | null): Authority {
 export async function readAuthorities(
     filters: Partial<AuthorityFilter> = {},
 ): Promise<Paginated<Authority>> {
-    const params = {
-        ...filters,
-    };
+    const endpoint = endpoints.authorities.list;
 
-    const { data } = await client.get<Paginated<Authority>>(endpoints.authorities.list, {
-        params,
-        transformResponse: transformPaginatedResponse(parseAuthority),
+    const { data } = await client.get<Paginated<Authority>>(endpoint, {
+        params: filters,
+        transformResponse: transformPaginatedResponse,
     });
 
     return data;
@@ -48,7 +32,11 @@ export async function readAuthorities(
  */
 export async function readAuthority(id: number): Promise<Authority> {
     const endpoint = endpoints.authorities.read.replace('{id}', id.toString());
-    const { data } = await client.get<Authority>(endpoint);
+
+    const { data } = await client.get<Authority>(endpoint, {
+        transformResponse,
+    });
+
     return data;
 }
 
@@ -60,7 +48,11 @@ export async function readAuthority(id: number): Promise<Authority> {
  */
 export async function createAuthority(request: AuthorityRequest): Promise<Authority> {
     const endpoint = endpoints.authorities.create.toString();
-    const { data } = await client.post<Authority>(endpoint, request);
+
+    const { data } = await client.post<Authority>(endpoint, request, {
+        transformResponse,
+    });
+
     return data;
 }
 
@@ -76,7 +68,11 @@ export async function updateAuthority(
     request: Partial<AuthorityRequest>,
 ): Promise<Authority> {
     const endpoint = endpoints.authorities.update.replace('{id}', id.toString());
-    const { data } = await client.patch<Authority>(endpoint, request);
+
+    const { data } = await client.patch<Authority>(endpoint, request, {
+        transformResponse,
+    });
+
     return data;
 }
 
@@ -88,7 +84,11 @@ export async function updateAuthority(
  */
 export async function readAuthorityMembers(id: number): Promise<Profile[]> {
     const endpoint = endpoints.authorities.members.list.replace('{id}', id.toString());
-    const { data } = await client.get<Profile[]>(endpoint);
+
+    const { data } = await client.get<Profile[]>(endpoint, {
+        transformResponse,
+    });
+
     return data;
 }
 
@@ -101,6 +101,7 @@ export async function readAuthorityMembers(id: number): Promise<Profile[]> {
  */
 export async function addAuthorityMember(id: number, profileId: string): Promise<void> {
     const endpoint = endpoints.authorities.members.add.replace('{id}', id.toString());
+
     await client.post(endpoint, { profileId });
 }
 
@@ -115,5 +116,6 @@ export async function removeAuthorityMember(id: number, profileId: string): Prom
     const endpoint = endpoints.authorities.members.remove
         .replace('{id}', id.toString())
         .replace('{profileId}', String(profileId));
+
     await client.delete(endpoint);
 }

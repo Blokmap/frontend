@@ -273,7 +273,8 @@ async function savePendingChanges(): Promise<void> {
             summary: 'Wijzigingen opgeslagen',
             detail: `Wijziging(en) succesvol opgeslagen.`,
         });
-    } catch {
+    } catch (e) {
+        console.error('Error saving reservation changes:', e);
         toast.add({
             severity: 'error',
             summary: 'Fout bij opslaan',

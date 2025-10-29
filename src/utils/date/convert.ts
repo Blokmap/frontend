@@ -1,4 +1,29 @@
 import { formatDate } from '@vueuse/core';
+import type { DateGranularity } from './types';
+
+/**
+ * Checks if a string is a valid date string.
+ *
+ * @param value - The string to check.
+ * @returns True if the string is a valid date, false otherwise.
+ */
+export function isDateString(value: string): boolean {
+    // regex to match YYYY-MM-DD or ISO 8601 date strings
+    return (
+        /^\d{4}-\d{2}-\d{2}$/.test(value) ||
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?$/.test(value)
+    );
+}
+
+/**
+ * Checks if a value is a Date object.
+ *
+ * @param value - The value to check.
+ * @returns True if the value is a Date object, false otherwise.
+ */
+export function isDateObject(value: any): value is Date {
+    return value instanceof Date && !isNaN(value.getTime());
+}
 
 /**
  * Converts a string representation of a date to a Date object.
@@ -17,7 +42,6 @@ export function stringToDate(
     const date = new Date(dateString);
 
     if (normalize) {
-        // Assume input is UTC and adjust to local timezone
         const offset = date.getTimezoneOffset();
         return new Date(date.getTime() - offset * 60 * 1000);
     }
@@ -45,4 +69,30 @@ export function dateToString(
     }
 
     return date.toISOString();
+}
+
+/**
+ * Adds a specified amount of time to a date based on the given granularity.
+ *
+ * @param date - The base date to add time to.
+ * @param amount - The amount to add (can be negative for subtraction).
+ * @param granularity - The unit of time to add ('day', 'week', or 'month').
+ * @returns A new Date object with the specified amount added.
+ */
+export function addToDate(date: Date, amount: number, granularity: DateGranularity = 'day'): Date {
+    const newDate = new Date(date);
+
+    switch (granularity) {
+        case 'day':
+            newDate.setDate(newDate.getDate() + amount);
+            break;
+        case 'week':
+            newDate.setDate(newDate.getDate() + amount * 7);
+            break;
+        case 'month':
+            newDate.setMonth(newDate.getMonth() + amount);
+            break;
+    }
+
+    return newDate;
 }

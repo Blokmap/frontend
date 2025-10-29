@@ -197,7 +197,7 @@ function onNearestClick(): void {
                     class="border-1 border-slate-200"
                     data-testid="locations-map"
                     :locations="locations?.data"
-                    :is-loading="locationsIsPending"
+                    :loading="locationsIsPending"
                     @update:bounds="onBoundsChange">
                 </BlokMap>
             </div>

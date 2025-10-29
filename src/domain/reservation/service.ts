@@ -1,45 +1,10 @@
-import { formatDate } from '@vueuse/core';
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { stringToDate } from '@/utils/date';
-import { stringToTime, timeToString, type Time } from '@/utils/time';
+import { formatRequest, transformResponse } from '@/utils/service';
+import { type Time } from '@/utils/time';
 import type { Reservation, ReservationRequest } from './types';
 
 export type ReservationIncludes = 'profile' | 'location' | 'openingTime' | 'confirmedBy';
-
-/**
- * Parse a reservation object. Used to ensure that API responses
- * are correctly formatted with Date objects and Time objects.
- *
- * @param {any} reservationData - The reservation data from the API.
- * @returns {Reservation} The parsed reservation object with proper types.
- */
-export function parseReservation(reservationData: any): Reservation {
-    return {
-        ...reservationData,
-        startTime: stringToTime(reservationData.startTime),
-        endTime: stringToTime(reservationData.endTime),
-        day: stringToDate(reservationData.day, true),
-        confirmedAt: stringToDate(reservationData.confirmedAt, true),
-        createdAt: stringToDate(reservationData.createdAt, true),
-        updatedAt: stringToDate(reservationData.updatedAt, true),
-    };
-}
-
-/**
- * Serialize a reservation object for API requests.
- *
- * @param {Reservation} reservation - The reservation object to serialize.
- * @returns {any} The serialized reservation data for the API.
- */
-export function serializeReservation(reservation: Reservation): any {
-    return {
-        ...reservation,
-        startTime: timeToString(reservation.startTime),
-        endTime: timeToString(reservation.endTime),
-        day: formatDate(reservation.day, 'YYYY-MM-DD'),
-    };
-}
 
 /**
  * Create a reservation for a specific opening time.
@@ -60,14 +25,16 @@ export async function createReservation(
         .replace('{id}', locationId.toString())
         .replace('{openingTimeId}', openingTimeId.toString());
 
-    const body = {
-        startTime: timeToString(startTime),
-        endTime: timeToString(endTime),
-    };
+    const request = formatRequest({
+        startTime,
+        endTime,
+    });
 
-    const response = await client.post(endpoint, body);
+    const { data } = await client.post(endpoint, request, {
+        transformResponse,
+    });
 
-    return parseReservation(response.data);
+    return data;
 }
 
 /**
@@ -99,9 +66,11 @@ export async function confirmReservation(
         .replace('{id}', locationId.toString())
         .replace('{reservationId}', reservationId.toString());
 
-    const response = await client.post(endpoint);
+    const { data } = await client.post(endpoint, {
+        transformResponse,
+    });
 
-    return parseReservation(response.data);
+    return data;
 }
 
 /**
@@ -117,15 +86,13 @@ export async function createReservations(
 ): Promise<Reservation[]> {
     const endpoint = endpoints.locations.reservations.create.replace('{id}', locationId.toString());
 
-    const body = requests.map((request) => ({
-        openingTimeId: request.openingTimeId,
-        startTime: timeToString(request.startTime),
-        endTime: timeToString(request.endTime),
-    }));
+    const request = requests.map((d) => formatRequest(d));
 
-    const response = await client.post(endpoint, body);
+    const { data } = await client.post(endpoint, request, {
+        transformResponse,
+    });
 
-    return response.data.map(parseReservation);
+    return data;
 }
 
 /**

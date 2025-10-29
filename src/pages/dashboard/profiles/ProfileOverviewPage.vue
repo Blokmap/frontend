@@ -15,6 +15,7 @@ import type { Profile, ProfileState } from '@/domain/profile';
 
 defineProps<{
     profile: Profile;
+    isOwnProfile: boolean;
 }>();
 
 const { locale } = useI18n();
@@ -46,7 +47,11 @@ async function onChangeStatus(profileId: string, state: ProfileState) {
 <template>
     <DashboardContent>
         <!-- Header -->
-        <DashboardDetailHeader title="Profiel" secondary="Bekijk profielinformatie.">
+        <DashboardDetailHeader title="Profiel">
+            <template #secondary>
+                <span v-if="isOwnProfile">Details over jouw profiel.</span>
+                <span v-else>Details over {{ profile.firstName }}'s profiel.</span>
+            </template>
             <template #actions>
                 <ProfileActionsMenu
                     :profile="profile"

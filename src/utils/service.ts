@@ -3,22 +3,6 @@ import { timeToString, isTimeObject } from './time';
 import type { Paginated } from '@/utils/pagination';
 
 /**
- * Utility function to format an array of includes into a record.
- *
- * @param includes - Array of strings representing the includes to format.
- * @returns {Record<string, boolean>} - A record with the included properties set to true.
- */
-export function formatIncludes(includes: string[] | null = []): Record<string, boolean> {
-    const acc: Record<string, boolean> = {};
-
-    for (const include of includes ?? []) {
-        acc[include] = true;
-    }
-
-    return acc;
-}
-
-/**
  * Formats a request object by converting Date objects to strings.
  *
  * @param data - The request data object to format.

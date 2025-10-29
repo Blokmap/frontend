@@ -84,7 +84,7 @@ async function loadLocaleMessages(targetLocale: SupportedLocale): Promise<void> 
     }
 
     // Load all namespaces in parallel
-    const [app, pages, components] = await Promise.all([
+    const [app, pages, components, permissions] = await Promise.all([
         loaders.app(),
         loaders.pages(),
         loaders.components(),
@@ -96,6 +96,7 @@ async function loadLocaleMessages(targetLocale: SupportedLocale): Promise<void> 
         ...app,
         pages,
         components,
+        permissions,
     };
 
     // Set the locale messages

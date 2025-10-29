@@ -27,9 +27,10 @@ const filters = ref({
     perPage: 25,
 });
 
+const { onPageChange, first } = usePagination(filters);
+
 const { data: members, isLoading } = useReadLocationMembers(computed(() => props.location.id));
 const { data: roles } = useReadLocationRoles(computed(() => props.location.id));
-const { onPageChange, first } = usePagination(filters);
 
 /**
  * Handle changing a member's role.

@@ -1,7 +1,7 @@
 {
     "location": {
         "Administrator": {
-            "name": "Beheerder",
+            "name": "Locatiebeheerder",
             "description": "Volledige toegang tot alle locatie functies en instellingen"
         },
         "ManageImages": {
@@ -23,7 +23,7 @@
     },
     "authority": {
         "Administrator": {
-            "name": "Beheerder",
+            "name": "Autoriteitbeheerder",
             "description": "Volledige toegang tot alle autoriteit functies en instellingen"
         },
         "AddLocations": {
@@ -45,7 +45,7 @@
     },
     "institution": {
         "Administrator": {
-            "name": "Beheerder",
+            "name": "Institutiebeheerder",
             "description": "Volledige toegang tot alle institutie functies en instellingen"
         },
         "AddAuthority": {

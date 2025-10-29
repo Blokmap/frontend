@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import Popover from 'primevue/popover';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import {
     LOCATION_PERMISSIONS,
@@ -20,19 +22,13 @@ const {
 
 const popover = ref();
 
-const allPermissions = computed(() => {
+const permissions = computed(() => {
     const lists = {
         location: LOCATION_PERMISSIONS,
         authority: AUTHORITY_PERMISSIONS,
         institution: INSTITUTION_PERMISSIONS,
     };
     return lists[type];
-});
-
-const permissions = computed(() => {
-    return allPermissions.value.filter(
-        (perm) => role.permissions & perm.value || role.permissions & (1 << 0),
-    );
 });
 
 const onClickLabel = (event: Event) => {
@@ -54,7 +50,13 @@ const onClickLabel = (event: Event) => {
             </div>
             <ul v-if="permissions.length" class="permissions">
                 <li v-for="perm in permissions" :key="perm.value">
-                    {{ $t(`permissions.${type}.${perm.value}.name`) }}
+                    <p class="text-sm font-medium">
+                        <FontAwesomeIcon :icon="faCheck" />
+                        {{ $t(`permissions.${type}.${perm.name}.name`) }}
+                    </p>
+                    <p class="text-xs text-slate-500">
+                        {{ $t(`permissions.${type}.${perm.name}.description`) }}
+                    </p>
                 </li>
             </ul>
             <p v-else class="empty">No permissions</p>
@@ -101,16 +103,6 @@ const onClickLabel = (event: Event) => {
 
     .permissions {
         @apply m-0 list-none space-y-2 p-4;
-
-        li {
-            @apply text-secondary-700 text-sm;
-            @apply relative pl-5;
-
-            &::before {
-                content: '✓';
-                @apply text-primary-500 absolute left-0 font-bold;
-            }
-        }
     }
 
     .empty {

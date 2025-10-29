@@ -4,6 +4,7 @@ import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useReadProfileAuthorities } from '@/composables/data/useAuthorities';
 import type { Authority } from '@/domain/authority';
 import type { Profile } from '@/domain/profile';
 
@@ -13,7 +14,9 @@ const props = defineProps<{
 
 const router = useRouter();
 
-const authorities = computed(() => props.profile.authorities || []);
+const { data: authorities, isLoading } = useReadProfileAuthorities(
+    computed(() => props.profile.id),
+);
 
 /**
  * Handle clicking on an authority to view its details.
@@ -26,20 +29,18 @@ function onAuthorityClick(authority: Authority): void {
 
 <template>
     <DashboardContent>
-        <div class="space-y-6">
-            <!-- Header -->
-            <DashboardDetailHeader
-                title="Autoriteiten"
-                secondary="Bekijk autoriteiten gekoppeld aan dit profiel.">
-            </DashboardDetailHeader>
+        <!-- Header -->
+        <DashboardDetailHeader
+            title="Autoriteiten"
+            secondary="Bekijk autoriteiten gekoppeld aan dit profiel.">
+        </DashboardDetailHeader>
 
-            <!-- Authorities Table -->
-            <AuthorityTable
-                :authorities="authorities"
-                :loading="false"
-                empty-message="Dit profiel is niet gekoppeld aan autoriteiten."
-                @click:authority="onAuthorityClick">
-            </AuthorityTable>
-        </div>
+        <!-- Authorities Table -->
+        <AuthorityTable
+            :authorities="authorities"
+            :loading="isLoading"
+            empty-message="Dit profiel is niet gekoppeld aan autoriteiten."
+            @click:authority="onAuthorityClick">
+        </AuthorityTable>
     </DashboardContent>
 </template>

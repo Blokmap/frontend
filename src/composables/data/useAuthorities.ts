@@ -1,10 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { toValue, type MaybeRefOrGetter } from 'vue';
+import { toValue, type MaybeRefOrGetter, type MaybeRef, computed } from 'vue';
 import {
     addAuthorityMember,
     createAuthority,
-    listAuthorities,
-    listAuthorityMembers,
+    readAuthorities,
     readAuthority,
     removeAuthorityMember,
     updateAuthority,
@@ -12,15 +11,18 @@ import {
     type AuthorityFilter,
     type AuthorityRequest,
 } from '@/domain/authority';
-import type { Profile } from '@/domain/profile';
+import { readProfileAuthorities } from '@/domain/profile';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
+import type { AxiosError } from 'axios';
 
 export const AUTHORITY_QUERY_KEYS = {
     list: (filters: MaybeRefOrGetter<Partial<AuthorityFilter>>) =>
         ['authorities', filters] as const,
     detail: (id: MaybeRefOrGetter<number>) => ['authorities', 'detail', id] as const,
     members: (id: MaybeRefOrGetter<number>) => ['authorities', 'members', id] as const,
+    profileAuthorities: (profileId: MaybeRef<string | null>) =>
+        ['profile', 'authorities', profileId] as const,
 } as const;
 
 // Mutation parameter types
@@ -51,7 +53,7 @@ export function useReadAuthorities(
     const authorities = useQuery({
         ...options,
         queryKey: AUTHORITY_QUERY_KEYS.list(filters),
-        queryFn: () => listAuthorities(toValue(filters)),
+        queryFn: () => readAuthorities(toValue(filters)),
     });
 
     return authorities;
@@ -120,26 +122,6 @@ export function useUpdateAuthority(
 }
 
 /**
- * Composable to fetch members of an authority.
- *
- * @param id - The ID of the authority.
- * @param options - Query options.
- * @returns The query object containing the members and their state.
- */
-export function useListAuthorityMembers(
-    id: MaybeRefOrGetter<number>,
-    options: CompQueryOptions = {},
-): CompQuery<Profile[]> {
-    const query = useQuery({
-        ...options,
-        queryKey: AUTHORITY_QUERY_KEYS.members(id),
-        queryFn: () => listAuthorityMembers(toValue(id)),
-    });
-
-    return query;
-}
-
-/**
  * Composable to add a member to an authority.
  *
  * @param options - Mutation options.
@@ -189,4 +171,24 @@ export function useRemoveAuthorityMember(
     });
 
     return mutation;
+}
+
+/**
+ * Composable to fetch authorities associated with a specific profile.
+ *
+ * @param profileId - The ID of the profile to fetch authorities for.
+ * @returns The query object containing profile authorities and their state.
+ */
+export function useReadProfileAuthorities(
+    profileId: MaybeRef<string | null>,
+): CompQuery<Authority[]> {
+    const enabled = computed(() => toValue(profileId) !== null);
+
+    const query = useQuery<Authority[], AxiosError>({
+        queryKey: AUTHORITY_QUERY_KEYS.profileAuthorities(profileId),
+        enabled,
+        queryFn: () => readProfileAuthorities(toValue(profileId)!),
+    });
+
+    return query;
 }

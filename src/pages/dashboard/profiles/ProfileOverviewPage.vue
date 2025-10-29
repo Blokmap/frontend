@@ -45,65 +45,63 @@ async function onChangeStatus(profileId: string, state: ProfileState) {
 
 <template>
     <DashboardContent>
-        <div class="space-y-6">
-            <!-- Header -->
-            <DashboardDetailHeader title="Profiel" secondary="Bekijk profielinformatie.">
-                <template #actions>
-                    <ProfileActionsMenu
-                        :profile="profile"
-                        :is-pending="isUpdatingProfile"
-                        @change:status="onChangeStatus">
-                        <template #trigger="{ toggle }">
-                            <Button
-                                severity="contrast"
-                                :disabled="isUpdatingProfile"
-                                @click="toggle"
-                                size="small">
-                                <span>Acties</span>
-                                <FontAwesomeIcon v-if="isUpdatingProfile" :icon="faSpinner" spin />
-                                <FontAwesomeIcon :icon="faChevronDown" v-else />
-                            </Button>
+        <!-- Header -->
+        <DashboardDetailHeader title="Profiel" secondary="Bekijk profielinformatie.">
+            <template #actions>
+                <ProfileActionsMenu
+                    :profile="profile"
+                    :is-pending="isUpdatingProfile"
+                    @change:status="onChangeStatus">
+                    <template #trigger="{ toggle }">
+                        <Button
+                            severity="contrast"
+                            :disabled="isUpdatingProfile"
+                            @click="toggle"
+                            size="small">
+                            <span>Acties</span>
+                            <FontAwesomeIcon v-if="isUpdatingProfile" :icon="faSpinner" spin />
+                            <FontAwesomeIcon :icon="faChevronDown" v-else />
+                        </Button>
+                    </template>
+                </ProfileActionsMenu>
+            </template>
+        </DashboardDetailHeader>
+
+        <!-- Profile Information Card -->
+        <Card>
+            <template #content>
+                <div class="grid grid-cols-1 gap-4 py-3 md:grid-cols-2">
+                    <!-- Username -->
+                    <KeyValue key-label="Gebruikersnaam">
+                        <template #value>@{{ profile.username }}</template>
+                    </KeyValue>
+
+                    <!-- Email -->
+                    <KeyValue key-label="E-mailadres" :value="profile.email" />
+
+                    <!-- Created At -->
+                    <KeyValue key-label="Aangemaakt op">
+                        <template #value>
+                            {{
+                                profile.createdAt.toLocaleDateString(locale, {
+                                    day: '2-digit',
+                                    year: 'numeric',
+                                    month: 'short',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                })
+                            }}
                         </template>
-                    </ProfileActionsMenu>
-                </template>
-            </DashboardDetailHeader>
+                    </KeyValue>
 
-            <!-- Profile Information Card -->
-            <Card>
-                <template #content>
-                    <div class="grid grid-cols-1 gap-4 py-3 md:grid-cols-2">
-                        <!-- Username -->
-                        <KeyValue key-label="Gebruikersnaam">
-                            <template #value>@{{ profile.username }}</template>
-                        </KeyValue>
-
-                        <!-- Email -->
-                        <KeyValue key-label="E-mailadres" :value="profile.email" />
-
-                        <!-- Created At -->
-                        <KeyValue key-label="Aangemaakt op">
-                            <template #value>
-                                {{
-                                    profile.createdAt.toLocaleDateString(locale, {
-                                        day: '2-digit',
-                                        year: 'numeric',
-                                        month: 'short',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    })
-                                }}
-                            </template>
-                        </KeyValue>
-
-                        <!-- Status -->
-                        <KeyValue key-label="Status">
-                            <template #value>
-                                <ProfileStateBadge :profile="profile" />
-                            </template>
-                        </KeyValue>
-                    </div>
-                </template>
-            </Card>
-        </div>
+                    <!-- Status -->
+                    <KeyValue key-label="Status">
+                        <template #value>
+                            <ProfileStateBadge :profile="profile" />
+                        </template>
+                    </KeyValue>
+                </div>
+            </template>
+        </Card>
     </DashboardContent>
 </template>

@@ -25,7 +25,7 @@ import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useRouteDate } from '@/composables/useRouteDate';
 import { pushRedirectUrl } from '@/domain/auth';
 
-const { locationId } = defineProps<{ locationId: string }>();
+const { locationId } = defineProps<{ locationId: number }>();
 
 const { locale } = useI18n();
 const { setPageTitle } = usePageTitleStore();

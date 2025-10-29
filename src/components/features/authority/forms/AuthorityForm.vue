@@ -19,18 +19,18 @@ const emit = defineEmits<{
 
 const form = ref<AuthorityRequest>({ ...DEFAULT_AUTHORITY_REQUEST });
 
-watchEffect(() => {
-    if (props.authority) {
-        form.value = authorityToRequest(props.authority);
-    }
-});
-
 /**
  * Handles the form submission by emitting the 'click:save' event with the form data.
  */
 function handleFormSubmission(): void {
     emit('click:save', form.value);
 }
+
+watchEffect(() => {
+    if (props.authority) {
+        form.value = authorityToRequest(props.authority);
+    }
+});
 </script>
 
 <template>
@@ -38,7 +38,7 @@ function handleFormSubmission(): void {
         <!-- Name -->
         <div>
             <label for="name" class="mb-2 block text-sm font-medium text-gray-700">
-                {{ $t('components.authorityForm.name') }} *
+                {{ $t('components.authorities.form.name') }} *
             </label>
             <InputText id="name" v-model="form.name" class="w-full" required />
         </div>
@@ -46,7 +46,7 @@ function handleFormSubmission(): void {
         <!-- Description -->
         <div>
             <label for="description" class="mb-2 block text-sm font-medium text-gray-700">
-                {{ $t('components.authorityForm.description') }}
+                {{ $t('components.authorities.form.description') }}
             </label>
             <Textarea id="description" v-model="form.description" class="w-full" rows="4">
             </Textarea>
@@ -54,11 +54,7 @@ function handleFormSubmission(): void {
 
         <!-- Submit Button -->
         <Button
-            :label="
-                authority
-                    ? $t('components.authorityForm.updateButton')
-                    : $t('components.authorityForm.createButton')
-            "
+            :label="$t('general.actions.save')"
             severity="primary"
             type="submit"
             :loading="isLoading">

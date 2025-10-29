@@ -9,10 +9,10 @@
             "delete": "Verwijderen",
             "create": "Aanmaken",
             "view": "Bekijken",
-            "save": "Opslaan",
             "previous": "Vorige",
             "next": "Volgende",
-            "complete": "Voltooien"
+            "complete": "Voltooien",
+            "save": "Opslaan"
         }
     },
     "locales": {

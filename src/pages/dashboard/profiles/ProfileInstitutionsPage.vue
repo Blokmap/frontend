@@ -29,19 +29,17 @@ function onInstitutionClick(institution: Institution): void {
 
 <template>
     <DashboardContent>
-        <div class="space-y-6">
-            <!-- Header -->
-            <DashboardDetailHeader
-                title="Instituties"
-                secondary="Bekijk instituties gekoppeld aan dit profiel.">
-            </DashboardDetailHeader>
+        <!-- Header -->
+        <DashboardDetailHeader
+            title="Instituties"
+            secondary="Bekijk instituties gekoppeld aan dit profiel.">
+        </DashboardDetailHeader>
 
-            <!-- Institutions Table -->
-            <InstitutionTable
-                :institutions="institutions"
-                :loading="false"
-                @click:institution="onInstitutionClick">
-            </InstitutionTable>
-        </div>
+        <!-- Institutions Table -->
+        <InstitutionTable
+            :institutions="institutions"
+            :loading="false"
+            @click:institution="onInstitutionClick">
+        </InstitutionTable>
     </DashboardContent>
 </template>

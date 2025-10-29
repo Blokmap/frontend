@@ -3,9 +3,15 @@ import { endpoints } from '@/config/endpoints';
 import { parseReservation } from '@/domain/reservation';
 import { dateToString, stringToDate } from '@/utils/date';
 import { formatFilters } from '@/utils/filter';
-import { createFormDataRequest, formatIncludes, transformPaginatedResponse } from '@/utils/service';
+import {
+    createFormDataRequest,
+    formatIncludes,
+    transformPaginatedResponse,
+    transformResponse,
+} from '@/utils/service';
 import { timeToString } from '@/utils/time';
-import { parseLocation } from '../location';
+import { parseAuthority, type Authority } from '../authority';
+import { parseLocation, type Location } from '../location';
 import type { Profile, ProfileStats, ProfileFilter, ProfileScanRequest } from './types';
 import type { Reservation, ReservationFilter, ReservationIncludes } from '@/domain/reservation';
 import type { Paginated } from '@/utils/pagination';
@@ -30,9 +36,11 @@ export function parseProfile(profileData: any | null): Profile {
  * @returns A promise that resolves to the profile statistics.
  */
 export async function readProfileStats(profileId: string): Promise<ProfileStats> {
-    const url = endpoints.profiles.stats.replace('{id}', String(profileId));
-    const response = await client.get<ProfileStats>(url);
-    return response.data;
+    const endpoint = endpoints.profiles.stats.replace('{id}', String(profileId));
+
+    const { data } = await client.get<ProfileStats>(endpoint);
+
+    return data;
 }
 
 /**
@@ -49,14 +57,17 @@ export async function readProfileReservations(
 ): Promise<Reservation[]> {
     const endpoint = endpoints.profiles.reservations.list.replace('{id}', profileId.toString());
 
-    const params: Record<string, any> = {
+    const params = {
         ...formatFilters(filter, ['inWeekOf']),
         ...formatIncludes(includes),
     };
 
-    const response = await client.get(endpoint, { params });
+    const { data } = await client.get(endpoint, {
+        params,
+        transformResponse: transformResponse(parseReservation),
+    });
 
-    return response.data.map(parseReservation);
+    return data;
 }
 
 /**
@@ -67,10 +78,10 @@ export async function readProfileReservations(
  * @returns A promise that resolves when the avatar is updated.
  */
 export async function updateProfileAvatar(profileId: string, file: File): Promise<void> {
-    const url = endpoints.profiles.avatar.replace('{id}', String(profileId));
+    const endpoint = endpoints.profiles.avatar.replace('{id}', String(profileId));
     const data = createFormDataRequest({ image: file });
 
-    await client.post(url, data, {
+    await client.post(endpoint, data, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -88,9 +99,13 @@ export async function updateProfile(
     profileId: string,
     profileData: Partial<Profile>,
 ): Promise<Profile> {
-    const url = endpoints.profiles.update.replace('{id}', String(profileId));
-    const response = await client.patch<any>(url, profileData);
-    return parseProfile(response.data);
+    const endpoint = endpoints.profiles.update.replace('{id}', String(profileId));
+
+    const { data } = await client.patch<any>(endpoint, profileData, {
+        transformResponse: transformResponse(parseProfile),
+    });
+
+    return data;
 }
 
 /**
@@ -100,8 +115,8 @@ export async function updateProfile(
  * @returns A promise that resolves when the avatar is deleted.
  */
 export async function deleteProfileAvatar(profileId: string): Promise<void> {
-    const url = endpoints.profiles.avatar.replace('{id}', String(profileId));
-    await client.delete(url);
+    const endpoint = endpoints.profiles.avatar.replace('{id}', String(profileId));
+    await client.delete(endpoint);
 }
 
 /**
@@ -111,30 +126,32 @@ export async function deleteProfileAvatar(profileId: string): Promise<void> {
  * @returns A promise that resolves to the fetched profile.
  */
 export async function readProfile(profileId: string): Promise<Profile> {
-    const url = endpoints.profiles.read.replace('{id}', String(profileId));
-    const response = await client.get<any>(url);
-    return parseProfile(response.data);
+    const endpoint = endpoints.profiles.read.replace('{id}', String(profileId));
+
+    const { data } = await client.get<any>(endpoint, {
+        transformResponse: transformResponse(parseProfile),
+    });
+
+    return data;
 }
 
 /**
- * List profiles with optional filters (admin endpoint).
+ * Read profiles with optional filters (admin endpoint, returns paginated list).
  *
- * @param filters - The filters to apply when listing profiles.
+ * @param filters - The filters to apply when reading profiles.
  * @returns A promise that resolves to a paginated list of profiles.
  */
-export async function listProfiles(
+export async function readProfiles(
     filters: Partial<ProfileFilter> = {},
 ): Promise<Paginated<Profile>> {
-    const params = {
-        ...filters,
-    };
+    const endpoint = endpoints.admin.profiles.list;
 
-    const response = await client.get(endpoints.admin.profiles.list, {
-        params,
+    const { data } = await client.get(endpoint, {
+        params: filters,
         transformResponse: transformPaginatedResponse(parseProfile),
     });
 
-    return response.data;
+    return data;
 }
 
 /**
@@ -144,10 +161,17 @@ export async function listProfiles(
  * @returns A promise that resolves to the blocked profile.
  */
 export async function blockProfile(profileId: string): Promise<Profile> {
-    const response = await client.post(
-        endpoints.profiles.block.replace('{id}', profileId.toString()),
+    const endpoint = endpoints.profiles.block.replace('{id}', profileId.toString());
+
+    const { data } = await client.post(
+        endpoint,
+        {},
+        {
+            transformResponse: transformPaginatedResponse(parseProfile),
+        },
     );
-    return parseProfile(response.data);
+
+    return data;
 }
 
 /**
@@ -157,11 +181,17 @@ export async function blockProfile(profileId: string): Promise<Profile> {
  * @returns A promise that resolves to the unblocked profile.
  */
 export async function unblockProfile(profileId: string): Promise<Profile> {
-    const response = await client.post(
-        endpoints.profiles.unblock.replace('{id}', profileId.toString()),
+    const endpoint = endpoints.profiles.unblock.replace('{id}', profileId.toString());
+
+    const { data } = await client.post(
+        endpoint,
+        {},
+        {
+            transformResponse: transformResponse(parseProfile),
+        },
     );
 
-    return parseProfile(response.data);
+    return data;
 }
 
 /**
@@ -183,9 +213,12 @@ export async function scanProfile(
     const { data } = await client.post(
         endpoints.profiles.scan.replace('{id}', profileId.toString()),
         body,
+        {
+            transformResponse: transformResponse(parseReservation),
+        },
     );
 
-    return data.map(parseReservation);
+    return data;
 }
 
 /**
@@ -194,10 +227,28 @@ export async function scanProfile(
  * @param profileId - The ID of the profile whose locations are to be fetched.
  * @returns A promise that resolves to a paginated list of locations.
  */
-export async function readProfileLocations(profileId: string | number) {
+export async function readProfileLocations(profileId: string): Promise<Location[]> {
     const endpoint = endpoints.profiles.locations.list.replace('{id}', profileId.toString());
 
-    const { data } = await client.get<Location[]>(endpoint);
+    const { data } = await client.get<Location[]>(endpoint, {
+        transformResponse: transformResponse(parseLocation),
+    });
 
-    return data.map(parseLocation);
+    return data;
+}
+
+/**
+ * Fetches the authorities associated with a specific profile.
+ *
+ * @param profileId - The ID of the profile whose authorities are to be fetched.
+ * @returns A promise that resolves to an array of authorities.
+ */
+export async function readProfileAuthorities(profileId: string): Promise<Authority[]> {
+    const endpoint = endpoints.profiles.authorities.list.replace('{id}', profileId.toString());
+
+    const { data } = await client.get<Authority[]>(endpoint, {
+        transformResponse: transformResponse(parseAuthority),
+    });
+
+    return data;
 }

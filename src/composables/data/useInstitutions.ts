@@ -4,8 +4,7 @@ import {
     addInstitutionAuthority,
     addInstitutionMember,
     createInstitution,
-    listInstitutionMembers,
-    listInstitutions,
+    readInstitutions,
     readInstitution,
     removeInstitutionAuthority,
     removeInstitutionMember,
@@ -14,7 +13,6 @@ import {
     type InstitutionFilter,
     type InstitutionRequest,
 } from '@/domain/institution';
-import type { Profile } from '@/domain/profile';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
 
@@ -64,7 +62,7 @@ export function useReadInstitutions(
     const institutions = useQuery({
         ...options,
         queryKey: INSTITUTION_QUERY_KEYS.list(filters),
-        queryFn: () => listInstitutions(toValue(filters)),
+        queryFn: () => readInstitutions(toValue(filters)),
     });
 
     return institutions;
@@ -122,26 +120,6 @@ export function useUpdateInstitution(
     });
 
     return mutation;
-}
-
-/**
- * Composable to fetch members of an institution.
- *
- * @param id - The id of the institution.
- * @param options - Query options.
- * @returns The query object containing the members and their state.
- */
-export function useListInstitutionMembers(
-    id: MaybeRefOrGetter<number>,
-    options: CompQueryOptions = {},
-): CompQuery<Profile[]> {
-    const query = useQuery({
-        ...options,
-        queryKey: INSTITUTION_QUERY_KEYS.members(id),
-        queryFn: () => listInstitutionMembers(toValue(id)),
-    });
-
-    return query;
 }
 
 /**

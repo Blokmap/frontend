@@ -15,10 +15,9 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import {
     useAddInstitutionMember,
-    useListInstitutionMembers,
     useRemoveInstitutionMember,
 } from '@/composables/data/useInstitutions';
-import { useReadProfiles } from '@/composables/data/useProfile';
+import { useReadInstitutionMembers, useReadProfiles } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/store/useToast';
 import type { Institution } from '@/domain/institution';
 import type { Profile, ProfileFilter } from '@/domain/profile';
@@ -35,7 +34,7 @@ const {
     data: members,
     isLoading,
     refetch: refetchMembers,
-} = useListInstitutionMembers(computed(() => props.institution.id));
+} = useReadInstitutionMembers(computed(() => props.institution.id));
 
 const showSelectorDialog = ref(false);
 
@@ -153,47 +152,45 @@ async function onRemoveUser(profile: Profile): Promise<void> {
 
 <template>
     <DashboardContent>
-        <div class="space-y-6">
-            <!-- Header -->
-            <DashboardDetailHeader
-                title="Gebruikers"
-                secondary="Beheer gebruikers die aan deze institutie zijn gekoppeld.">
-                <template #actions>
-                    <Button severity="primary" @click="onAddUser">
-                        <FontAwesomeIcon :icon="faUserPlus" class="mr-2" />
-                        Gebruiker Toevoegen
+        <!-- Header -->
+        <DashboardDetailHeader
+            title="Gebruikers"
+            secondary="Beheer gebruikers die aan deze institutie zijn gekoppeld.">
+            <template #actions>
+                <Button severity="primary" @click="onAddUser">
+                    <FontAwesomeIcon :icon="faUserPlus" class="mr-2" />
+                    Gebruiker Toevoegen
+                </Button>
+            </template>
+        </DashboardDetailHeader>
+
+        <!-- Profiles Table -->
+        <Table :value="members" :loading="isLoading" @click:row="onProfileClick">
+            <template #row="{ data: profile }">
+                <TableCell column="Profiel">
+                    <ProfileTableCell :profile="profile" />
+                </TableCell>
+
+                <TableCell column="E-mailadres">
+                    {{ profile.email }}
+                </TableCell>
+
+                <TableCell column="Status">
+                    <ProfileStateBadge :profile="profile" />
+                </TableCell>
+
+                <TableCell column="Acties">
+                    <Button
+                        size="small"
+                        severity="danger"
+                        :loading="isRemoving"
+                        @click.stop="onRemoveUser(profile)"
+                        outlined>
+                        Verwijderen
                     </Button>
-                </template>
-            </DashboardDetailHeader>
-
-            <!-- Profiles Table -->
-            <Table :value="members" :loading="isLoading" @click:row="onProfileClick">
-                <template #row="{ data: profile }">
-                    <TableCell column="Profiel">
-                        <ProfileTableCell :profile="profile" />
-                    </TableCell>
-
-                    <TableCell column="E-mailadres">
-                        {{ profile.email }}
-                    </TableCell>
-
-                    <TableCell column="Status">
-                        <ProfileStateBadge :profile="profile" />
-                    </TableCell>
-
-                    <TableCell column="Acties">
-                        <Button
-                            size="small"
-                            severity="danger"
-                            :loading="isRemoving"
-                            @click.stop="onRemoveUser(profile)"
-                            outlined>
-                            Verwijderen
-                        </Button>
-                    </TableCell>
-                </template>
-            </Table>
-        </div>
+                </TableCell>
+            </template>
+        </Table>
 
         <!-- Profile Selector Dialog -->
         <ProfileSelectorDialog

@@ -196,7 +196,7 @@
 }
 
 .p-button-outlined.p-button-danger {
-    @apply border-red-200 bg-transparent text-red-500;
+    @apply border-red-600 bg-transparent text-red-600;
     @apply enabled:hover:border-red-200 enabled:hover:bg-red-50 enabled:hover:text-red-500;
     @apply enabled:active:border-red-200 enabled:active:bg-red-100 enabled:active:text-red-500;
     @apply dark:border-red-700 dark:bg-transparent dark:text-red-400;

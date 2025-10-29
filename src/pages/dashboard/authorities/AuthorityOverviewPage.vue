@@ -42,23 +42,21 @@ async function handleUpdate(form: AuthorityRequest): Promise<void> {
 
 <template>
     <DashboardContent>
-        <div class="space-y-6">
-            <!-- Header -->
-            <DashboardDetailHeader
-                title="Autoriteitgegevens"
-                secondary="Bekijk en bewerk autoriteitgegevens.">
-            </DashboardDetailHeader>
+        <!-- Header -->
+        <DashboardDetailHeader
+            title="Autoriteitgegevens"
+            secondary="Bekijk en bewerk autoriteitgegevens.">
+        </DashboardDetailHeader>
 
-            <!-- Authority Information Card -->
-            <Card>
-                <template #content>
-                    <AuthorityForm
-                        :authority="authority"
-                        :is-loading="isUpdating"
-                        @click:save="handleUpdate">
-                    </AuthorityForm>
-                </template>
-            </Card>
-        </div>
+        <!-- Authority Information Card -->
+        <Card>
+            <template #content>
+                <AuthorityForm
+                    :authority="authority"
+                    :is-loading="isUpdating"
+                    @click:save="handleUpdate">
+                </AuthorityForm>
+            </template>
+        </Card>
     </DashboardContent>
 </template>

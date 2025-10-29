@@ -16,7 +16,7 @@ import { useRouteDate } from '@/composables/useRouteDate';
 import type { Reservation, ReservationState } from '@/domain/reservation';
 
 const props = defineProps<{
-    locationId: string;
+    locationId: number;
 }>();
 
 const toast = useToast();
@@ -75,7 +75,7 @@ const filteredReservations = computed(() => {
  *
  * @param reservationId - ID of the reservation
  */
-function isReservationPending(reservationId: number): boolean {
+function isReservationPending(reservationId: string): boolean {
     return pendingStatusChanges.value.has(reservationId);
 }
 
@@ -85,7 +85,7 @@ function isReservationPending(reservationId: number): boolean {
  * @param reservationId - ID of the reservation
  * @param state - New state to set
  */
-async function onStatusChange(reservationId: number, state: ReservationState): Promise<void> {
+async function onStatusChange(reservationId: string, state: ReservationState): Promise<void> {
     try {
         pendingStatusChanges.value.add(reservationId);
 

@@ -29,7 +29,7 @@ import { useToast } from '@/composables/store/useToast';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
-    locationId: string;
+    locationId: number;
     profile: Profile;
 }>();
 

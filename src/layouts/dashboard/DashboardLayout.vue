@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import DashboardHeader from './DashboardHeader.vue';
-import DashboardSidebar from './DashboardSidebar.vue';
+import DashboardSidebar from './sidebar/DashboardSidebar.vue';
 
 const { data: profile } = useAuthProfile();
 

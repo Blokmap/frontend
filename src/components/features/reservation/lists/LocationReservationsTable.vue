@@ -21,11 +21,11 @@ import { timeToString } from '@/utils/time';
 const props = defineProps<{
     reservations?: Reservation[];
     loading?: boolean;
-    isReservationPending?: (reservationId: number) => boolean;
+    isReservationPending?: (reservationId: string) => boolean;
 }>();
 
 const emit = defineEmits<{
-    'change:status': [reservationId: number, status: ReservationState];
+    'change:status': [reservationId: string, status: ReservationState];
 }>();
 
 const { locale } = useI18n();
@@ -76,7 +76,7 @@ const groupedReservations = computed(() => {
  * @param hideMenu Function to hide the action menu.
  */
 function onStatusChange(
-    reservationId: number,
+    reservationId: string,
     event: SelectChangeEvent,
     hideMenu: () => void,
 ): void {

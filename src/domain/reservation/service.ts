@@ -78,7 +78,7 @@ export async function createReservation(
  * @param reservationId - The ID of the reservation to delete.
  * @returns A promise that resolves when the reservation is deleted.
  */
-export async function deleteReservation(reservationId: number): Promise<void> {
+export async function deleteReservation(reservationId: string): Promise<void> {
     const endpoint = endpoints.reservations.delete.replace('{id}', reservationId.toString());
 
     await client.delete(endpoint);
@@ -93,7 +93,7 @@ export async function deleteReservation(reservationId: number): Promise<void> {
  */
 export async function confirmReservation(
     locationId: number,
-    reservationId: number,
+    reservationId: string,
 ): Promise<Reservation> {
     const endpoint = endpoints.locations.reservations.confirm
         .replace('{id}', locationId.toString())
@@ -137,7 +137,7 @@ export async function createReservations(
  */
 export async function deleteReservations(
     locationId: number,
-    reservationIds: number[],
+    reservationIds: string[],
 ): Promise<void> {
     const endpoint = endpoints.locations.reservations.delete.replace('{id}', locationId.toString());
 

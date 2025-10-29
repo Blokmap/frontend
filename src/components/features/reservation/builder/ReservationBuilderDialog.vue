@@ -12,8 +12,11 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useReadOpeningTimes } from '@/composables/data/useOpeningTimes';
-import { useReadProfileReservations } from '@/composables/data/useProfile';
-import { useCreateReservations, useDeleteReservations } from '@/composables/data/useReservations';
+import {
+    useCreateReservations,
+    useDeleteReservations,
+    useReadProfileReservations,
+} from '@/composables/data/useReservations';
 import { useWebsocket } from '@/composables/data/useWebsocket';
 import { useToast } from '@/composables/store/useToast';
 import { type Reservation, type ReservationRequest } from '@/domain/reservation';

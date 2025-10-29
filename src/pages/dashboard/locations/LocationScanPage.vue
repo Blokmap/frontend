@@ -10,7 +10,7 @@ import { useToast } from '@/composables/store/useToast';
 import type { Result } from '@zxing/library';
 
 const props = defineProps<{
-    locationId: string;
+    locationId: number;
 }>();
 
 const router = useRouter();

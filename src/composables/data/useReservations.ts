@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { toValue, type MaybeRef } from 'vue';
+import { toValue, type MaybeRef, computed } from 'vue';
 import { readLocationReservations } from '@/domain/location';
+import { readProfileReservations } from '@/domain/profile';
 import {
     confirmReservation,
     createReservation,
@@ -15,11 +16,15 @@ import {
 } from '@/domain/reservation';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Time } from '@/utils/time';
+import type { AxiosError } from 'axios';
 
 export const RESERVATION_QUERY_KEYS = {
     locationReservations: (locationId: MaybeRef<number>, filters?: MaybeRef<ReservationFilter>) =>
         ['location', 'reservations', locationId, filters] as const,
-    profileReservations: () => ['profile', 'reservations'] as const,
+    profileReservations: (
+        profileId: MaybeRef<string | null>,
+        filters?: MaybeRef<ReservationFilter>,
+    ) => ['profile', 'reservations', profileId, filters] as const,
 } as const;
 
 export type CreateReservationParams = {
@@ -43,9 +48,9 @@ export function useCreateReservation(
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate profile reservations queries
+            // Invalidate all profile reservations queries
             queryClient.invalidateQueries({
-                queryKey: RESERVATION_QUERY_KEYS.profileReservations(),
+                queryKey: ['profile', 'reservations'],
             });
 
             options.onSuccess?.(data, variables, context);
@@ -84,7 +89,7 @@ export function useCreateReservations(
 }
 
 export type DeleteReservationParams = {
-    reservationId: number;
+    reservationId: string;
 };
 
 /**
@@ -101,9 +106,9 @@ export function useDeleteReservation(
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate profile reservations queries
+            // Invalidate all profile reservations queries
             queryClient.invalidateQueries({
-                queryKey: RESERVATION_QUERY_KEYS.profileReservations(),
+                queryKey: ['profile', 'reservations'],
             });
 
             options.onSuccess?.(data, variables, context);
@@ -118,7 +123,7 @@ export function useDeleteReservation(
 
 export type DeleteReservationsParams = {
     locationId: number;
-    reservationIds: number[];
+    reservationIds: string[];
 };
 
 /**
@@ -169,7 +174,7 @@ export function useReadLocationReservations(
 
 export type ConfirmReservationParams = {
     locationId: number;
-    reservationId: number;
+    reservationId: string;
 };
 
 /**
@@ -191,9 +196,9 @@ export function useConfirmReservation(
                 queryKey: ['location', 'reservations'],
             });
 
-            // Invalidate profile reservations queries
+            // Invalidate all profile reservations queries
             queryClient.invalidateQueries({
-                queryKey: RESERVATION_QUERY_KEYS.profileReservations(),
+                queryKey: ['profile', 'reservations'],
             });
 
             options.onSuccess?.(data, variables, context);
@@ -208,7 +213,7 @@ export function useConfirmReservation(
 
 type ReservationStateParams = {
     locationId: number;
-    reservationId: number;
+    reservationId: string;
     state: ReservationState;
 };
 
@@ -233,9 +238,9 @@ export function useReservationState(
                 queryKey: ['location', 'reservations'],
             });
 
-            // Invalidate profile reservations queries
+            // Invalidate all profile reservations queries
             queryClient.invalidateQueries({
-                queryKey: RESERVATION_QUERY_KEYS.profileReservations(),
+                queryKey: ['profile', 'reservations'],
             });
 
             options.onSuccess?.(data, variables, context);
@@ -256,4 +261,35 @@ export function useReservationState(
     });
 
     return mutation;
+}
+
+/**
+ * Composable to fetch reservations for a specific profile within a given week.
+ *
+ * @param profileId - The ID of the profile to fetch reservations for.
+ * @param filters - Optional filters to apply when fetching reservations.
+ * @returns The query object containing profile reservations and their state.
+ */
+export function useReadProfileReservations(
+    profileId: MaybeRef<string | null>,
+    filters: MaybeRef<ReservationFilter> = {},
+): CompQuery<Reservation[]> {
+    const enabled = computed(() => toValue(profileId) !== null);
+
+    const query = useQuery<Reservation[], AxiosError>({
+        queryKey: RESERVATION_QUERY_KEYS.profileReservations(profileId, filters),
+        enabled,
+        placeholderData: (previousData) => previousData,
+        queryFn: () => {
+            const profileIdValue = toValue(profileId)!;
+            const filtersValue = toValue(filters);
+
+            return readProfileReservations(profileIdValue, filtersValue, [
+                'location',
+                'openingTime',
+            ]);
+        },
+    });
+
+    return query;
 }

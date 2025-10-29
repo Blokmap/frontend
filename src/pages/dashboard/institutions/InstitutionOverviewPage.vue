@@ -42,23 +42,21 @@ async function handleUpdate(form: InstitutionRequest): Promise<void> {
 
 <template>
     <DashboardContent>
-        <div class="space-y-6">
-            <!-- Header -->
-            <DashboardDetailHeader
-                title="Institutiegegevens"
-                secondary="Bekijk en bewerk institutiegegevens.">
-            </DashboardDetailHeader>
+        <!-- Header -->
+        <DashboardDetailHeader
+            title="Institutiegegevens"
+            secondary="Bekijk en bewerk institutiegegevens.">
+        </DashboardDetailHeader>
 
-            <!-- Institution Information Card -->
-            <Card>
-                <template #content>
-                    <InstitutionForm
-                        :institution="institution"
-                        :is-loading="isUpdating"
-                        @click:save="handleUpdate">
-                    </InstitutionForm>
-                </template>
-            </Card>
-        </div>
+        <!-- Institution Information Card -->
+        <Card>
+            <template #content>
+                <InstitutionForm
+                    :institution="institution"
+                    :is-loading="isUpdating"
+                    @click:save="handleUpdate">
+                </InstitutionForm>
+            </template>
+        </Card>
     </DashboardContent>
 </template>

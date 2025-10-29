@@ -59,7 +59,7 @@ function handleFormSubmission(): void {
         <!-- Name Translations and Type -->
         <div class="space-y-4">
             <div class="flex items-center justify-between">
-                <h3 class="text-lg font-semibold">{{ $t('components.institutionForm.name') }}</h3>
+                <h3 class="text-lg font-semibold">{{ $t('components.institutions.form.name') }}</h3>
                 <LanguageSelector v-model="currentLanguage">
                     <template #button="{ toggle, currentFlag, currentLabel }">
                         <Button severity="contrast" size="small" @click="toggle">
@@ -74,7 +74,7 @@ function handleFormSubmission(): void {
                 <label
                     :for="`name-${currentLanguage}`"
                     class="mb-2 block text-sm font-medium text-gray-700">
-                    {{ $t('components.institutionForm.name') }} ({{
+                    {{ $t('components.institutions.form.name') }} ({{
                         currentLanguage.toUpperCase()
                     }}) *
                 </label>
@@ -90,20 +90,15 @@ function handleFormSubmission(): void {
         <!-- Slug -->
         <div>
             <label for="slug" class="mb-2 block text-sm font-medium text-gray-700">
-                {{ $t('components.institutionForm.slug') }} *
+                {{ $t('components.institutions.form.slug') }} *
             </label>
-            <InputText
-                id="slug"
-                v-model="form.slug"
-                class="w-full"
-                :placeholder="DEFAULT_INSTITUTION_REQUEST.slug"
-                required />
+            <InputText id="slug" v-model="form.slug" class="w-full" required />
         </div>
 
         <!-- Category -->
         <div>
             <label for="category" class="mb-2 block text-sm font-medium text-gray-700">
-                {{ $t('components.institutionForm.category') }} *
+                {{ $t('components.institutions.form.category') }} *
             </label>
             <Select
                 id="category"
@@ -122,118 +117,80 @@ function handleFormSubmission(): void {
         <!-- Contact Information -->
         <div class="space-y-3">
             <h3 class="text-lg font-semibold">
-                {{ $t('components.institutionForm.contactInformation') }}
+                {{ $t('components.institutions.form.contactInformation') }}
             </h3>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                     <label for="email" class="mb-2 block text-sm font-medium text-gray-700">
-                        {{ $t('components.institutionForm.email') }}
+                        {{ $t('components.institutions.form.email') }}
                     </label>
-                    <InputText
-                        id="email"
-                        v-model="form.email"
-                        type="email"
-                        class="w-full"
-                        :placeholder="DEFAULT_INSTITUTION_REQUEST.email ?? ''" />
+                    <InputText id="email" v-model="form.email" type="email" class="w-full" />
                 </div>
 
                 <div>
                     <label for="phone" class="mb-2 block text-sm font-medium text-gray-700">
-                        {{ $t('components.institutionForm.phone') }}
+                        {{ $t('components.institutions.form.phone') }}
                     </label>
-                    <InputText
-                        id="phone"
-                        v-model="form.phoneNumber"
-                        type="tel"
-                        class="w-full"
-                        :placeholder="DEFAULT_INSTITUTION_REQUEST.phoneNumber ?? ''" />
+                    <InputText id="phone" v-model="form.phoneNumber" type="tel" class="w-full" />
                 </div>
             </div>
         </div>
 
         <!-- Address Information -->
         <div class="space-y-3">
-            <h3 class="text-lg font-semibold">{{ $t('components.institutionForm.address') }}</h3>
+            <h3 class="text-lg font-semibold">{{ $t('components.institutions.form.address') }}</h3>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div class="md:col-span-2">
                     <label for="street" class="mb-2 block text-sm font-medium text-gray-700">
-                        {{ $t('components.institutionForm.street') }}
+                        {{ $t('components.institutions.form.street') }}
                     </label>
-                    <InputText
-                        id="street"
-                        v-model="form.street"
-                        class="w-full"
-                        :placeholder="DEFAULT_INSTITUTION_REQUEST.street ?? ''" />
+                    <InputText id="street" v-model="form.street" class="w-full" />
                 </div>
 
                 <div>
                     <label for="number" class="mb-2 block text-sm font-medium text-gray-700">
-                        {{ $t('components.institutionForm.number') }}
+                        {{ $t('components.institutions.form.number') }}
                     </label>
-                    <InputText
-                        id="number"
-                        v-model="form.number"
-                        class="w-full"
-                        :placeholder="DEFAULT_INSTITUTION_REQUEST.number ?? ''" />
+                    <InputText id="number" v-model="form.number" class="w-full" />
                 </div>
             </div>
 
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div>
                     <label for="zip" class="mb-2 block text-sm font-medium text-gray-700">
-                        {{ $t('components.institutionForm.zip') }}
+                        {{ $t('components.institutions.form.zip') }}
                     </label>
-                    <InputText
-                        id="zip"
-                        v-model="form.zip"
-                        class="w-full"
-                        :placeholder="DEFAULT_INSTITUTION_REQUEST.zip ?? ''" />
+                    <InputText id="zip" v-model="form.zip" class="w-full" />
                 </div>
 
                 <div>
                     <label for="city" class="mb-2 block text-sm font-medium text-gray-700">
-                        {{ $t('components.institutionForm.city') }}
+                        {{ $t('components.institutions.form.city') }}
                     </label>
-                    <InputText
-                        id="city"
-                        v-model="form.city"
-                        class="w-full"
-                        :placeholder="DEFAULT_INSTITUTION_REQUEST.city ?? ''" />
+                    <InputText id="city" v-model="form.city" class="w-full" />
                 </div>
 
                 <div>
                     <label for="province" class="mb-2 block text-sm font-medium text-gray-700">
-                        {{ $t('components.institutionForm.province') }}
+                        {{ $t('components.institutions.form.province') }}
                     </label>
-                    <InputText
-                        id="province"
-                        v-model="form.province"
-                        class="w-full"
-                        :placeholder="DEFAULT_INSTITUTION_REQUEST.province ?? ''" />
+                    <InputText id="province" v-model="form.province" class="w-full" />
                 </div>
             </div>
 
             <div>
                 <label for="country" class="mb-2 block text-sm font-medium text-gray-700">
-                    {{ $t('components.institutionForm.country') }}
+                    {{ $t('components.institutions.form.country') }}
                 </label>
-                <InputText
-                    id="country"
-                    v-model="form.country"
-                    class="w-full"
-                    :placeholder="DEFAULT_INSTITUTION_REQUEST.country ?? ''" />
+                <InputText id="country" class="w-full" v-model="form.country"> </InputText>
             </div>
         </div>
 
         <!-- Submit Button -->
         <Button
-            :label="
-                institution
-                    ? $t('components.institutionForm.updateButton')
-                    : $t('components.institutionForm.createButton')
-            "
             severity="primary"
             type="submit"
+            :label="$t('general.actions.save')"
             :loading="isLoading">
             <template #icon>
                 <FontAwesomeIcon :icon="faSave" />

@@ -3,8 +3,11 @@ import LocationDataItem from '@/components/features/location/LocationDataItem.vu
 import LocationDataList from '@/components/features/location/LocationDataList.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
-import { useDeleteLocation, useLocationState } from '@/composables/data/useLocations';
-import { useReadProfileLocations } from '@/composables/data/useProfile';
+import {
+    useDeleteLocation,
+    useLocationState,
+    useReadProfileLocations,
+} from '@/composables/data/useLocations';
 import { useToast } from '@/composables/store/useToast';
 import type { LocationState } from '@/domain/location';
 import type { Profile } from '@/domain/profile';
@@ -85,26 +88,24 @@ function onDeleteLocation(locationId: number) {
 
 <template>
     <DashboardContent>
-        <div class="space-y-6">
-            <!-- Header -->
-            <DashboardDetailHeader
-                title="Locaties"
-                secondary="Bekijk en beheer locaties gekoppeld aan dit profiel.">
-            </DashboardDetailHeader>
+        <!-- Header -->
+        <DashboardDetailHeader
+            title="Locaties"
+            secondary="Bekijk en beheer locaties gekoppeld aan dit profiel.">
+        </DashboardDetailHeader>
 
-            <!-- Locations List -->
-            <LocationDataList :locations="locations" :loading="isLoading">
-                <template #item="{ location }">
-                    <LocationDataItem
-                        :location="location"
-                        :action-is-pending="isLocationPending(location.id)"
-                        :delete-is-pending="isPendingDelete"
-                        :show-status-change="ownProfile.isAdmin"
-                        @change:state="onChangeLocationStatus"
-                        @click:delete="onDeleteLocation">
-                    </LocationDataItem>
-                </template>
-            </LocationDataList>
-        </div>
+        <!-- Locations List -->
+        <LocationDataList :locations="locations" :loading="isLoading">
+            <template #item="{ location }">
+                <LocationDataItem
+                    :location="location"
+                    :action-is-pending="isLocationPending(location.id)"
+                    :delete-is-pending="isPendingDelete"
+                    :show-status-change="ownProfile.isAdmin"
+                    @change:state="onChangeLocationStatus"
+                    @click:delete="onDeleteLocation">
+                </LocationDataItem>
+            </template>
+        </LocationDataList>
     </DashboardContent>
 </template>

@@ -1,27 +1,43 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
+import { transformPaginatedResponse } from '@/utils/service';
 import type { Authority, AuthorityFilter, AuthorityRequest } from './types';
 import type { Profile } from '../profile';
 import type { Paginated } from '@/utils/pagination';
 
 /**
- * List authorities with optional filters.
+ * Parse an authority object from the API by converting string dates to Date objects
  *
- * @param filters - The filters to apply when listing authorities.
+ * @param authorityData - The raw authority data from the API
+ * @returns The parsed authority object
+ */
+export function parseAuthority(authorityData: any | null): Authority {
+    return {
+        ...authorityData,
+        createdAt: new Date(authorityData.createdAt),
+        updatedAt: new Date(authorityData.updatedAt),
+    };
+}
+
+/**
+ * Read authorities with optional filters (returns paginated list).
+ *
+ * @param filters - The filters to apply when reading authorities.
  * @returns A promise that resolves to a list of authorities.
  */
-export async function listAuthorities(
+export async function readAuthorities(
     filters: Partial<AuthorityFilter> = {},
 ): Promise<Paginated<Authority>> {
     const params = {
         ...filters,
     };
 
-    const response = await client.get<Paginated<Authority>>(endpoints.authorities.list, {
+    const { data } = await client.get<Paginated<Authority>>(endpoints.authorities.list, {
         params,
+        transformResponse: transformPaginatedResponse(parseAuthority),
     });
 
-    return response.data;
+    return data;
 }
 
 /**
@@ -65,12 +81,12 @@ export async function updateAuthority(
 }
 
 /**
- * List members (profiles) of an authority.
+ * Read members (profiles) of an authority.
  *
  * @param id - The ID of the authority.
  * @returns A promise that resolves to an array of profiles.
  */
-export async function listAuthorityMembers(id: number): Promise<Profile[]> {
+export async function readAuthorityMembers(id: number): Promise<Profile[]> {
     const endpoint = endpoints.authorities.members.list.replace('{id}', id.toString());
     const { data } = await client.get<Profile[]>(endpoint);
     return data;

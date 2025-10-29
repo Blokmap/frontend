@@ -2,20 +2,19 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { useToast } from 'primevue';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { readAuthorityMembers } from '@/domain/authority';
+import { readInstitutionMembers } from '@/domain/institution';
 import {
     blockProfile,
     deleteProfileAvatar,
-    readProfileReservations,
     readProfileStats,
-    listProfiles,
+    readProfiles,
     unblockProfile,
     updateProfile,
     updateProfileAvatar,
-    readProfileLocations,
     readProfile,
     scanProfile,
 } from '@/domain/profile';
-import type { Location } from '@/domain/location';
 import type {
     Profile,
     ProfileStats,
@@ -23,7 +22,7 @@ import type {
     ProfileState,
     ProfileScanRequest,
 } from '@/domain/profile';
-import type { Reservation, ReservationFilter } from '@/domain/reservation';
+import type { Reservation } from '@/domain/reservation';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
@@ -33,11 +32,10 @@ export const PROFILE_QUERY_KEYS = {
     list: (filters: MaybeRefOrGetter<Partial<ProfileFilter>>) =>
         ['admin', 'profiles', filters] as const,
     stats: (profileId: MaybeRefOrGetter<string | null>) => ['profile', 'stats', profileId] as const,
-    reservations: (
-        profileId: MaybeRef<string | null>,
-        filters: MaybeRefOrGetter<ReservationFilter>,
-    ) => ['profile', 'reservations', profileId, filters] as const,
-    locations: (profileId: MaybeRef<string | null>) => ['profile', 'locations', profileId] as const,
+    authorityMembers: (authorityId: MaybeRefOrGetter<number>) =>
+        ['authorities', 'members', authorityId] as const,
+    institutionMembers: (institutionId: MaybeRefOrGetter<number>) =>
+        ['institutions', 'members', institutionId] as const,
 } as const;
 
 /**
@@ -57,55 +55,6 @@ export function useReadProfileStats(
             return readProfileStats(profileIdValue);
         },
         enabled,
-    });
-
-    return query;
-}
-
-/**
- * Composable to fetch reservations for a specific profile within a given week.
- *
- * @param profileId - The ID of the profile to fetch reservations for.
- * @param inWeekOf - The date within the week for which to fetch reservations.
- * @returns The query object containing profile reservations and their state.
- */
-export function useReadProfileReservations(
-    profileId: MaybeRef<string | null>,
-    filters: MaybeRef<ReservationFilter> = {},
-): CompQuery<Reservation[]> {
-    const enabled = computed(() => toValue(profileId) !== null);
-
-    const query = useQuery<Reservation[], AxiosError>({
-        queryKey: PROFILE_QUERY_KEYS.reservations(profileId, filters),
-        enabled,
-        placeholderData: (previousData) => previousData,
-        queryFn: () => {
-            const profileIdValue = toValue(profileId)!;
-            const filtersValue = toValue(filters);
-
-            return readProfileReservations(profileIdValue, filtersValue, [
-                'location',
-                'openingTime',
-            ]);
-        },
-    });
-
-    return query;
-}
-
-/**
- * Composable to fetch locations associated with a specific profile.
- *
- * @param profileId - The ID of the profile to fetch locations for.
- * @returns The query object containing profile locations and their state.
- */
-export function useReadProfileLocations(profileId: MaybeRef<string | null>): CompQuery<Location[]> {
-    const enabled = computed(() => toValue(profileId) !== null);
-
-    const query = useQuery<Location[], AxiosError>({
-        queryKey: PROFILE_QUERY_KEYS.locations(profileId),
-        enabled,
-        queryFn: () => readProfileLocations(toValue(profileId)!),
     });
 
     return query;
@@ -145,7 +94,7 @@ export function useReadProfiles(
     const query = useQuery<Paginated<Profile>, AxiosError>({
         ...options,
         queryKey: PROFILE_QUERY_KEYS.list(filters),
-        queryFn: () => listProfiles(toValue(filters)),
+        queryFn: () => readProfiles(toValue(filters)),
     });
 
     return query;
@@ -313,4 +262,44 @@ export function useUpdateProfileState(
     });
 
     return mutation;
+}
+
+/**
+ * Composable to fetch members (profiles) of an authority.
+ *
+ * @param id - The ID of the authority.
+ * @param options - Query options.
+ * @returns The query object containing the members and their state.
+ */
+export function useReadAuthorityMembers(
+    id: MaybeRefOrGetter<number>,
+    options: CompQueryOptions = {},
+): CompQuery<Profile[]> {
+    const query = useQuery({
+        ...options,
+        queryKey: PROFILE_QUERY_KEYS.authorityMembers(id),
+        queryFn: () => readAuthorityMembers(toValue(id)),
+    });
+
+    return query;
+}
+
+/**
+ * Composable to fetch members (profiles) of an institution.
+ *
+ * @param id - The ID of the institution.
+ * @param options - Query options.
+ * @returns The query object containing the members and their state.
+ */
+export function useReadInstitutionMembers(
+    id: MaybeRefOrGetter<number>,
+    options: CompQueryOptions = {},
+): CompQuery<Profile[]> {
+    const query = useQuery({
+        ...options,
+        queryKey: PROFILE_QUERY_KEYS.institutionMembers(id),
+        queryFn: () => readInstitutionMembers(toValue(id)),
+    });
+
+    return query;
 }

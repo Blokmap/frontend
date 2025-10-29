@@ -40,33 +40,31 @@ function onRemoveAuthority(authority: Authority) {
 
 <template>
     <DashboardContent>
-        <div class="space-y-6">
-            <!-- Header -->
-            <DashboardDetailHeader
-                title="Autoriteiten"
-                secondary="Beheer autoriteiten gekoppeld aan deze institutie.">
-                <template #actions>
-                    <Button severity="primary" @click="onAddAuthority">
-                        <FontAwesomeIcon :icon="faPlus" class="mr-2" />
-                        Autoriteit Aanmaken
-                    </Button>
-                </template>
-            </DashboardDetailHeader>
+        <!-- Header -->
+        <DashboardDetailHeader
+            title="Autoriteiten"
+            secondary="Beheer autoriteiten gekoppeld aan deze institutie.">
+            <template #actions>
+                <Button severity="primary" @click="onAddAuthority">
+                    <FontAwesomeIcon :icon="faPlus" class="mr-2" />
+                    Autoriteit Aanmaken
+                </Button>
+            </template>
+        </DashboardDetailHeader>
 
-            <!-- Authorities Table -->
-            <AuthorityTable
-                :authorities="authorities"
-                :loading="isLoading"
-                @click:authority="onAuthorityClick">
-                <template #actions="{ authority }">
-                    <!-- Provide a simple remove action in the slot; the real remove logic should call the appropriate composable -->
-                    <button
-                        class="text-sm text-red-600 hover:underline"
-                        @click.stop.prevent="() => onRemoveAuthority(authority)">
-                        Verwijderen
-                    </button>
-                </template>
-            </AuthorityTable>
-        </div>
+        <!-- Authorities Table -->
+        <AuthorityTable
+            :authorities="authorities"
+            :loading="isLoading"
+            @click:authority="onAuthorityClick">
+            <template #actions="{ authority }">
+                <!-- Provide a simple remove action in the slot; the real remove logic should call the appropriate composable -->
+                <button
+                    class="text-sm text-red-600 hover:underline"
+                    @click.stop.prevent="() => onRemoveAuthority(authority)">
+                    Verwijderen
+                </button>
+            </template>
+        </AuthorityTable>
     </DashboardContent>
 </template>

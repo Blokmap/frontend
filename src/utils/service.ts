@@ -87,3 +87,20 @@ export function transformPaginatedResponse<T>(
         };
     };
 }
+
+/**
+ * Transforms a response by parsing it using the provided parser function.
+ *
+ * @param parser - A function that takes an item and returns the parsed item.
+ * @returns A function that takes a JSON string and returns the parsed item or array of items.
+ */
+export function transformResponse<T>(parser: (item: any) => T): (data: string) => T | T[] {
+    return (data: string) => {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) {
+            return parsed.map(parser);
+        } else {
+            return parser(parsed);
+        }
+    };
+}

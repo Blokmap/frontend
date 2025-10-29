@@ -5,12 +5,12 @@ import type { Profile } from '../profile';
 import type { Paginated } from '@/utils/pagination';
 
 /**
- * List institutions with optional filters.
+ * Read institutions with optional filters (returns paginated list).
  *
- * @param filters - The filters to apply when listing institutions.
+ * @param filters - The filters to apply when reading institutions.
  * @returns A promise that resolves to a list of institutions.
  */
-export async function listInstitutions(
+export async function readInstitutions(
     filters: Partial<InstitutionFilter> = {},
 ): Promise<Paginated<Institution>> {
     const params = {
@@ -65,12 +65,12 @@ export async function updateInstitution(
 }
 
 /**
- * List members (profiles) of an institution.
+ * Read members (profiles) of an institution.
  *
  * @param slug - The slug of the institution.
  * @returns A promise that resolves to an array of profiles.
  */
-export async function listInstitutionMembers(id: number): Promise<Profile[]> {
+export async function readInstitutionMembers(id: number): Promise<Profile[]> {
     const endpoint = endpoints.institutions.members.list.replace('{id}', id.toString());
     const { data } = await client.get<Profile[]>(endpoint);
     return data;
@@ -103,12 +103,12 @@ export async function removeInstitutionMember(id: number, profileId: string): Pr
 }
 
 /**
- * List authorities associated with an institution.
+ * Read authorities associated with an institution.
  *
  * @param slug - The slug of the institution.
  * @returns A promise that resolves to an array of authorities.
  */
-export async function listInstitutionAuthorities(id: number): Promise<any[]> {
+export async function readInstitutionAuthorities(id: number): Promise<any[]> {
     const endpoint = endpoints.institutions.authorities.list.replace('{id}', id.toString());
     const { data } = await client.get<any[]>(endpoint);
     return data;

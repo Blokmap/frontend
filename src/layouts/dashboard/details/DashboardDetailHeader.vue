@@ -58,10 +58,6 @@ defineProps<{
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.detail-header-card {
-    @apply mb-6;
-}
-
 .detail-header {
     @apply flex flex-row items-center gap-3 md:gap-6;
 

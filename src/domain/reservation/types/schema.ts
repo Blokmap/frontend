@@ -37,6 +37,6 @@ export type ReservationRequest = {
 };
 
 export type ReservationQueueResponse = {
-    reservationId: number;
+    reservationId: string;
     state: string;
 };

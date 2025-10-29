@@ -13,12 +13,8 @@ import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import {
-    useAddAuthorityMember,
-    useListAuthorityMembers,
-    useRemoveAuthorityMember,
-} from '@/composables/data/useAuthorities';
-import { useReadProfiles } from '@/composables/data/useProfile';
+import { useAddAuthorityMember, useRemoveAuthorityMember } from '@/composables/data/useAuthorities';
+import { useReadAuthorityMembers, useReadProfiles } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/store/useToast';
 import type { Authority } from '@/domain/authority';
 import type { Profile, ProfileFilter } from '@/domain/profile';
@@ -35,7 +31,7 @@ const {
     data: members,
     isLoading,
     refetch: refetchMembers,
-} = useListAuthorityMembers(computed(() => props.authority.id));
+} = useReadAuthorityMembers(computed(() => props.authority.id));
 
 const showSelectorDialog = ref(false);
 
@@ -153,48 +149,47 @@ async function onRemoveUser(profile: Profile): Promise<void> {
 
 <template>
     <DashboardContent>
-        <div class="space-y-6">
-            <!-- Header -->
-            <DashboardDetailHeader
-                title="Leden"
-                secondary="Beheer leden die aan deze autoriteit zijn gekoppeld.">
-                <template #actions>
-                    <Button severity="primary" @click="onAddUser">
-                        <FontAwesomeIcon :icon="faUserPlus" class="mr-2" />
-                        Lid Toevoegen
+        <!-- Header -->
+        <DashboardDetailHeader
+            title="Leden"
+            secondary="Beheer leden die aan deze autoriteit zijn gekoppeld.">
+            <template #actions>
+                <Button severity="primary" @click="onAddUser">
+                    <FontAwesomeIcon :icon="faUserPlus" class="mr-2" />
+                    Lid Toevoegen
+                </Button>
+            </template>
+        </DashboardDetailHeader>
+
+        <!-- Profiles Table -->
+        <Table :value="members" :loading="isLoading" @click:row="onProfileClick">
+            <template #row="{ data: profile }">
+                <TableCell column="Profiel">
+                    <ProfileTableCell :profile="profile" />
+                </TableCell>
+
+                <TableCell column="E-mailadres">
+                    {{ profile.email }}
+                </TableCell>
+
+                <TableCell column="Status">
+                    <ProfileStateBadge :profile="profile" />
+                </TableCell>
+
+                <TableCell column="Acties">
+                    <Button
+                        size="small"
+                        severity="danger"
+                        :loading="isRemoving"
+                        @click.stop="onRemoveUser(profile)"
+                        outlined>
+                        Verwijderen
                     </Button>
-                </template>
-            </DashboardDetailHeader>
-
-            <!-- Profiles Table -->
-            <Table :value="members" :loading="isLoading" @click:row="onProfileClick">
-                <template #row="{ data: profile }">
-                    <TableCell column="Profiel">
-                        <ProfileTableCell :profile="profile" />
-                    </TableCell>
-
-                    <TableCell column="E-mailadres">
-                        {{ profile.email }}
-                    </TableCell>
-
-                    <TableCell column="Status">
-                        <ProfileStateBadge :profile="profile" />
-                    </TableCell>
-
-                    <TableCell column="Acties">
-                        <Button
-                            size="small"
-                            severity="danger"
-                            :loading="isRemoving"
-                            @click.stop="onRemoveUser(profile)"
-                            outlined>
-                            Verwijderen
-                        </Button>
-                    </TableCell>
-                </template>
-            </Table>
-        </div>
-
+                </TableCell>
+            </template>
+        </Table>
+    </DashboardContent>
+    <Teleport to="body">
         <!-- Profile Selector Dialog -->
         <ProfileSelectorDialog
             v-model:visible="showSelectorDialog"
@@ -228,5 +223,5 @@ async function onRemoveUser(profile: Profile): Promise<void> {
                 </Paginator>
             </template>
         </ProfileSelectorDialog>
-    </DashboardContent>
+    </Teleport>
 </template>

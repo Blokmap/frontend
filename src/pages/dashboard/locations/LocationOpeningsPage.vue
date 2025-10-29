@@ -14,7 +14,7 @@ import { openingToRequest } from '@/domain/openings';
 import type { OpeningTimeRequest } from '@/domain/openings';
 
 const props = defineProps<{
-    locationId: string;
+    locationId: number;
 }>();
 
 const toast = useToast();

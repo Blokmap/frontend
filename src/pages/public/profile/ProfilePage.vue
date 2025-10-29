@@ -20,7 +20,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
-import { useReadProfileReservations, useReadProfileStats } from '@/composables/data/useProfile';
+import { useReadProfileStats } from '@/composables/data/useProfile';
+import { useReadProfileReservations } from '@/composables/data/useReservations';
 
 const { isLoading: profileIsLoading, data: profile, profileId } = useAuthProfile();
 

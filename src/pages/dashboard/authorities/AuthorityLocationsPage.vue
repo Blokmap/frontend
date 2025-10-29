@@ -17,19 +17,17 @@ const isLoading = computed(() => false);
 
 <template>
     <DashboardContent>
-        <div class="space-y-6">
-            <!-- Header -->
-            <DashboardDetailHeader
-                title="Locaties"
-                secondary="Bekijk alle locaties die aan deze autoriteit zijn gekoppeld.">
-            </DashboardDetailHeader>
+        <!-- Header -->
+        <DashboardDetailHeader
+            title="Locaties"
+            secondary="Bekijk alle locaties die aan deze autoriteit zijn gekoppeld.">
+        </DashboardDetailHeader>
 
-            <!-- Locations List -->
-            <LocationDataList :locations="locations" :loading="isLoading">
-                <template #item="{ location }">
-                    <LocationDataItem :location="location" />
-                </template>
-            </LocationDataList>
-        </div>
+        <!-- Locations List -->
+        <LocationDataList :locations="locations" :loading="isLoading">
+            <template #item="{ location }">
+                <LocationDataItem :location="location" />
+            </template>
+        </LocationDataList>
     </DashboardContent>
 </template>

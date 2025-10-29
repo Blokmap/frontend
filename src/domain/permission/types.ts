@@ -1,43 +1,59 @@
-/**
- * Base permission type - represents a numeric bitflag value
- */
-export type Permission = number;
+export enum LocationPermissions {
+    // Admin privileges, member can do everything
+    Administrator = 1 << 0,
 
-/**
- * Permission domain type
- */
-export type PermissionDomain = 'location' | 'authority' | 'institution';
+    // Member can manage images for this location
+    // - upload new images
+    // - reorder images
+    // - delete images
+    ManageImages = 1 << 1,
 
-/**
- * Location permissions bitflags
- */
-export const LP = {
-    Administrator: 1 << 0,
-    ManageLocation: 1 << 1,
-    DeleteLocation: 1 << 2,
-    ManageOpeningTimes: 1 << 3,
-    ManageReservations: 1 << 4,
-    ManageMembers: 1 << 5,
-} as const;
+    // Member can manage opening times for this location
+    // - create opening times
+    // - update opening times
+    // - delete opening times
+    ManageOpeningTimes = 1 << 2,
 
-/**
- * Authority permissions bitflags
- */
-export const AP = {
-    Administrator: 1 << 0,
-    ManageAuthority: 1 << 1,
-    ManageLocation: 1 << 2,
-    AddLocation: 1 << 3,
-    ApproveLocation: 1 << 4,
-    DeleteLocation: 1 << 5,
-    ManageOpeningTimes: 1 << 6,
-    ManageReservations: 1 << 7,
-    ManageMembers: 1 << 8,
-} as const;
+    // Member can manage location members and their permissions
+    // - Add members
+    // - Update member roles
+    // - Remove members
+    ManageMembers = 1 << 3,
 
-/**
- * Institution permissions bitflags
- */
-export const IP = {
-    Administrator: 1 << 0,
-} as const;
+    // Member can manage reservations for this location
+    ManageReservations = 1 << 4,
+}
+
+export enum AuthorityPermissions {
+    // Admin privileges, member can do everything
+    Administrator = 1 << 0,
+
+    // Member can submit new locations under this authority
+    AddLocations = 1 << 1,
+    // Member can approve/reject all locations under this authority
+    ApproveLocations = 1 << 2,
+    // Member can delete all locations under this authority
+    DeleteLocations = 1 << 3,
+
+    // Member can manage authority members and their permissions
+    // - Add members
+    // - Update member roles
+    // - Remove members
+    ManageMembers = 1 << 4,
+}
+
+export enum InstitutionPermissions {
+    // Admin privileges, member can do everything
+    Administrator = 1 << 0,
+
+    // Member can create or link new authorities under this institution
+    AddAuthority = 1 << 1,
+    // Member can delete authorities under this institution
+    DeleteAuthority = 1 << 2,
+
+    // Member can manage institution members and their permissions
+    // - Add members
+    // - Update member roles
+    // - Remove members
+    ManageMembers = 1 << 3,
+}

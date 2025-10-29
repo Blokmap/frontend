@@ -4,7 +4,13 @@ import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
-import { faBuilding, faList, faMapLocationDot, faUsers } from '@fortawesome/free-solid-svg-icons';
+import {
+    faBuilding,
+    faList,
+    faMapLocationDot,
+    faUsers,
+    faUsersGear,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useReadAuthority } from '@/composables/data/useAuthorities';
@@ -40,6 +46,16 @@ const tabs = computed<TabItem[]>(() => [
         icon: faUsers,
         route: {
             name: 'dashboard.authorities.detail.members',
+            params: { authorityId: props.authorityId },
+        },
+    },
+    {
+        value: 'access',
+        label: 'Toegangsbeheer',
+        align: 'right',
+        icon: faUsersGear,
+        route: {
+            name: 'dashboard.authorities.detail.access',
             params: { authorityId: props.authorityId },
         },
     },

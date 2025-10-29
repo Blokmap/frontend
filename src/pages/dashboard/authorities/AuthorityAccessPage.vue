@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Paginator from 'primevue/paginator';
 import MemberActionsMenu from '@/components/features/auth/MemberActionsMenu.vue';
 import ProfileTableCell from '@/components/features/profile/ProfileTableCell.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
@@ -9,24 +8,17 @@ import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { faCircleUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref } from 'vue';
-import { useReadLocationMembers, useReadLocationRoles } from '@/composables/data/useAuth';
-import { usePagination } from '@/composables/data/usePagination';
-import type { Location } from '@/domain/location';
+import { computed } from 'vue';
+import { useReadAuthorityMembers, useReadAuthorityRoles } from '@/composables/data/useAuth';
+import type { Authority } from '@/domain/authority';
 
 const props = defineProps<{
-    locationId: string;
-    location: Location;
+    authorityId: string;
+    authority: Authority;
 }>();
 
-const filters = ref({
-    page: 1,
-    perPage: 25,
-});
-
-const { data: members, isLoading } = useReadLocationMembers(computed(() => +props.locationId));
-const { data: roles } = useReadLocationRoles(computed(() => +props.locationId));
-const { onPageChange, first } = usePagination(filters);
+const { data: members, isLoading } = useReadAuthorityMembers(computed(() => +props.authorityId));
+const { data: roles } = useReadAuthorityRoles(computed(() => +props.authorityId));
 
 /**
  * Handle changing a member's role.
@@ -52,8 +44,8 @@ function onRemoveMember(profileId: string): void {
             <template #actions>
                 <RouterLink
                     :to="{
-                        name: 'dashboard.locations.detail.roles',
-                        params: { locationId },
+                        name: 'dashboard.authorities.detail.roles',
+                        params: { authorityId },
                     }">
                     <PageHeaderButton severity="contrast" label="Rollen beheren">
                         <FontAwesomeIcon :icon="faCircleUser" />
@@ -63,7 +55,7 @@ function onRemoveMember(profileId: string): void {
         </DashboardDetailHeader>
 
         <!-- Members Table -->
-        <Table :value="members?.data" :loading="isLoading">
+        <Table :value="members" :loading="isLoading">
             <template #row="{ data: member }">
                 <TableCell column="Profiel">
                     <ProfileTableCell :profile="member.profile" />
@@ -96,13 +88,5 @@ function onRemoveMember(profileId: string): void {
                 </TableCell>
             </template>
         </Table>
-
-        <Paginator
-            v-if="members?.data?.length"
-            :first="first"
-            :rows="members.perPage"
-            :total-records="members.total"
-            @page="onPageChange">
-        </Paginator>
     </DashboardContent>
 </template>

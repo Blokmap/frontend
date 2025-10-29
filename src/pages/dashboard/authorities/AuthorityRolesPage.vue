@@ -8,16 +8,16 @@ import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHe
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-import { useReadLocationRoles } from '@/composables/data/useAuth';
+import { useReadAuthorityRoles } from '@/composables/data/useAuth';
 import type { Role } from '@/domain/auth';
-import type { Location } from '@/domain/location';
+import type { Authority } from '@/domain/authority';
 
 const props = defineProps<{
-    locationId: string;
-    location: Location;
+    authorityId: string;
+    authority: Authority;
 }>();
 
-const { data: roles, isLoading } = useReadLocationRoles(computed(() => +props.locationId));
+const { data: roles, isLoading } = useReadAuthorityRoles(computed(() => +props.authorityId));
 
 /**
  * Handle adding a new role.
@@ -62,12 +62,13 @@ function onDeleteRole(role: Role): void {
                     <div class="flex items-center gap-2">
                         <span
                             class="inline-block h-3 w-3 rounded-full"
-                            :style="{ backgroundColor: role.colour }">
-                        </span>
-                        <span class="font-medium" :style="{ color: role.colour }">
-                            {{ role.name }}
-                        </span>
+                            :style="{ backgroundColor: role.colour }"></span>
+                        <span class="font-medium">{{ role.name }}</span>
                     </div>
+                </TableCell>
+
+                <TableCell column="Kleur">
+                    <code class="text-xs">{{ role.colour }}</code>
                 </TableCell>
 
                 <TableCell column="Permissies">

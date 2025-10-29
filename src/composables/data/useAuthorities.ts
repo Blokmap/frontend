@@ -25,7 +25,6 @@ export const AUTHORITY_QUERY_KEYS = {
         ['profile', 'authorities', profileId] as const,
 } as const;
 
-// Mutation parameter types
 export type UpdateAuthorityParams = {
     id: number;
     data: AuthorityRequest;

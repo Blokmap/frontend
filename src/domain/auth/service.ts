@@ -3,6 +3,7 @@ import { endpoints } from '@/config/endpoints';
 import { transformResponse } from '@/utils/service';
 import type { LoginRequest, Membership, RegisterRequest, Role } from './types';
 import type { Profile } from '@/domain/profile';
+import type { Paginated } from '@/utils/pagination';
 
 /**
  * Fetches the authenticated user's profile.
@@ -75,7 +76,7 @@ export async function readLocationRoles(locationId: number): Promise<Role[]> {
  * @param locationId - The ID of the location.
  * @returns A promise that resolves to an array of memberships for the specified location.
  */
-export async function readLocationMembers(locationId: number): Promise<Membership[]> {
+export async function readLocationMembers(locationId: number): Promise<Paginated<Membership>> {
     const endpoint = endpoints.locations.members.list.replace('{id}', locationId.toString());
 
     const { data } = await client.get(endpoint, {
@@ -107,7 +108,7 @@ export async function readAuthorityRoles(authorityId: number): Promise<Role[]> {
  * @param authorityId - The ID of the authority.
  * @returns A promise that resolves to an array of memberships for the specified authority.
  */
-export async function readAuthorityMembers(authorityId: number): Promise<Membership[]> {
+export async function readAuthorityMembers(authorityId: number): Promise<Paginated<Membership>> {
     const endpoint = endpoints.authorities.members.list.replace('{id}', authorityId.toString());
 
     const { data } = await client.get(endpoint, {
@@ -139,7 +140,9 @@ export async function readInstitutionRoles(institutionId: number): Promise<Role[
  * @param institutionId - The ID of the institution.
  * @returns A promise that resolves to an array of memberships for the specified institution.
  */
-export async function readInstitutionMembers(institutionId: number): Promise<Membership[]> {
+export async function readInstitutionMembers(
+    institutionId: number,
+): Promise<Paginated<Membership>> {
     const endpoint = endpoints.institutions.members.list.replace('{id}', institutionId.toString());
 
     const { data } = await client.get(endpoint, {

@@ -83,11 +83,11 @@ export async function updateInstitution(
  * @param slug - The slug of the institution.
  * @returns A promise that resolves to an array of profiles.
  */
-export async function readInstitutionMembers(id: number): Promise<Profile[]> {
+export async function readInstitutionMembers(id: number): Promise<Paginated<Profile>> {
     const endpoint = endpoints.institutions.members.list.replace('{id}', id.toString());
 
-    const { data } = await client.get<Profile[]>(endpoint, {
-        transformResponse,
+    const { data } = await client.get<Paginated<Profile>>(endpoint, {
+        transformResponse: transformPaginatedResponse,
     });
 
     return data;

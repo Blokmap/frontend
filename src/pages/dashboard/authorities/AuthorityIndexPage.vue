@@ -14,6 +14,7 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useReadAuthorities } from '@/composables/data/useAuthorities';
+import { usePagination } from '@/composables/data/usePagination';
 import { abbreviateCount } from '@/utils/format';
 import type { Authority, AuthorityFilter } from '@/domain/authority';
 import type { Profile } from '@/domain/profile';
@@ -29,6 +30,7 @@ const filters = ref<AuthorityFilter>({
 });
 
 const { data: authorities, isFetching, isLoading } = useReadAuthorities(filters);
+const { onPageChange, resetPage } = usePagination(filters);
 const { data: counts } = useAdminCounts();
 
 const searchQuery = ref<string>('');
@@ -39,11 +41,8 @@ const pageTitle = computed(
 
 const onSearchChange = useDebounceFn(() => {
     filters.value.query = searchQuery.value;
+    resetPage();
 }, 300);
-
-const onPageChange = (event: { page: number }): void => {
-    filters.value.page = event.page + 1;
-};
 
 const onAuthorityClick = (authority: Authority) => {
     router.push({

@@ -165,7 +165,7 @@ async function onRemoveUser(profile: Profile): Promise<void> {
         </DashboardDetailHeader>
 
         <!-- Profiles Table -->
-        <Table :value="members" :loading="isLoading" @click:row="onProfileClick">
+        <Table :value="members?.data" :loading="isLoading" @click:row="onProfileClick">
             <template #row="{ data: profile }">
                 <TableCell column="Profiel">
                     <ProfileTableCell :profile="profile" />

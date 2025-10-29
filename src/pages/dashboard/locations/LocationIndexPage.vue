@@ -20,6 +20,7 @@ import {
     useReadLocations,
     useLocationState,
 } from '@/composables/data/useLocations';
+import { usePagination } from '@/composables/data/usePagination';
 import { useToast } from '@/composables/store/useToast';
 import { abbreviateCount } from '@/utils/format';
 import type { LocationFilter, LocationState } from '@/domain/location';
@@ -95,6 +96,7 @@ const {
 });
 
 const { data: counts } = useAdminCounts();
+const { onPageChange, resetPage, first } = usePagination(filters);
 
 const pageTitle = computed(() =>
     t('pages.dashboard.locations.index.title', [
@@ -104,7 +106,7 @@ const pageTitle = computed(() =>
 
 const onSearchChange = useDebounceFn(() => {
     filters.value.query = searchQuery.value;
-    filters.value.page = 1;
+    resetPage();
 }, 300);
 
 /**
@@ -121,14 +123,6 @@ function isLocationPending(locationId: number): boolean {
  */
 function isLocationDeleting(locationId: number): boolean {
     return isDeletingLocation.value && deleteVariables.value === locationId;
-}
-
-/**
- * Handle changing the page in the paginator.
- * @param event The pagination event containing the new page number.
- */
-function onPageChange(event: { page: number }): void {
-    filters.value.page = event.page + 1;
 }
 
 /**
@@ -200,7 +194,7 @@ function onDeleteLocation(locationId: number) {
 
             <Paginator
                 v-if="locations?.data?.length"
-                :first="locations.perPage * (locations.page - 1)"
+                :first="first"
                 :rows="locations.perPage"
                 :total-records="locations.total"
                 @page="onPageChange">

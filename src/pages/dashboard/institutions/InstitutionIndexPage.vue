@@ -14,6 +14,7 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useReadInstitutions } from '@/composables/data/useInstitutions';
+import { usePagination } from '@/composables/data/usePagination';
 import { abbreviateCount } from '@/utils/format';
 import type { Institution, InstitutionFilter } from '@/domain/institution';
 import type { Profile } from '@/domain/profile';
@@ -29,6 +30,7 @@ const filters = ref<InstitutionFilter>({
 });
 
 const { data: institutions, isFetching, isLoading } = useReadInstitutions(filters);
+const { onPageChange, resetPage } = usePagination(filters);
 const { data: counts } = useAdminCounts();
 
 const searchQuery = ref<string>('');
@@ -39,11 +41,8 @@ const pageTitle = computed(
 
 const onSearchChange = useDebounceFn(() => {
     filters.value.query = searchQuery.value;
+    resetPage();
 }, 300);
-
-const onPageChange = (event: { page: number }): void => {
-    filters.value.page = event.page + 1;
-};
 
 const onInstitutionClick = (institution: Institution) => {
     router.push({

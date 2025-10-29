@@ -294,7 +294,7 @@ export function useReadAuthorityMembers(
 export function useReadInstitutionMembers(
     id: MaybeRefOrGetter<number>,
     options: CompQueryOptions = {},
-): CompQuery<Profile[]> {
+): CompQuery<Paginated<Profile>> {
     const query = useQuery({
         ...options,
         queryKey: PROFILE_QUERY_KEYS.institutionMembers(id),

@@ -5,7 +5,7 @@ import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
-import { faBuilding, faList, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faBuilding, faList, faUsers, faUsersGear } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useReadInstitutions } from '@/composables/data/useInstitutions';
@@ -55,6 +55,16 @@ const tabs = computed<TabItem[]>(() => [
         icon: faBuilding,
         route: {
             name: 'dashboard.institutions.detail.authorities',
+            params: { institutionId: props.institutionId },
+        },
+    },
+    {
+        value: 'access',
+        label: 'Toegangsbeheer',
+        align: 'right',
+        icon: faUsersGear,
+        route: {
+            name: 'dashboard.institutions.detail.access',
             params: { institutionId: props.institutionId },
         },
     },

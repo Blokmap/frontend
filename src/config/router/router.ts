@@ -13,18 +13,22 @@ import { readAuthProfile, pullRedirectUrl } from '@/domain/auth';
 import { authRouterGuard, breadcrumbRouterGuard, titleRouterGuard } from './guards';
 import {
     AuthPage,
+    AuthorityAccessPage,
     AuthorityCreatePage,
     AuthorityIndexPage,
     AuthorityLocationsPage,
     AuthorityMembersPage,
     AuthorityOverviewPage,
+    AuthorityRolesPage,
     DashboardReviewsPage,
     DashboardStatisticsPage,
+    InstitutionAccessPage,
+    InstitutionAuthoritiesPage,
     InstitutionCreatePage,
     InstitutionIndexPage,
-    InstitutionOverviewPage,
     InstitutionMembersPage,
-    InstitutionAuthoritiesPage,
+    InstitutionOverviewPage,
+    InstitutionRolesPage,
     LocationAccessPage,
     LocationImagesPage,
     LocationInfoPage,
@@ -251,27 +255,22 @@ const routes: RouteRecordRaw[] = [
                                     ],
                                 },
                             },
+                            {
+                                path: 'roles',
+                                name: 'dashboard.locations.detail.roles',
+                                component: LocationRolesPage,
+                                props: true,
+                                meta: {
+                                    title: 'Rollen beheren',
+                                    breadcrumbs: [
+                                        {
+                                            label: 'Rollen',
+                                            to: { name: 'dashboard.locations.detail.roles' },
+                                        },
+                                    ],
+                                },
+                            },
                         ],
-                    },
-                    {
-                        path: ':locationId/roles',
-                        name: 'dashboard.locations.detail.roles',
-                        component: LocationRolesPage,
-                        props: true,
-                        meta: {
-                            title: 'Rollen beheren',
-                            breadcrumbs: [
-                                { label: 'Locaties', to: { name: 'dashboard.locations.index' } },
-                                {
-                                    label: 'Details',
-                                    to: { name: 'dashboard.locations.detail.info' },
-                                },
-                                {
-                                    label: 'Rollen beheren',
-                                    to: { name: 'dashboard.locations.detail.roles' },
-                                },
-                            ],
-                        },
                     },
                 ],
             },
@@ -342,6 +341,36 @@ const routes: RouteRecordRaw[] = [
                                 component: AuthorityMembersPage,
                                 props: true,
                                 meta: { title: 'Autoriteit Leden' },
+                            },
+                            {
+                                path: 'access',
+                                name: 'dashboard.authorities.detail.access',
+                                component: AuthorityAccessPage,
+                                props: true,
+                                meta: {
+                                    title: 'Toegangsbeheer',
+                                    breadcrumbs: [
+                                        {
+                                            label: 'Toegangsbeheer',
+                                            to: { name: 'dashboard.authorities.detail.access' },
+                                        },
+                                    ],
+                                },
+                            },
+                            {
+                                path: 'roles',
+                                name: 'dashboard.authorities.detail.roles',
+                                component: AuthorityRolesPage,
+                                props: true,
+                                meta: {
+                                    title: 'Rollen beheren',
+                                    breadcrumbs: [
+                                        {
+                                            label: 'Rollen',
+                                            to: { name: 'dashboard.authorities.detail.roles' },
+                                        },
+                                    ],
+                                },
                             },
                         ],
                     },
@@ -414,6 +443,36 @@ const routes: RouteRecordRaw[] = [
                                 component: InstitutionAuthoritiesPage,
                                 props: true,
                                 meta: { title: 'Institutie Autoriteiten' },
+                            },
+                            {
+                                path: 'access',
+                                name: 'dashboard.institutions.detail.access',
+                                component: InstitutionAccessPage,
+                                props: true,
+                                meta: {
+                                    title: 'Toegangsbeheer',
+                                    breadcrumbs: [
+                                        {
+                                            label: 'Toegangsbeheer',
+                                            to: { name: 'dashboard.institutions.detail.access' },
+                                        },
+                                    ],
+                                },
+                            },
+                            {
+                                path: 'roles',
+                                name: 'dashboard.institutions.detail.roles',
+                                component: InstitutionRolesPage,
+                                props: true,
+                                meta: {
+                                    title: 'Rollen beheren',
+                                    breadcrumbs: [
+                                        {
+                                            label: 'Rollen',
+                                            to: { name: 'dashboard.institutions.detail.roles' },
+                                        },
+                                    ],
+                                },
                             },
                         ],
                     },

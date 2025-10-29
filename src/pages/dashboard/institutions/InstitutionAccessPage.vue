@@ -10,13 +10,13 @@ import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHe
 import { faCircleUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
-import { useReadLocationMembers, useReadLocationRoles } from '@/composables/data/useAuth';
+import { useReadInstitutionMembers, useReadInstitutionRoles } from '@/composables/data/useAuth';
 import { usePagination } from '@/composables/data/usePagination';
-import type { Location } from '@/domain/location';
+import type { Institution } from '@/domain/institution';
 
 const props = defineProps<{
-    locationId: string;
-    location: Location;
+    institutionId: string;
+    institution: Institution;
 }>();
 
 const filters = ref({
@@ -24,8 +24,10 @@ const filters = ref({
     perPage: 25,
 });
 
-const { data: members, isLoading } = useReadLocationMembers(computed(() => +props.locationId));
-const { data: roles } = useReadLocationRoles(computed(() => +props.locationId));
+const { data: members, isLoading } = useReadInstitutionMembers(
+    computed(() => +props.institutionId),
+);
+const { data: roles } = useReadInstitutionRoles(computed(() => +props.institutionId));
 const { onPageChange, first } = usePagination(filters);
 
 /**
@@ -52,8 +54,8 @@ function onRemoveMember(profileId: string): void {
             <template #actions>
                 <RouterLink
                     :to="{
-                        name: 'dashboard.locations.detail.roles',
-                        params: { locationId },
+                        name: 'dashboard.institutions.detail.roles',
+                        params: { institutionId },
                     }">
                     <PageHeaderButton severity="contrast" label="Rollen beheren">
                         <FontAwesomeIcon :icon="faCircleUser" />

@@ -49,6 +49,10 @@ export function formatRequest<T extends Record<string, any>>(
             continue;
         }
 
+        if (value instanceof File) {
+            continue;
+        }
+
         if (typeof value === 'object' && !Array.isArray(value)) {
             result[key] = formatRequest(value);
             continue;

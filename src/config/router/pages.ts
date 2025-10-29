@@ -50,6 +50,10 @@ export const AuthorityMembersPage = () =>
     import('@/pages/dashboard/authorities/AuthorityMembersPage.vue');
 export const AuthorityLocationsPage = () =>
     import('@/pages/dashboard/authorities/AuthorityLocationsPage.vue');
+export const AuthorityAccessPage = () =>
+    import('@/pages/dashboard/authorities/AuthorityAccessPage.vue');
+export const AuthorityRolesPage = () =>
+    import('@/pages/dashboard/authorities/AuthorityRolesPage.vue');
 export const DashboardAuthoritiesPage = () =>
     import('@/pages/dashboard/authorities/AuthoritiesPage.vue');
 export const DashboardAuthorityPage = () =>
@@ -66,6 +70,10 @@ export const InstitutionMembersPage = () =>
     import('@/pages/dashboard/institutions/InstitutionMembersPage.vue');
 export const InstitutionAuthoritiesPage = () =>
     import('@/pages/dashboard/institutions/InstitutionAuthoritiesPage.vue');
+export const InstitutionAccessPage = () =>
+    import('@/pages/dashboard/institutions/InstitutionAccessPage.vue');
+export const InstitutionRolesPage = () =>
+    import('@/pages/dashboard/institutions/InstitutionRolesPage.vue');
 
 // Dashboard Statistics
 export const DashboardStatisticsPage = () =>

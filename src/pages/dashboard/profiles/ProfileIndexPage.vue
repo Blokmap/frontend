@@ -15,6 +15,7 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
+import { usePagination } from '@/composables/data/usePagination';
 import { useReadProfiles, useUpdateProfileState } from '@/composables/data/useProfile';
 import { abbreviateCount } from '@/utils/format';
 import type { Profile, ProfileFilter, ProfileState } from '@/domain/profile';
@@ -31,6 +32,7 @@ const filters = ref<ProfileFilter>({
 });
 
 const { data: profiles, refetch, isFetching, isLoading } = useReadProfiles(filters);
+const { onPageChange, resetPage, first } = usePagination(filters);
 
 const {
     mutateAsync: updateProfileState,
@@ -59,13 +61,9 @@ const isProfilePending = (profileId: string): boolean => {
     return isUpdatingProfile.value && updateVariables.value?.profileId === profileId;
 };
 
-const onPageChange = (event: { page: number }): void => {
-    filters.value.page = event.page + 1;
-};
-
 const onSearchChange = useDebounceFn(() => {
     filters.value.query = searchQuery.value;
-    filters.value.page = 1;
+    resetPage();
 }, 300);
 
 /**
@@ -141,7 +139,7 @@ async function onChangeProfileStatus(profileId: string, status: ProfileState) {
 
             <Paginator
                 v-if="profiles?.data?.length"
-                :first="profiles.perPage * (profiles.page - 1)"
+                :first="first"
                 :rows="profiles.perPage"
                 :total-records="profiles.total"
                 @page="onPageChange">

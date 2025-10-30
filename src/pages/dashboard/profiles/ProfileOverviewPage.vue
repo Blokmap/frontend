@@ -15,6 +15,7 @@ import type { Profile, ProfileState } from '@/domain/profile';
 
 defineProps<{
     profile: Profile;
+    ownProfile: Profile;
     isOwnProfile: boolean;
 }>();
 
@@ -39,8 +40,8 @@ const isUpdatingProfile = computed(() => isUpdatingState.value);
  * @param profileId - ID of the profile
  * @param state - New state for the profile
  */
-async function onChangeStatus(profileId: string, state: ProfileState) {
-    await updateProfileState({ profileId, state });
+function onChangeStatus(profileId: string, state: ProfileState) {
+    updateProfileState({ profileId, state });
 }
 </script>
 
@@ -56,7 +57,8 @@ async function onChangeStatus(profileId: string, state: ProfileState) {
                 <ProfileActionsMenu
                     :profile="profile"
                     :is-pending="isUpdatingProfile"
-                    @change:status="onChangeStatus">
+                    @change:status="onChangeStatus"
+                    v-if="ownProfile.isAdmin">
                     <template #trigger="{ toggle }">
                         <Button
                             severity="contrast"

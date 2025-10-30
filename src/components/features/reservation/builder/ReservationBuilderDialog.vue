@@ -297,11 +297,19 @@ watch(visible, (newVisible) => {
 </script>
 
 <template>
-    <Dialog v-model:visible="visible" modal :closable="false" class="dialog">
+    <Dialog
+        class="dialog"
+        v-model:visible="visible"
+        modal
+        close-on-escape
+        dismissable-mask
+        closable>
+        <!-- Calendar Controls -->
         <template #header>
-            <!-- Calendar Controls -->
             <CalendarControls class="w-full" v-model:date="currentWeek" />
         </template>
+
+        <template #closeicon> <i></i> </template>
 
         <div class="space-y-6">
             <!-- Loading State -->

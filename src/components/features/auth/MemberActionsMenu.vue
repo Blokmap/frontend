@@ -4,7 +4,7 @@ import ActionMenu from '@/components/shared/atoms/ActionMenu.vue';
 import NavigationLink from '@/components/shared/atoms/NavigationLink.vue';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
-import RoleLabel from './roles/RoleLabel.vue';
+import RoleBadge from './roles/RoleBadge.vue';
 import type { Membership, Role } from '@/domain/auth';
 
 const props = defineProps<{
@@ -72,10 +72,10 @@ function onRemoveMember(hideMenu: () => void) {
                     class="w-full min-w-[200px]"
                     @change="(event) => onRoleChange(event, hideMenu)">
                     <template #option="{ option }">
-                        <RoleLabel :role="option.value" :clickable="false" />
+                        <RoleBadge :role="option.value" :clickable="false" />
                     </template>
                     <template #value>
-                        <RoleLabel :role="member.role" :clickable="false" />
+                        <RoleBadge :role="member.role" :clickable="false" />
                     </template>
                 </Select>
             </div>

@@ -250,6 +250,7 @@ export function useReservationState(
 export function useReadProfileReservations(
     profileId: MaybeRef<string | null>,
     filters: MaybeRef<ReservationFilter> = {},
+    includes: ReservationIncludes[] = ['location', 'openingTime'],
 ): CompQuery<Reservation[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 
@@ -260,11 +261,9 @@ export function useReadProfileReservations(
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
             const filtersValue = toValue(filters);
+            const includesValue = toValue(includes);
 
-            return readProfileReservations(profileIdValue, filtersValue, [
-                'location',
-                'openingTime',
-            ]);
+            return readProfileReservations(profileIdValue, filtersValue, includesValue);
         },
     });
 

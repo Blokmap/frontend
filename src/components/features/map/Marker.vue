@@ -5,11 +5,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { onDeactivated, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 import type { LngLat, MapAdapter } from '@/domain/map';
 
-const props = defineProps<{
-    id?: number;
-    position?: LngLat;
+const { id, position, map } = defineProps<{
+    map: MapAdapter;
+    id: number;
+    position: LngLat;
     active?: boolean;
-    map?: MapAdapter;
 }>();
 
 const emit = defineEmits<{
@@ -18,64 +18,62 @@ const emit = defineEmits<{
     (e: 'mouseleave'): void;
 }>();
 
-const markerRef = useTemplateRef('root');
-const popoverRef = useTemplateRef<any>('popover');
-const isShowingPopover = ref(false);
+const markerRef = useTemplateRef<HTMLElement>('root');
+const popoverRef = useTemplateRef<InstanceType<typeof Popover>>('popover');
 
-watch(() => props.map?.bounds.value, updatePopoverPosition);
+const isShowingPopover = ref<boolean>(false);
+
+watch(
+    () => map?.bounds.value,
+    () => {
+        if (isShowingPopover.value) {
+            popoverRef.value?.alignOverlay();
+        }
+    },
+);
 
 onMounted(() => {
-    if (!markerRef.value) return;
-    if (!props.id || !props.position) return;
+    const el = markerRef.value;
 
-    window.addEventListener('scroll', updatePopoverPosition);
-
-    props.map?.addMarker({
-        id: props.id,
-        coord: props.position,
-        el: markerRef.value,
-    });
-});
-
-onDeactivated(() => {
-    if (isShowingPopover.value) {
-        popoverRef?.value?.hide();
-        isShowingPopover.value = false;
+    if (id && position && el) {
+        map?.addMarker({
+            id,
+            coord: position,
+            el,
+        });
     }
 });
 
 onUnmounted(() => {
-    if (!markerRef.value) return;
-    if (!props.id || !props.position) return;
-
-    window.removeEventListener('scroll', updatePopoverPosition);
-    props.map?.removeMarker(props.id);
+    if (!id) return;
+    map?.removeMarker(id);
 });
 
+onDeactivated(() => {
+    popoverRef?.value?.hide();
+});
+
+/**
+ * Handle click event.
+ * @param event - Mouse event
+ */
 function handleClick(event: MouseEvent) {
     emit('click');
-
-    // Toggle popover on click
-    if (isShowingPopover.value) {
-        popoverRef?.value?.hide();
-        isShowingPopover.value = false;
-    } else {
-        popoverRef?.value?.show(event, markerRef.value);
-        isShowingPopover.value = true;
-    }
+    popoverRef?.value?.toggle(event);
 }
 
+/**
+ * Handle mouse enter event.
+ */
 function handleMouseEnter() {
     emit('mouseenter');
 }
 
+/**
+ * Handle mouse leave event.
+ */
 function handleMouseLeave() {
     emit('mouseleave');
-}
-
-function updatePopoverPosition() {
-    if (!isShowingPopover.value || !popoverRef.value) return;
-    popoverRef.value?.alignOverlay();
 }
 </script>
 
@@ -83,7 +81,7 @@ function updatePopoverPosition() {
     <Teleport to="body">
         <div
             ref="root"
-            @click.stop="handleClick"
+            @click="handleClick"
             @mouseenter="handleMouseEnter"
             @mouseleave="handleMouseLeave">
             <Transition name="bounce-scale" appear>
@@ -94,7 +92,11 @@ function updatePopoverPosition() {
         </div>
 
         <!-- Popover with slot for custom content -->
-        <Popover ref="popover" class="min-w-[350px]">
+        <Popover
+            ref="popover"
+            class="min-w-[350px]"
+            @show="isShowingPopover = true"
+            @hide="isShowingPopover = false">
             <slot name="popover"></slot>
         </Popover>
     </Teleport>

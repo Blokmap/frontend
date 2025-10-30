@@ -2,7 +2,7 @@ import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { stringToDate } from '@/utils/date';
 import { formatFilters } from '@/utils/filter';
-import { formatIncludes, formatRequest, transformResponseFactory } from '@/utils/service';
+import { formatRequest, transformResponseFactory } from '@/utils/service';
 import { stringToTime, type Time } from '@/utils/time';
 import { parseProfileResponse } from '../auth';
 import { parseLocationResponse } from '../location';

@@ -14,27 +14,7 @@ export function isWebsocketChannelsEqual(
     channelA: WebsocketChannel,
     channelB: WebsocketChannel,
 ): boolean {
-    if (channelA.name !== channelB.name) {
-        return false;
-    }
-
-    const metaA = channelA.meta || {};
-    const metaB = channelB.meta || {};
-
-    const keysA = Object.keys(metaA);
-    const keysB = Object.keys(metaB);
-
-    if (keysA.length !== keysB.length) {
-        return false;
-    }
-
-    for (const key of keysA) {
-        if (metaA[key] !== metaB[key]) {
-            return false;
-        }
-    }
-
-    return true;
+    return getWebsocketChannelKey(channelA) === getWebsocketChannelKey(channelB);
 }
 
 /**

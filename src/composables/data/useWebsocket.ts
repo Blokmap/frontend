@@ -31,7 +31,7 @@ export type WebsocketSubscription<T = unknown> = {
 export function useWebsocket(enabled: MaybeRef<boolean> = true) {
     const ws = ref<WebSocket | null>(null);
     const isConnected = ref<boolean>(false);
-    const subscriptions = ref<Map<string, WebsocketSubscription>>(new Map());
+    const subscriptions = ref<Map<string, WebsocketSubscription<any>>>(new Map());
 
     /**
      * Opens a new WebSocket connection
@@ -52,18 +52,14 @@ export function useWebsocket(enabled: MaybeRef<boolean> = true) {
         ws.value.onopen = () => {
             isConnected.value = true;
 
-            if (!ws.value || ws.value.readyState !== WebSocket.OPEN) {
-                return;
-            }
-
-            // Re-subscribe to all existing channels on reconnection
+            // (Re-)subscribe to all existing channels on connection
             for (const subscription of subscriptions.value.values()) {
                 const command = JSON.stringify({
                     channel: subscription.channel,
                     event: WebsocketCommandEvent.SUBSCRIBE,
                 });
 
-                ws.value.send(command);
+                send(command);
             }
 
             console.log('[WebSocket] Connected');
@@ -74,7 +70,10 @@ export function useWebsocket(enabled: MaybeRef<boolean> = true) {
                 const message = JSON.parse(event.data) as WebsocketMessage<unknown>;
 
                 if (message.event === WebsocketMessageEvent.SubscribeSuccess) {
-                    return console.log('[WebSocket] Server acknowledged subscription');
+                    return console.log(
+                        '[WebSocket] Server acknowledged subscription on channel',
+                        message.channel,
+                    );
                 }
 
                 // Find matching subscription and call its handler
@@ -92,7 +91,7 @@ export function useWebsocket(enabled: MaybeRef<boolean> = true) {
             console.error('[WebSocket] Error:', error);
         };
 
-        ws.value.onclose = (ev) => {
+        ws.value.onclose = (ev: CloseEvent) => {
             isConnected.value = false;
             console.log('[WebSocket] Disconnected', ev);
         };
@@ -102,10 +101,11 @@ export function useWebsocket(enabled: MaybeRef<boolean> = true) {
      * Closes the WebSocket connection and clears all subscriptions
      */
     function disconnect(): void {
+        isConnected.value = false;
+
         if (ws.value) {
             ws.value.close();
             ws.value = null;
-            isConnected.value = false;
         }
     }
 
@@ -128,24 +128,18 @@ export function useWebsocket(enabled: MaybeRef<boolean> = true) {
             return () => unsubscribe(channel);
         }
 
-        const subscription: WebsocketSubscription<any> = {
+        subscriptions.value.set(key, {
             channel,
             onMessage,
-        };
-
-        subscriptions.value.set(key, subscription);
+        });
 
         // Send subscription command if connected
-        if (ws.value && ws.value.readyState === WebSocket.OPEN) {
-            const command = JSON.stringify({
-                channel,
-                event: WebsocketCommandEvent.SUBSCRIBE,
-            });
+        const command = JSON.stringify({
+            channel,
+            event: WebsocketCommandEvent.SUBSCRIBE,
+        });
 
-            ws.value.send(command);
-
-            console.log(`[WebSocket] Subscribed to channel ${channel.name}`);
-        }
+        send(command);
 
         // Return unsubscribe function
         return () => unsubscribe(channel);
@@ -167,15 +161,15 @@ export function useWebsocket(enabled: MaybeRef<boolean> = true) {
         subscriptions.value.delete(key);
 
         // Send unsubscription command if connected
-        if (ws.value && ws.value.readyState === WebSocket.OPEN) {
-            const command = JSON.stringify({
-                channel,
-                event: WebsocketCommandEvent.UNSUBSCRIBE,
-            });
+        const command = JSON.stringify({
+            channel,
+            event: WebsocketCommandEvent.UNSUBSCRIBE,
+        });
 
-            ws.value.send(command);
+        const result = send(command);
 
-            console.log(`[WebSocket] Unsubscribed from channel ${channel.name}`);
+        if (result) {
+            console.log(`[WebSocket] Unsubscription command sent for channel ${channel.name}`);
         }
     }
 
@@ -190,6 +184,7 @@ export function useWebsocket(enabled: MaybeRef<boolean> = true) {
             ws.value.send(JSON.stringify(data));
             return true;
         }
+
         return false;
     }
 
@@ -206,9 +201,7 @@ export function useWebsocket(enabled: MaybeRef<boolean> = true) {
     );
 
     // Cleanup on unmount
-    onUnmounted(() => {
-        disconnect();
-    });
+    onUnmounted(disconnect);
 
     return {
         ws,

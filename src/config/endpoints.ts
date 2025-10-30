@@ -29,6 +29,7 @@ export const endpoints = {
         },
     },
     profiles: {
+        list: '/profiles',
         create: '/profiles',
         read: '/profiles/{id}',
         update: '/profiles/{id}',
@@ -77,7 +78,7 @@ export const endpoints = {
         update: '/locations/{id}',
         delete: '/locations/{id}',
         list: '/locations',
-        search: '/locations',
+        search: '/locations/search',
         approve: '/locations/{id}/approve',
         reject: '/locations/{id}/reject',
         pend: '/locations/{id}/pend',
@@ -147,12 +148,6 @@ export const endpoints = {
     admin: {
         stats: '/admin/stats',
         counts: '/admin/counts',
-        locations: {
-            list: '/admin/locations',
-        },
-        profiles: {
-            list: '/admin/profiles',
-        },
     },
 };
 

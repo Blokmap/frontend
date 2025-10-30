@@ -107,7 +107,7 @@ export async function readLocations(
     filters: Partial<LocationFilter> = {},
     locationIncludes: LocationIncludes[] = [],
 ): Promise<Paginated<Location>> {
-    const endpoint = endpoints.admin.locations.list;
+    const endpoint = endpoints.locations.list;
 
     const params = {
         locationIncludes,

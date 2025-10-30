@@ -105,7 +105,7 @@ export async function readProfile(profileId: string): Promise<Profile> {
 export async function readProfiles(
     filters: Partial<ProfileFilter> = {},
 ): Promise<Paginated<Profile>> {
-    const endpoint = endpoints.admin.profiles.list;
+    const endpoint = endpoints.profiles.list;
 
     const transformResponse = transformPaginatedResponseFactory(parseProfileResponse);
 

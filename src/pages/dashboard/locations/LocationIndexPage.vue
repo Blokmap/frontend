@@ -46,7 +46,7 @@ const {
     isFetching,
     isLoading,
 } = useReadLocations(filters, {
-    includes: ['images', 'createdBy'],
+    includes: ['createdBy'],
 });
 
 const {

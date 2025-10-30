@@ -22,7 +22,12 @@ import type { Image, ImageReorderRequest, ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { Paginated } from '@/utils/pagination';
 
-export type LocationIncludes = 'images' | 'createdBy';
+export type LocationIncludes =
+    | 'authority'
+    | 'createdBy'
+    | 'approvedBy'
+    | 'rejectedBy'
+    | 'updatedBy';
 
 /**
  * Transform a Location response object.

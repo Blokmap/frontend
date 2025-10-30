@@ -57,16 +57,7 @@ const tabs = computed<TabItem[]>(() => [
     },
 ]);
 
-const {
-    data: location,
-    isLoading,
-    error,
-} = useReadLocation(
-    computed(() => +props.locationId),
-    {
-        includes: ['images'],
-    },
-);
+const { data: location, isLoading, error } = useReadLocation(computed(() => +props.locationId));
 </script>
 
 <template>

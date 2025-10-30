@@ -7,6 +7,9 @@ import { stringToTime } from '@/utils/time';
 import { parseProfileResponse } from '../auth';
 import type { OpeningTime, OpeningTimeRequest, OpeningTimeFilter } from './types';
 
+export type OpeningTimeIncludes = 'createdBy' | 'updatedBy' | 'openingTimeStatsIncludes';
+export type OpeningTimeStatsIncludes = 'stats';
+
 /**
  * Parses an OpeningTime response object.
  *
@@ -54,6 +57,7 @@ export async function readOpeningTimes(
 
     const params = {
         ...formatFilters(filters, ['inWeekOf']),
+        openingTimeStatsIncludes: ['stats'],
     };
 
     const transformResponse = transformResponseFactory(parseOpeningTimeResponse);

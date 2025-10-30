@@ -57,6 +57,7 @@ defineEmits<{
     @apply border-secondary-500 border-l-3;
     @apply flex items-center justify-center;
     @apply transition-all duration-150;
+    @apply pointer-events-auto;
 
     .time-display {
         @apply text-secondary-800;

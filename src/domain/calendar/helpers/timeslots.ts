@@ -40,7 +40,7 @@ export function openingRequestsToTimeSlots(
 
     const timeslots: TimeSlot<OpeningTimeRequest>[] = openingRequests
         .filter((t) => !t.repetition)
-        .map(toTimeslot);
+        .map((t) => toTimeslot(t));
 
     for (const opening of repetitions) {
         const { startTime, endTime, repetition } = opening;

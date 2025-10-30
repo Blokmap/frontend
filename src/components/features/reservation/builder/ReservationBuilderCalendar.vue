@@ -5,13 +5,16 @@ import ReservationTimeslot from '@/components/features/reservation/timeslots/Res
 import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
 import { computed } from 'vue';
 import { toTimeslots, type TimeSlot } from '@/domain/calendar';
+import OpeningHistogram from '../../openings/timeslots/OpeningHistogram.vue';
 import {
     isOpeningTimeSlot,
     isReservationRequestSlot,
     isReservationSlot,
+    isHistogramSlot,
     type OpeningMetadata,
     type RequestMetadata,
     type ReservationMetadata,
+    type HistogramMetadata,
     type SlotMetadata,
 } from './index';
 import type { OpeningTime } from '@/domain/openings';
@@ -82,12 +85,31 @@ const reservationRequestTimeSlots = computed<TimeSlot<RequestMetadata>[]>(() => 
     return timeslots;
 });
 
+// Histogram timeslots (rendered on top)
+const histogramTimeSlots = computed<TimeSlot<HistogramMetadata>[]>(() => {
+    if (!props.openingTimes) return [];
+
+    const timeslots = toTimeslots(props.openingTimes).map((slot): TimeSlot<HistogramMetadata> => {
+        const metadata = { type: 'histogram', data: slot.metadata! } as const;
+
+        return {
+            ...slot,
+            metadata,
+        };
+    });
+
+    return timeslots;
+});
+
 // All time slots combined
 const allTimeSlots = computed<TimeSlot<SlotMetadata>[]>(() => {
+    // Note: the order here determines the rendering order (bottom to top)
+    // Histogram slots should be on top
     return [
         ...openingTimeSlots.value,
         ...reservationTimeSlots.value,
         ...reservationRequestTimeSlots.value,
+        ...histogramTimeSlots.value,
     ];
 });
 
@@ -137,12 +159,22 @@ function onReservationDelete(reservation: Reservation): void {
             :time-slots="allTimeSlots"
             :enable-dragging="false">
             <template #time-slot="{ slot }">
+                <!-- Histogram Slot (rendered on top) -->
+                <template v-if="isHistogramSlot(slot)">
+                    <OpeningHistogram
+                        :bin-count="100"
+                        :seat-count="slot.metadata.data.seatCount"
+                        :stats="slot.metadata.data.stats!">
+                    </OpeningHistogram>
+                </template>
+
                 <!-- Opening Time Slot -->
                 <template v-if="isOpeningTimeSlot(slot)">
                     <OpeningTimeslot
                         :start-time="slot.startTime"
                         :end-time="slot.endTime"
-                        @click="onOpeningTimeClick(slot, $event)" />
+                        @click="onOpeningTimeClick(slot, $event)">
+                    </OpeningTimeslot>
                 </template>
 
                 <!-- Reservation Slot -->
@@ -153,7 +185,8 @@ function onReservationDelete(reservation: Reservation): void {
                         :reservation="slot.metadata.data"
                         :is-pending-deletion="isPendingDeletion(slot.metadata.data)"
                         :is-saving="isSaving"
-                        @delete="onReservationDelete" />
+                        @delete="onReservationDelete">
+                    </ReservationTimeslot>
                 </template>
 
                 <!-- Reservation Request Slot -->
@@ -163,7 +196,8 @@ function onReservationDelete(reservation: Reservation): void {
                         :end-time="slot.endTime"
                         :request="slot.metadata.data"
                         :is-saving="isSaving"
-                        @delete="onRequestDelete" />
+                        @delete="onRequestDelete">
+                    </ReservationRequestTimeslot>
                 </template>
             </template>
         </Calendar>

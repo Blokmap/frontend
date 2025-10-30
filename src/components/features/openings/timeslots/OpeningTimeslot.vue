@@ -14,6 +14,7 @@ defineEmits<{
 
 <template>
     <div class="opening-time-card" @click="$emit('click', $event)">
+        <!-- Time display (centered) -->
         <div class="time-display">
             <span class="time-text">
                 {{ timeToString(startTime) }}-{{ timeToString(endTime) }}
@@ -30,17 +31,17 @@ defineEmits<{
     @apply flex items-center justify-center p-2;
     @apply cursor-pointer;
     @apply hover:bg-slate-200;
+    @apply pointer-events-auto overflow-hidden;
 
     .time-display {
+        @apply relative;
+        @apply flex items-center justify-center text-center;
         @apply text-slate-600;
-    }
-}
+        @apply z-10;
 
-.time-display {
-    @apply flex items-center justify-center text-center;
-
-    .time-text {
-        @apply text-xs font-semibold;
+        .time-text {
+            @apply text-xs font-semibold;
+        }
     }
 }
 </style>

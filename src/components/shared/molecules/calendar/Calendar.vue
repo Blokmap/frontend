@@ -327,6 +327,6 @@ onMounted(() => {
 .custom-time-slot {
     @apply absolute right-0 left-0 z-10 min-h-[20px];
     @apply p-1 transition-all duration-150 ease-out;
-    @apply overflow-visible select-none;
+    @apply pointer-events-none overflow-visible select-none;
 }
 </style>

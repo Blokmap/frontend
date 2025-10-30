@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { toValue, type MaybeRef, computed } from 'vue';
 import {
     confirmReservation,
@@ -250,14 +250,14 @@ export function useReservationState(
 export function useReadProfileReservations(
     profileId: MaybeRef<string | null>,
     filters: MaybeRef<ReservationFilter> = {},
-    includes: ReservationIncludes[] = ['location', 'openingTime'],
+    includes: ReservationIncludes[] = [],
 ): CompQuery<Reservation[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 
     const query = useQuery<Reservation[], AxiosError>({
         queryKey: RESERVATION_QUERY_KEYS.profileReservations(profileId, filters),
         enabled,
-        placeholderData: (previousData) => previousData,
+        placeholderData: keepPreviousData,
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
             const filtersValue = toValue(filters);

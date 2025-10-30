@@ -10,7 +10,7 @@ import { parseOpeningTimeResponse } from '../openings';
 import type { Reservation, ReservationRequest, ReservationFilter } from './types';
 
 // Defines which related data can be included when fetching reservations
-export type ReservationIncludes = 'profile' | 'location' | 'openingTime' | 'confirmedBy';
+export type ReservationIncludes = 'profile' | 'updatedBy';
 
 /**
  * Parses a Reservation response object.

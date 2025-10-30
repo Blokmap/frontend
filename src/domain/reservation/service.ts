@@ -187,12 +187,12 @@ export async function deleteReservations(
 export async function readProfileReservations(
     profileId: string,
     filter: Partial<ReservationFilter> = {},
-    includes: ReservationIncludes[] = [],
+    reservationIncludes: ReservationIncludes[] = [],
 ): Promise<Reservation[]> {
     const endpoint = endpoints.profiles.reservations.list.replace('{id}', profileId.toString());
 
     const params = {
-        includes,
+        reservationIncludes,
         ...formatFilters(filter, ['inWeekOf']),
     };
 
@@ -217,12 +217,12 @@ export async function readProfileReservations(
 export async function readLocationReservations(
     locationId: number,
     filters: Partial<ReservationFilter> = {},
-    includes: ReservationIncludes[] = [],
+    reservationIncludes: ReservationIncludes[] = [],
 ): Promise<Reservation[]> {
     const endpoint = endpoints.locations.reservations.list.replace('{id}', locationId.toString());
 
     const params = {
-        includes,
+        reservationIncludes,
         ...formatFilters(filters, ['inWeekOf', 'day']),
     };
 

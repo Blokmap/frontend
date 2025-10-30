@@ -100,12 +100,12 @@ export async function searchLocations(
  */
 export async function readLocations(
     filters: Partial<LocationFilter> = {},
-    includes: LocationIncludes[] = [],
+    locationIncludes: LocationIncludes[] = [],
 ): Promise<Paginated<Location>> {
     const endpoint = endpoints.admin.locations.list;
 
     const params = {
-        includes,
+        locationIncludes,
         ...formatFilters(filters),
     };
 

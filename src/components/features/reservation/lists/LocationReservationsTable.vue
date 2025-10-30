@@ -41,9 +41,9 @@ const statusOptions = computed(() => {
 
 // Group reservations by profile
 const groupedReservations = computed(() => {
-    if (!props.reservations) return [];
+    if (!props.reservations?.length) return [];
 
-    const grouped = new Map<number, ReservationGroup>();
+    const grouped = new Map<string, ReservationGroup>();
 
     for (const reservation of props.reservations) {
         const profileId = reservation.createdBy?.id;
@@ -62,10 +62,12 @@ const groupedReservations = computed(() => {
         grouped.get(profileId)!.reservations.push(reservation);
     }
 
-    return Array.from(grouped.values()).map((groupData) => ({
+    const result = Array.from(grouped.values()).map((groupData) => ({
         group: groupData,
         items: groupData.reservations,
     }));
+
+    return result;
 });
 
 /**

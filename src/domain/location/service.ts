@@ -7,9 +7,9 @@ import {
     transformPaginatedResponseFactory,
     transformResponseFactory,
 } from '@/utils/service';
-import { parseProfileResponse } from '../auth';
 import { parseImageResponse } from '../image';
 import { parseOpeningTimeResponse } from '../openings';
+import { parseProfileResponse } from '../profile';
 import { parseTranslationResponse } from '../translation';
 import type {
     Location,

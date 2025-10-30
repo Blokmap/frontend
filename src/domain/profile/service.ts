@@ -2,15 +2,44 @@ import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { parseAuthorityResponse, type Authority } from '@/domain/authority';
 import { parseReservationResponse, type Reservation } from '@/domain/reservation';
+import { stringToDate } from '@/utils/date';
 import {
     formatFormDataRequest,
     formatRequest,
     transformPaginatedResponseFactory,
     transformResponseFactory,
 } from '@/utils/service';
-import { parseProfileResponse } from '../auth';
+import { parseImageResponse } from '../image';
+import { parseInstitutionResponse } from '../institution';
 import type { Profile, ProfileStats, ProfileFilter, ProfileScanRequest } from './types';
 import type { Paginated } from '@/utils/pagination';
+
+/**
+ * Parses a profile response object.
+ *
+ * @param data - The raw profile data from the API.
+ * @returns The parsed Profile object.
+ */
+export function parseProfileResponse(data: any): Profile {
+    if (!data) return data;
+
+    const result: Profile = {
+        ...data,
+        avatarUrl: parseImageResponse(data.avatarUrl),
+        createdAt: stringToDate(data.createdAt),
+        updatedAt: stringToDate(data.updatedAt),
+    };
+
+    if (data.institution) {
+        result.institution = parseInstitutionResponse(data.institution);
+    }
+
+    if (data.authorities) {
+        result.authorities = data.authorities.map(parseAuthorityResponse);
+    }
+
+    return result;
+}
 
 /**
  * Fetches the profile statistics for a given profile ID.

@@ -4,7 +4,7 @@ import { stringToDate } from '@/utils/date';
 import { formatFilters } from '@/utils/filter';
 import { formatRequest, transformResponseFactory } from '@/utils/service';
 import { stringToTime } from '@/utils/time';
-import { parseProfileResponse } from '../auth';
+import { parseProfileResponse } from '../profile';
 import type { OpeningTime, OpeningTimeRequest, OpeningTimeFilter } from './types';
 
 export type OpeningTimeIncludes = 'createdBy' | 'updatedBy' | 'openingTimeStatsIncludes';

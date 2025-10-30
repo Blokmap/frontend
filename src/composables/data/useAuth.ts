@@ -6,12 +6,12 @@ import {
     login,
     logout,
     register,
-    readLocationMembers,
     readLocationRoles,
     readAuthorityMembers,
     readAuthorityRoles,
     readInstitutionMembers,
     readInstitutionRoles,
+    readLocationMembers,
 } from '@/domain/auth';
 import type { LoginRequest, RegisterRequest, Membership, Role } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';

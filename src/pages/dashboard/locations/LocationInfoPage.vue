@@ -193,35 +193,38 @@ async function saveChanges(): Promise<void> {
                 v-model:form="locationForm">
             </LocationSettingsBuilder>
         </div>
-    </DashboardContent>
 
-    <!-- Sticky Save Bar (teleported outside to prevent layout shift) -->
-    <Teleport to="body">
-        <Transition name="slide-up">
-            <div v-if="hasChanges" class="save-bar">
-                <div class="flex items-center justify-between">
-                    <p class="flex items-center font-medium">
-                        <FontAwesomeIcon :icon="faWarning" class="mr-2" />
-                        Je hebt niet-opgeslagen wijzigingen.
-                    </p>
-                    <div class="flex">
-                        <Button text @click="resetChanges" class="text-slate-100 hover:underline">
-                            Ongedaan maken
-                        </Button>
-                        <Button @click="saveChanges" :loading="isUpdating">
-                            <FontAwesomeIcon
-                                v-if="isUpdating"
-                                :icon="faSpinner"
-                                spin
-                                class="mr-2" />
-                            <FontAwesomeIcon :icon="faSave" class="mr-2" v-else />
-                            Opslaan
-                        </Button>
+        <!-- Sticky Save Bar (teleported outside to prevent layout shift) -->
+        <Teleport to="body">
+            <Transition name="slide-up">
+                <div v-if="hasChanges" class="save-bar">
+                    <div class="flex items-center justify-between">
+                        <p class="flex items-center font-medium">
+                            <FontAwesomeIcon :icon="faWarning" class="mr-2" />
+                            Je hebt niet-opgeslagen wijzigingen.
+                        </p>
+                        <div class="flex">
+                            <Button
+                                text
+                                @click="resetChanges"
+                                class="text-slate-100 hover:underline">
+                                Ongedaan maken
+                            </Button>
+                            <Button @click="saveChanges" :loading="isUpdating">
+                                <FontAwesomeIcon
+                                    v-if="isUpdating"
+                                    :icon="faSpinner"
+                                    spin
+                                    class="mr-2" />
+                                <FontAwesomeIcon :icon="faSave" class="mr-2" v-else />
+                                Opslaan
+                            </Button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </Transition>
-    </Teleport>
+            </Transition>
+        </Teleport>
+    </DashboardContent>
 </template>
 
 <style scoped>

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import AuthorityTable from '@/components/features/authority/AuthorityTable.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
+import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useReadProfileAuthorities } from '@/composables/data/useAuthorities';
@@ -39,6 +42,11 @@ function onAuthorityClick(authority: Authority): void {
                 <span v-else>
                     Bekijk en beheer autoriteiten gekoppeld aan {{ profile.firstName }}'s profiel.
                 </span>
+            </template>
+            <template #actions>
+                <PageHeaderButton label="Autoriteit Aanmaken" severity="contrast">
+                    <FontAwesomeIcon :icon="faPlus" />
+                </PageHeaderButton>
             </template>
         </DashboardDetailHeader>
 

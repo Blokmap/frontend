@@ -1,9 +1,9 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/service';
-import { parseProfileResponse } from '../auth';
 import { parseAuthorityResponse } from '../authority';
 import { parseImageResponse } from '../image';
+import { parseProfileResponse } from '../profile';
 import { parseTranslationResponse } from '../translation';
 import type { Authority } from '../authority';
 import type { Profile } from '../profile';

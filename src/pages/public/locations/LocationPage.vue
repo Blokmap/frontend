@@ -56,7 +56,7 @@ const {
 );
 
 const showReservationDialog = computed<boolean>({
-    get: () => 'reservation' in route.query,
+    get: () => 'reservation' in route.query && !!profile.value,
     set: (value: boolean) => {
         const query = { ...route.query };
 

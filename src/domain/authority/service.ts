@@ -1,8 +1,8 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/service';
-import { parseProfileResponse } from '../auth';
 import { parseLocationResponse } from '../location';
+import { parseProfileResponse } from '../profile';
 import type { Profile } from '../profile';
 import type { Authority, AuthorityFilter, AuthorityRequest } from './types';
 import type { Paginated } from '@/utils/pagination';

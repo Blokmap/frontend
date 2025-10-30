@@ -99,9 +99,11 @@ export const endpoints = {
             },
         },
         members: {
+            create: '/locations/{id}/members',
+            read: '/locations/{id}/members/{profileId}',
+            update: '/locations/{id}/members/{profileId}',
             list: '/locations/{id}/members',
-            add: '/locations/{id}/members',
-            remove: '/locations/{id}/members/{profileId}',
+            delete: '/locations/{id}/members/{profileId}',
             permissions: {
                 update: '/locations/{id}/members/{profileId}/permissions',
             },

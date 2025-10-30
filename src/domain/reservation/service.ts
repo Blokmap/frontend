@@ -4,9 +4,9 @@ import { stringToDate } from '@/utils/date';
 import { formatFilters } from '@/utils/filter';
 import { formatRequest, transformResponseFactory } from '@/utils/service';
 import { stringToTime, type Time } from '@/utils/time';
-import { parseProfileResponse } from '../auth';
 import { parseLocationResponse } from '../location';
 import { parseOpeningTimeResponse } from '../openings';
+import { parseProfileResponse } from '../profile';
 import type { Reservation, ReservationRequest, ReservationFilter } from './types';
 
 // Defines which related data can be included when fetching reservations

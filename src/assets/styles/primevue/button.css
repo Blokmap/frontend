@@ -83,7 +83,7 @@
 
 .p-button-secondary {
     @apply bg-secondary-100 enabled:hover:bg-secondary-200/70 enabled:active:bg-secondary-200;
-    @apply border-secondary-100 enabled:hover:border-secondary-200 enabled:active:border-secondary-300;
+    @apply border-secondary-100 enabled:hover:border-secondary-200/70 enabled:active:border-secondary-200;
     @apply text-secondary-700;
 }
 

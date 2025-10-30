@@ -60,6 +60,7 @@ function getTooltip(bin: { occupancy: number; ratio: number }) {
 
 .histogram {
     @apply flex h-full w-full flex-col;
+    @apply pointer-events-none;
 
     .histogram__bin {
         @apply flex-1;

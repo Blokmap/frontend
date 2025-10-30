@@ -262,7 +262,6 @@ export function useReadProfileReservations(
             const profileIdValue = toValue(profileId)!;
             const filtersValue = toValue(filters);
             const includesValue = toValue(includes);
-
             return readProfileReservations(profileIdValue, filtersValue, includesValue);
         },
     });

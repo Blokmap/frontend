@@ -328,5 +328,9 @@ onMounted(() => {
     @apply absolute right-0 left-0 z-10 min-h-[20px];
     @apply p-1 transition-all duration-150 ease-out;
     @apply pointer-events-none overflow-visible select-none;
+
+    :deep(> *) {
+        @apply pointer-events-auto;
+    }
 }
 </style>

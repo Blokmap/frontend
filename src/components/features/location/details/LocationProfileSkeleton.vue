@@ -1,12 +1,9 @@
 <script lang="ts" setup>
 import Skeleton from 'primevue/skeleton';
 
-withDefaults(
-    defineProps<{
-        avatarClass?: string;
-    }>(),
-    {},
-);
+defineProps<{
+    avatarClass?: string;
+}>();
 </script>
 
 <template>

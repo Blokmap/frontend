@@ -89,7 +89,7 @@ export async function readProfile(profileId: string): Promise<Profile> {
 
     const transformResponse = transformResponseFactory(parseProfileResponse);
 
-    const { data } = await client.get<any>(endpoint, {
+    const { data } = await client.get<Profile>(endpoint, {
         transformResponse,
     });
 
@@ -109,7 +109,7 @@ export async function readProfiles(
 
     const transformResponse = transformPaginatedResponseFactory(parseProfileResponse);
 
-    const { data } = await client.get(endpoint, {
+    const { data } = await client.get<Paginated<Profile>>(endpoint, {
         params: filters,
         transformResponse,
     });
@@ -128,13 +128,9 @@ export async function blockProfile(profileId: string): Promise<Profile> {
 
     const transformResponse = transformResponseFactory(parseProfileResponse);
 
-    const { data } = await client.post(
-        endpoint,
-        {},
-        {
-            transformResponse,
-        },
-    );
+    const { data } = await client.post(endpoint, null, {
+        transformResponse,
+    });
 
     return data;
 }
@@ -150,13 +146,9 @@ export async function unblockProfile(profileId: string): Promise<Profile> {
 
     const transformResponse = transformResponseFactory(parseProfileResponse);
 
-    const { data } = await client.post(
-        endpoint,
-        {},
-        {
-            transformResponse,
-        },
-    );
+    const { data } = await client.post(endpoint, null, {
+        transformResponse,
+    });
 
     return data;
 }

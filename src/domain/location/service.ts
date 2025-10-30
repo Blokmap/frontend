@@ -4,7 +4,6 @@ import { stringToDate } from '@/utils/date';
 import { formatFilters, formatLocationSearchFilters } from '@/utils/filter';
 import {
     formatFormDataRequest,
-    formatIncludes,
     transformPaginatedResponseFactory,
     transformResponseFactory,
 } from '@/utils/service';
@@ -23,7 +22,12 @@ import type { Image, ImageReorderRequest, ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { Paginated } from '@/utils/pagination';
 
-export type LocationIncludes = 'images' | 'createdBy';
+export type LocationIncludes =
+    | 'authority'
+    | 'createdBy'
+    | 'approvedBy'
+    | 'rejectedBy'
+    | 'updatedBy';
 
 /**
  * Transform a Location response object.
@@ -101,12 +105,12 @@ export async function searchLocations(
  */
 export async function readLocations(
     filters: Partial<LocationFilter> = {},
-    includes: LocationIncludes[] = [],
+    locationIncludes: LocationIncludes[] = [],
 ): Promise<Paginated<Location>> {
     const endpoint = endpoints.admin.locations.list;
 
     const params = {
-        includes,
+        locationIncludes,
         ...formatFilters(filters),
     };
 
@@ -147,7 +151,7 @@ export async function readLocation(
 ): Promise<Location> {
     const endpoint = endpoints.locations.read.replace('{id}', id.toString());
 
-    const params = formatIncludes(includes);
+    const params = { includes };
 
     const transformResponse = transformResponseFactory(parseLocationResponse);
 
@@ -180,15 +184,15 @@ export async function readNearestLocation(center: LngLat): Promise<NearestLocati
 /**
  * Create a new location.
  *
- * @param {LocationRequest} locationData - The location data to create.
+ * @param {LocationRequest} body - The location data to create.
  * @returns {Promise<Location>} A promise that resolves to the created location.
  */
-export async function createLocation(locationData: LocationRequest): Promise<Location> {
+export async function createLocation(body: LocationRequest): Promise<Location> {
     const endpoint = endpoints.locations.create;
 
     const transformResponse = transformResponseFactory(parseLocationResponse);
 
-    const { data } = await client.post(endpoint, locationData, {
+    const { data } = await client.post(endpoint, body, {
         transformResponse,
     });
 
@@ -204,18 +208,18 @@ export async function createLocation(locationData: LocationRequest): Promise<Loc
  */
 export async function createLocationImage(
     locationId: number,
-    image: ImageRequest,
+    request: ImageRequest,
 ): Promise<Location> {
     const endpoint = endpoints.locations.images.createOne.replace('{id}', locationId.toString());
 
-    const request = formatFormDataRequest({
-        image: image.file,
-        index: image.index,
+    const body = formatFormDataRequest({
+        image: request.file,
+        index: request.index,
     });
 
     const transformResponse = transformResponseFactory(parseLocationResponse);
 
-    const { data } = await client.post(endpoint, request, {
+    const { data } = await client.post(endpoint, body, {
         transformResponse,
     });
 
@@ -226,15 +230,15 @@ export async function createLocationImage(
  * Update a location.
  *
  * @param {number} id - The ID of the location to update.
- * @param {LocationRequest} locationData - The updated location data.
+ * @param {LocationRequest} body - The updated location data.
  * @returns {Promise<Location>} A promise that resolves to the updated location.
  */
-export async function updateLocation(id: number, locationData: LocationRequest): Promise<Location> {
+export async function updateLocation(id: number, body: LocationRequest): Promise<Location> {
     const endpoint = endpoints.locations.update.replace('{id}', id.toString());
 
     const transformResponse = transformResponseFactory(parseLocationResponse);
 
-    const { data } = await client.patch(endpoint, locationData, {
+    const { data } = await client.patch(endpoint, body, {
         transformResponse,
     });
 
@@ -291,7 +295,7 @@ export async function approveLocation(id: number): Promise<Location> {
 
     const transformResponse = transformResponseFactory(parseLocationResponse);
 
-    const { data } = await client.post(endpoint, {
+    const { data } = await client.post(endpoint, null, {
         transformResponse,
     });
 
@@ -308,10 +312,11 @@ export async function approveLocation(id: number): Promise<Location> {
 export async function rejectLocation(id: number, reason?: string | null): Promise<Location> {
     const endpoint = endpoints.locations.reject.replace('{id}', id.toString());
 
+    const body = { reason };
+
     const transformResponse = transformResponseFactory(parseLocationResponse);
 
-    const { data } = await client.post(endpoint, {
-        reason,
+    const { data } = await client.post(endpoint, body, {
         transformResponse,
     });
 
@@ -329,7 +334,7 @@ export async function pendLocation(id: number): Promise<Location> {
 
     const transformResponse = transformResponseFactory(parseLocationResponse);
 
-    const { data } = await client.post(endpoint, {
+    const { data } = await client.post(endpoint, null, {
         transformResponse,
     });
 

@@ -2,13 +2,14 @@ import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { stringToDate } from '@/utils/date';
 import { formatFilters } from '@/utils/filter';
-import { formatIncludes, formatRequest, transformResponseFactory } from '@/utils/service';
+import { formatRequest, transformResponseFactory } from '@/utils/service';
 import { stringToTime, type Time } from '@/utils/time';
 import { parseProfileResponse } from '../auth';
 import { parseLocationResponse } from '../location';
 import { parseOpeningTimeResponse } from '../openings';
 import type { Reservation, ReservationRequest, ReservationFilter } from './types';
 
+// Defines which related data can be included when fetching reservations
 export type ReservationIncludes = 'profile' | 'location' | 'openingTime' | 'confirmedBy';
 
 /**
@@ -61,14 +62,14 @@ export async function createReservation(
         .replace('{id}', locationId.toString())
         .replace('{openingTimeId}', openingTimeId.toString());
 
-    const request = formatRequest({
+    const body = formatRequest({
         startTime,
         endTime,
     });
 
     const transformResponse = transformResponseFactory(parseReservationResponse);
 
-    const { data } = await client.post(endpoint, request, {
+    const { data } = await client.post(endpoint, body, {
         transformResponse,
     });
 
@@ -97,13 +98,13 @@ export async function deleteReservation(reservationId: string): Promise<void> {
  */
 export async function updateReservation(
     reservationId: string,
-    request: Partial<ReservationRequest>,
+    body: Partial<ReservationRequest>,
 ): Promise<Reservation> {
     const endpoint = endpoints.reservations.update.replace('{id}', reservationId.toString());
 
     const transformResponse = transformResponseFactory(parseReservationResponse);
 
-    const { data } = await client.patch(endpoint, request, {
+    const { data } = await client.patch(endpoint, body, {
         transformResponse,
     });
 
@@ -127,7 +128,7 @@ export async function confirmReservation(
 
     const transformResponse = transformResponseFactory(parseReservationResponse);
 
-    const { data } = await client.post(endpoint, {
+    const { data } = await client.post(endpoint, null, {
         transformResponse,
     });
 
@@ -147,11 +148,11 @@ export async function createReservations(
 ): Promise<Reservation[]> {
     const endpoint = endpoints.locations.reservations.create.replace('{id}', locationId.toString());
 
-    const request = requests.map((d) => formatRequest(d));
+    const body = requests.map((d) => formatRequest(d));
 
     const transformResponse = transformResponseFactory(parseReservationResponse);
 
-    const { data } = await client.post(endpoint, request, {
+    const { data } = await client.post(endpoint, body, {
         transformResponse,
     });
 
@@ -184,13 +185,13 @@ export async function deleteReservations(
 export async function readProfileReservations(
     profileId: string,
     filter: Partial<ReservationFilter> = {},
-    includes: ReservationIncludes[] = [],
+    reservationIncludes: ReservationIncludes[] = [],
 ): Promise<Reservation[]> {
     const endpoint = endpoints.profiles.reservations.list.replace('{id}', profileId.toString());
 
     const params = {
+        reservationIncludes,
         ...formatFilters(filter, ['inWeekOf']),
-        ...formatIncludes(includes),
     };
 
     const transformResponse = transformResponseFactory(parseReservationResponse);
@@ -214,13 +215,13 @@ export async function readProfileReservations(
 export async function readLocationReservations(
     locationId: number,
     filters: Partial<ReservationFilter> = {},
-    includes: ReservationIncludes[] = [],
+    reservationIncludes: ReservationIncludes[] = [],
 ): Promise<Reservation[]> {
     const endpoint = endpoints.locations.reservations.list.replace('{id}', locationId.toString());
 
     const params = {
+        reservationIncludes,
         ...formatFilters(filters, ['inWeekOf', 'day']),
-        ...formatIncludes(includes),
     };
 
     const transformResponse = transformResponseFactory(parseReservationResponse);

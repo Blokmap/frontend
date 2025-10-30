@@ -22,16 +22,30 @@ const { mutateAsync: logout } = useAuthLogout();
 
 const popoverRef = useTemplateRef('popover');
 
+/**
+ * Handle menu button click event.
+ * Toggles the popover display.
+ *
+ * @param event - Mouse event needed for popover positioning
+ */
 function handleMenuButtonClick(event: MouseEvent): void {
     popoverRef.value?.toggle(event);
 }
 
+/**
+ * Handle logout click event.
+ * Logs out the user and navigates to the auth page.
+ */
 async function handleLogoutClick(): Promise<void> {
     await router.push({ name: 'auth' });
     await logout();
     popoverRef.value?.hide();
 }
 
+/**
+ * Handle navigation link click event.
+ * Hides the popover.
+ */
 function handleNavigationClick(): void {
     popoverRef.value?.hide();
 }

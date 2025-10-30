@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Paginator from 'primevue/paginator';
 import MemberActionsMenu from '@/components/features/auth/MemberActionsMenu.vue';
-import RoleLabel from '@/components/features/auth/roles/RoleLabel.vue';
+import RoleBadge from '@/components/features/auth/roles/RoleBadge.vue';
 import ProfileTableCell from '@/components/features/profile/ProfileTableCell.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
@@ -77,7 +77,7 @@ function onRemoveMember(profileId: string): void {
                 </TableCell>
 
                 <TableCell column="Rol">
-                    <RoleLabel :role="member.role" type="location" />
+                    <RoleBadge :role="member.role" type="location" />
                 </TableCell>
 
                 <TableCell column="Toegevoegd op">

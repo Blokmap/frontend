@@ -2,7 +2,7 @@ import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { type Profile, parseProfileResponse } from '@/domain/profile';
 import { transformResponseFactory } from '@/utils/service';
-import type { RegisterRequest, LoginRequest } from '../types';
+import type { RegisterBody, LoginBody } from '../types';
 
 export * from './member';
 export * from './role';
@@ -32,7 +32,7 @@ export async function readAuthProfile(): Promise<Profile | null> {
  * @param request - The registration request containing user details.
  * @returns A promise that resolves when the registration is successful.
  */
-export async function register(request: RegisterRequest): Promise<void> {
+export async function register(request: RegisterBody): Promise<void> {
     const endpoint = endpoints.auth.register;
     await client.post(endpoint, request);
 }
@@ -43,7 +43,7 @@ export async function register(request: RegisterRequest): Promise<void> {
  * @param request - The login request containing email and password.
  * @returns A promise that resolves when the login is successful.
  */
-export async function login(request: LoginRequest): Promise<void> {
+export async function login(request: LoginBody): Promise<void> {
     const endpoint = endpoints.auth.login;
     await client.post(endpoint, request);
 }

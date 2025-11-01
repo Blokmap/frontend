@@ -12,3 +12,7 @@ export type Membership = {
     profile: Profile;
     role: Role;
 };
+
+export type MembershipBody = {
+    roleId: number;
+};

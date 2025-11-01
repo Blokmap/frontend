@@ -10,7 +10,7 @@ import {
     type LocationIncludes,
     type Location,
     type LocationSearchFilter,
-    type LocationRequest,
+    type LocationBody,
     type NearestLocation,
     approveLocation,
     rejectLocation,
@@ -25,7 +25,7 @@ import {
     readProfileLocations,
 } from '@/domain/location';
 import { readLocationReservations, type Reservation } from '@/domain/reservation';
-import type { ImageReorderRequest, ImageRequest } from '@/domain/image';
+import type { ImageReorderBody, ImageBody } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
@@ -150,7 +150,7 @@ export function useNearestLocation(
  */
 export function useCreateLocation(
     options: CompMutationOptions = {},
-): CompMutation<LocationRequest, Location> {
+): CompMutation<LocationBody, Location> {
     const queryClient = useQueryClient();
 
     const mutation = useMutation({
@@ -170,7 +170,7 @@ export function useCreateLocation(
 
 export type UpdateLocationParams = {
     locationId: number;
-    data: LocationRequest;
+    data: LocationBody;
 };
 
 export function useUpdateLocation(
@@ -201,7 +201,7 @@ export function useUpdateLocation(
 
 export type CreateLocationImageParams = {
     locationId: number;
-    image: ImageRequest;
+    image: ImageBody;
 };
 
 /**
@@ -261,7 +261,7 @@ export function useDeleteLocationImage(
 
 export type ReorderLocationImagesParams = {
     locationId: number;
-    reorders: ImageReorderRequest[];
+    reorders: ImageReorderBody[];
 };
 
 export function useReorderLocationImages(
@@ -288,8 +288,8 @@ export function useReorderLocationImages(
 
 export type UpdateLocationImagesParams = {
     locationId: number;
-    originalImages: ImageRequest[];
-    currentImages: ImageRequest[];
+    originalImages: ImageBody[];
+    currentImages: ImageBody[];
 };
 
 /**
@@ -334,14 +334,14 @@ export function useUpdateLocationImages(
             );
 
             // Step 2: Create new images in parallel (those without id)
-            // New images are created with the correct index already from ImageRequest
+            // New images are created with the correct index already from ImageBody
             const newImages = currentImages.filter((img) => !img.id && img.file);
 
             await Promise.all(newImages.map((img) => createLocationImage(locationId, img)));
 
             // Step 3: Reorder ONLY existing images that weren't deleted
             // New images were created with correct index, no need to reorder them
-            const reorders: ImageReorderRequest[] = currentImages
+            const reorders: ImageReorderBody[] = currentImages
                 .filter((img) => !!img.id)
                 .map((img) => ({
                     imageId: img.id!,

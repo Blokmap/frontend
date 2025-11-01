@@ -1,10 +1,10 @@
-export type LoginRequest = {
+export type LoginBody = {
     username: string;
     password: string;
     remember: boolean;
 };
 
-export type RegisterRequest = {
+export type RegisterBody = {
     firstName: string;
     lastName: string;
     email: string;

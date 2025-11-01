@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { getImageRequestPreviewUrl, imageToRequest } from '@/domain/image';
-import { createMockImage, createMockImageRequest } from '../../mocks';
+import { getImageBodyPreviewUrl, imageToBody } from '@/domain/image';
+import { createMockImage, createMockImageBody } from '../../mocks';
 
 describe('image helpers', () => {
-    describe('imageToRequest', () => {
+    describe('imageToBody', () => {
         it('should convert image to request with primary flag for first image', () => {
             const image = createMockImage({
                 id: 1,
@@ -11,7 +11,7 @@ describe('image helpers', () => {
                 url: 'https://example.com/image.jpg',
             });
 
-            const result = imageToRequest(image, 0);
+            const result = imageToBody(image, 0);
 
             expect(result).toEqual({
                 id: 1,
@@ -29,7 +29,7 @@ describe('image helpers', () => {
                 index: 1,
             });
 
-            const result = imageToRequest(image, 1);
+            const result = imageToBody(image, 1);
 
             expect(result).toEqual({
                 id: 2,
@@ -47,56 +47,56 @@ describe('image helpers', () => {
                 url: 'https://example.com/image5.jpg',
             });
 
-            const result = imageToRequest(image, 4);
+            const result = imageToBody(image, 4);
 
             expect(result.isPrimary).toBe(false);
             expect(result.index).toBe(4);
         });
     });
 
-    describe('getImageRequestPreviewUrl', () => {
+    describe('getImageBodyPreviewUrl', () => {
         it('should return tempUrl if available', () => {
-            const image = createMockImageRequest({
+            const image = createMockImageBody({
                 tempUrl: 'https://temp.com/image.jpg',
                 imageUrl: 'https://original.com/image.jpg',
                 isPrimary: false,
                 index: 0,
             });
 
-            expect(getImageRequestPreviewUrl(image)).toBe('https://temp.com/image.jpg');
+            expect(getImageBodyPreviewUrl(image)).toBe('https://temp.com/image.jpg');
         });
 
         it('should return imageUrl if tempUrl not available', () => {
-            const image = createMockImageRequest({
+            const image = createMockImageBody({
                 tempUrl: null,
                 imageUrl: 'https://original.com/image.jpg',
                 isPrimary: false,
                 index: 0,
             });
 
-            expect(getImageRequestPreviewUrl(image)).toBe('https://original.com/image.jpg');
+            expect(getImageBodyPreviewUrl(image)).toBe('https://original.com/image.jpg');
         });
 
         it('should return empty string if no URLs available', () => {
-            const image = createMockImageRequest({
+            const image = createMockImageBody({
                 tempUrl: null,
                 imageUrl: null,
                 isPrimary: false,
                 index: 0,
             });
 
-            expect(getImageRequestPreviewUrl(image)).toBe('');
+            expect(getImageBodyPreviewUrl(image)).toBe('');
         });
 
         it('should prefer tempUrl over imageUrl', () => {
-            const image = createMockImageRequest({
+            const image = createMockImageBody({
                 tempUrl: 'https://temp.com/image.jpg',
                 imageUrl: 'https://original.com/image.jpg',
                 isPrimary: false,
                 index: 0,
             });
 
-            expect(getImageRequestPreviewUrl(image)).toBe('https://temp.com/image.jpg');
+            expect(getImageBodyPreviewUrl(image)).toBe('https://temp.com/image.jpg');
         });
     });
 });

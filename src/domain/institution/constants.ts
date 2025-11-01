@@ -1,6 +1,6 @@
-import { InstitutionCategory, type InstitutionRequest } from './types';
+import { InstitutionCategory, type InstitutionBody } from './types';
 
-export const DEFAULT_INSTITUTION_REQUEST: InstitutionRequest = {
+export const DEFAULT_INSTITUTION_REQUEST: InstitutionBody = {
     category: InstitutionCategory.Education,
     name: {
         en: '',

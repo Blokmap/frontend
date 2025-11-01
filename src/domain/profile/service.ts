@@ -4,14 +4,14 @@ import { parseAuthorityResponse, type Authority } from '@/domain/authority';
 import { parseReservationResponse, type Reservation } from '@/domain/reservation';
 import { stringToDate } from '@/utils/date';
 import {
-    formatFormDataRequest,
+    formatFormDataBody,
     formatRequest,
     transformPaginatedResponseFactory,
     transformResponseFactory,
 } from '@/utils/service';
 import { parseImageResponse } from '../image';
 import { parseInstitutionResponse } from '../institution';
-import type { Profile, ProfileStats, ProfileFilter, ProfileScanRequest } from './types';
+import type { Profile, ProfileStats, ProfileFilter, ProfileScanBody } from './types';
 import type { Paginated } from '@/utils/pagination';
 
 /**
@@ -64,7 +64,7 @@ export async function readProfileStats(profileId: string): Promise<ProfileStats>
  */
 export async function updateProfileAvatar(profileId: string, file: File): Promise<void> {
     const endpoint = endpoints.profiles.avatar.replace('{id}', String(profileId));
-    const data = formatFormDataRequest({ image: file });
+    const data = formatFormDataBody({ image: file });
 
     await client.post(endpoint, data, {
         headers: {
@@ -190,7 +190,7 @@ export async function unblockProfile(profileId: string): Promise<Profile> {
  */
 export async function scanProfile(
     profileId: string,
-    request: ProfileScanRequest,
+    request: ProfileScanBody,
 ): Promise<Reservation[]> {
     const endpoint = endpoints.profiles.scan.replace('{id}', profileId.toString());
 

@@ -9,9 +9,9 @@ import {
     useUpdateOpeningTime,
 } from '@/composables/data/useOpeningTimes';
 import { useToast } from '@/composables/store/useToast';
-import { openingToRequest } from '@/domain/openings';
+import { openingToBody } from '@/domain/openings';
 import type { Location } from '@/domain/location';
-import type { OpeningTimeRequest } from '@/domain/openings';
+import type { OpeningTimeBody } from '@/domain/openings';
 
 const props = defineProps<{
     location: Location;
@@ -71,18 +71,18 @@ const { mutateAsync: deleteOpeningTime } = useDeleteOpeningTime({
     },
 });
 
-const openingsForm = ref<OpeningTimeRequest[]>([]);
+const openingsForm = ref<OpeningTimeBody[]>([]);
 
 watchEffect(() => {
     if (!props.location) return;
-    const mappedOpenings = (props.location.openingTimes || []).map(openingToRequest);
+    const mappedOpenings = (props.location.openingTimes || []).map(openingToBody);
     openingsForm.value = mappedOpenings;
 });
 
 /**
  * Handles creation of a new opening time
  */
-async function onCreateOpeningTime(openingTime: OpeningTimeRequest): Promise<void> {
+async function onCreateOpeningTime(openingTime: OpeningTimeBody): Promise<void> {
     await createOpeningTimes({
         locationId: props.location.id,
         openings: [openingTime],
@@ -94,7 +94,7 @@ async function onCreateOpeningTime(openingTime: OpeningTimeRequest): Promise<voi
  */
 async function onUpdateOpeningTime(
     openingTimeId: number,
-    openingTime: OpeningTimeRequest,
+    openingTime: OpeningTimeBody,
     sequence?: boolean,
 ): Promise<void> {
     await updateOpeningTime({

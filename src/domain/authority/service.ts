@@ -4,7 +4,7 @@ import { transformPaginatedResponseFactory, transformResponseFactory } from '@/u
 import { parseLocationResponse } from '../location';
 import { parseProfileResponse } from '../profile';
 import type { Profile } from '../profile';
-import type { Authority, AuthorityFilter, AuthorityRequest } from './types';
+import type { Authority, AuthorityFilter, AuthorityBody } from './types';
 import type { Paginated } from '@/utils/pagination';
 
 /**
@@ -82,7 +82,7 @@ export async function readAuthority(id: number): Promise<Authority> {
  * @param request - The authority creation request data.
  * @returns A promise that resolves to the created authority.
  */
-export async function createAuthority(request: AuthorityRequest): Promise<Authority> {
+export async function createAuthority(request: AuthorityBody): Promise<Authority> {
     const endpoint = endpoints.authorities.create.toString();
 
     const transformResponse = transformResponseFactory(parseAuthorityResponse);
@@ -103,7 +103,7 @@ export async function createAuthority(request: AuthorityRequest): Promise<Author
  */
 export async function updateAuthority(
     id: number,
-    request: Partial<AuthorityRequest>,
+    request: Partial<AuthorityBody>,
 ): Promise<Authority> {
     const endpoint = endpoints.authorities.update.replace('{id}', id.toString());
 

@@ -20,7 +20,7 @@ import type {
     ProfileStats,
     ProfileFilter,
     ProfileState,
-    ProfileScanRequest,
+    ProfileScanBody,
 } from '@/domain/profile';
 import type { Reservation } from '@/domain/reservation';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
@@ -169,7 +169,7 @@ export function useUpdateProfile(
 
 export type ScanProfileParams = {
     profileId: string;
-    request: ProfileScanRequest;
+    request: ProfileScanBody;
 };
 
 /**

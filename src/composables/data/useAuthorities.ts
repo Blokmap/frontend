@@ -9,7 +9,7 @@ import {
     updateAuthority,
     type Authority,
     type AuthorityFilter,
-    type AuthorityRequest,
+    type AuthorityBody,
 } from '@/domain/authority';
 import { readProfileAuthorities } from '@/domain/profile';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
@@ -27,7 +27,7 @@ export const AUTHORITY_QUERY_KEYS = {
 
 export type UpdateAuthorityParams = {
     id: number;
-    data: AuthorityRequest;
+    data: AuthorityBody;
 };
 
 export type AddAuthorityMemberParams = {
@@ -84,9 +84,7 @@ export function useReadAuthority(
  * @param options - Mutation options.
  * @returns The mutation object for creating an authority.
  */
-export function useCreateAuthority(
-    options: CompMutationOptions = {},
-): CompMutation<AuthorityRequest> {
+export function useCreateAuthority(options: CompMutationOptions = {}): CompMutation<AuthorityBody> {
     const mutation = useMutation({
         ...options,
         mutationFn: createAuthority,

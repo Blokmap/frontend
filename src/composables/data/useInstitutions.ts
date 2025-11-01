@@ -11,7 +11,7 @@ import {
     updateInstitution,
     type Institution,
     type InstitutionFilter,
-    type InstitutionRequest,
+    type InstitutionBody,
 } from '@/domain/institution';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
@@ -27,7 +27,7 @@ export const INSTITUTION_QUERY_KEYS = {
 // Mutation parameter types
 export type UpdateInstitutionParams = {
     id: number;
-    data: InstitutionRequest;
+    data: InstitutionBody;
 };
 
 export type AddInstitutionMemberParams = {
@@ -96,7 +96,7 @@ export function useReadInstitution(
  */
 export function useCreateInstitution(
     options: CompMutationOptions = {},
-): CompMutation<InstitutionRequest> {
+): CompMutation<InstitutionBody> {
     const mutation = useMutation({
         ...options,
         mutationFn: createInstitution,

@@ -11,8 +11,8 @@ export type WebsocketChannel = {
 
 // Indicates the type of command sent
 export enum WebsocketCommandEvent {
-    SUBSCRIBE = 'SubscribeRequest',
-    UNSUBSCRIBE = 'UnsubscribeRequest',
+    SUBSCRIBE = 'SubscribeBody',
+    UNSUBSCRIBE = 'UnsubscribeBody',
 }
 
 // Data sent through the websocket

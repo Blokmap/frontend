@@ -1,7 +1,7 @@
 import type { Image } from '@/domain/image';
 import type { OpeningTime } from '@/domain/openings';
 import type { Profile } from '@/domain/profile';
-import type { TranslationRequest, Translation } from '@/domain/translation';
+import type { TranslationBody, Translation } from '@/domain/translation';
 
 export type LocationAddress = {
     street: string;
@@ -55,10 +55,10 @@ export type Location = {
     images?: Image[];
 };
 
-export type LocationRequest = {
+export type LocationBody = {
     name: string;
-    description: TranslationRequest;
-    excerpt: TranslationRequest;
+    description: TranslationBody;
+    excerpt: TranslationBody;
     seatCount: number;
     isReservable: boolean;
     isVisible: boolean;

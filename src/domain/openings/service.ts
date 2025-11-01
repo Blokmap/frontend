@@ -5,7 +5,7 @@ import { formatFilters } from '@/utils/filter';
 import { formatRequest, transformResponseFactory } from '@/utils/service';
 import { stringToTime } from '@/utils/time';
 import { parseProfileResponse } from '../profile';
-import type { OpeningTime, OpeningTimeRequest, OpeningTimeFilter } from './types';
+import type { OpeningTime, OpeningTimeBody, OpeningTimeFilter } from './types';
 
 export type OpeningTimeIncludes = 'createdBy' | 'updatedBy' | 'openingTimeStatsIncludes';
 export type OpeningTimeStatsIncludes = 'stats';
@@ -79,7 +79,7 @@ export async function readOpeningTimes(
  */
 export async function createOpeningTimes(
     locationId: number,
-    openings: OpeningTimeRequest[],
+    openings: OpeningTimeBody[],
 ): Promise<OpeningTime[]> {
     const endpoint = endpoints.locations.openingTimes.createMany.replace(
         '{id}',
@@ -116,7 +116,7 @@ export async function createOpeningTimes(
 export async function updateOpeningTime(
     locationId: number,
     openingTimeId: number,
-    opening: OpeningTimeRequest,
+    opening: OpeningTimeBody,
     sequence?: boolean,
 ): Promise<OpeningTime> {
     const endpoint = endpoints.locations.openingTimes.updateOne

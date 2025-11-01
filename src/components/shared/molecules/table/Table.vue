@@ -1,6 +1,7 @@
 <script lang="ts" setup generic="T extends Record<string, any>, G = any">
 import EmptyState from '@/components/shared/molecules/EmptyState.vue';
 import TableLoadingState from '@/components/shared/molecules/table/TableLoadingState.vue';
+import { useBreakpoints } from '@vueuse/core';
 import { computed, provide, ref } from 'vue';
 import type { TableGroup } from '.';
 
@@ -24,6 +25,14 @@ const emit = defineEmits<{
 }>();
 
 const columns = ref<string[]>([]);
+
+// Use breakpoints to conditionally render desktop or mobile view
+const breakpoints = useBreakpoints({
+    mobile: 0,
+    tablet: 768,
+});
+
+const isMobile = breakpoints.smaller('tablet');
 
 const isEmpty = computed(() => {
     if (props.grouped) {
@@ -72,7 +81,7 @@ provide('registerColumn', (column: string) => {
     <!-- Content -->
     <template v-else>
         <!-- Desktop Table View -->
-        <div class="table-container hidden md:block">
+        <div v-if="!isMobile" class="table-container">
             <table class="table">
                 <thead v-if="$slots.header || columns.length" class="table-header">
                     <slot name="header">
@@ -91,7 +100,7 @@ provide('registerColumn', (column: string) => {
                     <template v-if="props.grouped">
                         <template
                             v-for="(groupData, groupIndex) in props.grouped"
-                            :key="groupIndex">
+                            :key="`group-${groupIndex}`">
                             <!-- Group header row -->
                             <tr class="table-group-row" @click="onGroupClick(groupData.group)">
                                 <td :colspan="columns.length || 100" class="table-group-cell">
@@ -105,7 +114,7 @@ provide('registerColumn', (column: string) => {
                             <!-- Group items -->
                             <tr
                                 v-for="(item, itemIndex) in groupData.items"
-                                :key="`${groupIndex}-${itemIndex}`"
+                                :key="`item-${groupIndex}-${itemIndex}`"
                                 class="table-row"
                                 @click="onRowClick(item)">
                                 <slot
@@ -132,7 +141,7 @@ provide('registerColumn', (column: string) => {
         </div>
 
         <!-- Mobile Card View -->
-        <div class="mobile-card-container md:hidden">
+        <div v-else class="mobile-card-container">
             <!-- Grouped rendering -->
             <template v-if="props.grouped">
                 <div
@@ -178,9 +187,8 @@ provide('registerColumn', (column: string) => {
 
 /* Desktop Table View */
 .table-container {
-    @apply hidden overflow-hidden rounded-lg border border-slate-200;
+    @apply overflow-hidden rounded-lg border border-slate-200;
     @apply overflow-x-auto;
-    @apply md:block;
 
     .table {
         @apply min-w-full bg-white;
@@ -224,7 +232,6 @@ provide('registerColumn', (column: string) => {
 /* Mobile Card View */
 .mobile-card-container {
     @apply flex flex-col gap-3;
-    @apply md:hidden;
 
     .mobile-card-group {
         @apply space-y-2;

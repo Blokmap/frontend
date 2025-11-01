@@ -7,7 +7,7 @@ import {
     deleteOpeningTime,
     deleteOpeningTimes,
     type OpeningTime,
-    type OpeningTimeRequest,
+    type OpeningTimeBody,
     type OpeningTimeFilter,
 } from '@/domain/openings';
 import { LOCATION_QUERY_KEYS } from './useLocations';
@@ -48,7 +48,7 @@ export function useReadOpeningTimes(
 
 export type CreateOpeningTimesParams = {
     locationId: number;
-    openings: OpeningTimeRequest[];
+    openings: OpeningTimeBody[];
 };
 
 /**
@@ -88,7 +88,7 @@ export function useCreateOpeningTimes(
 export type UpdateOpeningTimeParams = {
     locationId: number;
     openingTimeId: number;
-    opening: OpeningTimeRequest;
+    opening: OpeningTimeBody;
     sequence?: boolean;
 };
 

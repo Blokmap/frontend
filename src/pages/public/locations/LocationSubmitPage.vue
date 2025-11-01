@@ -10,15 +10,15 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useLocalStorage } from '@/composables/useLocalStorage';
-import { DEFAULT_LOCATION_REQUEST, type LocationRequest } from '@/domain/location';
+import { DEFAULT_LOCATION_REQUEST, type LocationBody } from '@/domain/location';
 import type { BuilderStep, BuilderSubstep } from '@/components/features/location/builder';
-import type { ImageRequest } from '@/domain/image';
+import type { ImageBody } from '@/domain/image';
 
 const { t } = useI18n();
 
-const imagesForm = ref<ImageRequest[]>([]);
+const imagesForm = ref<ImageBody[]>([]);
 
-const locationForm = useLocalStorage<LocationRequest>('location-form', {
+const locationForm = useLocalStorage<LocationBody>('location-form', {
     defaults: DEFAULT_LOCATION_REQUEST,
 });
 

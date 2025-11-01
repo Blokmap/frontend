@@ -5,7 +5,7 @@ import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { useUpdateInstitution } from '@/composables/data/useInstitutions';
 import { useToast } from '@/composables/store/useToast';
-import type { Institution, InstitutionRequest } from '@/domain/institution';
+import type { Institution, InstitutionBody } from '@/domain/institution';
 
 const props = defineProps<{
     institution: Institution;
@@ -18,7 +18,7 @@ const { mutateAsync: updateInstitution, isPending: isUpdating } = useUpdateInsti
 /**
  * Handle form submission to update the institution
  */
-async function handleUpdate(form: InstitutionRequest): Promise<void> {
+async function handleUpdate(form: InstitutionBody): Promise<void> {
     try {
         await updateInstitution({
             id: props.institution.id,

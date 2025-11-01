@@ -3,10 +3,10 @@ import OpeningTimeslot from '@/components/features/openings/timeslots/OpeningTim
 import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
 import { computed } from 'vue';
 import { openingRequestsToTimeSlots, type TimeCell, type TimeSlot } from '@/domain/calendar';
-import type { OpeningTimeRequest } from '@/domain/openings';
+import type { OpeningTimeBody } from '@/domain/openings';
 
 const props = defineProps<{
-    openingTimes: OpeningTimeRequest[];
+    openingTimes: OpeningTimeBody[];
     inWeekOf: Date;
     minDate?: Date;
     maxDate?: Date;
@@ -14,8 +14,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     'click:cell': [timeCell: TimeCell];
-    'click:slot': [slot: TimeSlot<OpeningTimeRequest>];
-    'drag:slot': [slot: TimeSlot<OpeningTimeRequest>, newSlot: TimeSlot];
+    'click:slot': [slot: TimeSlot<OpeningTimeBody>];
+    'drag:slot': [slot: TimeSlot<OpeningTimeBody>, newSlot: TimeSlot];
 }>();
 
 const timeSlots = computed(() => openingRequestsToTimeSlots(props.openingTimes));
@@ -32,7 +32,7 @@ function onCellClick(timeCell: TimeCell): void {
  * Handle slot click event.
  * @param slot - Time slot data
  */
-function onSlotClick(slot: TimeSlot<OpeningTimeRequest>): void {
+function onSlotClick(slot: TimeSlot<OpeningTimeBody>): void {
     emit('click:slot', slot);
 }
 </script>

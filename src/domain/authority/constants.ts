@@ -1,6 +1,6 @@
-import type { AuthorityRequest } from './types';
+import type { AuthorityBody } from './types';
 
-export const DEFAULT_AUTHORITY_REQUEST: AuthorityRequest = {
+export const DEFAULT_AUTHORITY_REQUEST: AuthorityBody = {
     name: '',
     description: null,
 };

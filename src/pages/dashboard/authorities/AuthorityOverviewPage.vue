@@ -5,7 +5,7 @@ import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { useUpdateAuthority } from '@/composables/data/useAuthorities';
 import { useToast } from '@/composables/store/useToast';
-import type { Authority, AuthorityRequest } from '@/domain/authority';
+import type { Authority, AuthorityBody } from '@/domain/authority';
 
 const props = defineProps<{
     authority: Authority;
@@ -18,7 +18,7 @@ const { mutateAsync: updateAuthority, isPending: isUpdating } = useUpdateAuthori
 /**
  * Handle form submission to update the authority
  */
-async function handleUpdate(form: AuthorityRequest): Promise<void> {
+async function handleUpdate(form: AuthorityBody): Promise<void> {
     try {
         await updateAuthority({
             id: props.authority.id,

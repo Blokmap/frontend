@@ -21,13 +21,13 @@ import {
 } from '@/domain/image/constants';
 import { LOCATION_SETTINGS } from '@/domain/location';
 import type { BuilderSubstep } from '@/components/features/location/builder';
-import type { ImageRequest } from '@/domain/image';
+import type { ImageBody } from '@/domain/image';
 
-const images = defineModel<ImageRequest[]>({ required: true, default: () => [] });
+const images = defineModel<ImageBody[]>({ required: true, default: () => [] });
 const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
 
 const urlInput = ref('');
-const draggedImage = ref<ImageRequest | null>(null);
+const draggedImage = ref<ImageBody | null>(null);
 
 const showAddDialog = ref(false);
 const isDragging = ref(false);

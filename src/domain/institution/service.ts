@@ -7,7 +7,7 @@ import { parseProfileResponse } from '../profile';
 import { parseTranslationResponse } from '../translation';
 import type { Authority } from '../authority';
 import type { Profile } from '../profile';
-import type { Institution, InstitutionFilter, InstitutionRequest } from './types';
+import type { Institution, InstitutionFilter, InstitutionBody } from './types';
 import type { Paginated } from '@/utils/pagination';
 
 /**
@@ -71,7 +71,7 @@ export async function readInstitution(slug: string): Promise<Institution> {
  * @param request - The institution creation request data.
  * @returns A promise that resolves to the created institution.
  */
-export async function createInstitution(request: InstitutionRequest): Promise<Institution> {
+export async function createInstitution(request: InstitutionBody): Promise<Institution> {
     const endpoint = endpoints.institutions.create.toString();
 
     const transformResponse = transformResponseFactory(parseInstitutionResponse);
@@ -92,7 +92,7 @@ export async function createInstitution(request: InstitutionRequest): Promise<In
  */
 export async function updateInstitution(
     id: number,
-    request: Partial<InstitutionRequest>,
+    request: Partial<InstitutionBody>,
 ): Promise<Institution> {
     const endpoint = endpoints.institutions.update.replace('{id}', id.toString());
 

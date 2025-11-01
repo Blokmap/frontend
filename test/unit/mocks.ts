@@ -1,10 +1,12 @@
-import type { Image, ImageRequest } from '@/domain/image';
-import { LocationState, type Location, type LocationRequest } from '@/domain/location';
-import type { OpeningTime, OpeningTimeRequest } from '@/domain/openings';
+import type { Image, ImageBody } from '@/domain/image';
+import { LocationState, type Location, type LocationBody } from '@/domain/location';
+import type { OpeningTime, OpeningTimeBody } from '@/domain/openings';
 import type { Profile } from '@/domain/profile';
 import type { Reservation, ReservationState } from '@/domain/reservation';
 import type { TimeSlot, TimeSlottable } from '@/domain/calendar';
 import type { Translation } from '@/domain/translation';
+import type { Authority } from '@/domain/authority';
+import { InstitutionCategory, type Institution } from '@/domain/institution';
 
 /**
  * Mock factory for Translation objects
@@ -53,9 +55,9 @@ export function createMockImage(overrides?: Partial<Image>): Image {
 }
 
 /**
- * Mock factory for ImageRequest objects
+ * Mock factory for ImageBody objects
  */
-export function createMockImageRequest(overrides?: Partial<ImageRequest>): ImageRequest {
+export function createMockImageBody(overrides?: Partial<ImageBody>): ImageBody {
     return {
         id: 1,
         imageUrl: 'https://example.com/image.jpg',
@@ -127,11 +129,9 @@ export function createMockOpeningTime(overrides?: Partial<OpeningTime>): Opening
 }
 
 /**
- * Mock factory for OpeningTimeRequest objects
+ * Mock factory for OpeningTimeBody objects
  */
-export function createMockOpeningTimeRequest(
-    overrides?: Partial<OpeningTimeRequest>,
-): OpeningTimeRequest {
+export function createMockOpeningTimeBody(overrides?: Partial<OpeningTimeBody>): OpeningTimeBody {
     return {
         id: undefined,
         sequenceId: null,
@@ -187,6 +187,45 @@ export function createMockTimeSlot<T = any>(overrides?: Partial<TimeSlot<T>>): T
         startTime: { hours: 9, minutes: 0 },
         endTime: { hours: 17, minutes: 0 },
         metadata: undefined,
+        ...overrides,
+    };
+}
+
+/**
+ * Mock factory for Authority objects
+ */
+export function createMockAuthority(overrides?: Partial<Authority>): Authority {
+    return {
+        id: 1,
+        name: 'Test Authority',
+        description: 'A test authority',
+        createdBy: null,
+        updatedBy: null,
+        members: [],
+        locations: [],
+        ...overrides,
+    };
+}
+
+/**
+ * Mock factory for Institution objects
+ */
+export function createMockInstitution(overrides?: Partial<Institution>): Institution {
+    return {
+        id: 1,
+        slug: 'test-institution',
+        name: createMockTranslation({ en: 'Test Institution', nl: 'Test Instelling' }),
+        logo: createMockImage(),
+        email: 'test@institution.com',
+        phone: '+1234567890',
+        street: 'Institution Street',
+        number: '1',
+        zip: '12345',
+        city: 'Test City',
+        province: 'Test Province',
+        country: 'Test Country',
+        category: InstitutionCategory.Education,
+        aclType: 'whitelist',
         ...overrides,
     };
 }

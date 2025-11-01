@@ -11,7 +11,7 @@ export type Authority = {
     locations?: Location[];
 };
 
-export type AuthorityRequest = {
+export type AuthorityBody = {
     name: string;
     description: string | null;
 };

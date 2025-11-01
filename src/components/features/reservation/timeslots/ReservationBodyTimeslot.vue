@@ -3,18 +3,18 @@ import Button from 'primevue/button';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { timeToString } from '@/utils/time';
-import type { ReservationRequest } from '@/domain/reservation';
+import type { ReservationBody } from '@/domain/reservation';
 import type { Time } from '@/utils/time';
 
 defineProps<{
     startTime: Time;
     endTime: Time;
-    request: ReservationRequest;
+    request: ReservationBody;
     isSaving?: boolean;
 }>();
 
 defineEmits<{
-    delete: [request: ReservationRequest];
+    delete: [request: ReservationBody];
 }>();
 </script>
 

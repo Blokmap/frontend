@@ -7,7 +7,7 @@ import { stringToTime, type Time } from '@/utils/time';
 import { parseLocationResponse } from '../location';
 import { parseOpeningTimeResponse } from '../openings';
 import { parseProfileResponse } from '../profile';
-import type { Reservation, ReservationRequest, ReservationFilter } from './types';
+import type { Reservation, ReservationBody, ReservationFilter } from './types';
 
 // Defines which related data can be included when fetching reservations
 export type ReservationIncludes = 'profile' | 'updatedBy';
@@ -98,7 +98,7 @@ export async function deleteReservation(reservationId: string): Promise<void> {
  */
 export async function updateReservation(
     reservationId: string,
-    body: Partial<ReservationRequest>,
+    body: Partial<ReservationBody>,
 ): Promise<Reservation> {
     const endpoint = endpoints.reservations.update.replace('{id}', reservationId.toString());
 
@@ -144,7 +144,7 @@ export async function confirmReservation(
  */
 export async function createReservations(
     locationId: number,
-    requests: ReservationRequest[],
+    requests: ReservationBody[],
 ): Promise<Reservation[]> {
     const endpoint = endpoints.locations.reservations.create.replace('{id}', locationId.toString());
 

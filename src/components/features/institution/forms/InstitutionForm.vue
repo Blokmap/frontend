@@ -10,9 +10,9 @@ import { useI18n } from 'vue-i18n';
 import {
     DEFAULT_INSTITUTION_REQUEST,
     INSTITUTION_CATEGORIES,
-    institutionToRequest,
+    institutionToBody,
 } from '@/domain/institution';
-import type { Institution, InstitutionRequest } from '@/domain/institution';
+import type { Institution, InstitutionBody } from '@/domain/institution';
 
 const props = defineProps<{
     institution?: Institution;
@@ -20,18 +20,18 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'click:save', form: InstitutionRequest): void;
+    (e: 'click:save', form: InstitutionBody): void;
 }>();
 
 const { t, locale } = useI18n();
 
-const form = ref<InstitutionRequest>({ ...DEFAULT_INSTITUTION_REQUEST });
+const form = ref<InstitutionBody>({ ...DEFAULT_INSTITUTION_REQUEST });
 
 const currentLanguage = ref(locale.value);
 
 watchEffect(() => {
     if (props.institution) {
-        form.value = institutionToRequest(props.institution);
+        form.value = institutionToBody(props.institution);
     }
 });
 

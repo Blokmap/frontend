@@ -1,5 +1,5 @@
 import type { Image } from '@/domain/image';
-import type { Translation, TranslationRequest } from '@/domain/translation';
+import type { Translation, TranslationBody } from '@/domain/translation';
 
 export enum InstitutionCategory {
     Education = 'education',
@@ -24,9 +24,9 @@ export type Institution = {
     aclType: 'blacklist' | 'whitelist';
 };
 
-export type InstitutionRequest = {
+export type InstitutionBody = {
     category: InstitutionCategory;
-    name: TranslationRequest;
+    name: TranslationBody;
     slug: string;
     aclType: 'blacklist' | 'whitelist';
     city: string | null;

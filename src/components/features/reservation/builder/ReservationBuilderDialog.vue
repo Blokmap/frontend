@@ -18,7 +18,7 @@ import {
 } from '@/composables/data/useReservations';
 import { useWebsocket } from '@/composables/data/useWebsocket';
 import { useToast } from '@/composables/store/useToast';
-import { type Reservation, type ReservationRequest } from '@/domain/reservation';
+import { type Reservation, type ReservationBody } from '@/domain/reservation';
 import {
     WebsocketChannelName,
     WebsocketMessageEvent,
@@ -104,12 +104,12 @@ watch(
 );
 
 // Builder state
-const reservationsToCreate = ref<ReservationRequest[]>([]);
+const reservationsToCreate = ref<ReservationBody[]>([]);
 const reservationsToDelete = ref<Reservation[]>([]);
 
 // Popover state
 const reservationPopover = useTemplateRef('reservationPopover');
-const activeRequest = ref<ReservationRequest | null>(null);
+const activeRequest = ref<ReservationBody | null>(null);
 const activeOpeningTimeSlot = ref<TimeSlot<OpeningTime> | null>(null);
 
 const isSaving = ref<boolean>(false);
@@ -145,7 +145,7 @@ function onOpeningTimeClick(slot: TimeSlot<OpeningTime>, event: Event): void {
 /**
  * Handle deletion of a tentative reservation request
  */
-function onRequestDelete(request: ReservationRequest): void {
+function onRequestDelete(request: ReservationBody): void {
     if (isSaving.value) return;
 
     const index = reservationsToCreate.value.findIndex((r) => r === request);

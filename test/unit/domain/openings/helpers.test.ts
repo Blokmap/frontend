@@ -4,14 +4,14 @@ import {
     getOpeningsFromRepetition,
     groupOpeningTimesByDay,
     isOverlapping,
-    openingToRequest,
+    openingToBody,
 } from '@/domain/openings';
-import { createMockOpeningTime, createMockOpeningTimeRequest } from '../../mocks';
+import { createMockOpeningTime, createMockOpeningTimeBody } from '../../mocks';
 
 describe('openings helpers', () => {
     describe('getOpeningsFromRepetition', () => {
         it('should return single opening when no repetition', () => {
-            const opening = createMockOpeningTimeRequest({
+            const opening = createMockOpeningTimeBody({
                 day: new Date(2024, 0, 15),
                 startTime: { hours: 9, minutes: 0 },
                 endTime: { hours: 17, minutes: 0 },
@@ -25,7 +25,7 @@ describe('openings helpers', () => {
         });
 
         it('should generate multiple openings with repetition', () => {
-            const opening = createMockOpeningTimeRequest({
+            const opening = createMockOpeningTimeBody({
                 day: new Date(2024, 0, 1), // Monday
                 startTime: { hours: 9, minutes: 0 },
                 endTime: { hours: 17, minutes: 0 },
@@ -45,7 +45,7 @@ describe('openings helpers', () => {
         });
 
         it('should use weekdays when selectedDays is empty', () => {
-            const opening = createMockOpeningTimeRequest({
+            const opening = createMockOpeningTimeBody({
                 day: new Date(2024, 0, 1),
                 startTime: { hours: 9, minutes: 0 },
                 endTime: { hours: 17, minutes: 0 },
@@ -65,7 +65,7 @@ describe('openings helpers', () => {
         });
 
         it('should filter by selected days', () => {
-            const opening = createMockOpeningTimeRequest({
+            const opening = createMockOpeningTimeBody({
                 day: new Date(2024, 0, 1),
                 startTime: { hours: 9, minutes: 0 },
                 endTime: { hours: 17, minutes: 0 },
@@ -254,8 +254,8 @@ describe('openings helpers', () => {
         });
     });
 
-    describe('openingToRequest', () => {
-        it('should convert OpeningTime to OpeningTimeRequest', () => {
+    describe('openingToBody', () => {
+        it('should convert OpeningTime to OpeningTimeBody', () => {
             const opening = createMockOpeningTime({
                 id: 42,
                 day: new Date(2024, 0, 15),
@@ -265,7 +265,7 @@ describe('openings helpers', () => {
                 sequenceId: 'seq-1',
             });
 
-            const result = openingToRequest(opening);
+            const result = openingToBody(opening);
 
             expect(result.id).toBe(42);
             expect(result.day).toEqual(new Date(2024, 0, 15));
@@ -286,7 +286,7 @@ describe('openings helpers', () => {
                 sequenceId: null,
             });
 
-            const result = openingToRequest(opening);
+            const result = openingToBody(opening);
 
             expect(result).toEqual({
                 id: 123,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import OpeningTimeslot from '@/components/features/openings/timeslots/OpeningTimeslot.vue';
-import ReservationRequestTimeslot from '@/components/features/reservation/timeslots/ReservationRequestTimeslot.vue';
+import ReservationBodyTimeslot from '@/components/features/reservation/timeslots/ReservationBodyTimeslot.vue';
 import ReservationTimeslot from '@/components/features/reservation/timeslots/ReservationTimeslot.vue';
 import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
 import { computed } from 'vue';
@@ -8,7 +8,7 @@ import { toTimeslots, type TimeSlot } from '@/domain/calendar';
 import OpeningHistogram from '../../openings/timeslots/OpeningHistogram.vue';
 import {
     isOpeningTimeSlot,
-    isReservationRequestSlot,
+    isReservationBodySlot,
     isReservationSlot,
     isHistogramSlot,
     type OpeningMetadata,
@@ -18,20 +18,20 @@ import {
     type SlotMetadata,
 } from './index';
 import type { OpeningTime } from '@/domain/openings';
-import type { Reservation, ReservationRequest } from '@/domain/reservation';
+import type { Reservation, ReservationBody } from '@/domain/reservation';
 
 const props = defineProps<{
     currentWeek: Date;
     openingTimes: OpeningTime[];
     reservations: Reservation[];
     reservationsToDelete: Reservation[];
-    reservationsToCreate: ReservationRequest[];
+    reservationsToCreate: ReservationBody[];
     isSaving?: boolean;
 }>();
 
 const emit = defineEmits<{
     'click:opening': [slot: TimeSlot<OpeningTime>, event: Event];
-    'delete:request': [request: ReservationRequest];
+    'delete:request': [request: ReservationBody];
     'delete:reservation': [reservation: Reservation];
 }>();
 
@@ -137,7 +137,7 @@ function onOpeningTimeClick(slot: TimeSlot<OpeningMetadata>, event: Event): void
 /**
  * Handles deletion of a reservation request.
  */
-function onRequestDelete(request: ReservationRequest): void {
+function onRequestDelete(request: ReservationBody): void {
     if (props.isSaving) return;
     emit('delete:request', request);
 }
@@ -190,14 +190,14 @@ function onReservationDelete(reservation: Reservation): void {
                 </template>
 
                 <!-- Reservation Request Slot -->
-                <template v-else-if="isReservationRequestSlot(slot)">
-                    <ReservationRequestTimeslot
+                <template v-else-if="isReservationBodySlot(slot)">
+                    <ReservationBodyTimeslot
                         :start-time="slot.startTime"
                         :end-time="slot.endTime"
                         :request="slot.metadata.data"
                         :is-saving="isSaving"
                         @delete="onRequestDelete">
-                    </ReservationRequestTimeslot>
+                    </ReservationBodyTimeslot>
                 </template>
             </template>
         </Calendar>

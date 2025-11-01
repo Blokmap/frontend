@@ -12,7 +12,7 @@ import {
     type Reservation,
     type ReservationFilter,
     type ReservationIncludes,
-    type ReservationRequest,
+    type ReservationBody,
     type ReservationState,
 } from '@/domain/reservation';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
@@ -67,7 +67,7 @@ export function useCreateReservation(
 
 export type CreateReservationsParams = {
     locationId: number;
-    requests: ReservationRequest[];
+    requests: ReservationBody[];
 };
 
 /**

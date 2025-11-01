@@ -26,6 +26,7 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
     const profile = await client.fetchQuery({
         queryKey: AUTH_QUERY_KEYS.profile(),
         queryFn: readAuthProfile,
+        staleTime: 5000,
     });
 
     if (profile === null) {

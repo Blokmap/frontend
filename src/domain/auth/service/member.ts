@@ -2,9 +2,9 @@ import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
 import { parseProfileResponse } from '@/domain/profile';
 import { stringToDate } from '@/utils/date';
-import { transformPaginatedResponseFactory } from '@/utils/service';
+import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/service';
 import { parseRoleResponse } from './role';
-import type { Membership } from '../types';
+import type { Membership, MembershipBody } from '../types';
 import type { Paginated } from '@/utils/pagination';
 
 /**
@@ -38,6 +38,48 @@ export async function readLocationMembers(locationId: number): Promise<Paginated
     const transformResponse = transformPaginatedResponseFactory(parseMembershipResponse);
 
     const { data } = await client.get(endpoint, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Deletes a member from a specific location.
+ *
+ * @param locationId - The ID of the location.
+ * @param memberId - The ID of the member to be deleted.
+ * @returns A promise that resolves when the member is deleted.
+ */
+export async function deleteLocationMember(locationId: number, memberId: number): Promise<void> {
+    const endpoint = endpoints.locations.members.delete
+        .replace('{id}', locationId.toString())
+        .replace('{profileId}', memberId.toString());
+
+    await client.delete(endpoint);
+}
+
+/**
+ * Updates a member's role in a specific location.
+ *
+ * @param locationId - The ID of the location.
+ * @param memberId - The ID of the member to be updated.
+ * @param body - The membership body containing the new role ID.
+ *
+ * @returns A promise that resolves when the member is updated.
+ */
+export async function updateLocationMember(
+    locationId: number,
+    memberId: number,
+    body: MembershipBody,
+): Promise<void> {
+    const endpoint = endpoints.locations.members.update
+        .replace('{id}', locationId.toString())
+        .replace('{profileId}', memberId.toString());
+
+    const transformResponse = transformResponseFactory(parseMembershipResponse);
+
+    const { data } = await client.patch(endpoint, body, {
         transformResponse,
     });
 

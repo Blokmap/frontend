@@ -8,14 +8,14 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { isAxiosError } from 'axios';
 import { computed, ref, watchEffect } from 'vue';
 import { useCreateLocation, useCreateLocationImage } from '@/composables/data/useLocations';
-import { getImageRequestPreviewUrl, type ImageRequest } from '@/domain/image';
+import { getImageBodyPreviewUrl, type ImageBody } from '@/domain/image';
 import type { SubmissionStep } from '.';
-import type { LocationRequest } from '@/domain/location';
+import type { LocationBody } from '@/domain/location';
 
 const props = defineProps<{
     canSubmit: boolean;
-    location: LocationRequest;
-    images: ImageRequest[];
+    location: LocationBody;
+    images: ImageBody[];
 }>();
 
 const visible = defineModel<boolean>('visible', {
@@ -57,7 +57,7 @@ const allImagesCompleted = computed(() => {
  * Get the status of a specific image.
  * @param image The image to get the status for.
  */
-function getImageStatus(image: ImageRequest): SubmissionStep | undefined {
+function getImageStatus(image: ImageBody): SubmissionStep | undefined {
     return imagesStatuses.value.get(image.index);
 }
 
@@ -65,7 +65,7 @@ function getImageStatus(image: ImageRequest): SubmissionStep | undefined {
  * Submit a specific image.
  * @param image The image to submit.
  */
-async function submitImage(image: ImageRequest): Promise<void> {
+async function submitImage(image: ImageBody): Promise<void> {
     if (!locationId.value) return;
 
     imagesStatuses.value.set(image.index, 'loading');
@@ -158,7 +158,7 @@ watchEffect(async () => {
                     <div v-if="images.length > 0" class="grid grid-cols-3 gap-3">
                         <div v-for="image in images" :key="image.index" class="image-preview">
                             <img
-                                :src="getImageRequestPreviewUrl(image)"
+                                :src="getImageBodyPreviewUrl(image)"
                                 :class="{
                                     loading: getImageStatus(image) === 'loading',
                                 }" />

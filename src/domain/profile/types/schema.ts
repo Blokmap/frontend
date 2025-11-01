@@ -26,13 +26,13 @@ export type ProfileStats = {
     totalReservationHours: number;
 };
 
-export type ProfileRequest = {
+export type ProfileBody = {
     firstName?: string;
     lastName?: string;
     username?: string;
 };
 
-export type ProfileScanRequest = {
+export type ProfileScanBody = {
     locationId: number;
     day?: Date | null;
     time?: Time | null;

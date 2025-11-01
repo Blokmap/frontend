@@ -16,6 +16,7 @@ const {
     role,
 } = defineProps<{
     role: Role;
+    types: number[];
     clickable?: boolean;
     type?: PermissionType;
 }>();
@@ -50,7 +51,7 @@ const onClickLabel = (event: Event) => {
             </div>
             <ul v-if="permissions.length" class="permissions">
                 <li v-for="perm in permissions" :key="perm.value">
-                    <p class="text-sm font-medium">
+                    <p class="mb-2 text-sm font-medium">
                         <FontAwesomeIcon :icon="faCheck" />
                         {{ $t(`permissions.${type}.${perm.name}.name`) }}
                     </p>
@@ -102,7 +103,7 @@ const onClickLabel = (event: Event) => {
     }
 
     .permissions {
-        @apply m-0 list-none space-y-2 p-4;
+        @apply m-0 list-none space-y-3 p-4;
     }
 
     .empty {

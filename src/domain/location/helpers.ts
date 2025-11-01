@@ -1,9 +1,9 @@
 import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import { isWeekend } from '@/utils/date';
 import { isEvening, isMorning, isNight } from '@/utils/time';
-import { translationToRequest } from '../translation/helpers';
+import { translationToBody } from '../translation/helpers';
 import { GOOGLE_MAPS_DIRECTIONS_BASE_URL } from './constants';
-import type { Location, LocationAddress, LocationFeatures, LocationRequest } from './types';
+import type { Location, LocationAddress, LocationFeatures, LocationBody } from './types';
 
 /**
  * Returns a random placeholder image URL for locations.
@@ -16,16 +16,16 @@ export function getLocationPlaceholderImage(_location: Location): string {
 }
 
 /**
- * Converts a Location to a LocationRequest for editing.
+ * Converts a Location to a LocationBody for editing.
  *
  * @param location - The location object to convert.
- * @returns A LocationRequest object suitable for forms.
+ * @returns A LocationBody object suitable for forms.
  */
-export function locationToRequest(location: Location): LocationRequest {
+export function locationToBody(location: Location): LocationBody {
     return {
         name: location.name,
-        description: translationToRequest(location.description),
-        excerpt: translationToRequest(location.excerpt),
+        description: translationToBody(location.description),
+        excerpt: translationToBody(location.excerpt),
         seatCount: location.seatCount,
         isReservable: location.isReservable,
         isVisible: location.isVisible,

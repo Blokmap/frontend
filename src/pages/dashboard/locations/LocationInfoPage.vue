@@ -20,8 +20,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
 import { useUpdateLocation, useUpdateLocationImages } from '@/composables/data/useLocations';
 import { useToast } from '@/composables/store/useToast';
-import { imageToRequest, type ImageRequest } from '@/domain/image';
-import { locationToRequest, type Location, type LocationRequest } from '@/domain/location';
+import { imageToBody, type ImageBody } from '@/domain/image';
+import { locationToBody, type Location, type LocationBody } from '@/domain/location';
 
 const props = defineProps<{
     location: Location;
@@ -49,8 +49,8 @@ const { mutateAsync: updateImages, isPending: isUpdatingImages } = useUpdateLoca
     },
 });
 
-const locationForm = ref<LocationRequest | null>(null);
-const imagesForm = ref<ImageRequest[]>([]);
+const locationForm = ref<LocationBody | null>(null);
+const imagesForm = ref<ImageBody[]>([]);
 
 const originalFormSnapshot = ref<string>('');
 const originalImagesSnapshot = ref<string>('');
@@ -80,12 +80,12 @@ const hasImagesChanges = computed(() => {
 watchEffect(() => {
     if (props.location) {
         // Map location to form format
-        const request = locationToRequest(props.location);
+        const request = locationToBody(props.location);
         locationForm.value = request;
         originalFormSnapshot.value = JSON.stringify(request);
 
         // Map images to form format
-        const mappedImages = (props.location.images || []).map(imageToRequest);
+        const mappedImages = (props.location.images || []).map(imageToBody);
         imagesForm.value = mappedImages;
         originalImagesSnapshot.value = JSON.stringify(mappedImages);
     }

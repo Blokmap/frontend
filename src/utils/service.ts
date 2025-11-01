@@ -43,7 +43,7 @@ export function formatRequest<T extends Record<string, any>>(
  * @param data - The data object to convert to FormData.
  * @returns {FormData} - The resulting FormData object.
  */
-export function formatFormDataRequest(data: Record<string, any>): FormData {
+export function formatFormDataBody(data: Record<string, any>): FormData {
     const form = new FormData();
     const formatted = formatRequest(data);
 

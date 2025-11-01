@@ -29,7 +29,7 @@ export type ReservationGroup = {
     reservations: Reservation[];
 };
 
-export type ReservationRequest = {
+export type ReservationBody = {
     openingTimeId: number;
     state?: ReservationState;
     day: Date;

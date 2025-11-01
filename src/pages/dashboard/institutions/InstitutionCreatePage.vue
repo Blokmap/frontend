@@ -7,7 +7,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useCreateInstitution } from '@/composables/data/useInstitutions';
 import { useToast } from '@/composables/store/useToast';
-import type { InstitutionRequest } from '@/domain/institution';
+import type { InstitutionBody } from '@/domain/institution';
 
 const router = useRouter();
 const toast = useToast();
@@ -18,7 +18,7 @@ const { mutateAsync: createInstitution, isPending } = useCreateInstitution({});
 /**
  * Handles the form submission by creating a new institution.
  */
-async function handleSave(form: InstitutionRequest): Promise<void> {
+async function handleSave(form: InstitutionBody): Promise<void> {
     try {
         const institution = await createInstitution(form);
         toast.add({

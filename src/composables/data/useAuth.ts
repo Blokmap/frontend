@@ -13,7 +13,7 @@ import {
     readInstitutionRoles,
     readLocationMembers,
 } from '@/domain/auth';
-import type { LoginRequest, RegisterRequest, Membership, Role } from '@/domain/auth';
+import type { LoginBody, RegisterBody, Membership, Role } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
@@ -77,7 +77,7 @@ export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<v
  *
  * @returns The mutation object for logging in.
  */
-export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<LoginRequest> {
+export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<LoginBody> {
     const client = useQueryClient();
     const router = useRouter();
 
@@ -104,7 +104,7 @@ export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<Lo
  *
  * @returns The mutation object for registering a new user.
  */
-export function useAuthRegister(options: CompMutationOptions = {}): CompMutation<RegisterRequest> {
+export function useAuthRegister(options: CompMutationOptions = {}): CompMutation<RegisterBody> {
     const client = useQueryClient();
 
     const mutation = useMutation({

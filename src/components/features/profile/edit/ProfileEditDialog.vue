@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue';
 import { useUpdateProfile } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/store/useToast';
-import { type Profile, type ProfileRequest } from '@/domain/profile';
+import { type Profile, type ProfileBody } from '@/domain/profile';
 
 const props = defineProps<{ profile: Profile }>();
 const visible = defineModel<boolean>('visible', { default: false });
@@ -33,7 +33,7 @@ const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile({
     },
 });
 
-const profileData = ref<ProfileRequest>({
+const profileData = ref<ProfileBody>({
     firstName: props.profile.firstName,
     lastName: props.profile.lastName,
     username: props.profile.username,

@@ -4,7 +4,7 @@ export type Image = {
     index: number;
 };
 
-export type ImageRequest = {
+export type ImageBody = {
     id?: number;
     imageUrl?: string | null;
     tempUrl?: string | null;
@@ -13,7 +13,7 @@ export type ImageRequest = {
     index: number;
 };
 
-export type ImageReorderRequest = {
+export type ImageReorderBody = {
     imageId: number;
     index: number;
 };

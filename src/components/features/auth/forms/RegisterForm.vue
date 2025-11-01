@@ -5,7 +5,7 @@ import InputText from 'primevue/inputtext';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue';
-import type { RegisterRequest } from '@/domain/auth';
+import type { RegisterBody } from '@/domain/auth';
 
 defineProps<{
     error?: Error | null;
@@ -13,10 +13,10 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'submit', form: RegisterRequest): Promise<unknown>;
+    (e: 'submit', form: RegisterBody): Promise<unknown>;
 }>();
 
-const form = ref<RegisterRequest>({
+const form = ref<RegisterBody>({
     firstName: '',
     lastName: '',
     email: '',

@@ -5,8 +5,8 @@ import Textarea from 'primevue/textarea';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref, watchEffect } from 'vue';
-import { DEFAULT_AUTHORITY_REQUEST, authorityToRequest } from '@/domain/authority';
-import type { Authority, AuthorityRequest } from '@/domain/authority';
+import { DEFAULT_AUTHORITY_REQUEST, authorityToBody } from '@/domain/authority';
+import type { Authority, AuthorityBody } from '@/domain/authority';
 
 const props = defineProps<{
     authority?: Authority;
@@ -14,10 +14,10 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'click:save', form: AuthorityRequest): void;
+    (e: 'click:save', form: AuthorityBody): void;
 }>();
 
-const form = ref<AuthorityRequest>({ ...DEFAULT_AUTHORITY_REQUEST });
+const form = ref<AuthorityBody>({ ...DEFAULT_AUTHORITY_REQUEST });
 
 /**
  * Handles the form submission by emitting the 'click:save' event with the form data.
@@ -28,7 +28,7 @@ function handleFormSubmission(): void {
 
 watchEffect(() => {
     if (props.authority) {
-        form.value = authorityToRequest(props.authority);
+        form.value = authorityToBody(props.authority);
     }
 });
 </script>

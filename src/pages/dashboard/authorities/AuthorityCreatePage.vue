@@ -7,7 +7,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useCreateAuthority } from '@/composables/data/useAuthorities';
 import { useToast } from '@/composables/store/useToast';
-import type { AuthorityRequest } from '@/domain/authority';
+import type { AuthorityBody } from '@/domain/authority';
 
 const router = useRouter();
 const toast = useToast();
@@ -18,7 +18,7 @@ const { mutateAsync: createAuthority, isPending } = useCreateAuthority({});
 /**
  * Handles the form submission by creating a new authority.
  */
-async function handleSave(form: AuthorityRequest): Promise<void> {
+async function handleSave(form: AuthorityBody): Promise<void> {
     try {
         const authority = await createAuthority(form);
         toast.add({

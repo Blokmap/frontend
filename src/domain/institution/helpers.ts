@@ -1,16 +1,16 @@
-import { translationToRequest } from '../translation/helpers';
-import type { Institution, InstitutionRequest } from './types';
+import { translationToBody } from '../translation/helpers';
+import type { Institution, InstitutionBody } from './types';
 
 /**
- * Converts an Institution to an InstitutionRequest for editing.
+ * Converts an Institution to an InstitutionBody for editing.
  *
  * @param institution - The institution object to convert.
- * @returns An InstitutionRequest object suitable for forms.
+ * @returns An InstitutionBody object suitable for forms.
  */
-export function institutionToRequest(institution: Institution): InstitutionRequest {
+export function institutionToBody(institution: Institution): InstitutionBody {
     return {
         category: institution.category,
-        name: translationToRequest(institution.name),
+        name: translationToBody(institution.name),
         slug: institution.slug,
         aclType: institution.aclType,
         city: institution.city,

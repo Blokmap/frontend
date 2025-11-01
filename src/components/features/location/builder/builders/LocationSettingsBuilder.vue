@@ -6,9 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { watchEffect } from 'vue';
 import LocationBuilderCard from '../LocationBuilderCard.vue';
 import type { BuilderSubstep } from '..';
-import type { LocationRequest } from '@/domain/location';
+import type { LocationBody } from '@/domain/location';
 
-const form = defineModel<LocationRequest>('form', { required: true });
+const form = defineModel<LocationBody>('form', { required: true });
 const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
 
 watchEffect(() => {

@@ -1,7 +1,7 @@
 import { WEEKDAY_DAYS } from '@/domain/calendar/constants';
 import { datesInRange } from '@/utils/date';
 import { timeToMinutes, type Time } from '@/utils/time';
-import type { OpeningTimeRequest, OpeningTime } from '../types';
+import type { OpeningTimeBody, OpeningTime } from '../types';
 
 export * from './builder';
 
@@ -11,14 +11,14 @@ export * from './builder';
  * @param group - The base opening time request with repetition config.
  * @returns An array of generated opening time requests.
  */
-export function getOpeningsFromRepetition(group: OpeningTimeRequest): OpeningTimeRequest[] {
+export function getOpeningsFromRepetition(group: OpeningTimeBody): OpeningTimeBody[] {
     if (!group.repetition) return [group];
 
     const dates = datesInRange(group.day, group.repetition.endDate);
     const selectedDays =
         group.repetition.selectedDays.length > 0 ? group.repetition.selectedDays : WEEKDAY_DAYS;
 
-    const results: OpeningTimeRequest[] = [];
+    const results: OpeningTimeBody[] = [];
 
     for (const date of dates) {
         // we are europeans >:(
@@ -108,12 +108,12 @@ export function isOverlapping(
 }
 
 /**
- * Converts an OpeningTime to an OpeningTimeRequest.
+ * Converts an OpeningTime to an OpeningTimeBody.
  *
  * @param opening - The opening time to convert.
  * @returns The corresponding opening time request.
  */
-export function openingToRequest(opening: OpeningTime): OpeningTimeRequest {
+export function openingToBody(opening: OpeningTime): OpeningTimeBody {
     return {
         id: opening.id,
         day: opening.day,

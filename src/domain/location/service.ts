@@ -3,7 +3,7 @@ import { endpoints } from '@/config/endpoints';
 import { stringToDate } from '@/utils/date';
 import { formatFilters, formatLocationSearchFilters } from '@/utils/filter';
 import {
-    formatFormDataRequest,
+    formatFormDataBody,
     transformPaginatedResponseFactory,
     transformResponseFactory,
 } from '@/utils/service';
@@ -14,11 +14,11 @@ import { parseTranslationResponse } from '../translation';
 import type {
     Location,
     LocationSearchFilter,
-    LocationRequest,
+    LocationBody,
     NearestLocation,
     LocationFilter,
 } from './types';
-import type { Image, ImageReorderRequest, ImageRequest } from '@/domain/image';
+import type { Image, ImageReorderBody, ImageBody } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { Paginated } from '@/utils/pagination';
 
@@ -184,10 +184,10 @@ export async function readNearestLocation(center: LngLat): Promise<NearestLocati
 /**
  * Create a new location.
  *
- * @param {LocationRequest} body - The location data to create.
+ * @param {LocationBody} body - The location data to create.
  * @returns {Promise<Location>} A promise that resolves to the created location.
  */
-export async function createLocation(body: LocationRequest): Promise<Location> {
+export async function createLocation(body: LocationBody): Promise<Location> {
     const endpoint = endpoints.locations.create;
 
     const transformResponse = transformResponseFactory(parseLocationResponse);
@@ -203,16 +203,16 @@ export async function createLocation(body: LocationRequest): Promise<Location> {
  * Set images for a location.
  *
  * @param {number} locationId - The ID of the location to set images for.
- * @param {ImageRequest} image - The images to set for the location.
+ * @param {ImageBody} image - The images to set for the location.
  * @returns {Promise<Location>} A promise that resolves to the updated location.
  */
 export async function createLocationImage(
     locationId: number,
-    request: ImageRequest,
+    request: ImageBody,
 ): Promise<Location> {
     const endpoint = endpoints.locations.images.createOne.replace('{id}', locationId.toString());
 
-    const body = formatFormDataRequest({
+    const body = formatFormDataBody({
         image: request.file,
         index: request.index,
     });
@@ -230,10 +230,10 @@ export async function createLocationImage(
  * Update a location.
  *
  * @param {number} id - The ID of the location to update.
- * @param {LocationRequest} body - The updated location data.
+ * @param {LocationBody} body - The updated location data.
  * @returns {Promise<Location>} A promise that resolves to the updated location.
  */
-export async function updateLocation(id: number, body: LocationRequest): Promise<Location> {
+export async function updateLocation(id: number, body: LocationBody): Promise<Location> {
     const endpoint = endpoints.locations.update.replace('{id}', id.toString());
 
     const transformResponse = transformResponseFactory(parseLocationResponse);
@@ -360,12 +360,12 @@ export async function deleteLocationImage(locationId: number, imageId: number): 
  * Reorder images for a location.
  *
  * @param {number} locationId - The ID of the location to reorder images for.
- * @param {ImageReorderRequest[]} images - The new order of images.
+ * @param {ImageReorderBody[]} images - The new order of images.
  * @returns {Promise<void>} A promise that resolves when the reordering is complete.
  */
 export async function reorderLocationImages(
     locationId: number,
-    images: ImageReorderRequest[],
+    images: ImageReorderBody[],
 ): Promise<void> {
     const endpoint = endpoints.locations.images.reorder.replace('{id}', locationId.toString());
 

@@ -1,4 +1,5 @@
 export * from './permission';
+export * from './predicate';
 
 const REDIRECT_URL_KEY = 'redirectAfterLogin';
 

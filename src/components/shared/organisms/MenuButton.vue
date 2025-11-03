@@ -106,11 +106,11 @@ function handleNavigationClick(): void {
                 <p class="text-sm text-slate-500 dark:text-slate-400">
                     Reserveer een plek op een van onze locaties of meld zelf een plek aan.
                 </p>
+                <RouterLink class="menu-link" :to="{ name: 'auth' }" @click="handleNavigationClick">
+                    <FontAwesomeIcon :icon="faRightToBracket" class="text-secondary fa-icon" />
+                    <span>Inloggen</span>
+                </RouterLink>
             </template>
-            <RouterLink class="menu-link" :to="{ name: 'auth' }" @click="handleNavigationClick">
-                <FontAwesomeIcon :icon="faRightToBracket" class="text-secondary fa-icon" />
-                <span>Inloggen</span>
-            </RouterLink>
             <template v-if="profile">
                 <div class="menu-link logout-link" @click="handleLogoutClick">
                     <FontAwesomeIcon :icon="faSignOut" class="text-secondary fa-icon" />

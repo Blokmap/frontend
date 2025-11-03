@@ -177,3 +177,14 @@ body {
     --p-text-muted-color: var(--p-surface-400);
     --p-text-hover-muted-color: var(--p-surface-300);
 }
+
+/* Playful box shadow utilities */
+@utility shadow-playful {
+    @apply hover:-translate-y-0.5 hover:scale-105;
+    @apply active:translate-x-[0.125rem] active:translate-y-[0.125rem];
+    box-shadow: 0.25rem 0.25rem 0 var(--shadow-color, currentColor);
+}
+
+@utility shadow-playful-active {
+    box-shadow: 0.125rem 0.125rem 0 var(--shadow-color, currentColor);
+}

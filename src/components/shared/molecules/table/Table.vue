@@ -185,7 +185,7 @@ provide('registerColumn', (column: string) => {
 /* Desktop Table View */
 .table-container {
     @apply overflow-hidden overflow-x-auto rounded-lg;
-    @apply border border-slate-100 shadow-xs;
+    @apply border border-slate-100 shadow-sm;
 
     .table {
         @apply min-w-full bg-white;
@@ -230,14 +230,12 @@ provide('registerColumn', (column: string) => {
         @apply space-y-2;
 
         .card-group-header {
-            @apply rounded-lg bg-white p-3;
-            @apply border border-slate-200;
-            @apply cursor-pointer;
+            @apply cursor-pointer rounded-lg bg-white p-3 shadow-sm;
         }
     }
 
     .card {
-        @apply rounded-lg border border-slate-200 bg-white;
+        @apply rounded-lg bg-white shadow-sm;
         @apply p-4;
         @apply cursor-pointer transition-all;
         @apply hover:border-slate-300 hover:shadow-sm;

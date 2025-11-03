@@ -14,7 +14,7 @@ const googleMapsLink = computed(() => getGoogleMapsDirectionsLink(props.location
 </script>
 
 <template>
-    <div class="rounded-xl bg-white p-6 shadow-xs">
+    <div class="rounded-xl bg-white p-6 shadow-sm">
         <div class="flex items-center gap-3">
             <div class="bg-primary-100 flex h-10 w-10 items-center justify-center rounded-lg">
                 <FontAwesomeIcon :icon="faLocationDot" class="text-primary-600 h-5 w-5" />

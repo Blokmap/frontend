@@ -73,7 +73,7 @@ onUnmounted(() => {
     .main {
         @apply w-full flex-1 rounded-b-md;
         @apply py-4 md:py-6;
-        @apply bg-slate-50 inset-shadow-xs;
+        @apply bg-slate-50 inset-shadow-sm;
     }
 
     .header {

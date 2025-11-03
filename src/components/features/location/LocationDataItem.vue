@@ -123,7 +123,7 @@ function navigateToDetail(): void {
 
 .location-card {
     @apply flex flex-col gap-3 p-3;
-    @apply cursor-pointer rounded-lg bg-white shadow-xs;
+    @apply cursor-pointer rounded-lg bg-white shadow-sm;
     @apply md:flex-row md:gap-6 md:p-4;
 
     .location-card__image-wrap {

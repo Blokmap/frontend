@@ -97,7 +97,7 @@ const featuresList = computed(() => {
 
 .feature {
     @apply flex items-start gap-3 p-4;
-    @apply rounded-xl bg-white shadow-xs;
+    @apply rounded-xl bg-white shadow-sm;
     @apply transition-all hover:border-slate-300;
 }
 </style>

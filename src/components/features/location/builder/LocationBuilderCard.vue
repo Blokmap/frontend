@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-    <div class="rounded-lg bg-white p-3 shadow-xs sm:p-4">
+    <div class="rounded-lg bg-white p-3 shadow-sm sm:p-4">
         <div class="space-y-4 sm:space-y-6">
             <div class="flex items-center gap-3">
                 <div v-if="icon" class="icon hidden sm:flex">

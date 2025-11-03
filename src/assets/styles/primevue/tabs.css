@@ -1,5 +1,5 @@
 .p-tabs {
-    @apply flex flex-col gap-8 rounded-lg shadow-xs;
+    @apply flex flex-col gap-8 rounded-lg shadow-sm;
 }
 
 .p-tablist {

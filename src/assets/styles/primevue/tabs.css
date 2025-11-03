@@ -1,9 +1,9 @@
 .p-tabs {
-    @apply flex flex-col gap-8 rounded-lg shadow-sm;
+    @apply flex flex-col gap-8;
 }
 
 .p-tablist {
-    @apply relative flex;
+    @apply relative flex rounded-lg shadow-sm;
 }
 
 .p-tabs-scrollable > .p-tablist {

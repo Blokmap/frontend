@@ -24,6 +24,11 @@
         "locations": {
             "name": "Locatie | Locaties",
             "spot": "Plek | Plekken",
+            "state": {
+                "approved": "Goedgekeurd",
+                "pending": "In afwachting",
+                "rejected": "Afgewezen"
+            },
             "success": {
                 "statusUpdated": "Status Bijgewerkt",
                 "statusUpdatedDetail": "Locatiestatus werd succesvol bijgewerkt!",
@@ -36,7 +41,14 @@
             }
         },
         "reservations": {
-            "name": "Reservatie | Reservaties"
+            "name": "Reservatie | Reservaties",
+            "state": {
+                "pending": "In afwachting",
+                "created": "Goedgekeurd",
+                "rejected": "Afgewezen",
+                "present": "Aanwezig",
+                "absent": "Afwezig"
+            }
         },
         "openings": {
             "name": "Openingsuur | Openingsuren",

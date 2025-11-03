@@ -187,7 +187,7 @@ function onDeleteLocation(locationId: number) {
                         :delete-is-pending="isLocationDeleting(location.id)"
                         :show-status-change="true"
                         @click:delete="onDeleteLocation(location.id)"
-                        @change:state="onChangeLocationStatus">
+                        @update:state="onChangeLocationStatus">
                     </LocationDataItem>
                 </template>
             </LocationDataList>

@@ -14,21 +14,13 @@ const severities: Record<ReservationState, string> = {
     [ReservationState.Rejected]: 'contrast',
     [ReservationState.Pending]: 'warn',
 };
-
-const labels: Record<ReservationState, string> = {
-    [ReservationState.Created]: 'Bevestigd',
-    [ReservationState.Present]: 'Aanwezig',
-    [ReservationState.Absent]: 'Afwezig',
-    [ReservationState.Rejected]: 'Geweigerd',
-    [ReservationState.Pending]: 'In behandeling',
-};
 </script>
 
 <template>
     <Badge :severity="severities[state]">
         <div class="flex w-full items-center justify-around gap-1">
             <FontAwesomeIcon :icon="RESERVATION_STATE_ICONS[state]" :spin="state === 'pending'" />
-            <span>{{ labels[state] }}</span>
+            <span>{{ $t(`domains.reservations.state.${state.toLowerCase()}`) }}</span>
         </div>
     </Badge>
 </template>

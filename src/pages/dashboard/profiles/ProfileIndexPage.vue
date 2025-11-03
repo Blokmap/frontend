@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Paginator from 'primevue/paginator';
-import ProfileActionsMenu from '@/components/features/profile/ProfileActionsMenu.vue';
+import ProfileActionMenu from '@/components/features/profile/ProfileActionMenu.vue';
 import ProfileStateBadge from '@/components/features/profile/ProfileStateBadge.vue';
 import ProfileTableCell from '@/components/features/profile/ProfileTableCell.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
@@ -128,11 +128,11 @@ async function onChangeProfileStatus(profileId: string, status: ProfileState) {
                     </TableCell>
 
                     <TableCell column="Acties">
-                        <ProfileActionsMenu
+                        <ProfileActionMenu
                             :profile="profile"
                             :is-pending="isProfilePending(profile.id)"
                             @change:status="onChangeProfileStatus">
-                        </ProfileActionsMenu>
+                        </ProfileActionMenu>
                     </TableCell>
                 </template>
             </Table>

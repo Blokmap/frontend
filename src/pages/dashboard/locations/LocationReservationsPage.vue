@@ -23,36 +23,13 @@ const toast = useToast();
 const selectedDay = useRouteDate();
 
 // Fetch reservations for the selected date
-const {
-    data: reservations,
-    refetch,
-    isLoading,
-} = useReadLocationReservations(
+const { data: reservations, isLoading } = useReadLocationReservations(
     computed(() => +props.locationId),
     computed(() => ({ day: selectedDay.value })),
 );
 
 // Mutation for changing reservation state
-const { mutateAsync: changeReservationState } = useReservationState({
-    onSuccess: async () => {
-        await refetch();
-
-        toast.add({
-            severity: 'success',
-            summary: 'Status gewijzigd',
-            detail: 'De reservatiesstatus is succesvol gewijzigd.',
-        });
-    },
-    onError: (error: any) => {
-        const message = error.message || 'Er is iets misgegaan bij het wijzigen van de status.';
-
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij wijzigen van reservatiestatus',
-            detail: message,
-        });
-    },
-});
+const { mutateAsync: changeReservationState } = useReservationState();
 
 const searchQuery = ref<string>('');
 const pendingStatusChanges = ref<Set<string>>(new Set());
@@ -95,9 +72,31 @@ async function onStatusChange(reservationId: string, state: ReservationState): P
     try {
         pendingStatusChanges.value.add(reservationId);
 
-        await changeReservationState({
+        const update = await changeReservationState({
             reservationId,
             state,
+        });
+
+        if (reservations.value) {
+            const reservation = reservations.value.find((r) => r.id === reservationId);
+
+            if (reservation) {
+                Object.assign(reservation, update);
+            }
+        }
+
+        toast.add({
+            severity: 'success',
+            summary: 'Status gewijzigd',
+            detail: 'De reservatiesstatus is succesvol gewijzigd.',
+        });
+    } catch (error: any) {
+        const message = error.message || 'Er is iets misgegaan bij het wijzigen van de status.';
+
+        toast.add({
+            severity: 'error',
+            summary: 'Fout bij wijzigen van reservatiestatus',
+            detail: message,
         });
     } finally {
         pendingStatusChanges.value.delete(reservationId);

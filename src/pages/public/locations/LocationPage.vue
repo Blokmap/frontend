@@ -248,7 +248,7 @@ function onLoginClick(): void {
                         </Skeleton>
 
                         <!-- Map -->
-                        <div class="h-[400px] overflow-hidden rounded-xl border border-slate-200">
+                        <div class="h-[400px] overflow-hidden rounded-xl shadow-xs">
                             <LocationMap
                                 v-if="location"
                                 :center="[location.longitude, location.latitude]"
@@ -265,7 +265,7 @@ function onLoginClick(): void {
                 <div class="lg:col-span-1">
                     <div class="sticky top-8">
                         <!-- Reservation/Hours Card -->
-                        <div class="rounded-xl border border-slate-200 bg-white p-6">
+                        <div class="rounded-xl bg-white p-6 shadow-xs">
                             <h3 class="text-xl font-semibold text-gray-900">
                                 <template v-if="location?.isReservable">
                                     {{ $t('pages.locations.sections.reservations.title') }}

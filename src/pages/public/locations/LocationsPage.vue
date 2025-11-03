@@ -194,7 +194,7 @@ function onNearestClick(): void {
                 <BlokMap
                     ref="map"
                     v-model:hovered-location="hoveredLocation"
-                    class="border-1 border-slate-200"
+                    class="shadow-md"
                     data-testid="locations-map"
                     :locations="locations?.data"
                     :loading="locationsIsPending"

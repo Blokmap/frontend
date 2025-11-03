@@ -43,10 +43,6 @@ watch(() => props.profile.id, generateQrCode);
 @reference '@/assets/styles/main.css';
 
 .qr-code-container {
-    @apply aspect-square h-full rounded-lg border border-gray-200 bg-white p-2;
-}
-
-.qr-code-container :deep(svg) {
-    @apply block h-full w-full;
+    @apply aspect-square h-full rounded-lg bg-white;
 }
 </style>

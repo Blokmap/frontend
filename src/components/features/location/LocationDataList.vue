@@ -42,7 +42,3 @@ const isEmpty = computed(() => {
         </div>
     </div>
 </template>
-
-<style scoped>
-@reference '@/assets/styles/main.css';
-</style>

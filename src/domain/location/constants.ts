@@ -1,4 +1,5 @@
-import type { LocationBody } from './types';
+import { faCheck, faClock, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { LocationState, type LocationBody } from './types';
 
 export const GOOGLE_MAPS_DIRECTIONS_BASE_URL =
     'https://www.google.com/maps/dir/?api=1&destination=';
@@ -24,4 +25,12 @@ export const LOCATION_SETTINGS = {
     MIN_IMAGES: 5,
     MAX_DESCRIPTION_LENGTH: 2000,
     MAX_EXCERPT_LENGTH: 50,
+};
+
+export const LOCATION_STATES = Object.values(LocationState);
+
+export const LOCATION_STATE_ICONS = {
+    [LocationState.Approved]: faCheck,
+    [LocationState.Pending]: faClock,
+    [LocationState.Rejected]: faTimes,
 };

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import ActionMenu from '@/components/shared/atoms/ActionMenu.vue';
-import NavigationLink from '@/components/shared/atoms/NavigationLink.vue';
+import ActionMenu from '@/components/shared/atoms/menu/ActionMenu.vue';
+import ActionMenuButton from '@/components/shared/atoms/menu/ActionMenuButton.vue';
 import { faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import type { Role } from '@/domain/auth';
 
@@ -34,14 +34,14 @@ const onDelete = (hideMenu: () => void) => {
         </template>
 
         <template #navigation="{ hideMenu }">
-            <NavigationLink :icon="faPencil" label="Bewerken" @click="onEdit(hideMenu)">
-            </NavigationLink>
-            <NavigationLink
+            <ActionMenuButton :icon="faPencil" label="Bewerken" @click="onEdit(hideMenu)">
+            </ActionMenuButton>
+            <ActionMenuButton
                 :icon="faTrash"
                 label="Verwijderen"
                 destructive
                 @click="onDelete(hideMenu)">
-            </NavigationLink>
+            </ActionMenuButton>
         </template>
     </ActionMenu>
 </template>

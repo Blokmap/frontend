@@ -16,7 +16,6 @@ const {
     role,
 } = defineProps<{
     role: Role;
-    types: number[];
     clickable?: boolean;
     type?: PermissionType;
 }>();

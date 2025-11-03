@@ -16,7 +16,7 @@ withDefaults(
 </script>
 
 <template>
-    <div class="rounded-lg border border-slate-200 bg-white px-6 py-12 text-center">
+    <div class="rounded-lg bg-white px-6 py-12 text-center shadow-xs">
         <div class="mx-auto flex max-w-md flex-col items-center gap-3">
             <FontAwesomeIcon :icon="icon" class="text-4xl text-slate-400" />
             <div class="space-y-1">

@@ -380,7 +380,7 @@ function resetToCalculatedCoordinates(): void {
 
     .address-wrapper {
         @apply space-y-3 rounded-lg bg-white;
-        @apply sm:space-y-3 sm:p-3 sm:shadow-sm;
+        @apply sm:space-y-3 sm:p-3;
     }
 }
 

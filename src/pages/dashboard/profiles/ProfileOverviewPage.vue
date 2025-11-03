@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Card from 'primevue/card';
-import ProfileActionsMenu from '@/components/features/profile/ProfileActionsMenu.vue';
+import ProfileActionMenu from '@/components/features/profile/ProfileActionMenu.vue';
 import ProfileStateBadge from '@/components/features/profile/ProfileStateBadge.vue';
 import KeyValue from '@/components/shared/atoms/KeyValue.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
@@ -54,7 +54,7 @@ function onChangeStatus(profileId: string, state: ProfileState) {
                 <span v-else>Details over {{ profile.firstName }}'s profiel.</span>
             </template>
             <template #actions>
-                <ProfileActionsMenu
+                <ProfileActionMenu
                     :profile="profile"
                     :is-pending="isUpdatingProfile"
                     @change:status="onChangeStatus"
@@ -70,7 +70,7 @@ function onChangeStatus(profileId: string, state: ProfileState) {
                             <FontAwesomeIcon :icon="faChevronDown" v-else />
                         </Button>
                     </template>
-                </ProfileActionsMenu>
+                </ProfileActionMenu>
             </template>
         </DashboardDetailHeader>
 

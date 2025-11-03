@@ -73,13 +73,12 @@ onUnmounted(() => {
     .main {
         @apply w-full flex-1 rounded-b-md;
         @apply py-4 md:py-6;
-        @apply bg-gray-50;
+        @apply bg-slate-50 inset-shadow-xs;
     }
 
     .header {
         @apply rounded-t-md bg-white;
         @apply py-4 md:py-6;
-        @apply border-b border-slate-200;
     }
 
     .footer {

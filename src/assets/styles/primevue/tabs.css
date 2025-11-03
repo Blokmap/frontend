@@ -1,5 +1,5 @@
 .p-tabs {
-    @apply flex flex-col gap-8;
+    @apply flex flex-col gap-8 rounded-lg shadow-xs;
 }
 
 .p-tablist {
@@ -19,7 +19,7 @@
 }
 
 .p-tablist-tab-list {
-    @apply relative flex rounded-lg border-1 border-slate-200 bg-white;
+    @apply relative flex rounded-lg border-0 bg-white;
 }
 
 .p-tablist-content {
@@ -44,7 +44,7 @@
 }
 
 .p-tab {
-    @apply border-surface-200 dark:border-surface-700 text-surface-500 dark:text-surface-400 relative -mb-px flex-shrink-0 cursor-pointer border-0 px-[1.125rem] py-4 font-semibold whitespace-nowrap transition-colors duration-200 select-none;
+    @apply border-surface-200 text-surface-500 relative -mb-px flex-shrink-0 cursor-pointer border-0 px-[1.125rem] py-4 font-semibold whitespace-nowrap transition-colors duration-200 select-none;
 }
 
 .p-tab.p-disabled {
@@ -68,7 +68,7 @@
 }
 
 .p-tablist-active-bar {
-    @apply bg-primary absolute -bottom-px z-10 block h-[2px] transition-[left] duration-200 ease-[cubic-bezier(0.35,0,0.25,1)];
+    @apply bg-primary absolute -bottom-px z-10 block h-[3px] transition-[left] duration-200 ease-[cubic-bezier(0.35,0,0.25,1)];
 }
 
 .p-tablist-viewport {

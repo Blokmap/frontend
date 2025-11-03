@@ -14,7 +14,7 @@ const { locale } = useI18n();
 </script>
 
 <template>
-    <div class="rounded-2xl border border-slate-200 bg-white p-6">
+    <div class="rounded-2xl bg-white p-6 shadow-xs">
         <div class="flex items-start gap-4">
             <ProfileAvatar class="h-16 w-16" :profile="profile" />
             <div class="flex-1 space-y-3">

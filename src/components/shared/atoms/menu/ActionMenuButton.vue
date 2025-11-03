@@ -43,6 +43,7 @@ const handleClick = (event: MouseEvent) => {
 .navigation-link {
     @apply flex w-full items-center gap-3 px-2 py-1;
     @apply rounded-md text-sm text-slate-700 transition-colors hover:bg-slate-100;
+    @apply cursor-pointer;
 
     &.destructive {
         @apply text-red-700 hover:bg-red-50;

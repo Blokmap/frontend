@@ -6,6 +6,7 @@ const props = defineProps<{
     column: string;
 }>();
 
+// Register the column with the parent table component
 const registerColumn = inject<(column: string) => void>('registerColumn');
 
 onMounted(() => {
@@ -16,9 +17,9 @@ onMounted(() => {
 </script>
 
 <template>
-    <td :class="['table-cell', $props.class]" :data-column="column">
-        <div class="mobile-cell-label">{{ column }}</div>
-        <div class="mobile-cell-content">
+    <td :class="['table-cell', props.class]" :data-column="column">
+        <div class="cell-label">{{ column }}</div>
+        <div class="cell-content">
             <slot></slot>
         </div>
     </td>
@@ -28,29 +29,18 @@ onMounted(() => {
 @reference '@/assets/styles/main.css';
 
 .table-cell {
-    @apply px-6 py-4 text-sm whitespace-nowrap;
+    @apply text-sm;
+    @apply block px-0 py-2 whitespace-normal;
+    @apply md:table-cell md:px-6 md:py-4 md:whitespace-nowrap;
 
-    .mobile-cell-label {
-        @apply hidden;
+    .cell-label {
         @apply text-xs font-medium tracking-wider text-slate-500 uppercase;
         @apply mb-2;
+        @apply md:hidden;
     }
 
-    .mobile-cell-content {
+    .cell-content {
         @apply contents;
-    }
-
-    /* Mobile styles */
-    @media (max-width: 767px) {
-        @apply block px-0 py-2 whitespace-normal;
-
-        .mobile-cell-label {
-            @apply block;
-        }
-
-        .mobile-cell-content {
-            @apply block;
-        }
     }
 }
 </style>

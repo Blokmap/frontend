@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Paginator from 'primevue/paginator';
-import MemberActionsMenu from '@/components/features/auth/MemberActionsMenu.vue';
+import MemberActionMenu from '@/components/features/auth/MemberActionMenu.vue';
 import ProfileTableCell from '@/components/features/profile/ProfileTableCell.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
@@ -89,12 +89,12 @@ function onRemoveMember(profileId: string): void {
                 </TableCell>
 
                 <TableCell column="Acties">
-                    <MemberActionsMenu
+                    <MemberActionMenu
                         :member="member"
                         :available-roles="roles || []"
                         @change:role="onChangeRole"
                         @remove="onRemoveMember">
-                    </MemberActionsMenu>
+                    </MemberActionMenu>
                 </TableCell>
             </template>
         </Table>

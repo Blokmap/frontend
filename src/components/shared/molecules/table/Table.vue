@@ -1,7 +1,7 @@
 <script lang="ts" setup generic="T extends Record<string, any>, G = any">
 import EmptyState from '@/components/shared/molecules/EmptyState.vue';
 import TableLoadingState from '@/components/shared/molecules/table/TableLoadingState.vue';
-import { useBreakpoints } from '@vueuse/core';
+import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
 import { computed, provide, ref } from 'vue';
 import type { TableGroup } from '.';
 
@@ -24,15 +24,10 @@ const emit = defineEmits<{
     'click:group': [groupData: G];
 }>();
 
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const isMobile = breakpoints.smaller('md');
+
 const columns = ref<string[]>([]);
-
-// Use breakpoints to conditionally render desktop or mobile view
-const breakpoints = useBreakpoints({
-    mobile: 0,
-    tablet: 768,
-});
-
-const isMobile = breakpoints.smaller('tablet');
 
 const isEmpty = computed(() => {
     if (props.grouped) {
@@ -60,6 +55,7 @@ function onGroupClick(group: G) {
     emit('click:group', group);
 }
 
+// Register a column for the table
 provide('registerColumn', (column: string) => {
     if (!columns.value.includes(column)) {
         columns.value.push(column);
@@ -141,26 +137,27 @@ provide('registerColumn', (column: string) => {
         </div>
 
         <!-- Mobile Card View -->
-        <div v-else class="mobile-card-container">
+        <div v-else class="card-container">
             <!-- Grouped rendering -->
             <template v-if="props.grouped">
                 <div
                     v-for="(groupData, groupIndex) in props.grouped"
                     :key="groupIndex"
-                    class="mobile-card-group">
+                    class="card-group">
                     <!-- Group header -->
-                    <div class="mobile-card-group-header" @click="onGroupClick(groupData.group)">
+                    <div class="card-group-header" @click="onGroupClick(groupData.group)">
                         <slot
                             name="group"
                             :data="groupData.group"
                             :items="groupData.items"
-                            :index="groupIndex"></slot>
+                            :index="groupIndex">
+                        </slot>
                     </div>
                     <!-- Group items -->
                     <div
                         v-for="(item, itemIndex) in groupData.items"
                         :key="`${groupIndex}-${itemIndex}`"
-                        class="mobile-card"
+                        class="card"
                         @click="onRowClick(item)">
                         <slot name="row" :data="item" :index="itemIndex" :group="groupData.group">
                         </slot>
@@ -173,7 +170,7 @@ provide('registerColumn', (column: string) => {
                 <div
                     v-for="(item, index) in props.value"
                     :key="index"
-                    class="mobile-card"
+                    class="card"
                     @click="onRowClick(item)">
                     <slot name="row" :data="item" :index="index"></slot>
                 </div>
@@ -187,8 +184,8 @@ provide('registerColumn', (column: string) => {
 
 /* Desktop Table View */
 .table-container {
-    @apply overflow-hidden rounded-lg border border-slate-200;
-    @apply overflow-x-auto;
+    @apply overflow-hidden overflow-x-auto rounded-lg;
+    @apply border border-slate-100 shadow-xs;
 
     .table {
         @apply min-w-full bg-white;
@@ -215,14 +212,10 @@ provide('registerColumn', (column: string) => {
             }
 
             .table-group-row {
-                @apply bg-slate-50;
+                @apply bg-white;
 
                 .table-group-cell {
                     @apply px-6 py-4;
-                }
-
-                &:hover {
-                    @apply bg-slate-50;
                 }
             }
         }
@@ -230,20 +223,20 @@ provide('registerColumn', (column: string) => {
 }
 
 /* Mobile Card View */
-.mobile-card-container {
+.card-container {
     @apply flex flex-col gap-3;
 
-    .mobile-card-group {
+    .card-group {
         @apply space-y-2;
 
-        .mobile-card-group-header {
-            @apply rounded-lg bg-slate-50 p-3;
+        .card-group-header {
+            @apply rounded-lg bg-white p-3;
             @apply border border-slate-200;
             @apply cursor-pointer;
         }
     }
 
-    .mobile-card {
+    .card {
         @apply rounded-lg border border-slate-200 bg-white;
         @apply p-4;
         @apply cursor-pointer transition-all;

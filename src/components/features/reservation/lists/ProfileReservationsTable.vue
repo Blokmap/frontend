@@ -7,9 +7,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
-
-import { startOfDay, startOfWeek, endOfWeek } from '@/utils/date';
+import { useDeleteReservation } from '@/composables/data/useReservations';
+import { useToast } from '@/composables/store/useToast';
 import { timeToString, getTimeDuration, minutesToTime } from '@/utils/time';
+import ReservationActionMenu from '../ReservationActionMenu.vue';
+import type { DayGroup } from '.';
 import type { Reservation } from '@/domain/reservation';
 
 const props = defineProps<{
@@ -17,42 +19,44 @@ const props = defineProps<{
     loading?: boolean;
 }>();
 
-const { locale } = useI18n();
+const toast = useToast();
+const i18n = useI18n();
 
-type DayGroup = {
-    date: Date;
-    dayName: string;
-    fullDate: string;
-    reservations: Reservation[];
-};
+const { mutateAsync: deleteReservation, isPending: isPendingDelete } = useDeleteReservation({
+    onSuccess: () => {
+        toast.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Reservation deleted successfully',
+        });
+    },
+    onError: () => {
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to delete reservation',
+        });
+    },
+});
 
 // Group reservations by day of the week
 const groupedReservations = computed(() => {
     if (!props.reservations) return [];
 
-    const now = new Date();
-    const monday = startOfDay(startOfWeek(now));
-    const sunday = endOfWeek(now);
-    sunday.setHours(23, 59, 59, 999);
-
+    // Group reservations per day of the week
     const grouped = new Map<string, DayGroup>();
+    const locale = i18n.locale.value;
 
-    // Filter reservations for current week
-    const weekReservations = props.reservations.filter((reservation) => {
-        const reservationDate = new Date(reservation.day);
-        return reservationDate >= monday && reservationDate <= sunday;
-    });
-
-    // Group by day
-    for (const reservation of weekReservations) {
+    for (const reservation of props.reservations) {
         const reservationDate = new Date(reservation.day);
         const dateKey = reservationDate.toDateString();
 
         if (!grouped.has(dateKey)) {
-            const dayName = reservationDate.toLocaleDateString(locale.value, {
+            const dayName = reservationDate.toLocaleDateString(locale, {
                 weekday: 'short',
             });
-            const fullDate = reservationDate.toLocaleDateString(locale.value, {
+
+            const fullDate = reservationDate.toLocaleDateString(locale, {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',
@@ -66,25 +70,32 @@ const groupedReservations = computed(() => {
             });
         }
 
-        grouped.get(dateKey)!.reservations.push(reservation);
+        const group = grouped.get(dateKey)!;
+        group.reservations.push(reservation);
     }
 
     // Sort by date and convert to array format expected by Table component
-    return Array.from(grouped.values())
-        .sort((a, b) => a.date.getTime() - b.date.getTime())
-        .map((groupData) => ({
-            group: groupData,
-            items: groupData.reservations,
-        }));
+    const sorted = [...grouped.values()].sort((a, b) => a.date.getTime() - b.date.getTime());
+
+    // Return in the format expected by Table component
+    const data = sorted.map((group) => ({
+        group,
+        items: group.reservations,
+    }));
+
+    return data;
 });
 
 const getTotalDuration = (reservations: Reservation[]) => {
     let totalMinutes = 0;
+
     for (const reservation of reservations) {
         totalMinutes += getTimeDuration(reservation.startTime, reservation.endTime);
     }
+
     const time = minutesToTime(totalMinutes);
-    return time.minutes > 0 ? `${time.hours}u ${time.minutes}m` : `${time.hours}u`;
+
+    return `${time.hours}u ${time.minutes}m`;
 };
 </script>
 
@@ -94,23 +105,22 @@ const getTotalDuration = (reservations: Reservation[]) => {
         :loading="loading"
         empty-message="Geen reservaties deze week.">
         <template #group="{ data, items }">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div
-                        class="bg-primary-100 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg">
-                        <FontAwesomeIcon :icon="faCalendarDay" class="text-primary-600 text-lg" />
+            <div class="group-day">
+                <div class="group-day__icon-wrapper">
+                    <FontAwesomeIcon :icon="faCalendarDay" class="text-primary-600 text-lg" />
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg font-bold text-slate-900 uppercase">
+                            {{ data.dayName }}
+                        </span>
+                        <span class="text-sm text-slate-600">{{ data.fullDate }}</span>
                     </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-lg font-bold text-slate-900 uppercase">
-                                {{ data.dayName }}
-                            </span>
-                            <span class="text-sm text-slate-600">{{ data.fullDate }}</span>
-                        </div>
-                        <div class="text-xs text-slate-500">
-                            {{ items.length }} reservatie{{ items.length !== 1 ? 's' : '' }} •
-                            {{ getTotalDuration(items) }}
-                        </div>
+                    <div class="text-xs text-slate-500">
+                        {{ items.length }}
+                        {{ $t('domains.reservations.name', { count: items.length }) }}
+                        •
+                        {{ getTotalDuration(items) }}
                     </div>
                 </div>
             </div>
@@ -128,7 +138,7 @@ const getTotalDuration = (reservations: Reservation[]) => {
             </TableCell>
             <TableCell column="Aanmaakdatum">
                 {{
-                    data.createdAt.toLocaleDateString(locale, {
+                    data.createdAt.toLocaleDateString(i18n.locale.value, {
                         day: 'numeric',
                         month: 'short',
                         year: 'numeric',
@@ -143,10 +153,27 @@ const getTotalDuration = (reservations: Reservation[]) => {
             <TableCell column="Status">
                 <ReservationStateBadge :state="data.state" />
             </TableCell>
+            <TableCell column="Acties">
+                <ReservationActionMenu
+                    :reservation="data"
+                    :show-state-select="false"
+                    :is-pending="isPendingDelete"
+                    @click:delete="deleteReservation({ reservationId: data.id })">
+                </ReservationActionMenu>
+            </TableCell>
         </template>
     </Table>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
+
+.group-day {
+    @apply flex items-center space-x-4;
+
+    .group-day__icon-wrapper {
+        @apply flex h-12 w-12 flex-shrink-0 items-center justify-center;
+        @apply bg-primary-100 rounded-lg;
+    }
+}
 </style>

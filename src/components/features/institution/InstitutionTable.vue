@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import InstitutionActionsMenu from '@/components/features/institution/InstitutionActionsMenu.vue';
+import InstitutionActionMenu from '@/components/features/institution/InstitutionActionMenu.vue';
 import InstitutionLogo from '@/components/features/institution/InstitutionLogo.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
@@ -66,7 +66,7 @@ const onInstitutionClick = (institution: Institution) => {
             </TableCell>
 
             <TableCell column="Acties">
-                <InstitutionActionsMenu :institution="institution" />
+                <InstitutionActionMenu :institution="institution" />
             </TableCell>
         </template>
     </Table>

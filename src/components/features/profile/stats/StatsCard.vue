@@ -23,7 +23,7 @@ withDefaults(
                 <div class="text-2xl font-bold text-gray-900">
                     {{ value }}
                 </div>
-                <div class="text-sm text-gray-600">
+                <div class="hidden text-sm text-gray-600 md:block">
                     {{ label }}
                 </div>
             </div>

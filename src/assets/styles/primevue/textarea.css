@@ -13,7 +13,7 @@
     @apply dark:disabled:bg-surface-700 dark:disabled:text-surface-400;
     @apply disabled:opacity-100;
 
-    @apply px-3 py-2 shadow-xs;
+    @apply border border-slate-200 px-3 py-2;
     @apply transition-colors duration-200;
 
     @apply autofill:bg-white;

@@ -201,7 +201,7 @@ watchEffect(async () => {
 
 .image-preview {
     @apply relative aspect-square overflow-hidden;
-    @apply rounded-lg border border-slate-200;
+    @apply rounded-lg shadow-lg;
 
     img {
         @apply h-full w-full object-cover transition-all duration-300;

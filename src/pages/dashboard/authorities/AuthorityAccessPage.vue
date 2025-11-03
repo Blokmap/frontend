@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MemberActionsMenu from '@/components/features/auth/MemberActionsMenu.vue';
+import MemberActionMenu from '@/components/features/auth/MemberActionMenu.vue';
 import ProfileTableCell from '@/components/features/profile/ProfileTableCell.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
@@ -55,7 +55,7 @@ function onRemoveMember(profileId: string): void {
         </DashboardDetailHeader>
 
         <!-- Members Table -->
-        <Table :value="members" :loading="isLoading">
+        <Table :value="members?.data" :loading="isLoading">
             <template #row="{ data: member }">
                 <TableCell column="Profiel">
                     <ProfileTableCell :profile="member.profile" />
@@ -79,12 +79,12 @@ function onRemoveMember(profileId: string): void {
                 </TableCell>
 
                 <TableCell column="Acties">
-                    <MemberActionsMenu
+                    <MemberActionMenu
                         :member="member"
                         :available-roles="roles || []"
-                        @change:role="onChangeRole"
-                        @remove="onRemoveMember">
-                    </MemberActionsMenu>
+                        @change:role="onChangeRole(member.profile.id, $event)"
+                        @click:delete="onRemoveMember(member.profile.id)">
+                    </MemberActionMenu>
                 </TableCell>
             </template>
         </Table>

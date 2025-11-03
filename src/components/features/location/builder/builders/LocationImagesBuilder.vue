@@ -60,6 +60,9 @@ watchEffect(() => {
     ];
 });
 
+/**
+ * Add image from URL input. This will reset the URL input and close the dialog.
+ */
 function addImageFromUrl(): void {
     if (!urlInput.value || !canAddMore.value) return;
 
@@ -74,6 +77,11 @@ function addImageFromUrl(): void {
     showAddDialog.value = false;
 }
 
+/**
+ * Remove image by its index in the images array.
+ *
+ * @param imageIndex - The index of the image to remove.
+ */
 function removeImage(imageIndex: number): void {
     images.value = images.value.filter((img) => img.index !== imageIndex);
 
@@ -83,6 +91,11 @@ function removeImage(imageIndex: number): void {
     });
 }
 
+/**
+ * Set an image as primary by its index in the images array.
+ *
+ * @param imageIndex - The index of the image to set as primary.
+ */
 function setPrimary(imageIndex: number): void {
     images.value.forEach((img) => {
         if (img.index === imageIndex) {
@@ -95,6 +108,11 @@ function setPrimary(imageIndex: number): void {
     });
 }
 
+/**
+ * Handle file upload event from FileUpload component.
+ *
+ * @param event The file upload select event.
+ */
 function handleFileUpload(event: FileUploadSelectEvent): void {
     if (!event.files?.length) return;
 
@@ -113,11 +131,20 @@ function handleFileUpload(event: FileUploadSelectEvent): void {
     showAddDialog.value = false;
 }
 
+/**
+ * Open the add image dialog.
+ */
 function openAddDialog(): void {
     showAddDialog.value = true;
     urlInput.value = '';
 }
 
+/**
+ * Handle drag start event for an image.
+ *
+ * @param event The drag event.
+ * @param imageIndex The index of the image being dragged.
+ */
 function onDragStart(event: DragEvent, imageIndex: number): void {
     const image = images.value.find((img) => img.index === imageIndex);
     if (!image) return;
@@ -130,6 +157,11 @@ function onDragStart(event: DragEvent, imageIndex: number): void {
     }
 }
 
+/**
+ * Handle drag over event for an image.
+ *
+ * @param event The drag event.
+ */
 function onDragOver(event: DragEvent): void {
     event.preventDefault();
     if (event.dataTransfer) {
@@ -137,6 +169,12 @@ function onDragOver(event: DragEvent): void {
     }
 }
 
+/**
+ * Handle drop event for an image.
+ *
+ * @param event The drag event.
+ * @param targetImageIndex The index of the target image where the dragged image is dropped.
+ */
 function onDrop(event: DragEvent, targetImageIndex: number): void {
     event.preventDefault();
 
@@ -161,20 +199,10 @@ function onDrop(event: DragEvent, targetImageIndex: number): void {
     images.value = [...images.value];
 }
 
+/**
+ * Handle drag end event for an image.
+ */
 function onDragEnd(): void {
-    draggedImage.value = null;
-    isDragging.value = false;
-}
-
-function onTouchStart(event: TouchEvent, imageIndex: number): void {
-    const image = images.value.find((img) => img.index === imageIndex);
-    if (!image) return;
-
-    draggedImage.value = image;
-    isDragging.value = true;
-}
-
-function onTouchEnd(): void {
     draggedImage.value = null;
     isDragging.value = false;
 }
@@ -194,16 +222,7 @@ function onTouchEnd(): void {
             <template v-if="images.length > 0">
                 <!-- Main Image (Primary) -->
                 <div v-if="primaryImage" class="relative overflow-hidden rounded-lg">
-                    <div
-                        class="primary-image group"
-                        :class="{ dragging: isDragging && draggedImage === primaryImage }"
-                        draggable="true"
-                        @dragstart="onDragStart($event, 0)"
-                        @dragover="onDragOver"
-                        @drop="onDrop($event, 0)"
-                        @dragend="onDragEnd"
-                        @touchstart="onTouchStart($event, 0)"
-                        @touchend="onTouchEnd">
+                    <div class="primary-image">
                         <img
                             v-if="primaryImage.tempUrl"
                             :src="primaryImage.tempUrl"
@@ -241,13 +260,11 @@ function onTouchEnd(): void {
                             :class="{
                                 dragging: isDragging && draggedImage === image,
                             }"
-                            draggable="true"
                             @dragstart="onDragStart($event, image.index ?? 0)"
                             @dragover="onDragOver"
                             @drop="onDrop($event, image.index ?? 0)"
                             @dragend="onDragEnd"
-                            @touchstart="onTouchStart($event, image.index ?? 0)"
-                            @touchend="onTouchEnd">
+                            draggable>
                             <img
                                 v-if="image.tempUrl"
                                 :src="image.tempUrl"

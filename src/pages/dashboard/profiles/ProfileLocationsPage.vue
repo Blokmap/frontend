@@ -122,7 +122,7 @@ function onDeleteLocation(locationId: number) {
                     :action-is-pending="isLocationPending(location.id)"
                     :delete-is-pending="isPendingDelete"
                     :show-status-change="ownProfile.isAdmin"
-                    @change:state="onChangeLocationStatus"
+                    @update:state="onChangeLocationStatus"
                     @click:delete="onDeleteLocation">
                 </LocationDataItem>
             </template>

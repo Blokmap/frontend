@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import AuthorityActionsMenu from '@/components/features/authority/AuthorityActionsMenu.vue';
+import AuthorityActionMenu from '@/components/features/authority/AuthorityActionMenu.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import type { Authority } from '@/domain/authority';
@@ -38,7 +38,7 @@ const onAuthorityClick = (authority: Authority) => {
 
             <TableCell column="Acties">
                 <slot name="actions" :authority="authority">
-                    <AuthorityActionsMenu :authority="authority" />
+                    <AuthorityActionMenu :authority="authority" />
                 </slot>
             </TableCell>
         </template>

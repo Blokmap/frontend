@@ -1,4 +1,4 @@
-import { timeToString as convertTimeToString } from './convert';
+import { timeToString } from './convert';
 import type { Time } from './types';
 
 /**
@@ -13,5 +13,5 @@ export function formatTime(
     time?: Time | null,
     compact: boolean = false,
 ): string | undefined | null {
-    return convertTimeToString(time, compact);
+    return timeToString(time, compact);
 }

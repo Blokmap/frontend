@@ -57,7 +57,7 @@ const imageUrl = computed(() => {
 
     .location__image {
         @apply relative h-full w-full overflow-hidden;
-        @apply rounded-2xl border-1 border-slate-200;
+        @apply rounded-2xl shadow-lg;
 
         .location__address {
             @apply absolute top-2 left-2 flex max-w-30 items-center gap-2 py-0.5;

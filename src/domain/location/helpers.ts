@@ -16,6 +16,22 @@ export function getLocationPlaceholderImage(_location: Location): string {
 }
 
 /**
+ * Retrieves the primary image URL of a location or a placeholder if none exists.
+ *
+ * @param location - The location object containing images.
+ * @returns The primary image URL or a placeholder image URL.
+ */
+export function getLocationImageUrl(location: Location): string {
+    const primaryImage = location.images?.find((img) => img.index === 0);
+
+    if (!primaryImage) {
+        return getLocationPlaceholderImage(location);
+    }
+
+    return primaryImage.url;
+}
+
+/**
  * Converts a Location to a LocationBody for editing.
  *
  * @param location - The location object to convert.
@@ -24,8 +40,6 @@ export function getLocationPlaceholderImage(_location: Location): string {
 export function locationToBody(location: Location): LocationBody {
     return {
         name: location.name,
-        description: translationToBody(location.description),
-        excerpt: translationToBody(location.excerpt),
         seatCount: location.seatCount,
         isReservable: location.isReservable,
         isVisible: location.isVisible,
@@ -36,6 +50,8 @@ export function locationToBody(location: Location): LocationBody {
         country: location.country,
         latitude: location.latitude,
         longitude: location.longitude,
+        description: translationToBody(location.description),
+        excerpt: translationToBody(location.excerpt),
     };
 }
 

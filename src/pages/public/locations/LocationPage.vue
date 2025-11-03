@@ -12,6 +12,7 @@ import ReservationBuilderDialog from '@/components/features/reservation/builder/
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import Gallery from '@/components/shared/organisms/image/Gallery.vue';
 import GallerySkeleton from '@/components/shared/organisms/image/GallerySkeleton.vue';
+import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import { faArrowRight, faEdit, faLocationDot, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, watch } from 'vue';
@@ -128,12 +129,11 @@ function onLoginClick(): void {
                                     params: { locationId },
                                 }"
                                 v-if="location && location?.isReservable">
-                                <Button severity="contrast">
-                                    <span class="hidden md:inline">
-                                        {{ $t('domains.reservations.name', 2) }}
-                                    </span>
+                                <PageHeaderButton
+                                    severity="contrast"
+                                    :label="$t('domains.reservations.name', 2)">
                                     <FontAwesomeIcon :icon="faUsers" />
-                                </Button>
+                                </PageHeaderButton>
                             </RouterLink>
 
                             <Skeleton v-else-if="isPending" height="36px" width="120px" />
@@ -143,12 +143,11 @@ function onLoginClick(): void {
                                     name: 'dashboard.locations.detail.info',
                                     params: { locationId },
                                 }">
-                                <Button severity="secondary">
-                                    <span class="hidden md:inline">
-                                        {{ $t('general.actions.edit') }}
-                                    </span>
+                                <PageHeaderButton
+                                    severity="secondary"
+                                    :label="$t('general.actions.edit')">
                                     <FontAwesomeIcon :icon="faEdit" />
-                                </Button>
+                                </PageHeaderButton>
                             </RouterLink>
                         </div>
                     </template>

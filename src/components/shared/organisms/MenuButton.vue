@@ -9,7 +9,6 @@ import {
     faRightToBracket,
     faSignOut,
     faUser,
-    faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRef } from 'vue';
@@ -61,7 +60,7 @@ function handleNavigationClick(): void {
 
     <!-- Popover -->
     <Popover ref="popover" class="w-full max-w-[275px] rounded-lg">
-        <div class="dark:text-slate-20 space-y-3 p-1 text-slate-800">
+        <div class="dark:text-slate-20 space-y-2 p-1 text-slate-800">
             <!-- Profile Section -->
             <template v-if="profileIsLoading">
                 <div class="flex items-center gap-3">
@@ -93,6 +92,13 @@ function handleNavigationClick(): void {
                     <FontAwesomeIcon :icon="faUser" class="text-secondary fa-icon" />
                     <span>Profiel en Reservaties</span>
                 </RouterLink>
+                <RouterLink
+                    class="menu-link"
+                    :to="{ name: 'dashboard' }"
+                    @click="handleNavigationClick">
+                    <FontAwesomeIcon :icon="faCity" class="text-secondary fa-icon" />
+                    <span>Dashboard</span>
+                </RouterLink>
             </template>
 
             <template v-else>
@@ -100,29 +106,10 @@ function handleNavigationClick(): void {
                 <p class="text-sm text-slate-500 dark:text-slate-400">
                     Reserveer een plek op een van onze locaties of meld zelf een plek aan.
                 </p>
-                <div class="flex gap-1">
-                    <RouterLink
-                        class="menu-link"
-                        :to="{ name: 'auth' }"
-                        @click="handleNavigationClick">
-                        <FontAwesomeIcon :icon="faRightToBracket" class="text-secondary fa-icon" />
-                        <span>Inloggen</span>
-                    </RouterLink>
-                    <RouterLink
-                        class="menu-link"
-                        :to="{ name: 'auth' }"
-                        @click="handleNavigationClick">
-                        <FontAwesomeIcon :icon="faUserPlus" class="text-secondary fa-icon" />
-                        <span>Registreren</span>
-                    </RouterLink>
-                </div>
             </template>
-            <RouterLink
-                class="menu-link"
-                :to="{ name: 'dashboard' }"
-                @click="handleNavigationClick">
-                <FontAwesomeIcon :icon="faCity" class="text-secondary fa-icon" />
-                <span>Dashboard</span>
+            <RouterLink class="menu-link" :to="{ name: 'auth' }" @click="handleNavigationClick">
+                <FontAwesomeIcon :icon="faRightToBracket" class="text-secondary fa-icon" />
+                <span>Inloggen</span>
             </RouterLink>
             <template v-if="profile">
                 <div class="menu-link logout-link" @click="handleLogoutClick">

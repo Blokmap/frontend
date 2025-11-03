@@ -106,16 +106,16 @@ onUnmounted(() => {
         <div
             v-for="item in imageLayout"
             :key="item.index"
-            :class="['gallery-image-container', item.classes]"
+            :class="['gallery__item', item.classes]"
             @click="openFullScreen(item.index)">
-            <img v-if="item.image" :src="item.image.url" class="gallery-image" />
+            <img v-if="item.image" :src="item.image.url" class="gallery__image" />
         </div>
     </div>
 
     <!-- Placeholder when no images -->
-    <div v-else-if="placeholder" class="gallery grid-cols-1 grid-rows-1">
-        <div class="gallery-image-container">
-            <img :src="placeholder" class="gallery-image" />
+    <div v-else-if="placeholder" class="gallery gallery--placeholder grid-cols-1 grid-rows-1">
+        <div class="gallery__item">
+            <img :src="placeholder" class="gallery__image" />
         </div>
     </div>
 
@@ -123,7 +123,7 @@ onUnmounted(() => {
     <Transition name="scale">
         <div v-if="isFullscreen" class="gallery-fullscreen">
             <!-- Header with close and share buttons -->
-            <div class="flex items-center justify-between p-4">
+            <div class="gallery-fullscreen__header">
                 <Button severity="contrast" rounded text @click="closeFullscreen">
                     <template #icon>
                         <FontAwesomeIcon :icon="faChevronLeft" />
@@ -133,17 +133,17 @@ onUnmounted(() => {
             </div>
 
             <!-- Scrollable image grid -->
-            <div class="gallery-grid-container">
-                <div class="gallery-grid">
+            <div class="gallery-fullscreen__container">
+                <div class="gallery-fullscreen__grid">
                     <div
                         v-for="(image, index) in images"
                         :id="`gallery-image-${index}`"
                         :key="index"
-                        class="gallery-grid-item">
+                        class="gallery-fullscreen__grid-item">
                         <img
                             :src="image.url"
                             :alt="`Gallery image ${index + 1}`"
-                            class="gallery-grid-image" />
+                            class="gallery-fullscreen__grid-image" />
                     </div>
                 </div>
             </div>
@@ -155,33 +155,36 @@ onUnmounted(() => {
 @reference '@/assets/styles/main.css';
 
 .gallery {
-    @apply grid h-full w-full gap-2 overflow-hidden rounded-xl;
+    @apply grid h-full w-full gap-2 overflow-hidden;
 }
 
-.gallery-image-container {
+.gallery__item {
     @apply relative cursor-pointer overflow-hidden;
 
-    &:hover .gallery-image {
+    &:hover .gallery__image {
         @apply scale-110 brightness-75;
     }
 
-    .gallery-image {
-        @apply h-full w-full object-cover transition-all duration-300;
-        @apply shadow-md;
+    .gallery__image {
+        @apply h-full w-full object-cover shadow-md transition-all duration-300;
     }
 }
 
 .gallery-fullscreen {
-    @apply fixed top-0 left-0 z-50 flex h-full w-full flex-col bg-white;
+    @apply fixed top-0 left-0 z-50 flex h-full w-full flex-col overflow-y-auto bg-white;
 
-    .gallery-grid-container {
-        @apply flex flex-1 justify-center overflow-y-auto p-4 pb-[88px];
+    .gallery-fullscreen__header {
+        @apply flex items-center justify-between p-4;
     }
 
-    .gallery-grid {
-        @apply grid w-full max-w-2xl grid-cols-2 gap-2;
+    .gallery-fullscreen__container {
+        @apply flex flex-1 justify-center p-4 pb-[88px];
+    }
 
-        .gallery-grid-item {
+    .gallery-fullscreen__grid {
+        @apply grid w-full max-w-3xl grid-cols-2 gap-2;
+
+        .gallery-fullscreen__grid-item {
             @apply overflow-hidden rounded-lg;
 
             &:nth-child(3n + 1) {
@@ -193,7 +196,7 @@ onUnmounted(() => {
             }
         }
 
-        .gallery-grid-image {
+        .gallery-fullscreen__grid-image {
             @apply h-full w-full cursor-pointer object-cover;
         }
     }

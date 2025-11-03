@@ -219,6 +219,7 @@
     @apply enabled:active:border-transparent enabled:active:bg-transparent;
     @apply dark:enabled:hover:border-transparent dark:enabled:active:border-transparent;
     @apply text-color;
+    @apply shadow-none;
 }
 
 .p-button-text.p-button-secondary {
@@ -276,6 +277,7 @@
     @apply enabled:hover:border-transparent enabled:hover:bg-transparent;
     @apply enabled:active:border-transparent enabled:active:bg-transparent;
     @apply text-secondary enabled:hover:text-secondary enabled:active:text-secondary;
+    @apply shadow-none;
 }
 
 .p-button-link:not(:disabled):hover .p-button-label {

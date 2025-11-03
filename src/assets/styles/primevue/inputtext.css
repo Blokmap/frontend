@@ -5,7 +5,7 @@
     @apply text-surface-700 dark:text-surface-0;
     @apply placeholder:text-surface-500 dark:placeholder:text-surface-400;
 
-    @apply border-slate-300 dark:border-slate-900;
+    @apply border-0 border-b-2 border-slate-100 shadow-md dark:border-slate-900;
     @apply enabled:hover:border-slate-200 dark:enabled:hover:border-slate-800;
     @apply enabled:focus:border-primary;
 

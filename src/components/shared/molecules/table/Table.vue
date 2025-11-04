@@ -8,8 +8,8 @@ import type { TableGroup } from '.';
 const props = withDefaults(
     defineProps<{
         value?: T[];
-        grouped?: TableGroup<T, G>[];
         loading?: boolean;
+        grouped?: TableGroup<T, G>[];
         emptyMessage?: string;
         emptyTitle?: string;
     }>(),
@@ -185,7 +185,7 @@ provide('registerColumn', (column: string) => {
 /* Desktop Table View */
 .table-container {
     @apply overflow-hidden overflow-x-auto rounded-lg;
-    @apply border border-slate-100 shadow-sm;
+    @apply border border-slate-200;
 
     .table {
         @apply min-w-full bg-white;
@@ -235,7 +235,7 @@ provide('registerColumn', (column: string) => {
     }
 
     .card {
-        @apply rounded-lg bg-white shadow-sm;
+        @apply rounded-lg border border-slate-200 bg-white;
         @apply p-4;
         @apply cursor-pointer transition-all;
         @apply hover:border-slate-300 hover:shadow-sm;

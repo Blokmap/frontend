@@ -1,13 +1,10 @@
 import { useQuery } from '@tanstack/vue-query';
 import { readAdminCounts, readAdminStats } from '@/domain/admin';
+import { queryKeys } from './queryKeys';
+
 import type { AdminCounts, AdminStats } from '@/domain/admin';
 import type { CompQuery, CompQueryOptions } from '@/types';
 import type { AxiosError } from 'axios';
-
-export const ADMIN_QUERY_KEYS = {
-    counts: () => ['admin', 'counts'] as const,
-    stats: () => ['admin', 'stats'] as const,
-} as const;
 
 /**
  * Composable to fetch admin counts for dashboard overview.
@@ -18,7 +15,7 @@ export const ADMIN_QUERY_KEYS = {
 export function useAdminCounts(options: CompQueryOptions = {}): CompQuery<AdminCounts> {
     const query = useQuery<AdminCounts, AxiosError>({
         ...options,
-        queryKey: ADMIN_QUERY_KEYS.counts(),
+        queryKey: queryKeys.admin.counts(),
         queryFn: readAdminCounts,
         staleTime: 60 * 60 * 1000, // 60 minutes
     });
@@ -35,7 +32,7 @@ export function useAdminCounts(options: CompQueryOptions = {}): CompQuery<AdminC
 export function useAdminStats(options: CompQueryOptions = {}): CompQuery<AdminStats> {
     const query = useQuery<AdminStats, AxiosError>({
         ...options,
-        queryKey: ADMIN_QUERY_KEYS.stats(),
+        queryKey: queryKeys.admin.stats(),
         queryFn: readAdminStats,
     });
 

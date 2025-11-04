@@ -3,7 +3,6 @@ import { endpoints } from '@/config/endpoints';
 import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/service';
 import { parseLocationResponse } from '../location';
 import { parseProfileResponse } from '../profile';
-import type { Profile } from '../profile';
 import type { Authority, AuthorityFilter, AuthorityBody } from './types';
 import type { Paginated } from '@/utils/pagination';
 
@@ -114,50 +113,4 @@ export async function updateAuthority(
     });
 
     return data;
-}
-
-/**
- * Read members (profiles) of an authority.
- *
- * @param id - The ID of the authority.
- * @returns A promise that resolves to an array of profiles.
- */
-export async function readAuthorityMembers(id: number): Promise<Profile[]> {
-    const endpoint = endpoints.authorities.members.list.replace('{id}', id.toString());
-
-    const transformResponse = transformResponseFactory(parseProfileResponse);
-
-    const { data } = await client.get<Profile[]>(endpoint, {
-        transformResponse,
-    });
-
-    return data;
-}
-
-/**
- * Add a member to an authority.
- *
- * @param id - The ID of the authority.
- * @param profileId - The ID of the profile to add.
- * @returns A promise that resolves when the member is added.
- */
-export async function addAuthorityMember(id: number, profileId: string): Promise<void> {
-    const endpoint = endpoints.authorities.members.add.replace('{id}', id.toString());
-
-    await client.post(endpoint, { profileId });
-}
-
-/**
- * Remove a member from an authority.
- *
- * @param id - The ID of the authority.
- * @param profileId - The ID of the profile to remove.
- * @returns A promise that resolves when the member is removed.
- */
-export async function removeAuthorityMember(id: number, profileId: string): Promise<void> {
-    const endpoint = endpoints.authorities.members.remove
-        .replace('{id}', id.toString())
-        .replace('{profileId}', String(profileId));
-
-    await client.delete(endpoint);
 }

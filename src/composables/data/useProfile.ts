@@ -2,8 +2,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { useToast } from 'primevue';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { readAuthorityMembers } from '@/domain/authority';
-import { readInstitutionMembers } from '@/domain/institution';
 import {
     blockProfile,
     deleteProfileAvatar,
@@ -15,6 +13,8 @@ import {
     readProfile,
     scanProfile,
 } from '@/domain/profile';
+import { queryKeys } from './queryKeys';
+
 import type {
     Profile,
     ProfileStats,
@@ -27,17 +27,6 @@ import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } f
 import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
 
-export const PROFILE_QUERY_KEYS = {
-    read: (profileId: MaybeRef<string>) => ['profile', 'details', profileId] as const,
-    list: (filters: MaybeRefOrGetter<Partial<ProfileFilter>>) =>
-        ['admin', 'profiles', filters] as const,
-    stats: (profileId: MaybeRefOrGetter<string | null>) => ['profile', 'stats', profileId] as const,
-    authorityMembers: (authorityId: MaybeRefOrGetter<number>) =>
-        ['authorities', 'members', authorityId] as const,
-    institutionMembers: (institutionId: MaybeRefOrGetter<number>) =>
-        ['institutions', 'members', institutionId] as const,
-} as const;
-
 /**
  * Composable to fetch statistics for a specific profile.
  *
@@ -49,7 +38,7 @@ export function useReadProfileStats(
 ): CompQuery<ProfileStats> {
     const enabled = computed(() => toValue(profileId) !== null);
     const query = useQuery<ProfileStats, AxiosError>({
-        queryKey: PROFILE_QUERY_KEYS.stats(profileId),
+        queryKey: queryKeys.profiles.stats(profileId),
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
             return readProfileStats(profileIdValue);
@@ -73,7 +62,7 @@ export function useReadProfile(
 ): CompQuery<Profile | null> {
     const query = useQuery<Profile | null, AxiosError>({
         ...options,
-        queryKey: PROFILE_QUERY_KEYS.read(profileId),
+        queryKey: queryKeys.profiles.detail(profileId),
         queryFn: () => readProfile(toValue(profileId)),
     });
 
@@ -93,7 +82,7 @@ export function useReadProfiles(
 ): CompQuery<Paginated<Profile>> {
     const query = useQuery<Paginated<Profile>, AxiosError>({
         ...options,
-        queryKey: PROFILE_QUERY_KEYS.list(filters),
+        queryKey: queryKeys.profiles.list(filters),
         queryFn: () => readProfiles(toValue(filters)),
     });
 
@@ -121,7 +110,7 @@ export function useUpdateProfileAvatar(
         onSuccess: (data, variables, context) => {
             // Invalidate the specific profile query
             queryClient.invalidateQueries({
-                queryKey: PROFILE_QUERY_KEYS.read(variables.profileId),
+                queryKey: queryKeys.profiles.detail(variables.profileId),
             });
             options.onSuccess?.(data, variables, context);
         },
@@ -152,10 +141,8 @@ export function useUpdateProfile(
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate all profile detail queries
-            queryClient.invalidateQueries({ queryKey: ['profile', 'details'] });
-            // Invalidate the profile list
-            queryClient.invalidateQueries({ queryKey: ['admin', 'profiles'] });
+            // Invalidate all profile queries
+            queryClient.invalidateQueries({ queryKey: queryKeys.profiles.all() });
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: async ({ profileId, profileData }: UpdateProfileParams) => {
@@ -203,7 +190,7 @@ export function useDeleteProfileAvatar(options: CompMutationOptions = {}): CompM
         onSuccess: (data, variables, context) => {
             // Invalidate the specific profile query
             queryClient.invalidateQueries({
-                queryKey: PROFILE_QUERY_KEYS.read(variables),
+                queryKey: queryKeys.profiles.detail(variables),
             });
             options.onSuccess?.(data, variables, context);
         },
@@ -235,7 +222,7 @@ export function useUpdateProfileState(
         ...options,
         onSuccess: (data, variables, context) => {
             queryClient.invalidateQueries({
-                queryKey: PROFILE_QUERY_KEYS.read(variables.profileId),
+                queryKey: queryKeys.profiles.detail(variables.profileId),
             });
 
             if (!options.disableToasts) {
@@ -262,44 +249,4 @@ export function useUpdateProfileState(
     });
 
     return mutation;
-}
-
-/**
- * Composable to fetch members (profiles) of an authority.
- *
- * @param id - The ID of the authority.
- * @param options - Query options.
- * @returns The query object containing the members and their state.
- */
-export function useReadAuthorityMembers(
-    id: MaybeRefOrGetter<number>,
-    options: CompQueryOptions = {},
-): CompQuery<Profile[]> {
-    const query = useQuery({
-        ...options,
-        queryKey: PROFILE_QUERY_KEYS.authorityMembers(id),
-        queryFn: () => readAuthorityMembers(toValue(id)),
-    });
-
-    return query;
-}
-
-/**
- * Composable to fetch members (profiles) of an institution.
- *
- * @param id - The ID of the institution.
- * @param options - Query options.
- * @returns The query object containing the members and their state.
- */
-export function useReadInstitutionMembers(
-    id: MaybeRefOrGetter<number>,
-    options: CompQueryOptions = {},
-): CompQuery<Paginated<Profile>> {
-    const query = useQuery({
-        ...options,
-        queryKey: PROFILE_QUERY_KEYS.institutionMembers(id),
-        queryFn: () => readInstitutionMembers(toValue(id)),
-    });
-
-    return query;
 }

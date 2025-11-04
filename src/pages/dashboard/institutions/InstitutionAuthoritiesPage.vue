@@ -24,7 +24,10 @@ const { data: authoritiesData, isLoading } = useReadAuthorities(
 const authorities = computed(() => authoritiesData.value?.data || []);
 
 function onAuthorityClick(authority: Authority) {
-    router.push({ name: 'dashboard.authorities.detail', params: { authorityId: authority.id } });
+    router.push({
+        name: 'dashboard.authorities.detail.overview',
+        params: { authorityId: authority.id },
+    });
 }
 
 function onAddAuthority() {

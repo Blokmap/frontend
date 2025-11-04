@@ -1,18 +1,21 @@
-<script lang="ts" setup>
+<script lang="ts" generic="T" setup>
 import Skeleton from 'primevue/skeleton';
+import EmptyState from '../EmptyState.vue';
 
 defineProps<{
+    items: T[] | undefined;
     loading?: boolean;
-    empty?: boolean;
 }>();
 </script>
 
 <template>
-    <slot name="loading" v-if="loading">
-        <Skeleton></Skeleton>
-    </slot>
-    <slot name="empty" v-else-if="empty"></slot>
-    <div v-else class="flex flex-col gap-4">
-        <slot></slot>
+    <div class="flex flex-col gap-4">
+        <slot v-if="loading" name="loading">
+            <Skeleton v-for="_ in 5"></Skeleton>
+        </slot>
+        <slot v-else-if="!items || items.length === 0" name="empty">
+            <EmptyState message="Geen items gevonden"></EmptyState>
+        </slot>
+        <slot v-else v-for="item in items" name="item" :item="item"> </slot>
     </div>
 </template>

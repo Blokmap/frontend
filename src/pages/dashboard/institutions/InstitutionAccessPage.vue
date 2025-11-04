@@ -10,7 +10,8 @@ import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHe
 import { faCircleUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
-import { useReadInstitutionMembers, useReadInstitutionRoles } from '@/composables/data/useAuth';
+import { useReadInstitutionRoles } from '@/composables/data/useAuth';
+import { useReadInstitutionMembers } from '@/composables/data/useMembers';
 import { usePagination } from '@/composables/data/usePagination';
 import type { Institution } from '@/domain/institution';
 

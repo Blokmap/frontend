@@ -130,7 +130,8 @@ watch(
                 :loading="isPending"
                 label="Status wijzigen"
                 placeholder="Selecteer nieuwe status"
-                @change="onStateSelect" />
+                @change="onStateSelect">
+            </ActionMenuSelect>
         </template>
 
         <template #navigation>
@@ -141,7 +142,8 @@ watch(
                 :to="{
                     name: 'dashboard.locations.detail.info',
                     params: { locationId: props.location.id },
-                }" />
+                }">
+            </ActionMenuButton>
 
             <ActionMenuButton v-if="showReservations" :icon="faCalendarAlt" label="Reservaties" />
 
@@ -150,7 +152,8 @@ watch(
                 :icon="faTrashCan"
                 label="Verwijderen"
                 destructive
-                @click="onDeleteClick" />
+                @click="onDeleteClick">
+            </ActionMenuButton>
         </template>
     </ActionMenu>
 

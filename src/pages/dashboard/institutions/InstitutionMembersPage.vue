@@ -14,10 +14,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import {
-    useAddInstitutionMember,
-    useRemoveInstitutionMember,
-} from '@/composables/data/useInstitutions';
-import { useReadInstitutionMembers, useReadProfiles } from '@/composables/data/useProfile';
+    useAddMemberToInstitution,
+    useReadInstitutionMembers,
+    useRemoveMemberFromInstitution,
+} from '@/composables/data/useMembers';
+import { useReadProfiles } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/store/useToast';
 import type { Institution } from '@/domain/institution';
 import type { Profile, ProfileFilter } from '@/domain/profile';
@@ -49,10 +50,10 @@ const searchFilters = ref<ProfileFilter>({
 const { data: searchResults, isLoading: isSearching } = useReadProfiles(searchFilters);
 
 // Add member mutation
-const { mutateAsync: addMember, isPending: isAdding } = useAddInstitutionMember();
+const { mutateAsync: addMember, isPending: isAdding } = useAddMemberToInstitution();
 
 // Remove member mutation
-const { mutateAsync: removeMember, isPending: isRemoving } = useRemoveInstitutionMember();
+const { mutateAsync: removeMember, isPending: isRemoving } = useRemoveMemberFromInstitution();
 
 /**
  * Handle clicking on a profile to view its details.
@@ -165,18 +166,21 @@ async function onRemoveUser(profile: Profile): Promise<void> {
         </DashboardDetailHeader>
 
         <!-- Profiles Table -->
-        <Table :value="members?.data" :loading="isLoading" @click:row="onProfileClick">
-            <template #row="{ data: profile }">
+        <Table
+            :value="members?.data"
+            :loading="isLoading"
+            @click:row="(membership) => onProfileClick(membership.profile)">
+            <template #row="{ data: membership }">
                 <TableCell column="Profiel">
-                    <ProfileTableCell :profile="profile" />
+                    <ProfileTableCell :profile="membership.profile" />
                 </TableCell>
 
                 <TableCell column="E-mailadres">
-                    {{ profile.email }}
+                    {{ membership.profile.email }}
                 </TableCell>
 
                 <TableCell column="Status">
-                    <ProfileStateBadge :profile="profile" />
+                    <ProfileStateBadge :profile="membership.profile" />
                 </TableCell>
 
                 <TableCell column="Acties">
@@ -184,7 +188,7 @@ async function onRemoveUser(profile: Profile): Promise<void> {
                         size="small"
                         severity="danger"
                         :loading="isRemoving"
-                        @click.stop="onRemoveUser(profile)"
+                        @click.stop="onRemoveUser(membership.profile)"
                         outlined>
                         Verwijderen
                     </Button>

@@ -30,30 +30,29 @@ const selectedOption = computed<SelectOption<T> | undefined>(() => {
 </script>
 
 <template>
-    <div>
-        <label class="mb-1 block text-sm font-medium text-gray-700">
-            {{ label }}
-        </label>
-        <Select
-            :model-value="value"
-            :options="options"
-            :loading="loading"
-            :placeholder="placeholder"
-            @update:model-value="emit('change', $event)">
-            <template #option="{ option }">
-                <div class="flex items-center gap-2 text-sm">
-                    <FontAwesomeIcon v-if="option.icon" :icon="option.icon" />
-                    <span>{{ option.label }}</span>
-                </div>
-            </template>
-            <template #value>
-                <div v-if="selectedOption" class="flex items-center gap-2 text-sm">
-                    <FontAwesomeIcon v-if="selectedOption.icon" :icon="selectedOption.icon" />
-                    <span>{{ selectedOption.label }}</span>
-                </div>
-            </template>
-        </Select>
-    </div>
+    <label class="mb-1 block text-sm font-medium text-gray-700">
+        {{ label }}
+    </label>
+    <Select
+        class="min-w-[200px]"
+        :model-value="value"
+        :options="options"
+        :loading="loading"
+        :placeholder="placeholder"
+        @update:model-value="emit('change', $event.value)">
+        <template #option="{ option }">
+            <div class="flex items-center gap-2 text-sm">
+                <FontAwesomeIcon v-if="option.icon" :icon="option.icon" />
+                <span>{{ option.label }}</span>
+            </div>
+        </template>
+        <template #value>
+            <div v-if="selectedOption" class="flex items-center gap-2 text-sm">
+                <FontAwesomeIcon v-if="selectedOption.icon" :icon="selectedOption.icon" />
+                <span>{{ selectedOption.label }}</span>
+            </div>
+        </template>
+    </Select>
 </template>
 
 <style scoped>

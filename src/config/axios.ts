@@ -1,5 +1,6 @@
 import axios, { AxiosError, HttpStatusCode } from 'axios';
 import { useRouter } from 'vue-router';
+import { useAuthLogout } from '@/composables/data/useAuth';
 import { useToast } from '@/composables/store/useToast';
 import { MAPBOX_API_KEY, MAPBOX_URL } from '@/config';
 
@@ -28,6 +29,7 @@ export const client = axios.create({
 export function setupAxiosInterceptors(): void {
     const router = useRouter();
     const toast = useToast();
+    const logout = useAuthLogout();
 
     // Response interceptor to handle errors
     client.interceptors.response.use(
@@ -35,10 +37,11 @@ export function setupAxiosInterceptors(): void {
             //await getRandomDelay(1000, 2000);
             return response;
         },
-        (error: AxiosError) => {
+        async (error: AxiosError) => {
             if (error.status === HttpStatusCode.Forbidden) {
                 if (error.request.method === 'GET') {
-                    router.push({ name: 'dashboard' });
+                    await logout.mutateAsync();
+                    router.push({ name: 'auth' });
                 }
 
                 if (error.request.method !== 'GET') {
@@ -57,7 +60,6 @@ export function setupAxiosInterceptors(): void {
             }
 
             if (error.status === HttpStatusCode.PayloadTooLarge) {
-                console.debug('File too large error intercepted', error);
                 toast.add({
                     severity: 'error',
                     summary: 'Bestand te groot',

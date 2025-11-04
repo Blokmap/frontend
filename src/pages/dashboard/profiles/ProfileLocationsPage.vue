@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import LocationDataItem from '@/components/features/location/LocationDataItem.vue';
-import LocationDataList from '@/components/features/location/LocationDataList.vue';
+import DataList from '@/components/shared/molecules/datalist/DataList.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import {
     useDeleteLocation,
-    useLocationState,
+    useUpdateLocationState,
     useReadProfileLocations,
 } from '@/composables/data/useLocations';
 import { useToast } from '@/composables/store/useToast';
@@ -34,7 +34,7 @@ const {
     mutateAsync: updateLocationState,
     isPending: isUpdatingLocation,
     variables: updateVariables,
-} = useLocationState({
+} = useUpdateLocationState({
     onSuccess: async () => {
         await refetch();
 
@@ -115,8 +115,8 @@ function onDeleteLocation(locationId: number) {
         </DashboardDetailHeader>
 
         <!-- Locations List -->
-        <LocationDataList :locations="locations" :loading="isLoading">
-            <template #item="{ location }">
+        <DataList :items="locations" :loading="isLoading">
+            <template #item="{ item: location }">
                 <LocationDataItem
                     :location="location"
                     :action-is-pending="isLocationPending(location.id)"
@@ -126,6 +126,6 @@ function onDeleteLocation(locationId: number) {
                     @click:delete="onDeleteLocation">
                 </LocationDataItem>
             </template>
-        </LocationDataList>
+        </DataList>
     </DashboardContent>
 </template>

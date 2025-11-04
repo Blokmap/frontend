@@ -3,10 +3,8 @@ import { endpoints } from '@/config/endpoints';
 import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/service';
 import { parseAuthorityResponse } from '../authority';
 import { parseImageResponse } from '../image';
-import { parseProfileResponse } from '../profile';
 import { parseTranslationResponse } from '../translation';
 import type { Authority } from '../authority';
-import type { Profile } from '../profile';
 import type { Institution, InstitutionFilter, InstitutionBody } from './types';
 import type { Paginated } from '@/utils/pagination';
 
@@ -103,51 +101,6 @@ export async function updateInstitution(
     });
 
     return data;
-}
-
-/**
- * Read members (profiles) of an institution.
- *
- * @param slug - The slug of the institution.
- * @returns A promise that resolves to an array of profiles.
- */
-export async function readInstitutionMembers(id: number): Promise<Paginated<Profile>> {
-    const endpoint = endpoints.institutions.members.list.replace('{id}', id.toString());
-
-    const transformResponse = transformPaginatedResponseFactory(parseProfileResponse);
-
-    const { data } = await client.get<Paginated<Profile>>(endpoint, {
-        transformResponse,
-    });
-
-    return data;
-}
-
-/**
- * Add a member to an institution.
- *
- * @param slug - The slug of the institution.
- * @param profileId - The ID of the profile to add.
- * @returns A promise that resolves when the member is added.
- */
-export async function addInstitutionMember(id: number, profileId: string): Promise<void> {
-    const endpoint = endpoints.institutions.members.add.replace('{id}', id.toString());
-    await client.post(endpoint, { profileId });
-}
-
-/**
- * Remove a member from an institution.
- *
- * @param id - The ID of the institution.
- * @param profileId - The ID of the profile to remove.
- * @returns A promise that resolves when the member is removed.
- */
-export async function removeInstitutionMember(id: number, profileId: string): Promise<void> {
-    const endpoint = endpoints.institutions.members.remove
-        .replace('{id}', id.toString())
-        .replace('{profileId}', String(profileId));
-
-    await client.delete(endpoint);
 }
 
 /**

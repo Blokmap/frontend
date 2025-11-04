@@ -3,20 +3,13 @@ import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { mapBoxClient } from '@/config/axios';
 import { mapboxEndpoints } from '@/config/endpoints';
-import { geocodeAddress } from '@/domain/map';
-import type { LngLat } from '@/domain/map';
+import { geocodeAddress, type GeoSearchFilter, type LngLat } from '@/domain/map';
+import { queryKeys } from './queryKeys';
+
 import type { CompMutation, CompQuery, CompQueryOptions } from '@/types';
 import type { AxiosError } from 'axios';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
-
-type GeoSearchFilter = {
-    search: string;
-    types?: string;
-    auto_complete?: boolean;
-    country?: string;
-    limit?: number;
-};
 
 const defaultGeoSearchOptions: Partial<GeoSearchFilter> = {
     auto_complete: true,
@@ -24,11 +17,6 @@ const defaultGeoSearchOptions: Partial<GeoSearchFilter> = {
     country: 'be',
     limit: 5,
 };
-
-export const GEO_QUERY_KEYS = {
-    search: (filters: MaybeRef<GeoSearchFilter | undefined>, locale: MaybeRef<string>) =>
-        ['geosearch', filters, locale] as const,
-} as const;
 
 /**
  * A composable function to perform a location search using Mapbox's geocoding API.
@@ -45,7 +33,10 @@ export function useSearchGeoLocations(
 
     const query = useQuery<GeoJSON.GeoJsonProperties[], AxiosError>({
         ...options,
-        queryKey: GEO_QUERY_KEYS.search(filters, locale),
+        queryKey: queryKeys.geo.search({
+            ...toValue(filters),
+            language: toValue(locale),
+        }),
         retry: false,
         queryFn: async () => {
             const params = toValue(filters);

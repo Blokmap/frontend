@@ -12,7 +12,8 @@ import { faUserPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useReadLocationMembers, useReadLocationRoles } from '@/composables/data/useAuth';
+import { useReadLocationRoles } from '@/composables/data/useAuth';
+import { useReadLocationMembers } from '@/composables/data/useMembers';
 import { usePagination } from '@/composables/data/usePagination';
 import type { Location } from '@/domain/location';
 

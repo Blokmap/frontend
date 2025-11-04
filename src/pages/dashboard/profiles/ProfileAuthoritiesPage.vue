@@ -27,7 +27,10 @@ const { data: authorities, isLoading } = useReadProfileAuthorities(
  * @param authority The authority that was clicked.
  */
 function onAuthorityClick(authority: Authority): void {
-    router.push({ name: 'dashboard.authorities.detail', params: { authorityId: authority.id } });
+    router.push({
+        name: 'dashboard.authorities.detail.overview',
+        params: { authorityId: authority.id },
+    });
 }
 </script>
 

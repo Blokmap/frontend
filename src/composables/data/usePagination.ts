@@ -7,10 +7,10 @@ import type { Pagination } from '@/utils/pagination';
  * This composable syncs pagination state with a filters ref that contains
  * page and perPage properties, and provides utility functions for PrimeVue Paginator.
  *
- * @param filters - A ref to a filters object containing page and perPage
+ * @param pagination - A ref to a pagination object
  * @returns An object containing pagination controls
  */
-export function usePagination(filters: Ref<Pagination & Record<string, any>>) {
+export function usePagination(pagination: Ref<Pagination>) {
     /**
      * Handle page change event.
      * Updates the filters ref with the new page number.
@@ -18,7 +18,7 @@ export function usePagination(filters: Ref<Pagination & Record<string, any>>) {
      * @param event - The pagination event containing the new page index
      */
     const onPageChange = (event: { page: number }): void => {
-        filters.value.page = event.page + 1;
+        pagination.value.page = event.page + 1;
     };
 
     /**
@@ -26,15 +26,15 @@ export function usePagination(filters: Ref<Pagination & Record<string, any>>) {
      * Useful when filters change or data is refreshed.
      */
     const resetPage = (): void => {
-        filters.value.page = 1;
+        pagination.value.page = 1;
     };
 
     /**
      * Computed property for the first record index (0-indexed).
      */
     const first = computed(() => {
-        const page = filters.value.page ?? 1;
-        const perPage = filters.value.perPage ?? 25;
+        const page = pagination.value.page ?? 1;
+        const perPage = pagination.value.perPage ?? 25;
         return perPage * (page - 1);
     });
 

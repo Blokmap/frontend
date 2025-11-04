@@ -6,7 +6,7 @@
         <InputIcon v-else>
             <FontAwesomeIcon :icon="faSearch" />
         </InputIcon>
-        <InputText v-model="search" :placeholder="placeholder" @input="onInput"> </InputText>
+        <InputText v-model="search" :placeholder="placeholder" @input="onInput" />
     </IconField>
 </template>
 
@@ -28,13 +28,13 @@ withDefaults(
     },
 );
 
-const search = defineModel<string>();
+const search = defineModel<string>({ default: '' });
 
 const emit = defineEmits<{
-    (e: 'input', event: Event): void;
+    (e: 'input', event: InputEvent): void;
 }>();
 
-const onInput = (event: Event): void => {
+const onInput = (event: InputEvent): void => {
     emit('input', event);
 };
 </script>

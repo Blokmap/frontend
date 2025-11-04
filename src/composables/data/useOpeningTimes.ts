@@ -10,15 +10,9 @@ import {
     type OpeningTimeBody,
     type OpeningTimeFilter,
 } from '@/domain/openings';
-import { LOCATION_QUERY_KEYS } from './useLocations';
+import { queryKeys } from './queryKeys';
 import type { CompMutation, CompMutationOptions, CompQuery } from '@/types';
 import type { AxiosError } from 'axios';
-
-export const OPENING_TIME_QUERY_KEYS = {
-    all: (locationId: MaybeRef<number>) => ['location', 'opening-times', locationId] as const,
-    read: (locationId: MaybeRef<number | null>, filters: MaybeRefOrGetter<OpeningTimeFilter>) =>
-        ['location', 'opening-times', locationId, filters] as const,
-} as const;
 
 /**
  * Composable to fetch opening times for a specific location within a given week.
@@ -34,7 +28,7 @@ export function useReadOpeningTimes(
     const enabled = computed(() => toValue(locationId) !== null);
 
     const query = useQuery<OpeningTime[], AxiosError>({
-        queryKey: OPENING_TIME_QUERY_KEYS.read(locationId, filters),
+        queryKey: queryKeys.openingTimes.filtered(locationId, filters),
         enabled,
         queryFn: () => {
             const locationIdValue = toValue(locationId)!;
@@ -67,12 +61,12 @@ export function useCreateOpeningTimes(
         onSuccess: (data, variables, context) => {
             // Invalidate all opening times queries for this location
             queryClient.invalidateQueries({
-                queryKey: OPENING_TIME_QUERY_KEYS.all(variables.locationId),
+                queryKey: queryKeys.openingTimes.all(variables.locationId),
             });
 
             // Also invalidate the location query to update embedded opening times
             queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
+                queryKey: queryKeys.locations.detail(variables.locationId),
             });
 
             options.onSuccess?.(data, variables, context);
@@ -108,11 +102,11 @@ export function useUpdateOpeningTime(
         onSuccess: (data, variables, context) => {
             // Invalidate all opening times queries for this location
             queryClient.invalidateQueries({
-                queryKey: OPENING_TIME_QUERY_KEYS.all(variables.locationId),
+                queryKey: queryKeys.openingTimes.all(variables.locationId),
             });
             // Also invalidate the location query to update embedded opening times
             queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
+                queryKey: queryKeys.locations.detail(variables.locationId),
             });
             options.onSuccess?.(data, variables, context);
         },
@@ -146,11 +140,11 @@ export function useDeleteOpeningTime(
         onSuccess: (data, variables, context) => {
             // Invalidate all opening times queries for this location
             queryClient.invalidateQueries({
-                queryKey: OPENING_TIME_QUERY_KEYS.all(variables.locationId),
+                queryKey: queryKeys.openingTimes.all(variables.locationId),
             });
             // Also invalidate the location query to update embedded opening times
             queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
+                queryKey: queryKeys.locations.detail(variables.locationId),
             });
             options.onSuccess?.(data, variables, context);
         },
@@ -178,11 +172,11 @@ export function useDeleteAllOpeningTimes(
         onSuccess: (data, variables, context) => {
             // Invalidate all opening times queries for this location
             queryClient.invalidateQueries({
-                queryKey: OPENING_TIME_QUERY_KEYS.all(variables),
+                queryKey: queryKeys.openingTimes.all(variables),
             });
             // Also invalidate the location query to update embedded opening times
             queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables),
+                queryKey: queryKeys.locations.detail(variables),
             });
             options.onSuccess?.(data, variables, context);
         },

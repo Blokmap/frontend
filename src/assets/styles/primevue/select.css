@@ -3,12 +3,10 @@
 @import './iconfield';
 
 .p-select {
-    @apply bg-surface-0 relative inline-flex cursor-pointer rounded-md border-1 border-slate-300 transition-colors duration-200 select-none;
-    @apply py-1;
-}
-
-.p-select:not(.p-disabled):hover {
-    @apply border-slate-200;
+    @apply relative inline-flex py-1;
+    @apply bg-surface-0 cursor-pointer rounded-md transition-colors duration-200 select-none;
+    @apply shadow-playful-no-transform border-1 border-slate-200;
+    --shadow-color: var(--color-slate-200);
 }
 
 .p-select.p-variant-filled {
@@ -60,7 +58,7 @@ input.p-select-label {
 }
 
 .p-select-overlay {
-    @apply bg-surface-0 text-surface-700 absolute top-0 left-0 mt-1 rounded-md border-1 border-slate-300;
+    @apply bg-surface-0 text-surface-700 absolute top-0 left-0 mt-2 rounded-md border border-slate-200;
 }
 
 .p-select-header {

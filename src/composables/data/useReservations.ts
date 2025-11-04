@@ -15,18 +15,10 @@ import {
     type ReservationBody,
     type ReservationState,
 } from '@/domain/reservation';
+import { queryKeys } from './queryKeys';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Time } from '@/utils/time';
 import type { AxiosError } from 'axios';
-
-export const RESERVATION_QUERY_KEYS = {
-    locationReservations: (locationId: MaybeRef<number>, filters?: MaybeRef<ReservationFilter>) =>
-        ['location', 'reservations', locationId, filters] as const,
-    profileReservations: (
-        profileId: MaybeRef<string | null>,
-        filters?: MaybeRef<ReservationFilter>,
-    ) => ['profile', 'reservations', profileId, filters] as const,
-} as const;
 
 export type CreateReservationParams = {
     locationId: number;
@@ -51,7 +43,13 @@ export function useCreateReservation(
         onSuccess: (data, variables, context) => {
             // Invalidate all profile reservations queries
             queryClient.invalidateQueries({
-                queryKey: ['profile', 'reservations'],
+                queryKey: queryKeys.reservations.all(),
+            });
+            // Also invalidate location reservations for this specific location
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.reservations.byLocation(variables.locationId, {
+                    inWeekOf: new Date(),
+                }),
             });
 
             options.onSuccess?.(data, variables, context);
@@ -79,8 +77,24 @@ export type CreateReservationsParams = {
 export function useCreateReservations(
     options: CompMutationOptions = {},
 ): CompMutation<CreateReservationsParams, Reservation[]> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate all reservations
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.reservations.all(),
+            });
+            // Also invalidate location reservations for this specific location
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.reservations.byLocation(variables.locationId, {
+                    inWeekOf: new Date(),
+                }),
+            });
+
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: ({ locationId, requests }: CreateReservationsParams) => {
             return createReservations(locationId, requests);
         },
@@ -109,7 +123,7 @@ export function useDeleteReservation(
         onSuccess: (data, variables, context) => {
             // Invalidate all profile reservations queries
             queryClient.invalidateQueries({
-                queryKey: ['profile', 'reservations'],
+                queryKey: queryKeys.reservations.all(),
             });
 
             options.onSuccess?.(data, variables, context);
@@ -136,8 +150,24 @@ export type DeleteReservationsParams = {
 export function useDeleteReservations(
     options: CompMutationOptions = {},
 ): CompMutation<DeleteReservationsParams> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate all reservations
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.reservations.all(),
+            });
+            // Also invalidate location reservations for this specific location
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.reservations.byLocation(variables.locationId, {
+                    inWeekOf: new Date(),
+                }),
+            });
+
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: ({ locationId, reservationIds }: DeleteReservationsParams) => {
             return deleteReservations(locationId, reservationIds);
         },
@@ -161,7 +191,7 @@ export function useReadLocationReservations(
 ): CompQuery<Reservation[]> {
     const query = useQuery({
         ...options,
-        queryKey: RESERVATION_QUERY_KEYS.locationReservations(locationId, filters),
+        queryKey: queryKeys.reservations.byLocation(locationId, filters),
         queryFn: () => {
             const locationIdValue = toValue(locationId);
             const filtersValue = toValue(filters);
@@ -194,12 +224,7 @@ export function useConfirmReservation(
         onSuccess: (data, variables, context) => {
             // Invalidate location reservations queries
             queryClient.invalidateQueries({
-                queryKey: ['location', 'reservations'],
-            });
-
-            // Invalidate all profile reservations queries
-            queryClient.invalidateQueries({
-                queryKey: ['profile', 'reservations'],
+                queryKey: queryKeys.reservations.all(),
             });
 
             options.onSuccess?.(data, variables, context);
@@ -228,8 +253,18 @@ type ReservationStateParams = {
 export function useReservationState(
     options: CompMutationOptions = {},
 ): CompMutation<ReservationStateParams, Reservation> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate all reservations
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.reservations.all(),
+            });
+
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: ({ reservationId, state }: ReservationStateParams) => {
             return updateReservation(reservationId, {
                 state,
@@ -255,7 +290,7 @@ export function useReadProfileReservations(
     const enabled = computed(() => toValue(profileId) !== null);
 
     const query = useQuery<Reservation[], AxiosError>({
-        queryKey: RESERVATION_QUERY_KEYS.profileReservations(profileId, filters),
+        queryKey: queryKeys.reservations.byProfile(profileId, filters),
         enabled,
         placeholderData: keepPreviousData,
         queryFn: () => {

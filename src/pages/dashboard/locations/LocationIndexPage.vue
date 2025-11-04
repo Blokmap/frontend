@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import Paginator from 'primevue/paginator';
 import LocationDataItem from '@/components/features/location/LocationDataItem.vue';
-import LocationDataList from '@/components/features/location/LocationDataList.vue';
 import LocationStateDropdown from '@/components/features/location/forms/LocationStateSelect.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
+import DataList from '@/components/shared/molecules/datalist/DataList.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
@@ -18,7 +18,7 @@ import { useAdminCounts } from '@/composables/data/useAdmin';
 import {
     useDeleteLocation,
     useReadLocations,
-    useLocationState,
+    useUpdateLocationState,
 } from '@/composables/data/useLocations';
 import { usePagination } from '@/composables/data/usePagination';
 import { useToast } from '@/composables/store/useToast';
@@ -53,7 +53,7 @@ const {
     mutateAsync: updateLocationState,
     isPending: isUpdatingLocation,
     variables: updateVariables,
-} = useLocationState({
+} = useUpdateLocationState({
     onSuccess: async () => {
         await refetch();
         toast.add({
@@ -179,8 +179,8 @@ function onDeleteLocation(locationId: number) {
                 </template>
             </DashboardPageHeader>
 
-            <LocationDataList :locations="locations?.data" :loading="isLoading">
-                <template #item="{ location }">
+            <DataList :items="locations?.data" :loading="isLoading">
+                <template #item="{ item: location }">
                     <LocationDataItem
                         :location="location"
                         :action-is-pending="isLocationPending(location.id)"
@@ -190,7 +190,7 @@ function onDeleteLocation(locationId: number) {
                         @update:state="onChangeLocationStatus">
                     </LocationDataItem>
                 </template>
-            </LocationDataList>
+            </DataList>
 
             <Paginator
                 v-if="locations?.data?.length"

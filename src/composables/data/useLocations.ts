@@ -12,36 +12,26 @@ import {
     type LocationSearchFilter,
     type LocationBody,
     type NearestLocation,
-    approveLocation,
-    rejectLocation,
     type LocationFilter,
     readLocations,
     type LocationState,
-    pendLocation,
     deleteLocation,
     updateLocation,
+    updateLocationState,
     deleteLocationImage,
     reorderLocationImages,
     readProfileLocations,
+    readAuthorityLocations,
 } from '@/domain/location';
 import { readLocationReservations, type Reservation } from '@/domain/reservation';
+import { useToast } from '../store/useToast';
+import { invalidateQueries } from './queryCache';
+import { queryKeys } from './queryKeys';
 import type { ImageReorderBody, ImageBody } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
-
-export const LOCATION_QUERY_KEYS = {
-    read: (id: MaybeRef<number>) => ['location', id] as const,
-    list: (filters: MaybeRef<LocationFilter | undefined>, locale: MaybeRef<string>) =>
-        ['locations', filters, locale] as const,
-    search: (filters: MaybeRef<LocationSearchFilter | undefined>, locale: MaybeRef<string>) =>
-        ['locations', 'search', filters, locale] as const,
-    reservations: (locationId: MaybeRef<number | null>, inWeekOf: MaybeRefOrGetter<Date>) =>
-        ['location', 'reservations', locationId, inWeekOf] as const,
-    profileLocations: (profileId: MaybeRef<string | null>) =>
-        ['profile', 'locations', profileId] as const,
-} as const;
 
 /**
  * Composable to search for locations based on filters.
@@ -58,7 +48,10 @@ export function useSearchLocations(
 
     const query = useQuery({
         ...options,
-        queryKey: LOCATION_QUERY_KEYS.search(filters, locale),
+        queryKey: queryKeys.locations.search({
+            ...toValue(filters),
+            language: toValue(locale),
+        }),
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const params = toValue(filters);
@@ -89,7 +82,10 @@ export function useReadLocations(
 
     const query = useQuery({
         ...options,
-        queryKey: LOCATION_QUERY_KEYS.list(filters, locale),
+        queryKey: queryKeys.locations.list({
+            ...toValue(filters),
+            language: toValue(locale),
+        }),
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const filtersValue = toValue(filters);
@@ -114,12 +110,84 @@ export function useReadLocation(
 ): CompQuery<Location> {
     const query = useQuery({
         ...options,
-        queryKey: LOCATION_QUERY_KEYS.read(id),
+        queryKey: queryKeys.locations.detail(id),
         queryFn: () => {
             const locationId = toValue(id);
             const includes = options.includes ?? [];
             return readLocation(locationId, includes);
         },
+    });
+
+    return query;
+}
+
+/**
+ * Composable to fetch reservations for a specific location within a given week.
+ *
+ * @param locationId - The ID of the location to fetch reservations for.
+ * @param inWeekOf - The date within the week for which to fetch reservations.
+ * @returns The query object containing location reservations and their state.
+ */
+export function useReadLocationReservations(
+    locationId: MaybeRef<number | null>,
+    inWeekOf: MaybeRefOrGetter<Date> = new Date(),
+): CompQuery<Reservation[]> {
+    const enabled = computed(() => toValue(locationId) !== null);
+
+    const query = useQuery<Reservation[], AxiosError>({
+        queryKey: queryKeys.reservations.byLocation(toValue(locationId), {
+            inWeekOf: toValue(inWeekOf),
+        }),
+        enabled,
+        queryFn: () => {
+            const locationIdValue = toValue(locationId)!;
+            const inWeekOfValue = toValue(inWeekOf);
+            return readLocationReservations(locationIdValue, { inWeekOf: inWeekOfValue });
+        },
+    });
+
+    return query;
+}
+
+/**
+ * Composable to fetch locations associated with a specific profile.
+ *
+ * @param profileId - The ID of the profile to fetch locations for.
+ * @returns The query object containing profile locations and their state.
+ */
+export function useReadProfileLocations(
+    profileId: MaybeRef<string | null>,
+    options: CompQueryOptions = {},
+): CompQuery<Location[]> {
+    const enabled = computed(() => toValue(profileId) !== null);
+
+    const query = useQuery<Location[], AxiosError>({
+        ...options,
+        queryKey: queryKeys.locations.detail(profileId),
+        enabled,
+        queryFn: () => readProfileLocations(toValue(profileId)!),
+    });
+
+    return query;
+}
+
+/**
+ * Composable to fetch locations associated with a specific authority.
+ *
+ * @param authorityId - The ID of the authority to fetch locations for.
+ * @returns The query object containing authority locations and their state.
+ */
+export function useReadAuthorityLocations(
+    authorityId: MaybeRef<number | null>,
+    options: CompQueryOptions = {},
+): CompQuery<Location[]> {
+    const enabled = computed(() => toValue(authorityId) !== null);
+
+    const query = useQuery<Location[], AxiosError>({
+        ...options,
+        queryKey: queryKeys.locations.detail(authorityId),
+        enabled,
+        queryFn: () => readAuthorityLocations(toValue(authorityId)!),
     });
 
     return query;
@@ -152,14 +220,22 @@ export function useCreateLocation(
     options: CompMutationOptions = {},
 ): CompMutation<LocationBody, Location> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate all location lists
-            queryClient.invalidateQueries({
-                queryKey: ['locations'],
-            });
+            // Invalidate all location queries
+            invalidateQueries(queryClient, queryKeys.locations.all());
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Locatie aangemaakt',
+                    detail: 'De locatie is succesvol aangemaakt.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: createLocation,
@@ -170,26 +246,43 @@ export function useCreateLocation(
 
 export type UpdateLocationParams = {
     locationId: number;
-    data: LocationBody;
+    data: Partial<LocationBody>;
 };
 
 export function useUpdateLocation(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateLocationParams, Location> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate the specific location query
-            queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
-            });
-            // Invalidate all location lists
-            queryClient.invalidateQueries({
-                queryKey: ['locations'],
-            });
+            // Invalidate only queries that contain this location
+            const { locationId } = variables;
+
+            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Locatie bijgewerkt',
+                    detail: 'De locatie is succesvol bijgewerkt.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
+        },
+        onError: (error, variables, context) => {
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'error',
+                    summary: 'Fout bij bijwerken locatie',
+                    detail: 'Er was een fout bij het bijwerken van de locatie. ',
+                });
+            }
+
+            options.onError?.(error, variables, context);
         },
         mutationFn: ({ locationId, data }: UpdateLocationParams) => {
             return updateLocation(locationId, data);
@@ -214,14 +307,24 @@ export function useCreateLocationImage(
     options: CompMutationOptions = {},
 ): CompMutation<CreateLocationImageParams> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate the specific location query
-            queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
-            });
+            // Add the new image to the specific location query
+            const { locationId } = variables;
+
+            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Locatie afbeelding toegevoegd',
+                    detail: 'De locatie afbeelding is succesvol toegevoegd.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: ({ locationId, image }: CreateLocationImageParams) => {
@@ -245,10 +348,21 @@ export function useDeleteLocationImage(
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate the specific location query
-            queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
-            });
+            // Invalidate specific location query
+            const { locationId } = variables;
+
+            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+
+            if (!options.disableToasts) {
+                const toast = useToast();
+
+                toast.add({
+                    severity: 'success',
+                    summary: 'Locatie afbeelding verwijderd',
+                    detail: 'De locatie afbeelding is succesvol verwijderd.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: ({ locationId, imageId }: DeleteLocationImageParams) => {
@@ -268,14 +382,24 @@ export function useReorderLocationImages(
     options: CompMutationOptions = {},
 ): CompMutation<ReorderLocationImagesParams, void> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate the specific location query
-            queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
-            });
+            // Invalidate specific location query
+            const { locationId } = variables;
+
+            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Locatie afbeeldingen bijgewerkt',
+                    detail: 'De locatie afbeeldingen zijn succesvol bijgewerkt.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: async ({ locationId, reorders }: ReorderLocationImagesParams) => {
@@ -305,14 +429,24 @@ export function useUpdateLocationImages(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateLocationImagesParams, void> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate the specific location query
-            queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
-            });
+            // Invalidate specific location query
+            const { locationId } = variables;
+
+            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Locatie afbeeldingen bijgewerkt',
+                    detail: 'De locatie afbeeldingen zijn succesvol bijgewerkt.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: async ({
@@ -357,61 +491,44 @@ export function useUpdateLocationImages(
     return mutation;
 }
 
+type UpdateLocationStateParams = {
+    locationId: number;
+    state: LocationState;
+    reason?: string | null;
+};
+
 /**
- * Composable to handle approving a location.
+ * Composable to handle updating a location's state (approved, rejected, or pending).
  *
  * @param options - Additional options for the mutation.
- * @returns The mutation object for approving a location.
+ * @returns The mutation object for updating a location's state.
  */
-export function useApproveLocation(
+export function useUpdateLocationState(
     options: CompMutationOptions = {},
-): CompMutation<number, Location> {
+): CompMutation<UpdateLocationStateParams, void> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate the specific location query
-            queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables),
-            });
-            // Invalidate all location lists
-            queryClient.invalidateQueries({
-                queryKey: ['locations'],
-            });
+            // Invalidate all queries containing this location
+            const { locationId } = variables;
+
+            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Locatie status bijgewerkt',
+                    detail: `De status van de locatie is bijgewerkt naar ${variables.state}.`,
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
-        mutationFn: approveLocation,
-    });
-
-    return mutation;
-}
-
-/**
- * Composable to handle rejecting a location.
- *
- * @param options - Additional options for the mutation.
- * @returns The mutation object for rejecting a location.
- */
-export function useRejectLocation(
-    options: CompMutationOptions = {},
-): CompMutation<number, Location> {
-    const queryClient = useQueryClient();
-
-    const mutation = useMutation({
-        ...options,
-        onSuccess: (data, variables, context) => {
-            // Invalidate the specific location query
-            queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables),
-            });
-            // Invalidate all location lists
-            queryClient.invalidateQueries({
-                queryKey: ['locations'],
-            });
-            options.onSuccess?.(data, variables, context);
-        },
-        mutationFn: rejectLocation,
+        mutationFn: ({ locationId, state, reason }: UpdateLocationStateParams) =>
+            updateLocationState(locationId, { state, reason }),
     });
 
     return mutation;
@@ -425,116 +542,39 @@ export function useRejectLocation(
  */
 export function useDeleteLocation(options: CompMutationOptions = {}): CompMutation<number, void> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
-        onSuccess: (data, variables, context) => {
-            // Invalidate the specific location query
-            queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables),
-            });
-            // Invalidate all location lists
-            queryClient.invalidateQueries({
-                queryKey: ['locations'],
-            });
-            options.onSuccess?.(data, variables, context);
-        },
         mutationFn: deleteLocation,
-    });
-
-    return mutation;
-}
-
-type LocationStateParams = {
-    locationId: number;
-    state: LocationState;
-    reason?: string | null;
-};
-
-/**
- * Composable to handle changing a location's state (approved, rejected, or pending).
- *
- * @param options - Additional options for the mutation.
- * @returns The mutation object for updating a location's state.
- */
-export function useLocationState(
-    options: CompMutationOptions = {},
-): CompMutation<LocationStateParams, Location> {
-    const queryClient = useQueryClient();
-
-    const mutation = useMutation({
-        ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate the specific location query
-            queryClient.invalidateQueries({
-                queryKey: LOCATION_QUERY_KEYS.read(variables.locationId),
-            });
-            // Invalidate all location lists
-            queryClient.invalidateQueries({
-                queryKey: ['locations'],
-            });
-            options.onSuccess?.(data, variables, context);
-        },
-        mutationFn: ({ locationId, state, reason }: LocationStateParams) => {
-            if (state === 'approved') {
-                return approveLocation(locationId);
-            } else if (state === 'rejected') {
-                return rejectLocation(locationId, reason);
-            } else if (state === 'pending') {
-                return pendLocation(locationId);
+            // Remove the location from all queries
+            const locationId = variables;
+
+            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Locatie verwijderd',
+                    detail: 'De locatie is succesvol verwijderd.',
+                });
             }
 
-            throw new Error(`Invalid state: ${state}`);
+            options.onSuccess?.(data, variables, context);
+        },
+        onError: (error, variables, context) => {
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'error',
+                    summary: 'Fout bij verwijderen locatie',
+                    detail: 'Er was een fout bij het verwijderen van de locatie.',
+                });
+            }
+
+            options.onError?.(error, variables, context);
         },
     });
 
     return mutation;
-}
-
-/**
- * Composable to fetch reservations for a specific location within a given week.
- *
- * @param locationId - The ID of the location to fetch reservations for.
- * @param inWeekOf - The date within the week for which to fetch reservations.
- * @returns The query object containing location reservations and their state.
- */
-export function useReadLocationReservations(
-    locationId: MaybeRef<number | null>,
-    inWeekOf: MaybeRefOrGetter<Date> = new Date(),
-): CompQuery<Reservation[]> {
-    const enabled = computed(() => toValue(locationId) !== null);
-
-    const query = useQuery<Reservation[], AxiosError>({
-        queryKey: LOCATION_QUERY_KEYS.reservations(locationId, inWeekOf),
-        enabled,
-        queryFn: () => {
-            const locationIdValue = toValue(locationId)!;
-            const inWeekOfValue = toValue(inWeekOf);
-            return readLocationReservations(locationIdValue, { inWeekOf: inWeekOfValue });
-        },
-    });
-
-    return query;
-}
-
-/**
- * Composable to fetch locations associated with a specific profile.
- *
- * @param profileId - The ID of the profile to fetch locations for.
- * @returns The query object containing profile locations and their state.
- */
-export function useReadProfileLocations(
-    profileId: MaybeRef<string | null>,
-    options: CompQueryOptions = {},
-): CompQuery<Location[]> {
-    const enabled = computed(() => toValue(profileId) !== null);
-
-    const query = useQuery<Location[], AxiosError>({
-        ...options,
-        queryKey: LOCATION_QUERY_KEYS.profileLocations(profileId),
-        enabled,
-        queryFn: () => readProfileLocations(toValue(profileId)!),
-    });
-
-    return query;
 }

@@ -8,7 +8,6 @@ import SearchField from '@/components/shared/atoms/SearchField.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
 import { useDebounceFn } from '@vueuse/core';
 import { computed, ref } from 'vue';
@@ -18,12 +17,10 @@ import { useAdminCounts } from '@/composables/data/useAdmin';
 import { usePagination } from '@/composables/data/usePagination';
 import { useReadProfiles, useUpdateProfileState } from '@/composables/data/useProfile';
 import { abbreviateCount } from '@/utils/format';
-import type { Profile, ProfileFilter, ProfileState } from '@/domain/profile';
+import type { Profile, ProfileFilter } from '@/domain/profile';
 
 const router = useRouter();
 const { t } = useI18n();
-
-const searchQuery = ref<string>('');
 
 const filters = ref<ProfileFilter>({
     query: '',
@@ -41,7 +38,6 @@ const {
 } = useUpdateProfileState({
     onSuccess: async () => {
         await refetch();
-        // Success toast is handled in the composable
     },
     onError: (error: any) => {
         // Error toast is handled in the composable
@@ -61,9 +57,13 @@ const isProfilePending = (profileId: string): boolean => {
     return isUpdatingProfile.value && updateVariables.value?.profileId === profileId;
 };
 
-const onSearchChange = useDebounceFn(() => {
-    filters.value.query = searchQuery.value;
-    resetPage();
+const onSearchChange = useDebounceFn((event: InputEvent) => {
+    const input = event.data;
+
+    if (input) {
+        filters.value.query = input;
+        resetPage();
+    }
 }, 300);
 
 /**
@@ -75,75 +75,70 @@ function onProfileClick(profile: Profile): void {
 }
 
 /**
- * Handle changing the status of a profile (enable/disable).
- * @param profileId The ID of the profile to update.
- * @param status The new status to set.
+ * Handle selecting a new state for a profile.
+ *
+ * @param profileId - The ID of the profile.
+ * @param state - The new state to set.
  */
-async function onChangeProfileStatus(profileId: string, status: ProfileState) {
-    await updateProfileState({ profileId, state: status });
-    refetch();
+function onSelectProfileState(profileId: string, state: string): void {
+    updateProfileState({ profileId, state: state as Profile['state'] });
 }
 </script>
 
 <template>
     <DashboardContent>
-        <DashboardLoading v-if="isLoading" />
+        <DashboardPageHeader :title="pageTitle">
+            <template #metadata>
+                <ResultSummary
+                    :current-count="profiles?.data.length"
+                    :total-count="profiles?.total"
+                    :truncated="profiles?.truncated"
+                    :empty-message="$t('pages.dashboard.profiles.index.empty')">
+                </ResultSummary>
+            </template>
+            <template #filters>
+                <SearchField
+                    :placeholder="$t('pages.dashboard.profiles.index.search')"
+                    :loading="isFetching"
+                    @input="onSearchChange">
+                </SearchField>
+            </template>
+        </DashboardPageHeader>
 
-        <template v-else>
-            <DashboardPageHeader :title="pageTitle">
-                <template #metadata>
-                    <ResultSummary
-                        :current-count="profiles?.data.length"
-                        :total-count="profiles?.total"
-                        :truncated="profiles?.truncated"
-                        :empty-message="$t('pages.dashboard.profiles.index.empty')">
-                    </ResultSummary>
-                </template>
-                <template #filters>
-                    <SearchField
-                        v-model="searchQuery"
-                        :placeholder="$t('pages.dashboard.profiles.index.search')"
-                        :loading="isFetching"
-                        @input="onSearchChange">
-                    </SearchField>
-                </template>
-            </DashboardPageHeader>
+        <Table :value="profiles?.data" :loading="isLoading" @click:row="onProfileClick">
+            <template #row="{ data: profile }">
+                <TableCell column="Profiel">
+                    <ProfileTableCell :profile="profile" />
+                </TableCell>
 
-            <Table :value="profiles?.data" @click:row="onProfileClick">
-                <template #row="{ data: profile }">
-                    <TableCell column="Profiel">
-                        <ProfileTableCell :profile="profile" />
-                    </TableCell>
+                <TableCell column="E-mailadres">
+                    {{ profile.email }}
+                </TableCell>
 
-                    <TableCell column="E-mailadres">
-                        {{ profile.email }}
-                    </TableCell>
+                <TableCell column="Institutie">
+                    {{ profile.institution?.name || '-' }}
+                </TableCell>
 
-                    <TableCell column="Institutie">
-                        {{ profile.institution?.name || '-' }}
-                    </TableCell>
+                <TableCell column="Status">
+                    <ProfileStateBadge :profile="profile" />
+                </TableCell>
 
-                    <TableCell column="Status">
-                        <ProfileStateBadge :profile="profile" />
-                    </TableCell>
+                <TableCell column="Acties">
+                    <ProfileActionMenu
+                        :profile="profile"
+                        :is-pending="isProfilePending(profile.id)"
+                        @select:state="onSelectProfileState(profile.id, $event)">
+                    </ProfileActionMenu>
+                </TableCell>
+            </template>
+        </Table>
 
-                    <TableCell column="Acties">
-                        <ProfileActionMenu
-                            :profile="profile"
-                            :is-pending="isProfilePending(profile.id)"
-                            @change:status="onChangeProfileStatus">
-                        </ProfileActionMenu>
-                    </TableCell>
-                </template>
-            </Table>
-
-            <Paginator
-                v-if="profiles?.data?.length"
-                :first="first"
-                :rows="profiles.perPage"
-                :total-records="profiles.total"
-                @page="onPageChange">
-            </Paginator>
-        </template>
+        <Paginator
+            v-if="profiles?.data?.length"
+            :first="first"
+            :rows="profiles.perPage"
+            :total-records="profiles.total"
+            @page="onPageChange">
+        </Paginator>
     </DashboardContent>
 </template>

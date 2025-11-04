@@ -6,10 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { formatLocationAddress, getLocationImageUrl } from '@/domain/location';
-import LocationActionMenu from './LocationActionMenu.vue';
 import LocationLanguagesList from './details/LocationLanguagesList.vue';
 import LocationStateBadge from './details/LocationStateBadge.vue';
-import type { Location, LocationState } from '@/domain/location';
+import type { Location } from '@/domain/location';
 
 const props = withDefaults(
     defineProps<{
@@ -23,28 +22,8 @@ const props = withDefaults(
     },
 );
 
-const emit = defineEmits<{
-    'click:delete': [];
-    'select:state': [status: LocationState];
-}>();
-
 const i18n = useI18n();
 const router = useRouter();
-
-/**
- * Handle location status change.
- * @param status The new status.
- */
-function onStateSelect(state: LocationState): void {
-    emit('select:state', state);
-}
-
-/**
- * Handle delete action.
- */
-function onDelete(): void {
-    emit('click:delete');
-}
 
 /**
  * Navigate to location detail page.
@@ -108,12 +87,7 @@ function navigateToDetail(): void {
 
         <!-- Action Button -->
         <div class="location-card__actions">
-            <LocationActionMenu
-                :location="location"
-                :is-pending="actionIsPending"
-                @select:state="onStateSelect"
-                @click:delete="onDelete">
-            </LocationActionMenu>
+            <slot name="actions"> </slot>
         </div>
     </div>
 </template>
@@ -123,7 +97,7 @@ function navigateToDetail(): void {
 
 .location-card {
     @apply flex flex-col gap-3 p-3;
-    @apply cursor-pointer rounded-lg bg-white shadow-sm;
+    @apply cursor-pointer rounded-lg border border-slate-200 bg-white;
     @apply md:flex-row md:gap-6 md:p-4;
 
     .location-card__image-wrap {

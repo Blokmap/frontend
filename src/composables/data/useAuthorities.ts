@@ -1,43 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { toValue, type MaybeRefOrGetter, type MaybeRef, computed } from 'vue';
 import {
-    addAuthorityMember,
     createAuthority,
     readAuthorities,
     readAuthority,
-    removeAuthorityMember,
     updateAuthority,
     type Authority,
     type AuthorityFilter,
     type AuthorityBody,
 } from '@/domain/authority';
 import { readProfileAuthorities } from '@/domain/profile';
+import { useToast } from '../store/useToast';
+import { invalidateQueries } from './queryCache';
+import { queryKeys } from './queryKeys';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
 
-export const AUTHORITY_QUERY_KEYS = {
-    list: (filters: MaybeRefOrGetter<Partial<AuthorityFilter>>) =>
-        ['authorities', filters] as const,
-    detail: (id: MaybeRefOrGetter<number>) => ['authorities', 'detail', id] as const,
-    members: (id: MaybeRefOrGetter<number>) => ['authorities', 'members', id] as const,
-    profileAuthorities: (profileId: MaybeRef<string | null>) =>
-        ['profile', 'authorities', profileId] as const,
-} as const;
-
 export type UpdateAuthorityParams = {
     id: number;
     data: AuthorityBody;
-};
-
-export type AddAuthorityMemberParams = {
-    id: number;
-    profileId: string;
-};
-
-export type RemoveAuthorityMemberParams = {
-    id: number;
-    profileId: string;
 };
 
 /**
@@ -51,7 +33,7 @@ export function useReadAuthorities(
 ): CompQuery<Paginated<Authority>> {
     const authorities = useQuery({
         ...options,
-        queryKey: AUTHORITY_QUERY_KEYS.list(filters),
+        queryKey: queryKeys.authorities.list(filters),
         queryFn: () => readAuthorities(toValue(filters)),
     });
 
@@ -71,11 +53,31 @@ export function useReadAuthority(
 ): CompQuery<Authority> {
     const authority = useQuery({
         ...options,
-        queryKey: AUTHORITY_QUERY_KEYS.detail(id),
+        queryKey: queryKeys.authorities.detail(id),
         queryFn: () => readAuthority(toValue(id)),
     });
 
     return authority;
+}
+
+/**
+ * Composable to fetch authorities associated with a specific profile.
+ *
+ * @param profileId - The ID of the profile to fetch authorities for.
+ * @returns The query object containing profile authorities and their state.
+ */
+export function useReadProfileAuthorities(
+    profileId: MaybeRef<string | null>,
+): CompQuery<Authority[]> {
+    const enabled = computed(() => toValue(profileId) !== null);
+
+    const query = useQuery<Authority[], AxiosError>({
+        enabled,
+        queryKey: queryKeys.authorities.byProfile(profileId),
+        queryFn: () => readProfileAuthorities(toValue(profileId)!),
+    });
+
+    return query;
 }
 
 /**
@@ -85,8 +87,16 @@ export function useReadAuthority(
  * @returns The mutation object for creating an authority.
  */
 export function useCreateAuthority(options: CompMutationOptions = {}): CompMutation<AuthorityBody> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate all authority queries
+            invalidateQueries(queryClient, queryKeys.authorities.all());
+
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: createAuthority,
     });
 
@@ -103,89 +113,27 @@ export function useUpdateAuthority(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateAuthorityParams> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         mutationFn: ({ id, data }: UpdateAuthorityParams) => updateAuthority(id, data),
         onSuccess: (data, variables, context) => {
-            queryClient.invalidateQueries({
-                queryKey: AUTHORITY_QUERY_KEYS.detail(variables.id),
-            });
+            // Invalidate all authority queries
+            const { id: authorityId } = variables;
+            invalidateQueries(queryClient, queryKeys.authorities.all(), authorityId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Authority updated successfully.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
     });
 
     return mutation;
-}
-
-/**
- * Composable to add a member to an authority.
- *
- * @param options - Mutation options.
- * @returns The mutation object for adding a member.
- */
-export function useAddAuthorityMember(
-    options: CompMutationOptions = {},
-): CompMutation<AddAuthorityMemberParams> {
-    const queryClient = useQueryClient();
-
-    const mutation = useMutation({
-        ...options,
-        mutationFn: ({ id, profileId }: AddAuthorityMemberParams) =>
-            addAuthorityMember(id, profileId),
-        onSuccess: (data, variables, context) => {
-            queryClient.invalidateQueries({
-                queryKey: AUTHORITY_QUERY_KEYS.members(variables.id),
-            });
-            options.onSuccess?.(data, variables, context);
-        },
-    });
-
-    return mutation;
-}
-
-/**
- * Composable to remove a member from an authority.
- *
- * @param options - Mutation options.
- * @returns The mutation object for removing a member.
- */
-export function useRemoveAuthorityMember(
-    options: CompMutationOptions = {},
-): CompMutation<RemoveAuthorityMemberParams> {
-    const queryClient = useQueryClient();
-
-    const mutation = useMutation({
-        ...options,
-        mutationFn: ({ id, profileId }: RemoveAuthorityMemberParams) =>
-            removeAuthorityMember(id, profileId),
-        onSuccess: (data, variables, context) => {
-            queryClient.invalidateQueries({
-                queryKey: AUTHORITY_QUERY_KEYS.members(variables.id),
-            });
-            options.onSuccess?.(data, variables, context);
-        },
-    });
-
-    return mutation;
-}
-
-/**
- * Composable to fetch authorities associated with a specific profile.
- *
- * @param profileId - The ID of the profile to fetch authorities for.
- * @returns The query object containing profile authorities and their state.
- */
-export function useReadProfileAuthorities(
-    profileId: MaybeRef<string | null>,
-): CompQuery<Authority[]> {
-    const enabled = computed(() => toValue(profileId) !== null);
-
-    const query = useQuery<Authority[], AxiosError>({
-        queryKey: AUTHORITY_QUERY_KEYS.profileAuthorities(profileId),
-        enabled,
-        queryFn: () => readProfileAuthorities(toValue(profileId)!),
-    });
-
-    return query;
 }

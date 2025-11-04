@@ -7,25 +7,18 @@ import {
     logout,
     register,
     readLocationRoles,
-    readAuthorityMembers,
     readAuthorityRoles,
-    readInstitutionMembers,
     readInstitutionRoles,
-    readLocationMembers,
 } from '@/domain/auth';
-import type { LoginBody, RegisterBody, Membership, Role } from '@/domain/auth';
+import type { LoginBody, RegisterBody, Role } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
-import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
 
 export const AUTH_QUERY_KEYS = {
     profile: () => ['profile', 'details'],
-    locationMembers: (locationId: number) => ['location', locationId, 'members'],
     locationRoles: (locationId: number) => ['location', locationId, 'roles'],
-    authorityMembers: (authorityId: number) => ['authority', authorityId, 'members'],
     authorityRoles: (authorityId: number) => ['authority', authorityId, 'roles'],
-    institutionMembers: (institutionId: number) => ['institution', institutionId, 'members'],
     institutionRoles: (institutionId: number) => ['institution', institutionId, 'roles'],
 };
 
@@ -123,26 +116,6 @@ export function useAuthRegister(options: CompMutationOptions = {}): CompMutation
 }
 
 /**
- * Composable to fetch members for a specific location.
- *
- * @param locationId - The ID of the location.
- * @param options - Optional query options.
- * @returns The query object containing the members data and its state.
- */
-export function useReadLocationMembers(
-    locationId: Ref<number>,
-    options: CompQueryOptions = {},
-): CompQuery<Paginated<Membership>> {
-    const query = useQuery<Paginated<Membership>, AxiosError>({
-        ...options,
-        queryKey: computed(() => AUTH_QUERY_KEYS.locationMembers(locationId.value)),
-        queryFn: () => readLocationMembers(locationId.value),
-    });
-
-    return query;
-}
-
-/**
  * Composable to fetch roles for a specific location.
  *
  * @param locationId - The ID of the location.
@@ -163,26 +136,6 @@ export function useReadLocationRoles(
 }
 
 /**
- * Composable to fetch members for a specific authority.
- *
- * @param authorityId - The ID of the authority.
- * @param options - Optional query options.
- * @returns The query object containing the members data and its state.
- */
-export function useReadAuthorityMembers(
-    authorityId: Ref<number>,
-    options: CompQueryOptions = {},
-): CompQuery<Paginated<Membership>> {
-    const query = useQuery<Paginated<Membership>, AxiosError>({
-        ...options,
-        queryKey: computed(() => AUTH_QUERY_KEYS.authorityMembers(authorityId.value)),
-        queryFn: () => readAuthorityMembers(authorityId.value),
-    });
-
-    return query;
-}
-
-/**
  * Composable to fetch roles for a specific authority.
  *
  * @param authorityId - The ID of the authority.
@@ -197,26 +150,6 @@ export function useReadAuthorityRoles(
         ...options,
         queryKey: computed(() => AUTH_QUERY_KEYS.authorityRoles(authorityId.value)),
         queryFn: () => readAuthorityRoles(authorityId.value),
-    });
-
-    return query;
-}
-
-/**
- * Composable to fetch members for a specific institution.
- *
- * @param institutionId - The ID of the institution.
- * @param options - Optional query options.
- * @returns The query object containing the members data and its state.
- */
-export function useReadInstitutionMembers(
-    institutionId: Ref<number>,
-    options: CompQueryOptions = {},
-): CompQuery<Paginated<Membership>> {
-    const query = useQuery<Paginated<Membership>, AxiosError>({
-        ...options,
-        queryKey: computed(() => AUTH_QUERY_KEYS.institutionMembers(institutionId.value)),
-        queryFn: () => readInstitutionMembers(institutionId.value),
     });
 
     return query;

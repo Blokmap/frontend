@@ -219,6 +219,6 @@ function onDeleteClick(): void {
 }
 
 .repetition {
-    @apply space-y-3 rounded-lg bg-gray-50 p-4 shadow-md;
+    @apply space-y-3 rounded-lg border border-slate-200 bg-gray-50 p-4;
 }
 </style>

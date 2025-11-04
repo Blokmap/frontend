@@ -17,6 +17,7 @@ import type {
     LocationBody,
     NearestLocation,
     LocationFilter,
+    LocationStateBody,
 } from './types';
 import type { Image, ImageReorderBody, ImageBody } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
@@ -233,7 +234,7 @@ export async function createLocationImage(
  * @param {LocationBody} body - The updated location data.
  * @returns {Promise<Location>} A promise that resolves to the updated location.
  */
-export async function updateLocation(id: number, body: LocationBody): Promise<Location> {
+export async function updateLocation(id: number, body: Partial<LocationBody>): Promise<Location> {
     const endpoint = endpoints.locations.update.replace('{id}', id.toString());
 
     const transformResponse = transformResponseFactory(parseLocationResponse);
@@ -285,60 +286,15 @@ export async function deleteLocationImages(locationId: number): Promise<void> {
 }
 
 /**
- * Approve a location to make it appear in the public listing.
+ * Update the state of a location.
  *
- * @param {number} id - The ID of the location to approve.
- * @returns {Promise<Location>} A promise that resolves to the approved location.
+ * @param {number} id - The ID of the location.
+ * @param {LocationStateBody} body - The state and optional reason.
+ * @returns {Promise<void>} A promise that resolves when the state is updated.
  */
-export async function approveLocation(id: number): Promise<Location> {
-    const endpoint = endpoints.locations.approve.replace('{id}', id.toString());
-
-    const transformResponse = transformResponseFactory(parseLocationResponse);
-
-    const { data } = await client.post(endpoint, null, {
-        transformResponse,
-    });
-
-    return data;
-}
-
-/**
- * Reject a location to remove it from the public listing.
- *
- * @param {number} id - The ID of the location to reject.
- * @param {string | null} reason - The reason for rejecting the location.
- * @returns {Promise<Location>} A promise that resolves to the rejected location.
- */
-export async function rejectLocation(id: number, reason?: string | null): Promise<Location> {
-    const endpoint = endpoints.locations.reject.replace('{id}', id.toString());
-
-    const body = { reason };
-
-    const transformResponse = transformResponseFactory(parseLocationResponse);
-
-    const { data } = await client.post(endpoint, body, {
-        transformResponse,
-    });
-
-    return data;
-}
-
-/**
- * Pend a location to set its status to pending review.
- *
- * @param {number} id - The ID of the location to pend.
- * @returns {Promise<Location>} A promise that resolves to the pended location.
- */
-export async function pendLocation(id: number): Promise<Location> {
-    const endpoint = endpoints.locations.pend.replace('{id}', id.toString());
-
-    const transformResponse = transformResponseFactory(parseLocationResponse);
-
-    const { data } = await client.post(endpoint, null, {
-        transformResponse,
-    });
-
-    return data;
+export async function updateLocationState(id: number, body: LocationStateBody): Promise<void> {
+    const endpoint = endpoints.locations.state.replace('{id}', id.toString());
+    await client.patch(endpoint, body);
 }
 
 /**
@@ -380,6 +336,24 @@ export async function reorderLocationImages(
  */
 export async function readProfileLocations(profileId: string): Promise<Location[]> {
     const endpoint = endpoints.profiles.locations.list.replace('{id}', profileId.toString());
+
+    const transformResponse = transformResponseFactory(parseLocationResponse);
+
+    const { data } = await client.get<Location[]>(endpoint, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Fetches the locations associated with a specific authority.
+ *
+ * @param authorityId - The ID of the authority whose locations are to be fetched.
+ * @returns A promise that resolves to a paginated list of locations.
+ */
+export async function readAuthorityLocations(authorityId: number): Promise<Location[]> {
+    const endpoint = endpoints.authorities.locations.list.replace('{id}', authorityId.toString());
 
     const transformResponse = transformResponseFactory(parseLocationResponse);
 

@@ -12,7 +12,7 @@ const variantClasses = computed(() => {
         return 'bg-slate-900 text-slate-200';
     }
 
-    return 'bg-primary-100 text-primary-500';
+    return 'bg-primary-100 text-primary-500 shadow-playful';
 });
 
 onMounted(async () => {
@@ -70,6 +70,8 @@ function handleHoverOut() {
     @apply cursor-pointer font-black tracking-tight uppercase select-none;
     @apply text-2xl md:text-3xl;
     @apply transition-shadow duration-200;
+
+    --shadow-color: var(--color-primary-300);
 
     .letters {
         @apply translate-y-1;

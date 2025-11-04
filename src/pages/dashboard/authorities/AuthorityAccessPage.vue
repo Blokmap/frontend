@@ -9,7 +9,8 @@ import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHe
 import { faCircleUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-import { useReadAuthorityMembers, useReadAuthorityRoles } from '@/composables/data/useAuth';
+import { useReadAuthorityRoles } from '@/composables/data/useAuth';
+import { useReadAuthorityMembers } from '@/composables/data/useMembers';
 import type { Authority } from '@/domain/authority';
 
 const props = defineProps<{

@@ -3,7 +3,8 @@
 }
 
 .p-tablist {
-    @apply relative flex rounded-lg shadow-sm;
+    @apply relative flex rounded-lg;
+    @apply border border-slate-200;
 }
 
 .p-tabs-scrollable > .p-tablist {
@@ -27,7 +28,7 @@
 }
 
 .p-tablist-nav-button {
-    @apply bg-surface-0 dark:bg-surface-900 text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-0 dark:shadow-surface-900/50 focus-visible:outline-primary !absolute top-0 z-20 flex h-full w-10 flex-shrink-0 cursor-pointer items-center justify-center shadow-[0px_0px_10px_50px_rgba(255,255,255,0.6)] transition-colors duration-200 focus-visible:z-10 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-1px] dark:shadow-[0px_0px_10px_50px];
+    @apply bg-surface-0 dark:bg-surface-900 text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-0 dark:shadow-surface-900/50 focus-visible:outline-primary !absolute top-0 z-20 flex h-full w-10 flex-shrink-0 cursor-pointer items-center justify-center shadow-[0px_0px_10px_50px_rgba(255,255,255,0.6)] transition-colors duration-200 focus-visible:z-10 focus-visible:outline focus-visible:outline-offset-[-1px] dark:shadow-[0px_0px_10px_50px];
 }
 
 .p-tablist-prev-button {
@@ -52,7 +53,7 @@
 }
 
 .p-tab:not(.p-disabled):focus-visible {
-    @apply outline-primary z-10 outline outline-1 outline-offset-[-1px];
+    @apply outline-primary z-10 outline outline-offset-[-1px];
 }
 
 .p-tab:not(.p-tab-active):not(.p-disabled):hover {

@@ -38,6 +38,7 @@
 
 .p-button-icon-only.p-button-rounded {
     @apply h-10 rounded-full;
+    --shadow-size: 0.1rem;
 }
 
 .p-button-icon-only .p-button-label {
@@ -131,66 +132,36 @@
 }
 
 .p-button-outlined {
-    @apply text-primary border bg-transparent;
-    @apply border-primary-400;
-    @apply enabled:hover:bg-primary-50 enabled:hover:border-primary-400;
-    @apply enabled:active:bg-primary-100 enabled:active:border-primary-400;
-    @apply !shadow-none;
+    @apply text-primary-500 border-primary-300 border bg-transparent;
+    @apply transition-all duration-200;
 }
 
 .p-button-outlined.p-button-secondary {
-    @apply text-secondary-500;
-    @apply border-secondary-500;
-    @apply enabled:hover:bg-secondary-50/50 enabled:hover:border-secondary;
-    @apply enabled:active:bg-secondary-50 enabled:active:border-secondary;
+    @apply text-secondary-500 border-secondary-300;
 }
 
 .p-button-outlined.p-button-success {
-    @apply bg-transparent text-green-500;
-    @apply border-green-200;
-    @apply enabled:hover:border-green-200 enabled:hover:bg-green-50;
-    @apply enabled:active:border-green-200 enabled:active:bg-green-100;
-    --shadow-color: rgb(34 197 94 / 0.25);
+    @apply border-green-300 text-green-500;
 }
 
 .p-button-outlined.p-button-info {
-    @apply bg-transparent text-sky-500;
-    @apply border-sky-200;
-    @apply enabled:hover:border-sky-200 enabled:hover:bg-sky-50;
-    @apply enabled:active:border-sky-200 enabled:active:bg-sky-100;
-    --shadow-color: rgb(14 165 233 / 0.25);
+    @apply border-sky-300 text-sky-500;
 }
 
 .p-button-outlined.p-button-warn {
-    @apply bg-transparent text-orange-500;
-    @apply border-orange-200;
-    @apply enabled:hover:border-orange-200 enabled:hover:bg-orange-50;
-    @apply enabled:active:border-orange-200 enabled:active:bg-orange-100;
-    --shadow-color: rgb(249 115 22 / 0.25);
+    @apply border-orange-300 text-orange-500;
 }
 
 .p-button-outlined.p-button-help {
-    @apply bg-transparent text-purple-500;
-    @apply border-purple-200;
-    @apply enabled:hover:border-purple-200 enabled:hover:bg-purple-50;
-    @apply enabled:active:border-purple-200 enabled:active:bg-purple-100;
-    --shadow-color: rgb(168 85 247 / 0.25);
+    @apply border-purple-300 text-purple-500;
 }
 
 .p-button-outlined.p-button-danger {
-    @apply bg-transparent text-red-600;
-    @apply border-red-600;
-    @apply enabled:hover:border-red-200 enabled:hover:bg-red-50 enabled:hover:text-red-500;
-    @apply enabled:active:border-red-200 enabled:active:bg-red-100 enabled:active:text-red-500;
-    --shadow-color: rgb(239 68 68 / 0.25);
+    @apply border-red-300 text-red-500;
 }
 
 .p-button-outlined.p-button-contrast {
-    @apply bg-transparent text-slate-600;
-    @apply border-slate-400;
-    @apply enabled:hover:border-slate-400 enabled:hover:bg-slate-100 enabled:hover:text-slate-700;
-    @apply enabled:active:border-slate-400 enabled:active:bg-slate-200 enabled:active:text-slate-800;
-    --shadow-color: rgb(148 163 184 / 0.25);
+    @apply border-slate-300 text-slate-500;
 }
 
 .p-button-outlined.p-button-plain {
@@ -206,7 +177,7 @@
     @apply border-transparent;
     @apply enabled:hover:border-transparent enabled:hover:bg-transparent;
     @apply enabled:active:border-transparent enabled:active:bg-transparent;
-    @apply shadow-none;
+    @apply !translate-none !transform-none !shadow-none !transition-none;
 }
 
 .p-button-text.p-button-secondary {
@@ -263,7 +234,7 @@
     @apply border-transparent;
     @apply enabled:hover:border-transparent enabled:hover:bg-transparent;
     @apply enabled:active:border-transparent enabled:active:bg-transparent;
-    @apply shadow-none;
+    @apply !translate-none !transform-none !shadow-none !transition-none;
 }
 
 .p-button-link:not(:disabled):hover .p-button-label {

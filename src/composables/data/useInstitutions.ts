@@ -2,42 +2,23 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { toValue, type MaybeRefOrGetter } from 'vue';
 import {
     addInstitutionAuthority,
-    addInstitutionMember,
     createInstitution,
     readInstitutions,
     readInstitution,
     removeInstitutionAuthority,
-    removeInstitutionMember,
     updateInstitution,
     type Institution,
     type InstitutionFilter,
     type InstitutionBody,
 } from '@/domain/institution';
+import { queryKeys } from './queryKeys';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
-
-export const INSTITUTION_QUERY_KEYS = {
-    list: (filters: MaybeRefOrGetter<Partial<InstitutionFilter>>) =>
-        ['institutions', filters] as const,
-    detail: (id: MaybeRefOrGetter<string>) => ['institutions', 'detail', id] as const,
-    members: (id: MaybeRefOrGetter<number>) => ['institutions', 'members', id] as const,
-    authorities: (id: MaybeRefOrGetter<number>) => ['institutions', 'authorities', id] as const,
-} as const;
 
 // Mutation parameter types
 export type UpdateInstitutionParams = {
     id: number;
     data: InstitutionBody;
-};
-
-export type AddInstitutionMemberParams = {
-    id: number;
-    profileId: string;
-};
-
-export type RemoveInstitutionMemberParams = {
-    id: number;
-    profileId: string;
 };
 
 export type AddInstitutionAuthorityParams = {
@@ -61,7 +42,7 @@ export function useReadInstitutions(
 ): CompQuery<Paginated<Institution>> {
     const institutions = useQuery({
         ...options,
-        queryKey: INSTITUTION_QUERY_KEYS.list(filters),
+        queryKey: queryKeys.institutions.list(filters),
         queryFn: () => readInstitutions(toValue(filters)),
     });
 
@@ -81,7 +62,7 @@ export function useReadInstitution(
 ): CompQuery<Institution> {
     const institution = useQuery({
         ...options,
-        queryKey: INSTITUTION_QUERY_KEYS.detail(id),
+        queryKey: queryKeys.institutions.detail(id),
         queryFn: () => readInstitution(toValue(id)),
     });
 
@@ -97,8 +78,18 @@ export function useReadInstitution(
 export function useCreateInstitution(
     options: CompMutationOptions = {},
 ): CompMutation<InstitutionBody> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate all institution lists
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.institutions.lists(),
+            });
+
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: createInstitution,
     });
 
@@ -114,61 +105,23 @@ export function useCreateInstitution(
 export function useUpdateInstitution(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateInstitutionParams> {
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific institution
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.institutions.detail(variables.id),
+            });
+            // Invalidate all institution lists
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.institutions.lists(),
+            });
+
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: ({ id, data }: UpdateInstitutionParams) => updateInstitution(id, data),
-    });
-
-    return mutation;
-}
-
-/**
- * Composable to add a member to an institution.
- *
- * @param options - Mutation options.
- * @returns The mutation object for adding a member.
- */
-export function useAddInstitutionMember(
-    options: CompMutationOptions = {},
-): CompMutation<AddInstitutionMemberParams> {
-    const queryClient = useQueryClient();
-
-    const mutation = useMutation({
-        ...options,
-        mutationFn: ({ id, profileId }: AddInstitutionMemberParams) =>
-            addInstitutionMember(id, profileId),
-        onSuccess: (data, variables, context) => {
-            queryClient.invalidateQueries({
-                queryKey: INSTITUTION_QUERY_KEYS.members(variables.id),
-            });
-            options.onSuccess?.(data, variables, context);
-        },
-    });
-
-    return mutation;
-}
-
-/**
- * Composable to remove a member from an institution.
- *
- * @param options - Mutation options.
- * @returns The mutation object for removing a member.
- */
-export function useRemoveInstitutionMember(
-    options: CompMutationOptions = {},
-): CompMutation<RemoveInstitutionMemberParams> {
-    const queryClient = useQueryClient();
-
-    const mutation = useMutation({
-        ...options,
-        mutationFn: ({ id, profileId }: RemoveInstitutionMemberParams) =>
-            removeInstitutionMember(id, profileId),
-        onSuccess: (data, variables, context) => {
-            queryClient.invalidateQueries({
-                queryKey: INSTITUTION_QUERY_KEYS.members(variables.id),
-            });
-            options.onSuccess?.(data, variables, context);
-        },
     });
 
     return mutation;
@@ -192,9 +145,13 @@ export function useAddInstitutionAuthority(
         onSuccess: (data, variables, context) => {
             // Invalidate authorities list
             queryClient.invalidateQueries({
-                queryKey: INSTITUTION_QUERY_KEYS.authorities(variables.id),
+                queryKey: queryKeys.institutions.authorities(variables.id),
             });
-            queryClient.invalidateQueries({ queryKey: ['authorities'] });
+            queryClient.invalidateQueries({ queryKey: queryKeys.authorities.all() });
+            // Also invalidate the specific institution detail
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.institutions.detail(variables.id),
+            });
             options.onSuccess?.(data, variables, context);
         },
     });
@@ -220,9 +177,13 @@ export function useRemoveInstitutionAuthority(
         onSuccess: (data, variables, context) => {
             // Invalidate authorities list
             queryClient.invalidateQueries({
-                queryKey: INSTITUTION_QUERY_KEYS.authorities(variables.id),
+                queryKey: queryKeys.institutions.authorities(variables.id),
             });
-            queryClient.invalidateQueries({ queryKey: ['authorities'] });
+            queryClient.invalidateQueries({ queryKey: queryKeys.authorities.all() });
+            // Also invalidate the specific institution detail
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.institutions.detail(variables.id),
+            });
             options.onSuccess?.(data, variables, context);
         },
     });

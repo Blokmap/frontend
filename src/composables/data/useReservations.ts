@@ -1,3 +1,4 @@
+import { useToast } from 'primevue/usetoast';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { toValue, type MaybeRef, computed } from 'vue';
 import {
@@ -15,6 +16,7 @@ import {
     type ReservationBody,
     type ReservationState,
 } from '@/domain/reservation';
+import { invalidateQueries } from './queryCache';
 import { queryKeys } from './queryKeys';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Time } from '@/utils/time';
@@ -37,20 +39,22 @@ export function useCreateReservation(
     options: CompMutationOptions = {},
 ): CompMutation<CreateReservationParams, Reservation> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate all profile reservations queries
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.reservations.all(),
-            });
-            // Also invalidate location reservations for this specific location
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.reservations.byLocation(variables.locationId, {
-                    inWeekOf: new Date(),
-                }),
-            });
+            // Invalidate all reservations and related location queries
+            invalidateQueries(queryClient, queryKeys.reservations.all());
+            invalidateQueries(queryClient, queryKeys.reservations.all(), data.id);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Reservatie aangemaakt',
+                    detail: 'De reservatie is succesvol aangemaakt.',
+                });
+            }
 
             options.onSuccess?.(data, variables, context);
         },
@@ -78,20 +82,21 @@ export function useCreateReservations(
     options: CompMutationOptions = {},
 ): CompMutation<CreateReservationsParams, Reservation[]> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all reservations
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.reservations.all(),
-            });
-            // Also invalidate location reservations for this specific location
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.reservations.byLocation(variables.locationId, {
-                    inWeekOf: new Date(),
-                }),
-            });
+            invalidateQueries(queryClient, queryKeys.reservations.all());
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Reservaties aangemaakt',
+                    detail: `${data.length} reservatie(s) zijn succesvol aangemaakt.`,
+                });
+            }
 
             options.onSuccess?.(data, variables, context);
         },
@@ -117,14 +122,21 @@ export function useDeleteReservation(
     options: CompMutationOptions = {},
 ): CompMutation<DeleteReservationParams> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate all profile reservations queries
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.reservations.all(),
-            });
+            // Invalidate all reservations queries
+            invalidateQueries(queryClient, queryKeys.reservations.all(), variables.reservationId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Reservatie verwijderd',
+                    detail: 'De reservatie is succesvol verwijderd.',
+                });
+            }
 
             options.onSuccess?.(data, variables, context);
         },
@@ -151,20 +163,21 @@ export function useDeleteReservations(
     options: CompMutationOptions = {},
 ): CompMutation<DeleteReservationsParams> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all reservations
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.reservations.all(),
-            });
-            // Also invalidate location reservations for this specific location
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.reservations.byLocation(variables.locationId, {
-                    inWeekOf: new Date(),
-                }),
-            });
+            invalidateQueries(queryClient, queryKeys.reservations.all());
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Reservaties verwijderd',
+                    detail: `${variables.reservationIds.length} reservatie(s) zijn succesvol verwijderd.`,
+                });
+            }
 
             options.onSuccess?.(data, variables, context);
         },
@@ -218,14 +231,21 @@ export function useConfirmReservation(
     options: CompMutationOptions = {},
 ): CompMutation<ConfirmReservationParams, Reservation> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate location reservations queries
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.reservations.all(),
-            });
+            // Invalidate reservations queries
+            invalidateQueries(queryClient, queryKeys.reservations.all(), variables.reservationId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Reservatie bevestigd',
+                    detail: 'De reservatie is succesvol bevestigd.',
+                });
+            }
 
             options.onSuccess?.(data, variables, context);
         },
@@ -254,14 +274,21 @@ export function useReservationState(
     options: CompMutationOptions = {},
 ): CompMutation<ReservationStateParams, Reservation> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all reservations
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.reservations.all(),
-            });
+            invalidateQueries(queryClient, queryKeys.reservations.all(), variables.reservationId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Reservatiestatus bijgewerkt',
+                    detail: 'De status van de reservatie is succesvol bijgewerkt.',
+                });
+            }
 
             options.onSuccess?.(data, variables, context);
         },

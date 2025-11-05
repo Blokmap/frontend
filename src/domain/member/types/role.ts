@@ -1,5 +1,13 @@
-import type { Role } from '../auth';
-import type { Profile } from '../profile';
+import type { Profile } from '@/domain/profile';
+
+export type Role = {
+    id: number;
+    name: string;
+    colour: string;
+    permissions: number;
+    createdAt: Date;
+    updatedAt: Date;
+};
 
 export type Membership = {
     id: number;

@@ -8,7 +8,7 @@ import ProfileAvatarDialog from '@/components/features/profile/avatar/ProfileAva
 // import ProfileEditDialog from '@/components/features/profile/edit/ProfileEditDialog.vue';
 import StatsCard from '@/components/features/profile/stats/StatsCard.vue';
 import StatsCardSkeleton from '@/components/features/profile/stats/StatsCardSkeleton.vue';
-import ProfileReservationsTable from '@/components/features/reservation/lists/ProfileReservationsTable.vue';
+import ProfileReservationsTable from '@/components/features/reservation/table/ProfileReservationsTable.vue';
 import {
     faCalendarDays,
     faChartLine,

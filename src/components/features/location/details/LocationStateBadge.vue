@@ -1,6 +1,8 @@
 <template>
     <Badge :severity="severities[location.state]" class="w-[90px]">
-        <div class="flex w-full items-center justify-around gap-1">
+        <div
+            class="flex w-full items-center justify-around gap-1"
+            v-tooltip.top="location.rejectedReason">
             <FontAwesomeIcon :icon="icons[location.state]" />
             <span>{{ capitalize(location.state) }}</span>
         </div>

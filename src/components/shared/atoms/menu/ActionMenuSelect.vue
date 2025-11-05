@@ -21,9 +21,6 @@ const emit = defineEmits<{
     change: [value: T];
 }>();
 
-/**
- * Get the currently selected option.
- */
 const selectedOption = computed<SelectOption<T> | undefined>(() => {
     return props.options.find((opt) => opt.value === props.value);
 });
@@ -35,21 +32,23 @@ const selectedOption = computed<SelectOption<T> | undefined>(() => {
     </label>
     <Select
         class="min-w-[200px]"
-        :model-value="value"
+        :model-value="selectedOption"
         :options="options"
         :loading="loading"
         :placeholder="placeholder"
         @update:model-value="emit('change', $event.value)">
         <template #option="{ option }">
-            <div class="flex items-center gap-2 text-sm">
-                <FontAwesomeIcon v-if="option.icon" :icon="option.icon" />
-                <span>{{ option.label }}</span>
-            </div>
+            <slot name="option" :option="option">
+                <div class="flex items-center gap-2 text-sm">
+                    <FontAwesomeIcon v-if="option.icon" :icon="option.icon" />
+                    <span>{{ option.label }}</span>
+                </div>
+            </slot>
         </template>
-        <template #value>
-            <div v-if="selectedOption" class="flex items-center gap-2 text-sm">
-                <FontAwesomeIcon v-if="selectedOption.icon" :icon="selectedOption.icon" />
-                <span>{{ selectedOption.label }}</span>
+        <template #value="{ value }">
+            <div class="flex items-center gap-2 text-sm text-slate-800">
+                <FontAwesomeIcon v-if="value.icon" :icon="value.icon" />
+                <span>{{ value.label }}</span>
             </div>
         </template>
     </Select>

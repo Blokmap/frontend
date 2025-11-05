@@ -14,9 +14,11 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useReadAuthority } from '@/composables/data/useAuthorities';
+import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
     authorityId: string;
+    profile: Profile;
 }>();
 
 const { data: authority, isLoading, error } = useReadAuthority(computed(() => +props.authorityId));
@@ -92,7 +94,7 @@ const tabs = computed<TabItem[]>(() => [
 
             <!-- Page Content -->
             <div class="tab-content">
-                <RouterView :authority="authority"></RouterView>
+                <RouterView :authority="authority" :profile="profile"></RouterView>
             </div>
         </template>
     </DashboardContent>

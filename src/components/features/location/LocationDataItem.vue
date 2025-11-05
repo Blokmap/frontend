@@ -13,9 +13,9 @@ import type { Location } from '@/domain/location';
 const props = withDefaults(
     defineProps<{
         location: Location;
-        actionIsPending?: boolean;
-        deleteIsPending?: boolean;
         showStatusChange?: boolean;
+        actionIsPending?: (id: number) => boolean;
+        deleteIsPending?: (id: number) => boolean;
     }>(),
     {
         showStatusChange: true,

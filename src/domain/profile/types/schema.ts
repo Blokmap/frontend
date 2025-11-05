@@ -3,7 +3,11 @@ import type { Image } from '@/domain/image';
 import type { Institution } from '@/domain/institution';
 import type { Time } from '@/utils/time';
 
-export type ProfileState = 'active' | 'disabled' | 'deleted';
+export enum ProfileState {
+    Active = 'Active',
+    Disabled = 'Disabled',
+    Deleted = 'Deleted',
+}
 
 export type Profile = {
     id: string;

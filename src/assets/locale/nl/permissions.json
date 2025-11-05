@@ -1,4 +1,9 @@
 {
+    "administrator": {
+        "name": "Beheerder",
+        "description": "Volledige toegang tot alle functies en instellingen"
+    },
+    "none": "Geen rechten",
     "location": {
         "Administrator": {
             "name": "Locatiebeheerder",

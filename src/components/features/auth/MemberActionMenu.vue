@@ -21,59 +21,57 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-    'select:role': [roleName: string];
-    'click:delete': [];
+    'select:role': [memberId: string, roleId: number];
+    'click:delete': [memberId: string];
 }>();
 
 const roleOptions = computed(() => {
-    return props.availableRoles.map((role) => ({
+    return props.availableRoles.map((role: Role) => ({
         label: role.name,
-        value: role.name,
+        value: role.id,
     }));
 });
 
 /**
  * Handle role selection change.
  *
- * @param roleName - The selected role name
+ * @param roleId - The selected role's ID
  */
-function onRoleSelect(roleName: string): void {
-    emit('select:role', roleName);
+function onRoleSelect(roleId: number): void {
+    emit('select:role', props.member.profile.id, roleId);
 }
 
 /**
  * Handle delete button click.
  */
 function onDeleteClick(): void {
-    emit('click:delete');
+    emit('click:delete', props.member.profile.id);
 }
 </script>
 
 <template>
     <ActionMenu :is-pending="isPending">
         <template #trigger="{ toggle }">
-            <slot name="trigger" :toggle="toggle" />
+            <slot name="trigger" :toggle="toggle"></slot>
         </template>
 
         <template #content>
             <ActionMenuSelect
                 v-if="showRoleSelect"
-                :value="member.role.name"
+                :value="member.role.id"
                 :options="roleOptions"
                 :loading="isPending"
                 label="Rol wijzigen"
                 placeholder="Selecteer rol"
-                @change="onRoleSelect" />
+                @change="onRoleSelect">
+            </ActionMenuSelect>
             <ActionMenuButton
                 v-if="showDelete"
                 :icon="faTrash"
                 label="Verwijderen"
                 destructive
-                @click="onDeleteClick" />
+                @click="onDeleteClick">
+            </ActionMenuButton>
         </template>
     </ActionMenu>
 </template>
-
-<style scoped>
-@reference '@/assets/styles/main.css';
-</style>

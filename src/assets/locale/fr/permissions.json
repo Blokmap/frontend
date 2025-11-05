@@ -1,4 +1,9 @@
 {
+    "administrator": {
+        "name": "Administrateur",
+        "description": "Accès complet à toutes les fonctionnalités et paramètres"
+    },
+    "none": "Aucune permission",
     "location": {
         "Administrator": {
             "name": "Administrateur",

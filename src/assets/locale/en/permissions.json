@@ -1,4 +1,9 @@
 {
+    "administrator": {
+        "name": "Administrator",
+        "description": "Full access to all features and settings"
+    },
+    "none": "No permissions",
     "location": {
         "Administrator": {
             "name": "Administrator",

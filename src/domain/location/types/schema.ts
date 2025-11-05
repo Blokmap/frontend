@@ -18,9 +18,9 @@ export type LocationFeatures = {
 };
 
 export enum LocationState {
-    Approved = 'approved',
-    Pending = 'pending',
-    Rejected = 'rejected',
+    Approved = 'Approved',
+    Pending = 'Pending',
+    Rejected = 'Rejected',
 }
 
 export type LocationStateBody = {

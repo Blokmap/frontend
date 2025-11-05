@@ -33,8 +33,8 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-    'select:state': [status: LocationState];
-    'click:delete': [];
+    'select:state': [id: number, status: LocationState, reason?: string];
+    'click:delete': [id: number];
 }>();
 
 const { t } = useI18n();
@@ -56,20 +56,22 @@ const statusOptions = computed(() => {
  * @param state - The selected location state
  */
 function onStateSelect(state: LocationState): void {
-    if (state === 'rejected') {
+    if (state === LocationState.Rejected) {
         showRejectionDialog.value = true;
         return;
     }
-    emit('select:state', state);
+
+    emit('select:state', props.location.id, state);
 }
 
 /**
  * Confirm location rejection and emit status change.
  */
-function onConfirmRejection(): void {
-    if (props.location.state !== 'rejected') {
-        emit('select:state', LocationState.Rejected);
+function onConfirmRejection(reason: string): void {
+    if (props.location.state !== LocationState.Rejected) {
+        emit('select:state', props.location.id, LocationState.Rejected, reason);
     }
+
     showRejectionDialog.value = false;
 }
 
@@ -84,7 +86,7 @@ function onCancelRejection(): void {
  * Confirm location deletion and emit delete event.
  */
 function onConfirmDeletion(): void {
-    emit('click:delete');
+    emit('click:delete', props.location.id);
 }
 
 /**
@@ -137,56 +139,66 @@ watch(
         <template #navigation>
             <ActionMenuButton
                 v-if="showEdit"
-                :icon="faEdit"
                 label="Beheren"
+                :icon="faEdit"
                 :to="{
                     name: 'dashboard.locations.detail.info',
                     params: { locationId: props.location.id },
                 }">
             </ActionMenuButton>
 
-            <ActionMenuButton v-if="showReservations" :icon="faCalendarAlt" label="Reservaties" />
+            <ActionMenuButton
+                v-if="showReservations"
+                label="Reservaties"
+                :icon="faCalendarAlt"
+                :to="{
+                    name: 'dashboard.locations.detail.reservations',
+                    params: { locationId: props.location.id },
+                }">
+            </ActionMenuButton>
 
             <ActionMenuButton
                 v-if="showDelete"
-                :icon="faTrashCan"
                 label="Verwijderen"
-                destructive
-                @click="onDeleteClick">
+                :icon="faTrashCan"
+                @click="onDeleteClick"
+                destructive>
             </ActionMenuButton>
         </template>
     </ActionMenu>
 
-    <LocationConfirmationDialog
-        v-if="showStateSelect"
-        v-model:visible="showRejectionDialog"
-        :location="location"
-        @click:confirm="onConfirmRejection"
-        @click:cancel="onCancelRejection">
-    </LocationConfirmationDialog>
+    <Teleport to="body">
+        <LocationConfirmationDialog
+            v-if="showStateSelect"
+            v-model:visible="showRejectionDialog"
+            :location="location"
+            @click:confirm="onConfirmRejection"
+            @click:cancel="onCancelRejection">
+        </LocationConfirmationDialog>
 
-    <ConfirmDialog
-        v-model:visible="showDeleteDialog"
-        title="Locatie verwijderen"
-        confirm-label="Verwijderen"
-        :loading="isPending"
-        @click:confirm="onConfirmDeletion"
-        @click:cancel="onCancelDeletion"
-        destructive>
-        <template #content>
-            <p class="text-gray-600">
-                Weet je zeker dat je <strong>"{{ location.name }}"</strong> wilt verwijderen? Deze
-                actie kan niet ongedaan worden gemaakt. Naast de locatie wordt ook het volgende
-                wordt verwijderd:
-            </p>
-            <ul class="list-inside list-disc space-y-1 ps-3 text-gray-600">
-                <li>Alle bijbehorende <strong>afbeeldingen</strong></li>
-                <li>Alle bijbehorende <strong>reservaties</strong></li>
-                <li>Alle bijbehorende <strong>openingstijden</strong></li>
-                <li>Alle bijbehorende <strong>reviews</strong></li>
-            </ul>
-        </template>
-    </ConfirmDialog>
+        <ConfirmDialog
+            v-model:visible="showDeleteDialog"
+            title="Locatie verwijderen"
+            confirm-label="Verwijderen"
+            :loading="isPending"
+            @click:confirm="onConfirmDeletion"
+            @click:cancel="onCancelDeletion"
+            destructive>
+            <template #content>
+                <p class="text-gray-600">
+                    Weet je zeker dat je <strong>"{{ location.name }}"</strong> wilt verwijderen?
+                    Deze actie kan niet ongedaan worden gemaakt. Naast de locatie wordt ook het
+                    volgende wordt verwijderd:
+                </p>
+                <ul class="list-inside list-disc space-y-1 ps-3 text-gray-600">
+                    <li>Alle bijbehorende <strong>afbeeldingen</strong></li>
+                    <li>Alle bijbehorende <strong>reservaties</strong></li>
+                    <li>Alle bijbehorende <strong>openingstijden</strong></li>
+                    <li>Alle bijbehorende <strong>reviews</strong></li>
+                </ul>
+            </template>
+        </ConfirmDialog>
+    </Teleport>
 </template>
 
 <style scoped>

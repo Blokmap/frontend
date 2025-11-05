@@ -1,7 +1,7 @@
 export enum WebsocketChannelName {
-    Reservations = 'reservations',
-    Occupancy = 'occupancy',
-    Blokmap = 'blokmap',
+    Reservations = 'Reservations',
+    Occupancy = 'Occupancy',
+    Blokmap = 'Blokmap',
 }
 
 export type WebsocketChannel = {

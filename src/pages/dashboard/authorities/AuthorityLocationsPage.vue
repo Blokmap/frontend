@@ -13,30 +13,51 @@ import {
 } from '@/composables/data/useLocations';
 import type { Authority } from '@/domain/authority';
 import type { LocationState } from '@/domain/location';
+import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
     authority: Authority;
+    profile: Profile;
 }>();
 
 const { data: locations, isLoading } = useReadAuthorityLocations(
     computed(() => props.authority.id),
 );
 
-const { mutateAsync: updateLocation, isPending: isUpdatingLocation } = useUpdateLocationState();
-const { mutateAsync: deleteLocation, isPending: isDeletingLocation } = useDeleteLocation();
+const {
+    mutateAsync: updateLocationState,
+    isPending: isUpdatingLocation,
+    variables: updateVariables,
+} = useUpdateLocationState();
 
-const isPendingUpdate = computed(() => isUpdatingLocation.value || isDeletingLocation.value);
+const {
+    mutateAsync: deleteLocation,
+    isPending: isDeletingLocation,
+    variables: deleteVariables,
+} = useDeleteLocation();
 
+/**
+ * Check if a location is currently being updated.
+ * @param locationId
+ */
+function isLocationPending(locationId: number): boolean {
+    const pendingUpdate =
+        isUpdatingLocation.value && updateVariables.value?.locationId === locationId;
+    const pendingDelete = isDeletingLocation.value && deleteVariables.value === locationId;
+    return pendingUpdate || pendingDelete;
+}
 /**
  * Handle state selection for a location.
  *
  * @param locationId - ID of the location
  * @param state - New state to set
+ * @param reason - Optional reason for the state change
  */
-function onStateSelect(locationId: number, state: LocationState) {
-    updateLocation({
+function onStateSelect(locationId: number, state: LocationState, reason?: string) {
+    updateLocationState({
         locationId,
         state,
+        reason,
     });
 }
 
@@ -65,9 +86,10 @@ function onDeleteClick(locationId: number) {
                     <template #actions>
                         <LocationActionMenu
                             :location="item"
-                            :is-pending="isPendingUpdate"
-                            @select:state="onStateSelect(item.id, $event)"
-                            @click:delete="onDeleteClick(item.id)">
+                            :is-pending="isLocationPending(item.id)"
+                            :show-state-select="profile.isAdmin"
+                            @select:state="onStateSelect"
+                            @click:delete="onDeleteClick">
                         </LocationActionMenu>
                     </template>
                 </LocationDataItem>

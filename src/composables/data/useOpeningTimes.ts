@@ -1,3 +1,4 @@
+import { useToast } from 'primevue/usetoast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
 import {
@@ -10,6 +11,7 @@ import {
     type OpeningTimeBody,
     type OpeningTimeFilter,
 } from '@/domain/openings';
+import { invalidateQueries } from './queryCache';
 import { queryKeys } from './queryKeys';
 import type { CompMutation, CompMutationOptions, CompQuery } from '@/types';
 import type { AxiosError } from 'axios';
@@ -55,19 +57,22 @@ export function useCreateOpeningTimes(
     options: CompMutationOptions = {},
 ): CompMutation<CreateOpeningTimesParams, OpeningTime[]> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate all opening times queries for this location
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.openingTimes.all(variables.locationId),
-            });
+            // Invalidate all opening times and location queries
+            invalidateQueries(queryClient, queryKeys.openingTimes.all(variables.locationId));
+            invalidateQueries(queryClient, queryKeys.locations.all(), variables.locationId);
 
-            // Also invalidate the location query to update embedded opening times
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.locations.detail(variables.locationId),
-            });
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Openingstijden aangemaakt',
+                    detail: `${data.length} openingstijd(en) zijn succesvol aangemaakt.`,
+                });
+            }
 
             options.onSuccess?.(data, variables, context);
         },
@@ -96,18 +101,23 @@ export function useUpdateOpeningTime(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateOpeningTimeParams, OpeningTime> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate all opening times queries for this location
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.openingTimes.all(variables.locationId),
-            });
-            // Also invalidate the location query to update embedded opening times
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.locations.detail(variables.locationId),
-            });
+            // Invalidate all opening times and location queries
+            invalidateQueries(queryClient, queryKeys.openingTimes.all(variables.locationId));
+            invalidateQueries(queryClient, queryKeys.locations.all(), variables.locationId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Openingstijd bijgewerkt',
+                    detail: 'De openingstijd is succesvol bijgewerkt.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: ({ locationId, openingTimeId, opening, sequence }: UpdateOpeningTimeParams) => {
@@ -134,18 +144,23 @@ export function useDeleteOpeningTime(
     options: CompMutationOptions = {},
 ): CompMutation<DeleteOpeningTimeParams, void> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate all opening times queries for this location
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.openingTimes.all(variables.locationId),
-            });
-            // Also invalidate the location query to update embedded opening times
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.locations.detail(variables.locationId),
-            });
+            // Invalidate all opening times and location queries
+            invalidateQueries(queryClient, queryKeys.openingTimes.all(variables.locationId));
+            invalidateQueries(queryClient, queryKeys.locations.all(), variables.locationId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Openingstijd verwijderd',
+                    detail: 'De openingstijd is succesvol verwijderd.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: ({ locationId, openingTimeId, sequence }: DeleteOpeningTimeParams) => {
@@ -166,18 +181,23 @@ export function useDeleteAllOpeningTimes(
     options: CompMutationOptions = {},
 ): CompMutation<number, void> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate all opening times queries for this location
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.openingTimes.all(variables),
-            });
-            // Also invalidate the location query to update embedded opening times
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.locations.detail(variables),
-            });
+            // Invalidate all opening times and location queries
+            invalidateQueries(queryClient, queryKeys.openingTimes.all(variables));
+            invalidateQueries(queryClient, queryKeys.locations.all(), variables);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Alle openingstijden verwijderd',
+                    detail: 'Alle openingstijden van deze locatie zijn succesvol verwijderd.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: deleteOpeningTimes,

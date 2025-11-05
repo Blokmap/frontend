@@ -10,7 +10,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    'click:confirm': [];
+    'click:confirm': [reason: string];
     'click:cancel': [];
 }>();
 
@@ -32,7 +32,7 @@ watch(
 );
 
 async function onConfirm() {
-    emit('click:confirm');
+    emit('click:confirm', reason.value);
 }
 
 function onCancel() {

@@ -6,7 +6,7 @@ import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
-import { faCircleUser } from '@fortawesome/free-solid-svg-icons';
+import { faUserTag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useReadAuthorityRoles } from '@/composables/data/useAuth';
@@ -49,7 +49,7 @@ function onRemoveMember(profileId: string): void {
                         params: { authorityId },
                     }">
                     <PageHeaderButton severity="contrast" label="Rollen beheren">
-                        <FontAwesomeIcon :icon="faCircleUser" />
+                        <FontAwesomeIcon :icon="faUserTag" />
                     </PageHeaderButton>
                 </RouterLink>
             </template>

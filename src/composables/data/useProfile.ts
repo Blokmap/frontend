@@ -13,15 +13,16 @@ import {
     readProfile,
     scanProfile,
 } from '@/domain/profile';
+import {
+    type Profile,
+    type ProfileStats,
+    type ProfileFilter,
+    ProfileState,
+    type ProfileScanBody,
+} from '@/domain/profile';
+import { invalidateQueries } from './queryCache';
 import { queryKeys } from './queryKeys';
 
-import type {
-    Profile,
-    ProfileStats,
-    ProfileFilter,
-    ProfileState,
-    ProfileScanBody,
-} from '@/domain/profile';
 import type { Reservation } from '@/domain/reservation';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
@@ -104,14 +105,22 @@ export function useUpdateProfileAvatar(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateAvatarParams> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate the specific profile query
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.profiles.detail(variables.profileId),
-            });
+            invalidateQueries(queryClient, queryKeys.profiles.all(), variables.profileId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Avatar bijgewerkt',
+                    detail: 'De profielfoto is succesvol bijgewerkt.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: async ({ profileId, file }: UpdateAvatarParams) => {
@@ -137,12 +146,22 @@ export function useUpdateProfile(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateProfileParams> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all profile queries
-            queryClient.invalidateQueries({ queryKey: queryKeys.profiles.all() });
+            invalidateQueries(queryClient, queryKeys.profiles.all(), variables.profileId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Profiel bijgewerkt',
+                    detail: 'Het profiel is succesvol bijgewerkt.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: async ({ profileId, profileData }: UpdateProfileParams) => {
@@ -184,14 +203,22 @@ export function useScanProfile(
  */
 export function useDeleteProfileAvatar(options: CompMutationOptions = {}): CompMutation<string> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate the specific profile query
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.profiles.detail(variables),
-            });
+            invalidateQueries(queryClient, queryKeys.profiles.all(), variables);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Avatar verwijderd',
+                    detail: 'De profielfoto is succesvol verwijderd.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: deleteProfileAvatar,
@@ -221,12 +248,11 @@ export function useUpdateProfileState(
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.profiles.detail(variables.profileId),
-            });
+            invalidateQueries(queryClient, queryKeys.profiles.all(), variables.profileId);
 
             if (!options.disableToasts) {
-                const statusLabel = variables.state === 'disabled' ? 'geblokkeerd' : 'geactiveerd';
+                const statusLabel =
+                    variables.state === ProfileState.Disabled ? 'geblokkeerd' : 'geactiveerd';
 
                 toast.add({
                     severity: 'success',
@@ -238,9 +264,9 @@ export function useUpdateProfileState(
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: ({ profileId, state }: ProfileStateParams) => {
-            if (state === 'disabled') {
+            if (state === ProfileState.Disabled) {
                 return blockProfile(profileId);
-            } else if (state === 'active') {
+            } else if (state === ProfileState.Active) {
                 return unblockProfile(profileId);
             }
 

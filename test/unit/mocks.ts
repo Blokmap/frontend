@@ -1,7 +1,7 @@
 import type { Image, ImageBody } from '@/domain/image';
 import { LocationState, type Location, type LocationBody } from '@/domain/location';
 import type { OpeningTime, OpeningTimeBody } from '@/domain/openings';
-import type { Profile } from '@/domain/profile';
+import { ProfileState, type Profile } from '@/domain/profile';
 import type { Reservation, ReservationState } from '@/domain/reservation';
 import type { TimeSlot, TimeSlottable } from '@/domain/calendar';
 import type { Translation } from '@/domain/translation';
@@ -37,7 +37,7 @@ export function createMockProfile(overrides?: Partial<Profile>): Profile {
         authorities: [],
         createdAt: new Date('2024-01-01'),
         isAdmin: false,
-        state: 'active',
+        state: ProfileState.Active,
         ...overrides,
     };
 }

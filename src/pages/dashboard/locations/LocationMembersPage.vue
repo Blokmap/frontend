@@ -2,18 +2,19 @@
 import Paginator from 'primevue/paginator';
 import MemberActionMenu from '@/components/features/auth/MemberActionMenu.vue';
 import RoleBadge from '@/components/features/auth/roles/RoleBadge.vue';
-import ProfileTableCell from '@/components/features/profile/ProfileTableCell.vue';
-import Table from '@/components/shared/molecules/table/Table.vue';
-import TableCell from '@/components/shared/molecules/table/TableCell.vue';
+import MembersTable from '@/components/features/member/MembersTable.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
-import { faUserPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faUserPlus, faUserTag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useReadLocationRoles } from '@/composables/data/useAuth';
-import { useReadLocationMembers } from '@/composables/data/useMembers';
+import {
+    useDeleteLocationMember,
+    useReadLocationMembers,
+    useUpdateLocationMember,
+} from '@/composables/data/useMembers';
 import { usePagination } from '@/composables/data/usePagination';
 import type { Location } from '@/domain/location';
 
@@ -21,32 +22,41 @@ const props = defineProps<{
     location: Location;
 }>();
 
-const { locale } = useI18n();
-
-const filters = ref({
+const pagination = ref({
     page: 1,
     perPage: 25,
 });
 
-const { onPageChange, first } = usePagination(filters);
+const { onPageChange, first } = usePagination(pagination);
 
 const { data: members, isLoading } = useReadLocationMembers(computed(() => props.location.id));
 const { data: roles } = useReadLocationRoles(computed(() => props.location.id));
 
+const { mutate: updateLocationMember } = useUpdateLocationMember();
+const { mutate: deleteLocationMember } = useDeleteLocationMember();
+
 /**
  * Handle changing a member's role.
+ * @param memberId - The ID of the member
+ * @param roleID - The new role's ID
  */
-function onChangeRole(profileId: string, roleName: string): void {
-    // TODO: Implement role change
-    console.log('Change role for', profileId, 'to', roleName);
+function onSelectRole(memberId: string, roleId: number): void {
+    updateLocationMember({
+        id: props.location.id,
+        memberId,
+        body: { roleId },
+    });
 }
 
 /**
  * Handle removing a member.
+ * @param memberId - The ID of the member to remove
  */
-function onRemoveMember(profileId: string): void {
-    // TODO: Implement member removal
-    console.log('Remove member', profileId);
+function onDeleteClick(memberId: string): void {
+    deleteLocationMember({
+        id: props.location.id,
+        memberId,
+    });
 }
 </script>
 
@@ -61,7 +71,7 @@ function onRemoveMember(profileId: string): void {
                         params: { locationId: location.id },
                     }">
                     <PageHeaderButton severity="contrast" label="Rollen Beheren">
-                        <FontAwesomeIcon :icon="faUsers" />
+                        <FontAwesomeIcon :icon="faUserTag" />
                     </PageHeaderButton>
                 </RouterLink>
                 <PageHeaderButton severity="contrast" label="Beheerder Toevoegen">
@@ -71,38 +81,20 @@ function onRemoveMember(profileId: string): void {
         </DashboardDetailHeader>
 
         <!-- Members Table -->
-        <Table :value="members?.data" :loading="isLoading">
-            <template #row="{ data: member }">
-                <TableCell column="Profiel">
-                    <ProfileTableCell :profile="member.profile" />
-                </TableCell>
-
-                <TableCell column="Rol">
-                    <RoleBadge :role="member.role" type="location" />
-                </TableCell>
-
-                <TableCell column="Toegevoegd op">
-                    {{
-                        member.role.createdAt.toLocaleDateString(locale, {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                        })
-                    }}
-                </TableCell>
-
-                <TableCell column="Acties">
-                    <MemberActionMenu
-                        :member="member"
-                        :available-roles="roles || []"
-                        @change:role="onChangeRole"
-                        @remove="onRemoveMember">
-                    </MemberActionMenu>
-                </TableCell>
+        <MembersTable :members="members?.data" :is-loading="isLoading">
+            <template #role="{ member }">
+                <RoleBadge :role="member.role" type="location" />
             </template>
-        </Table>
+            <template #actions="{ member }">
+                <MemberActionMenu
+                    v-if="roles"
+                    :member="member"
+                    :available-roles="roles"
+                    @select:role="onSelectRole"
+                    @click:delete="onDeleteClick">
+                </MemberActionMenu>
+            </template>
+        </MembersTable>
 
         <Paginator
             v-if="members?.data?.length"

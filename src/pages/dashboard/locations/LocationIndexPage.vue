@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Paginator from 'primevue/paginator';
+import LocationActionMenu from '@/components/features/location/LocationActionMenu.vue';
 import LocationDataItem from '@/components/features/location/LocationDataItem.vue';
 import LocationStateDropdown from '@/components/features/location/forms/LocationStateSelect.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
@@ -21,14 +22,12 @@ import {
     useUpdateLocationState,
 } from '@/composables/data/useLocations';
 import { usePagination } from '@/composables/data/usePagination';
-import { useToast } from '@/composables/store/useToast';
 import { abbreviateCount } from '@/utils/format';
 import type { LocationFilter, LocationState } from '@/domain/location';
 import type { Profile } from '@/domain/profile';
 
 defineProps<{ profile: Profile }>();
 
-const toast = useToast();
 const { t } = useI18n();
 
 const searchQuery = ref<string>('');
@@ -42,7 +41,6 @@ const filters = ref<LocationFilter>({
 
 const {
     data: locations,
-    refetch,
     isFetching,
     isLoading,
 } = useReadLocations(filters, {
@@ -53,47 +51,13 @@ const {
     mutateAsync: updateLocationState,
     isPending: isUpdatingLocation,
     variables: updateVariables,
-} = useUpdateLocationState({
-    onSuccess: async () => {
-        await refetch();
-        toast.add({
-            severity: 'success',
-            summary: t('domains.locations.success.statusUpdated'),
-            detail: t('domains.locations.success.statusUpdatedDetail'),
-        });
-    },
-    onError: (error: any) => {
-        const message = error.message || t('domains.locations.errors.statusUpdateFailed');
-        toast.add({
-            severity: 'error',
-            summary: t('domains.locations.errors.statusUpdateFailed'),
-            detail: message,
-        });
-    },
-});
+} = useUpdateLocationState();
 
 const {
     mutateAsync: deleteLocation,
     isPending: isDeletingLocation,
     variables: deleteVariables,
-} = useDeleteLocation({
-    onSuccess: async () => {
-        await refetch();
-        toast.add({
-            severity: 'success',
-            summary: t('domains.locations.success.deleted'),
-            detail: t('domains.locations.success.deletedDetail'),
-        });
-    },
-    onError: (error: any) => {
-        const message = error.message || t('domains.locations.errors.deleteFailed');
-        toast.add({
-            severity: 'error',
-            summary: t('domains.locations.errors.deleteFailed'),
-            detail: message,
-        });
-    },
-});
+} = useDeleteLocation();
 
 const { data: counts } = useAdminCounts();
 const { onPageChange, resetPage, first } = usePagination(filters);
@@ -114,24 +78,20 @@ const onSearchChange = useDebounceFn(() => {
  * @param locationId
  */
 function isLocationPending(locationId: number): boolean {
-    return isUpdatingLocation.value && updateVariables.value?.locationId === locationId;
-}
+    const isUpdating = isUpdatingLocation.value && updateVariables.value?.locationId === locationId;
+    const isDeleting = isDeletingLocation.value && deleteVariables.value === locationId;
 
-/**
- * Check if a location is currently being deleted.
- * @param locationId
- */
-function isLocationDeleting(locationId: number): boolean {
-    return isDeletingLocation.value && deleteVariables.value === locationId;
+    return isUpdating || isDeleting;
 }
 
 /**
  * Handle changing the status of a location.
  * @param locationId The ID of the location to update.
  * @param status The new status to set.
+ * @param reason Optional reason for status change.
  */
-function onChangeLocationStatus(locationId: number, status: LocationState) {
-    updateLocationState({ locationId, state: status });
+function onUpdateLocationState(locationId: number, status: LocationState, reason?: string) {
+    updateLocationState({ locationId, state: status, reason });
 }
 
 /**
@@ -181,13 +141,14 @@ function onDeleteLocation(locationId: number) {
 
             <DataList :items="locations?.data" :loading="isLoading">
                 <template #item="{ item: location }">
-                    <LocationDataItem
-                        :location="location"
-                        :action-is-pending="isLocationPending(location.id)"
-                        :delete-is-pending="isLocationDeleting(location.id)"
-                        :show-status-change="true"
-                        @click:delete="onDeleteLocation(location.id)"
-                        @update:state="onChangeLocationStatus">
+                    <LocationDataItem :location="location" :is-pending="isLocationPending">
+                        <template #actions>
+                            <LocationActionMenu
+                                :location="location"
+                                @click:delete="onDeleteLocation"
+                                @select:state="onUpdateLocationState">
+                            </LocationActionMenu>
+                        </template>
                     </LocationDataItem>
                 </template>
             </DataList>

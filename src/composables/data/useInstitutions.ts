@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { useToast } from 'primevue';
 import { toValue, type MaybeRefOrGetter } from 'vue';
 import {
     addInstitutionAuthority,
@@ -11,6 +12,7 @@ import {
     type InstitutionFilter,
     type InstitutionBody,
 } from '@/domain/institution';
+import { invalidateQueries } from './queryCache';
 import { queryKeys } from './queryKeys';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
 import type { Paginated } from '@/utils/pagination';
@@ -79,14 +81,21 @@ export function useCreateInstitution(
     options: CompMutationOptions = {},
 ): CompMutation<InstitutionBody> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all institution lists
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.institutions.lists(),
-            });
+            invalidateQueries(queryClient, queryKeys.institutions.all());
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Instelling aangemaakt',
+                    detail: 'De nieuwe instelling is succesvol aangemaakt.',
+                });
+            }
 
             options.onSuccess?.(data, variables, context);
         },
@@ -106,18 +115,21 @@ export function useUpdateInstitution(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateInstitutionParams> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            // Invalidate the specific institution
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.institutions.detail(variables.id),
-            });
-            // Invalidate all institution lists
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.institutions.lists(),
-            });
+            // Invalidate the specific institution and all lists containing it
+            invalidateQueries(queryClient, queryKeys.institutions.all(), variables.id);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Instelling bijgewerkt',
+                    detail: 'De instelling is succesvol bijgewerkt.',
+                });
+            }
 
             options.onSuccess?.(data, variables, context);
         },
@@ -137,21 +149,25 @@ export function useAddInstitutionAuthority(
     options: CompMutationOptions = {},
 ): CompMutation<AddInstitutionAuthorityParams> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         mutationFn: ({ id, authorityId }: AddInstitutionAuthorityParams) =>
             addInstitutionAuthority(id, authorityId),
         onSuccess: (data, variables, context) => {
-            // Invalidate authorities list
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.institutions.authorities(variables.id),
-            });
-            queryClient.invalidateQueries({ queryKey: queryKeys.authorities.all() });
-            // Also invalidate the specific institution detail
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.institutions.detail(variables.id),
-            });
+            // Invalidate institution and authority queries
+            invalidateQueries(queryClient, queryKeys.institutions.all(), variables.id);
+            invalidateQueries(queryClient, queryKeys.authorities.all(), variables.authorityId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Overheid toegevoegd',
+                    detail: 'De overheid is succesvol toegevoegd aan de instelling.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
     });
@@ -169,21 +185,25 @@ export function useRemoveInstitutionAuthority(
     options: CompMutationOptions = {},
 ): CompMutation<RemoveInstitutionAuthorityParams> {
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         mutationFn: ({ id, authorityId }: RemoveInstitutionAuthorityParams) =>
             removeInstitutionAuthority(id, authorityId),
         onSuccess: (data, variables, context) => {
-            // Invalidate authorities list
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.institutions.authorities(variables.id),
-            });
-            queryClient.invalidateQueries({ queryKey: queryKeys.authorities.all() });
-            // Also invalidate the specific institution detail
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.institutions.detail(variables.id),
-            });
+            // Invalidate institution and authority queries
+            invalidateQueries(queryClient, queryKeys.institutions.all(), variables.id);
+            invalidateQueries(queryClient, queryKeys.authorities.all(), variables.authorityId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Overheid verwijderd',
+                    detail: 'De overheid is succesvol verwijderd van de instelling.',
+                });
+            }
+
             options.onSuccess?.(data, variables, context);
         },
     });

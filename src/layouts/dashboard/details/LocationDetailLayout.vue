@@ -51,7 +51,7 @@ const tabs = computed<TabItem[]>(() => [
         align: 'right',
         icon: faUsersGear,
         route: {
-            name: 'dashboard.locations.detail.access',
+            name: 'dashboard.locations.detail.members',
             params: { locationId: props.locationId },
         },
     },

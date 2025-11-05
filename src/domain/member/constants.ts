@@ -1,14 +1,15 @@
-import google from '@/assets/img/logos/idps/google.svg';
-import { LocationPermission, AuthorityPermission, InstitutionPermission } from './types/permission';
-import type { Idp } from '@/domain/auth';
+import {
+    LocationPermission,
+    AuthorityPermission,
+    InstitutionPermission,
+    type PermissionType,
+} from './types/permission';
 
-export const AUTH_IDPS: Idp[] = [
-    {
-        id: 'google',
-        name: 'Google',
-        logo: google,
-    },
-];
+/**
+ * The administrator permission bit flag (1 << 0 = 0b1).
+ * When a role has this permission, it has full access to all features.
+ */
+export const ADMINISTRATOR_PERMISSION = 0b1;
 
 export const LOCATION_PERMISSIONS = {
     Administrator: LocationPermission.Administrator,
@@ -31,4 +32,10 @@ export const INSTITUTION_PERMISSIONS = {
     AddAuthority: InstitutionPermission.AddAuthority,
     DeleteAuthority: InstitutionPermission.DeleteAuthority,
     ManageMembers: InstitutionPermission.ManageMembers,
+} as const;
+
+export const PERMISSIONS: Record<PermissionType, Record<string, number>> = {
+    location: LOCATION_PERMISSIONS,
+    authority: AUTHORITY_PERMISSIONS,
+    institution: INSTITUTION_PERMISSIONS,
 } as const;

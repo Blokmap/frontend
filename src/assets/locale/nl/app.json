@@ -25,9 +25,9 @@
             "name": "Locatie | Locaties",
             "spot": "Plek | Plekken",
             "state": {
-                "approved": "Goedgekeurd",
-                "pending": "In afwachting",
-                "rejected": "Afgewezen"
+                "Approved": "Goedgekeurd",
+                "Pending": "In afwachting",
+                "Rejected": "Afgewezen"
             },
             "success": {
                 "statusUpdated": "Status Bijgewerkt",
@@ -43,11 +43,11 @@
         "reservations": {
             "name": "Reservatie | Reservaties",
             "state": {
-                "pending": "In afwachting",
-                "created": "Goedgekeurd",
-                "rejected": "Afgewezen",
-                "present": "Aanwezig",
-                "absent": "Afwezig"
+                "Pending": "In afwachting",
+                "Created": "Goedgekeurd",
+                "Rejected": "Afgewezen",
+                "Present": "Aanwezig",
+                "Absent": "Afwezig"
             }
         },
         "openings": {

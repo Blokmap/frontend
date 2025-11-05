@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { useToast } from 'primevue';
 import { type MaybeRef, toValue } from 'vue';
 import {
     addAuthorityMember,
@@ -14,6 +13,7 @@ import {
     type Membership,
     type MembershipBody,
 } from '@/domain/member';
+import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
 import { queryKeys } from './queryKeys';
 import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
@@ -22,23 +22,18 @@ import type { AxiosError } from 'axios';
 
 export type AddMemberParams = {
     id: number;
-    profileId: string;
+    memberId: string;
 };
 
-export type RemoveMemberParams = {
+export type UpdateMemberParams = {
     id: number;
-    profileId: string;
-};
-
-export type UpdateLocationMemberParams = {
-    locationId: number;
-    profileId: number;
+    memberId: string;
     body: MembershipBody;
 };
 
-export type DeleteLocationMemberParams = {
-    locationId: number;
-    memberId: number;
+export type DeleteMemberParams = {
+    id: number;
+    memberId: string;
 };
 
 /**
@@ -100,8 +95,9 @@ export function useAddMemberToAuthority(
 
     const mutation = useMutation({
         ...options,
-        mutationFn: ({ id, profileId }) => addAuthorityMember(id, profileId),
+        mutationFn: ({ id, memberId }) => addAuthorityMember(id, memberId),
         onSuccess: (data, variables, context) => {
+            // Invalidate all member queries on the authority
             invalidateQueries(queryClient, queryKeys.members.byAuthority(variables.id));
 
             if (!options.disableToasts) {
@@ -122,16 +118,17 @@ export function useAddMemberToAuthority(
 /**
  * Composable to remove a member from an authority.
  */
-export function useRemoveMemberFromAuthority(
+export function useDeleteMemberFromAuthority(
     options: CompMutationOptions = {},
-): CompMutation<RemoveMemberParams> {
+): CompMutation<DeleteMemberParams> {
     const queryClient = useQueryClient();
     const toast = useToast();
 
     const mutation = useMutation({
         ...options,
-        mutationFn: ({ id, profileId }) => removeAuthorityMember(id, profileId),
+        mutationFn: ({ id, memberId }) => removeAuthorityMember(id, memberId),
         onSuccess: (data, variables, context) => {
+            // Invalidate all member queries in the authority
             invalidateQueries(queryClient, queryKeys.members.byAuthority(variables.id));
 
             if (!options.disableToasts) {
@@ -160,19 +157,16 @@ export function useAddMemberToInstitution(
 
     const mutation = useMutation({
         ...options,
-        mutationFn: ({ id, profileId }) => addInstitutionMember(id, profileId),
+        mutationFn: ({ id, memberId }) => addInstitutionMember(id, memberId),
         onSuccess: (data, variables, context) => {
+            // Invalidate all member queries on the institution
             invalidateQueries(queryClient, queryKeys.members.byInstitution(variables.id));
-            // Also invalidate the specific institution detail
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.institutions.detail(variables.id),
-            });
 
             if (!options.disableToasts) {
                 toast.add({
                     severity: 'success',
-                    summary: 'Success',
-                    detail: 'Member added successfully.',
+                    summary: 'Lid toegevoegd',
+                    detail: 'Het lid is succesvol toegevoegd aan de instelling.',
                 });
             }
 
@@ -186,27 +180,24 @@ export function useAddMemberToInstitution(
 /**
  * Composable to remove a member from an institution.
  */
-export function useRemoveMemberFromInstitution(
+export function useDeleteMemberFromInstitution(
     options: CompMutationOptions = {},
-): CompMutation<RemoveMemberParams> {
+): CompMutation<DeleteMemberParams> {
     const queryClient = useQueryClient();
     const toast = useToast();
 
     const mutation = useMutation({
         ...options,
-        mutationFn: ({ id, profileId }) => removeInstitutionMember(id, profileId),
+        mutationFn: ({ id, memberId }) => removeInstitutionMember(id, memberId),
         onSuccess: (data, variables, context) => {
+            // Invalidate all member queries on the institution
             invalidateQueries(queryClient, queryKeys.members.byInstitution(variables.id));
-            // Also invalidate the specific institution detail
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.institutions.detail(variables.id),
-            });
 
             if (!options.disableToasts) {
                 toast.add({
                     severity: 'success',
-                    summary: 'Success',
-                    detail: 'Member removed successfully.',
+                    summary: 'Lid verwijderd',
+                    detail: 'Het lid is succesvol verwijderd van de instelling.',
                 });
             }
 
@@ -222,22 +213,22 @@ export function useRemoveMemberFromInstitution(
  */
 export function useUpdateLocationMember(
     options: CompMutationOptions = {},
-): CompMutation<UpdateLocationMemberParams> {
+): CompMutation<UpdateMemberParams> {
     const queryClient = useQueryClient();
     const toast = useToast();
 
     const mutation = useMutation({
         ...options,
-        mutationFn: ({ locationId, profileId, body }) =>
-            updateLocationMember(locationId, profileId, body),
+        mutationFn: ({ id, memberId, body }) => updateLocationMember(id, memberId, body),
         onSuccess: (data, variables, context) => {
-            invalidateQueries(queryClient, queryKeys.members.byLocation(variables.locationId));
+            // Invalidate all member queries on the location
+            invalidateQueries(queryClient, queryKeys.members.byLocation(variables.id));
 
             if (!options.disableToasts) {
                 toast.add({
                     severity: 'success',
                     summary: 'Success',
-                    detail: 'Member updated successfully.',
+                    detail: 'Member role updated successfully.',
                 });
             }
 
@@ -253,15 +244,16 @@ export function useUpdateLocationMember(
  */
 export function useDeleteLocationMember(
     options: CompMutationOptions = {},
-): CompMutation<DeleteLocationMemberParams> {
+): CompMutation<DeleteMemberParams> {
     const queryClient = useQueryClient();
     const toast = useToast();
 
     const mutation = useMutation({
         ...options,
-        mutationFn: ({ locationId, memberId }) => deleteLocationMember(locationId, memberId),
+        mutationFn: ({ id, memberId }) => deleteLocationMember(id, memberId),
         onSuccess: (data, variables, context) => {
-            invalidateQueries(queryClient, queryKeys.members.byLocation(variables.locationId));
+            // Invalidate all member queries on the location
+            invalidateQueries(queryClient, queryKeys.members.byLocation(variables.id));
 
             if (!options.disableToasts) {
                 toast.add({

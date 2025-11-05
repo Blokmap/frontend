@@ -7,28 +7,28 @@ import {
     type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import type { Profile, ProfileState } from '@/domain/profile';
+import { ProfileState, type Profile } from '@/domain/profile';
 
 defineProps<{
     profile: Profile;
 }>();
 
 const severities: Record<ProfileState, string> = {
-    active: 'success',
-    disabled: 'danger',
-    deleted: 'contrast',
+    [ProfileState.Active]: 'success',
+    [ProfileState.Disabled]: 'danger',
+    [ProfileState.Deleted]: 'contrast',
 };
 
 const icons: Record<ProfileState, IconDefinition> = {
-    active: faUser,
-    disabled: faUserSlash,
-    deleted: faTrash,
+    [ProfileState.Active]: faUser,
+    [ProfileState.Disabled]: faUserSlash,
+    [ProfileState.Deleted]: faTrash,
 };
 
 const labels: Record<ProfileState, string> = {
-    active: 'Actief',
-    disabled: 'Banned',
-    deleted: 'Verwijderd',
+    [ProfileState.Active]: 'Actief',
+    [ProfileState.Disabled]: 'Banned',
+    [ProfileState.Deleted]: 'Verwijderd',
 };
 </script>
 

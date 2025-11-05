@@ -1,11 +1,14 @@
 import { client } from '@/config/axios';
 import { endpoints } from '@/config/endpoints';
-import { parseRoleResponse } from '@/domain/auth/service/role';
 import { parseProfileResponse } from '@/domain/profile';
 import { stringToDate } from '@/utils/date';
 import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/service';
+import { parseRoleResponse } from './service/role';
 import type { Membership, MembershipBody } from './types';
 import type { Paginated } from '@/utils/pagination';
+
+export * from './service/role';
+export * from './service/permission';
 
 /**
  * Parses a Membership response object.
@@ -46,14 +49,21 @@ export async function deleteLocationMember(locationId: number, memberId: number)
  */
 export async function updateLocationMember(
     locationId: number,
-    memberId: number,
+    memberId: string,
     body: MembershipBody,
 ): Promise<void> {
     const endpoint = endpoints.locations.members.update
         .replace('{id}', locationId.toString())
         .replace('{profileId}', memberId.toString());
+
     const transformResponse = transformResponseFactory(parseMembershipResponse);
-    const { data } = await client.patch(endpoint, body, { transformResponse });
+
+    const { data } = await client.patch(
+        endpoint,
+        { locationRoleId: body.roleId },
+        { transformResponse },
+    );
+
     return data;
 }
 

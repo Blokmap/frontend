@@ -2,64 +2,83 @@
 import Popover from 'primevue/popover';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref } from 'vue';
-import {
-    LOCATION_PERMISSIONS,
-    AUTHORITY_PERMISSIONS,
-    INSTITUTION_PERMISSIONS,
-} from '@/domain/auth/constants';
+import { computed, useTemplateRef } from 'vue';
+import { extractPermissions, isAdministrator } from '@/domain/member';
+import { getContrastColor } from '@/utils/color';
 import type { PermissionType, Role } from '@/domain/auth';
 
 const {
     clickable = true,
-    type = 'location',
     role,
+    type,
 } = defineProps<{
     role: Role;
     clickable?: boolean;
-    type?: PermissionType;
+    type: PermissionType;
 }>();
 
-const popover = ref();
+const popover = useTemplateRef('popover');
 
-const permissions = computed(() => {
-    const lists = {
-        location: LOCATION_PERMISSIONS,
-        authority: AUTHORITY_PERMISSIONS,
-        institution: INSTITUTION_PERMISSIONS,
-    };
-    return lists[type];
-});
+/**
+ * Extract the permissions from the role's permission bitmask.
+ * Returns an array of [label, value] tuples for display.
+ */
+const rolePermissions = computed(() => extractPermissions(role.permissions, type));
 
-const onClickLabel = (event: Event) => {
+/**
+ * Check if the role has administrator permissions.
+ */
+const isAdmin = computed(() => isAdministrator(role.permissions));
+
+/**
+ * Calculate the high contrast text color for the badge.
+ */
+const textColor = computed(() => getContrastColor(role.colour));
+
+/**
+ * Handle click on role label
+ *
+ * @param event - The click event for toggling the popover
+ */
+function onClickLabel(event: Event): void {
     if (clickable) popover.value?.toggle(event);
-};
+}
 </script>
 
 <template>
-    <div class="role-label" :class="{ clickable }" @click="onClickLabel">
-        <span class="circle" :style="{ backgroundColor: role.colour }"></span>
-        <span class="text" :style="{ color: role.colour }">{{ role.name }}</span>
+    <div
+        class="role-label"
+        :class="{ clickable }"
+        :style="{ backgroundColor: role.colour, color: textColor }"
+        @click="onClickLabel">
+        <span class="text">{{ role.name }}</span>
     </div>
 
     <Popover ref="popover">
         <div class="permissions-popover">
-            <div class="header">
-                <span class="circle" :style="{ backgroundColor: role.colour }"></span>
-                <h3 :style="{ color: role.colour }">{{ role.name }}</h3>
-            </div>
-            <ul v-if="permissions.length" class="permissions">
-                <li v-for="perm in permissions" :key="perm.value">
-                    <p class="mb-2 text-sm font-medium">
-                        <FontAwesomeIcon :icon="faCheck" />
-                        {{ $t(`permissions.${type}.${perm.name}.name`) }}
-                    </p>
-                    <p class="text-xs text-slate-500">
-                        {{ $t(`permissions.${type}.${perm.name}.description`) }}
-                    </p>
-                </li>
-            </ul>
-            <p v-else class="empty">No permissions</p>
+            <template v-if="isAdmin">
+                <div class="permission-item">
+                    <FontAwesomeIcon :icon="faCheck" class="check-icon" />
+                    <div class="text">
+                        <span class="name">{{ $t('permissions.administrator.name') }}</span>
+                        <span class="desc">{{ $t('permissions.administrator.description') }}</span>
+                    </div>
+                </div>
+            </template>
+            <template v-else-if="rolePermissions.length > 0">
+                <div v-for="[label, perm] in rolePermissions" :key="perm" class="permission-item">
+                    <FontAwesomeIcon :icon="faCheck" class="check-icon" />
+                    <div class="text">
+                        <span class="name">
+                            {{ $t(`permissions.${type}.${label}.name`) }}
+                        </span>
+                        <span class="desc">
+                            {{ $t(`permissions.${type}.${label}.description`) }}
+                        </span>
+                    </div>
+                </div>
+            </template>
+            <p v-else class="empty">{{ $t('permissions.none') }}</p>
         </div>
     </Popover>
 </template>
@@ -68,16 +87,16 @@ const onClickLabel = (event: Event) => {
 @reference '@/assets/styles/main.css';
 
 .role-label {
-    @apply inline-flex items-center gap-2;
-    @apply bg-secondary-100 rounded-full px-3 py-1;
+    @apply inline-flex items-center justify-center;
+    @apply rounded-full px-3 py-1;
     @apply text-xs transition-colors;
 
     &.clickable {
-        @apply hover:bg-secondary-200 cursor-pointer;
-    }
+        @apply cursor-pointer;
 
-    .circle {
-        @apply h-3 w-3 rounded-full;
+        &:hover {
+            @apply brightness-110;
+        }
     }
 
     .text {
@@ -86,27 +105,31 @@ const onClickLabel = (event: Event) => {
 }
 
 .permissions-popover {
-    @apply min-w-64 overflow-hidden rounded-lg;
+    @apply max-w-xs min-w-64;
 
-    .header {
-        @apply flex items-center justify-center gap-2;
-        @apply bg-slate-100 py-3;
+    .permission-item {
+        @apply flex gap-2 py-2;
+        @apply border-b border-slate-100 last:border-0;
 
-        .circle {
-            @apply h-3 w-3 rounded-full;
+        .check-icon {
+            @apply text-primary mt-0.5 flex-shrink-0 text-xs;
         }
 
-        h3 {
-            @apply text-sm font-semibold;
-        }
-    }
+        .text {
+            @apply flex min-w-0 flex-1 flex-col gap-0.5;
 
-    .permissions {
-        @apply m-0 list-none space-y-3 p-4;
+            .name {
+                @apply text-sm font-medium text-slate-900;
+            }
+
+            .desc {
+                @apply text-xs leading-snug text-slate-500;
+            }
+        }
     }
 
     .empty {
-        @apply text-secondary-500 px-4 py-3 text-center text-sm italic;
+        @apply text-sm text-slate-400 italic;
     }
 }
 </style>

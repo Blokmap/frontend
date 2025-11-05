@@ -29,7 +29,6 @@ import {
     InstitutionMembersPage,
     InstitutionOverviewPage,
     InstitutionRolesPage,
-    LocationAccessPage,
     LocationInfoPage,
     LocationOpeningsPage,
     LocationReservationsPage,
@@ -45,6 +44,7 @@ import {
     ProfileOverviewPage,
     ProfileIndexPage,
     ProfileInstitutionsPage,
+    LocationMembersPage,
 } from './pages';
 
 const routes: RouteRecordRaw[] = [
@@ -173,9 +173,9 @@ const routes: RouteRecordRaw[] = [
                                 },
                             },
                             {
-                                path: 'access',
-                                name: 'dashboard.locations.detail.access',
-                                component: LocationAccessPage,
+                                path: 'members',
+                                name: 'dashboard.locations.detail.members',
+                                component: LocationMembersPage,
                                 props: true,
                                 meta: {
                                     title: 'Toegangsbeheer',
@@ -245,7 +245,7 @@ const routes: RouteRecordRaw[] = [
                             },
                             {
                                 path: 'access',
-                                name: 'dashboard.authorities.detail.access',
+                                name: 'dashboard.authorities.detail.members',
                                 component: AuthorityAccessPage,
                                 props: true,
                                 meta: {

@@ -1,111 +1,61 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
 import Paginator from 'primevue/paginator';
-import ProfileSelectorDialog from '@/components/features/profile/ProfileSelectorDialog.vue';
-import ProfileSelectorTable from '@/components/features/profile/ProfileSelectorTable.vue';
-import ProfileStateBadge from '@/components/features/profile/ProfileStateBadge.vue';
-import ProfileTableCell from '@/components/features/profile/ProfileTableCell.vue';
-import Table from '@/components/shared/molecules/table/Table.vue';
-import TableCell from '@/components/shared/molecules/table/TableCell.vue';
+import MemberActionMenu from '@/components/features/auth/MemberActionMenu.vue';
+import RoleBadge from '@/components/features/auth/roles/RoleBadge.vue';
+import MembersTable from '@/components/features/member/MembersTable.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
+import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
-import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faUserPlus, faUserTag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useReadAuthorityRoles } from '@/composables/data/useAuth';
 import {
-    useAddMemberToAuthority,
-    useDeleteMemberFromAuthority,
+    useDeleteAuthorityMember,
     useReadAuthorityMembers,
+    useUpdateAuthorityMember,
 } from '@/composables/data/useMembers';
-import { useReadProfiles } from '@/composables/data/useProfile';
-import { useToast } from '@/composables/store/useToast';
+import { usePagination } from '@/composables/data/usePagination';
 import type { Authority } from '@/domain/authority';
-import type { Profile, ProfileFilter } from '@/domain/profile';
 
 const props = defineProps<{
     authority: Authority;
 }>();
 
-const router = useRouter();
-const toast = useToast();
-
-const searchFilters = ref<ProfileFilter>({
-    query: '',
+const pagination = ref({
     page: 1,
     perPage: 25,
 });
 
+const { onPageChange, first } = usePagination(pagination);
+
 const { data: members, isLoading } = useReadAuthorityMembers(computed(() => props.authority.id));
-const { data: searchResults, isLoading: isSearching } = useReadProfiles(searchFilters);
-const { mutateAsync: addMember, isPending: isAdding } = useAddMemberToAuthority();
-const { mutateAsync: deleteMember, isPending: isRemoving } = useDeleteMemberFromAuthority();
+const { data: roles } = useReadAuthorityRoles(computed(() => props.authority.id));
 
-const showSelectorDialog = ref(false);
+const { mutate: updateAuthorityMember } = useUpdateAuthorityMember();
+const { mutate: deleteAuthorityMember } = useDeleteAuthorityMember();
 
 /**
- * Handle clicking on a profile to view its details.
- * @param profile The profile that was clicked.
+ * Handle changing a member's role.
+ * @param memberId - The ID of the member
+ * @param roleID - The new role's ID
  */
-function onProfileClick(profile: Profile): void {
-    router.push({
-        name: 'dashboard.profiles.detail.overview',
-        params: { profileId: profile.id },
+function onSelectRole(memberId: string, roleId: number): void {
+    updateAuthorityMember({
+        id: props.authority.id,
+        memberId,
+        body: { roleId },
     });
 }
 
 /**
- * Handle adding a new user to the authority.
+ * Handle removing a member.
+ * @param memberId - The ID of the member to remove
  */
-function onAddUser(): void {
-    showSelectorDialog.value = true;
-    searchFilters.value = {
-        query: '',
-        page: 1,
-        perPage: 25,
-    };
-}
-
-/**
- * Handle pagination page change in the selector dialog.
- */
-function onSelectorPageChange(event: { page: number }): void {
-    searchFilters.value.page = event.page + 1;
-}
-
-/**
- * Handle searching for profiles in the selector dialog.
- */
-async function onSearchProfiles(query: string): Promise<void> {
-    try {
-        searchFilters.value.query = query;
-        searchFilters.value.page = 1;
-    } catch {
-        toast.add({
-            severity: 'error',
-            summary: 'Zoekfout',
-            detail: 'Er is een fout opgetreden bij het zoeken naar profielen.',
-        });
-    }
-}
-
-/**
- * Handle selecting a profile to add to the authority.
- */
-async function onSelectProfile(profile: Profile): Promise<void> {
-    addMember({
+function onDeleteClick(memberId: string): void {
+    deleteAuthorityMember({
         id: props.authority.id,
-        memberId: profile.id,
-    });
-}
-
-/**
- * Handle removing a user from the authority.
- */
-async function onRemoveUser(profile: Profile): Promise<void> {
-    deleteMember({
-        id: props.authority.id,
-        memberId: profile.id,
+        memberId,
     });
 }
 </script>
@@ -113,81 +63,44 @@ async function onRemoveUser(profile: Profile): Promise<void> {
 <template>
     <DashboardContent>
         <!-- Header -->
-        <DashboardDetailHeader
-            title="Leden"
-            secondary="Beheer leden die aan deze autoriteit zijn gekoppeld.">
+        <DashboardDetailHeader title="Leden" secondary="Beheer leden en hun rollen.">
             <template #actions>
-                <Button severity="primary" @click="onAddUser">
-                    <FontAwesomeIcon :icon="faUserPlus" class="mr-2" />
-                    Lid Toevoegen
-                </Button>
+                <RouterLink
+                    :to="{
+                        name: 'dashboard.authorities.detail.roles',
+                        params: { authorityId: authority.id },
+                    }">
+                    <PageHeaderButton severity="contrast" label="Rollen Beheren">
+                        <FontAwesomeIcon :icon="faUserTag" />
+                    </PageHeaderButton>
+                </RouterLink>
+                <PageHeaderButton severity="contrast" label="Beheerder Toevoegen">
+                    <FontAwesomeIcon :icon="faUserPlus" />
+                </PageHeaderButton>
             </template>
         </DashboardDetailHeader>
 
-        <!-- Profiles Table -->
-        <Table
-            :value="members?.data"
-            :loading="isLoading"
-            @click:row="(membership) => onProfileClick(membership.profile)">
-            <template #row="{ data: membership }">
-                <TableCell column="Profiel">
-                    <ProfileTableCell :profile="membership.profile" />
-                </TableCell>
-
-                <TableCell column="E-mailadres">
-                    {{ membership.profile.email }}
-                </TableCell>
-
-                <TableCell column="Status">
-                    <ProfileStateBadge :profile="membership.profile" />
-                </TableCell>
-
-                <TableCell column="Acties">
-                    <Button
-                        size="small"
-                        severity="danger"
-                        :loading="isRemoving"
-                        @click.stop="onRemoveUser(membership.profile)"
-                        outlined>
-                        Verwijderen
-                    </Button>
-                </TableCell>
+        <!-- Members Table -->
+        <MembersTable :members="members?.data" :is-loading="isLoading">
+            <template #role="{ member }">
+                <RoleBadge :role="member.role" type="authority" />
             </template>
-        </Table>
-        <Teleport to="body">
-            <!-- Profile Selector Dialog -->
-            <ProfileSelectorDialog
-                v-model:visible="showSelectorDialog"
-                :profiles="searchResults?.data"
-                :loading="isSearching"
-                @search="onSearchProfiles">
-                <template #table="{ profiles: dialogProfiles, onSelect }">
-                    <ProfileSelectorTable
-                        :profiles="dialogProfiles"
-                        :loading="isSearching"
-                        @click:profile="onSelect">
-                        <template #actions="{ profile }">
-                            <Button
-                                size="small"
-                                severity="primary"
-                                outlined
-                                :loading="isAdding"
-                                @click.stop="onSelectProfile(profile)">
-                                <FontAwesomeIcon :icon="faUserPlus" class="mr-1" />
-                                Toevoegen
-                            </Button>
-                        </template>
-                    </ProfileSelectorTable>
+            <template #actions="{ member }">
+                <MemberActionMenu
+                    v-if="roles"
+                    :member="member"
+                    :available-roles="roles"
+                    @select:role="onSelectRole"
+                    @click:delete="onDeleteClick">
+                </MemberActionMenu>
+            </template>
+        </MembersTable>
 
-                    <Paginator
-                        v-if="searchResults?.data?.length"
-                        :first="searchResults.perPage * (searchResults.page - 1)"
-                        :rows="searchResults.perPage"
-                        :total-records="searchResults.total"
-                        @page="onSelectorPageChange">
-                    </Paginator>
-                </template>
-            </ProfileSelectorDialog>
-        </Teleport>
+        <Paginator
+            :first="first(members)"
+            :rows="members?.perPage"
+            :total-records="members?.total"
+            @page="onPageChange">
+        </Paginator>
     </DashboardContent>
 </template>

@@ -15,7 +15,7 @@ import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useReadAuthorities } from '@/composables/data/useAuthorities';
 import { usePagination } from '@/composables/data/usePagination';
-import { abbreviateCount } from '@/utils/format';
+import { abbreviateCount } from '@/utils/formatUtils';
 import type { Authority, AuthorityFilter } from '@/domain/authority';
 import type { Profile } from '@/domain/profile';
 
@@ -23,17 +23,18 @@ defineProps<{ profile: Profile }>();
 
 const router = useRouter();
 
+const searchQuery = ref<string>('');
+
 const filters = ref<AuthorityFilter>({
     query: '',
     page: 1,
     perPage: 25,
 });
 
+const { first, onPageChange, resetPage } = usePagination(filters);
 const { data: authorities, isFetching, isLoading } = useReadAuthorities(filters);
-const { onPageChange, resetPage } = usePagination(filters);
-const { data: counts } = useAdminCounts();
 
-const searchQuery = ref<string>('');
+const { data: counts } = useAdminCounts();
 
 const pageTitle = computed(
     () => `Alle Autoriteiten (${abbreviateCount(counts.value?.authorityCount) ?? '...'})`,
@@ -95,9 +96,9 @@ const onCreateAuthority = () => {
             </AuthorityTable>
 
             <Paginator
-                v-if="authorities?.data.length"
-                :total-records="counts?.authorityCount ?? 0"
-                :rows="authorities.perPage"
+                :total-records="counts?.authorityCount"
+                :first="first(authorities)"
+                :rows="authorities?.perPage"
                 @page="onPageChange">
             </Paginator>
         </template>

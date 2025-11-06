@@ -1,4 +1,4 @@
 export * from './types';
-export * from './service';
-export * from './constants';
-export * from './helpers';
+export * from './authorityService';
+export * from './authorityConstants';
+export * from './authorityHelpers';

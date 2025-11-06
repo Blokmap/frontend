@@ -1,2 +1,2 @@
-export * from './filter';
-export * from './schema';
+export * from './authorityFilterTypes';
+export * from './authoritySchemaTypes';

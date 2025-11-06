@@ -9,7 +9,7 @@ import { faPlus, faTrash, faRepeat, faCalendarDays } from '@fortawesome/free-sol
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { WEEK_DAYS } from '@/domain/calendar/constants';
+import { WEEK_DAYS } from '@/domain/calendar/calendarConstants';
 import {
     DEFAULT_OPENING_TIME_REQUEST,
     DEFAULT_REPETITION_CONFIG,

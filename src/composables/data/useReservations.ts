@@ -18,7 +18,12 @@ import {
 } from '@/domain/reservation';
 import { invalidateQueries } from './queryCache';
 import { queryKeys } from './queryKeys';
-import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
+import type {
+    CompMutation,
+    CompMutationOptions,
+    CompQuery,
+    CompQueryOptions,
+} from '@/utils/composable';
 import type { Time } from '@/utils/time';
 import type { AxiosError } from 'axios';
 

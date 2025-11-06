@@ -3,7 +3,7 @@ import { dateToString } from '../date';
 import { timeToString } from '../time';
 import type { LngLatBounds, LngLat } from '@/domain/map';
 
-export * from './types';
+export * from './filterTypes';
 
 /**
  * Format filters by converting dates and times to strings and removing nullish values.

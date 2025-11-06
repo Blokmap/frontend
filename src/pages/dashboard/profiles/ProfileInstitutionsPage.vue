@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import InstitutionTable from '@/components/features/institution/InstitutionTable.vue';
+import InstitutionMembershipTable from '@/components/features/institution/InstitutionMembershipTable.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
-import type { Institution } from '@/domain/institution';
+import { useReadProfileInstitutionMemberships } from '@/composables/data/useMembers';
+import type { InstitutionMembership } from '@/domain/member';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -14,16 +15,18 @@ const props = defineProps<{
 
 const router = useRouter();
 
-const institutions = computed(() => (props.profile.institution ? [props.profile.institution] : []));
+const { data: memberships, isLoading } = useReadProfileInstitutionMemberships(
+    computed(() => props.profile.id),
+);
 
 /**
- * Handle clicking on an institution to view its details.
- * @param institution The institution that was clicked.
+ * Handle clicking on an membership to view its details.
+ * @param membership The membership that was clicked.
  */
-function onInstitutionClick(institution: Institution): void {
+function onMembershipClick(membership: InstitutionMembership): void {
     router.push({
         name: 'dashboard.institutions.detail.overview',
-        params: { institutionId: institution.slug },
+        params: { institutionId: membership.institution.id },
     });
 }
 </script>
@@ -43,10 +46,10 @@ function onInstitutionClick(institution: Institution): void {
         </DashboardDetailHeader>
 
         <!-- Institutions Table -->
-        <InstitutionTable
-            :institutions="institutions"
-            :loading="false"
-            @click:institution="onInstitutionClick">
-        </InstitutionTable>
+        <InstitutionMembershipTable
+            :memberships="memberships"
+            :loading="isLoading"
+            @click:membership="onMembershipClick">
+        </InstitutionMembershipTable>
     </DashboardContent>
 </template>

@@ -22,14 +22,14 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-    'click:delete': [];
+    'click:delete': [authorityId: number];
 }>();
 
 /**
  * Handle delete button click.
  */
 function onDeleteClick(): void {
-    emit('click:delete');
+    emit('click:delete', props.authority.id);
 }
 </script>
 

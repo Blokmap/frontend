@@ -1,9 +1,9 @@
-import { WEEKDAY_DAYS } from '@/domain/calendar/constants';
+import { WEEKDAY_DAYS } from '@/domain/calendar/calendarConstants';
 import { datesInRange } from '@/utils/date';
 import { timeToMinutes, type Time } from '@/utils/time';
 import type { OpeningTimeBody, OpeningTime } from '../types';
 
-export * from './builder';
+export * from './openingBuilderHelpers';
 
 /**
  * Generates opening times based on a repetition configuration.

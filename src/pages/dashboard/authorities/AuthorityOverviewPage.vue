@@ -4,39 +4,24 @@ import AuthorityForm from '@/components/features/authority/forms/AuthorityForm.v
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { useUpdateAuthority } from '@/composables/data/useAuthorities';
-import { useToast } from '@/composables/store/useToast';
 import type { Authority, AuthorityBody } from '@/domain/authority';
 
 const props = defineProps<{
     authority: Authority;
 }>();
 
-const toast = useToast();
-
 const { mutateAsync: updateAuthority, isPending: isUpdating } = useUpdateAuthority();
 
 /**
  * Handle form submission to update the authority
+ *
+ * @param form - The updated authority data
  */
 async function handleUpdate(form: AuthorityBody): Promise<void> {
-    try {
-        await updateAuthority({
-            id: props.authority.id,
-            data: form,
-        });
-
-        toast.add({
-            severity: 'success',
-            summary: 'Opgeslagen',
-            detail: 'De autoriteit is succesvol bijgewerkt.',
-        });
-    } catch {
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij opslaan',
-            detail: 'Er is iets misgegaan bij het bijwerken van de autoriteit.',
-        });
-    }
+    updateAuthority({
+        id: props.authority.id,
+        data: form,
+    });
 }
 </script>
 

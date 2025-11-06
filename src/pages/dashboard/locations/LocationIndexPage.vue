@@ -22,7 +22,7 @@ import {
     useUpdateLocationState,
 } from '@/composables/data/useLocations';
 import { usePagination } from '@/composables/data/usePagination';
-import { abbreviateCount } from '@/utils/format';
+import { abbreviateCount } from '@/utils/formatUtils';
 import type { LocationFilter, LocationState } from '@/domain/location';
 import type { Profile } from '@/domain/profile';
 

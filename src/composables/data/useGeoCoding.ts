@@ -1,12 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { mapBoxClient } from '@/config/axios';
+import { mapBoxClient } from '@/config/axiosConfig';
 import { mapboxEndpoints } from '@/config/endpoints';
 import { geocodeAddress, type GeoSearchFilter, type LngLat } from '@/domain/map';
 import { queryKeys } from './queryKeys';
 
-import type { CompMutation, CompQuery, CompQueryOptions } from '@/types';
+import type { CompMutation, CompQuery, CompQueryOptions } from '@/utils/composable';
 import type { AxiosError } from 'axios';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;

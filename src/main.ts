@@ -4,7 +4,7 @@ import { VueQueryPlugin } from '@tanstack/vue-query';
 import { createPinia } from 'pinia';
 import { ConfirmationService, FocusTrap, Ripple, ToastService, Tooltip } from 'primevue';
 import { createApp } from 'vue';
-import { i18n } from '@/config/i18n';
+import { i18n } from '@/config/i18nConfig';
 import { vueQueryConfig, primevueConfig } from '@/config/plugin';
 import { router } from '@/config/router';
 
@@ -33,16 +33,16 @@ app.directive('focustrap', FocusTrap);
 //     sendDefaultPii: true,
 // });
 
-// Cache busting
-// A bit of a hack but works
-let reloaded = false;
+// // Cache busting
+// // A bit of a hack but works
+// let reloaded = false;
 
-window.addEventListener('unhandledrejection', (event) => {
-    if (event.reason?.message?.includes('dynamically imported module') && !reloaded) {
-        window.location.reload();
-        reloaded = true;
-    }
-});
+// window.addEventListener('unhandledrejection', (event) => {
+//     if (event.reason?.message?.includes('dynamically imported module') && !reloaded) {
+//         window.location.reload();
+//         reloaded = true;
+//     }
+// });
 
 // Mount the app.
 app.mount('#app');

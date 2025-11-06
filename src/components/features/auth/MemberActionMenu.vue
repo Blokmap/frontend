@@ -4,11 +4,11 @@ import ActionMenuButton from '@/components/shared/atoms/menu/ActionMenuButton.vu
 import ActionMenuSelect from '@/components/shared/atoms/menu/ActionMenuSelect.vue';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
-import type { Membership, Role } from '@/domain/auth';
+import type { Member, Role } from '@/domain/member';
 
 const props = withDefaults(
     defineProps<{
-        member: Membership;
+        member: Member;
         availableRoles: Role[];
         isPending?: boolean;
         showRoleSelect?: boolean;

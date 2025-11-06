@@ -14,7 +14,12 @@ import {
 } from '@/domain/institution';
 import { invalidateQueries } from './queryCache';
 import { queryKeys } from './queryKeys';
-import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
+import type {
+    CompMutation,
+    CompMutationOptions,
+    CompQuery,
+    CompQueryOptions,
+} from '@/utils/composable';
 import type { Paginated } from '@/utils/pagination';
 
 // Mutation parameter types
@@ -59,7 +64,7 @@ export function useReadInstitutions(
  * @returns An object containing the institution and its state.
  */
 export function useReadInstitution(
-    id: MaybeRefOrGetter<string>,
+    id: MaybeRefOrGetter<number>,
     options: CompQueryOptions = {},
 ): CompQuery<Institution> {
     const institution = useQuery({

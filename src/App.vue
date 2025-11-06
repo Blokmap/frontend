@@ -3,9 +3,9 @@ import Toast from '@/components/Toast.vue';
 import ProgressBar from '@/components/shared/atoms/ProgressBar.vue';
 import { useRouter } from 'vue-router';
 import { useProgress } from '@/composables/store/useProgress';
-import { setupAxiosInterceptors } from './config/axios';
-import { setupI18n } from './config/i18n';
-import { setupAuthGuard } from './config/router/guards';
+import { setupAxiosInterceptors } from './config/axiosConfig';
+import { setupI18n } from './config/i18nConfig';
+import { setupAuthGuard } from './config/router/routerGuards';
 
 const router = useRouter();
 const progressStore = useProgress();

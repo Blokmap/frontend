@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import Paginator from 'primevue/paginator';
 import ProfileActionMenu from '@/components/features/profile/ProfileActionMenu.vue';
-import ProfileStateBadge from '@/components/features/profile/ProfileStateBadge.vue';
-import ProfileTableCell from '@/components/features/profile/ProfileTableCell.vue';
+import ProfileTable from '@/components/features/profile/table/ProfileTable.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
-import Table from '@/components/shared/molecules/table/Table.vue';
-import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
 import { useDebounceFn } from '@vueuse/core';
@@ -16,7 +13,7 @@ import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { usePagination } from '@/composables/data/usePagination';
 import { useReadProfiles, useUpdateProfileState } from '@/composables/data/useProfile';
-import { abbreviateCount } from '@/utils/format';
+import { abbreviateCount } from '@/utils/formatUtils';
 import type { Profile, ProfileFilter } from '@/domain/profile';
 
 const router = useRouter();
@@ -28,22 +25,14 @@ const filters = ref<ProfileFilter>({
     perPage: 25,
 });
 
-const { data: profiles, refetch, isFetching, isLoading } = useReadProfiles(filters);
-const { onPageChange, resetPage, first } = usePagination(filters);
+const { first, onPageChange, resetPage } = usePagination(filters);
+const { data: profiles, isFetching, isLoading } = useReadProfiles(filters);
 
 const {
     mutateAsync: updateProfileState,
     isPending: isUpdatingProfile,
     variables: updateVariables,
-} = useUpdateProfileState({
-    onSuccess: async () => {
-        await refetch();
-    },
-    onError: (error: any) => {
-        // Error toast is handled in the composable
-        console.error('Failed to update profile state:', error);
-    },
-});
+} = useUpdateProfileState();
 
 const { data: counts } = useAdminCounts();
 
@@ -105,39 +94,23 @@ function onSelectProfileState(profileId: string, state: string): void {
             </template>
         </DashboardPageHeader>
 
-        <Table :value="profiles?.data" :loading="isLoading" @click:row="onProfileClick">
-            <template #row="{ data: profile }">
-                <TableCell column="Profiel">
-                    <ProfileTableCell :profile="profile" />
-                </TableCell>
-
-                <TableCell column="E-mailadres">
-                    {{ profile.email }}
-                </TableCell>
-
-                <TableCell column="Institutie">
-                    {{ profile.institution?.name || '-' }}
-                </TableCell>
-
-                <TableCell column="Status">
-                    <ProfileStateBadge :profile="profile" />
-                </TableCell>
-
-                <TableCell column="Acties">
-                    <ProfileActionMenu
-                        :profile="profile"
-                        :is-pending="isProfilePending(profile.id)"
-                        @select:state="onSelectProfileState(profile.id, $event)">
-                    </ProfileActionMenu>
-                </TableCell>
+        <ProfileTable
+            :profiles="profiles?.data"
+            :loading="isLoading"
+            @click:profile="onProfileClick">
+            <template #actions="{ profile }">
+                <ProfileActionMenu
+                    :profile="profile"
+                    :is-pending="isProfilePending(profile.id)"
+                    @select:state="onSelectProfileState">
+                </ProfileActionMenu>
             </template>
-        </Table>
+        </ProfileTable>
 
         <Paginator
-            v-if="profiles?.data?.length"
-            :first="first"
-            :rows="profiles.perPage"
-            :total-records="profiles.total"
+            :first="first(profiles)"
+            :rows="profiles?.perPage"
+            :total-records="profiles?.total"
             @page="onPageChange">
         </Paginator>
     </DashboardContent>

@@ -1,6 +1,6 @@
-import type { Paginated } from './types';
+import type { Paginated } from './paginationTypes';
 
-export * from './types';
+export * from './paginationTypes';
 
 /**
  * Check if there are more pages available in a paginated result

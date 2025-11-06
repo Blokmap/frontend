@@ -8,8 +8,7 @@ import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHe
 import { faBuilding, faList, faUsers, faUsersGear } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useReadInstitutions } from '@/composables/data/useInstitutions';
-import type { Institution } from '@/domain/institution';
+import { useReadInstitution } from '@/composables/data/useInstitutions';
 
 const props = defineProps<{
     institutionId: string;
@@ -17,18 +16,11 @@ const props = defineProps<{
 
 const { locale } = useI18n();
 
-const institutionSlug = computed(() => props.institutionId);
-
 const {
-    data: institutionData,
+    data: institution,
     isLoading,
     error,
-} = useReadInstitutions(computed(() => ({ query: institutionSlug.value })));
-
-const institution = computed<Institution | undefined>(() => {
-    // Find the institution that matches the slug
-    return institutionData.value?.data?.find((inst) => inst.slug === institutionSlug.value);
-});
+} = useReadInstitution(computed(() => +props.institutionId));
 
 const tabs = computed<TabItem[]>(() => [
     {

@@ -56,10 +56,17 @@ export const queryKeys = {
     profiles: {
         all: () => ['profiles'],
         lists: () => ['profiles', 'list'],
+        stats: (profileId: any) => ['profiles', 'stats', profileId],
         list: (filters: any) => ['profiles', 'list', filters],
         singles: () => ['profiles', 'detail'],
         detail: (profileId: any) => ['profiles', 'detail', profileId],
-        stats: (profileId: any) => ['profiles', 'stats', profileId],
+        byInstitution: (institutionId: any, pagination: any) => [
+            'profiles',
+            'list',
+            'institution',
+            institutionId,
+            pagination,
+        ],
     },
 
     // Authorities
@@ -89,6 +96,29 @@ export const queryKeys = {
         byLocation: (locationId: any) => ['members', 'list', 'location', locationId],
         byAuthority: (authorityId: any) => ['members', 'list', 'authority', authorityId],
         byInstitution: (institutionId: any) => ['members', 'list', 'institution', institutionId],
+
+        memberships: {
+            all: () => ['members', 'memberships'],
+
+            byProfileLocations: (profileId: any) => [
+                'members',
+                'memberships',
+                'locations',
+                profileId,
+            ],
+            byProfileAuthorities: (profileId: any) => [
+                'members',
+                'memberships',
+                'authorities',
+                profileId,
+            ],
+            byProfileInstitutions: (profileId: any) => [
+                'members',
+                'memberships',
+                'institutions',
+                profileId,
+            ],
+        },
     },
 
     // Admin

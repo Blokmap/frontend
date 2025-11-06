@@ -11,6 +11,7 @@ import { storeToRefs } from 'pinia';
 import { computed, ref, useTemplateRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSearchLocations, useNearestLocation } from '@/composables/data/useLocations';
+import { usePagination } from '@/composables/data/usePagination';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { useToast } from '@/composables/store/useToast';
 import { hasNextPage } from '@/utils/pagination';
@@ -23,7 +24,8 @@ const filterStore = useLocationFilters();
 const toast = useToast();
 const i18n = useI18n();
 
-const { geoLocation } = storeToRefs(filterStore);
+const { geoLocation, filters } = storeToRefs(filterStore);
+const { first, onPageChange } = usePagination(filters);
 
 const { data: locations, isPending: locationsIsPending } = useSearchLocations(filterStore.filters, {
     enabled: computed(() => !!filterStore.filters.bounds),
@@ -77,15 +79,6 @@ watch(
 const onBoundsChange = useDebounceFn(async (bounds: LngLatBounds | null) => {
     filterStore.updateFilters({ bounds, page: 1 });
 }, 400);
-
-/**
- * Handles page change events from the paginator.
- * @param event - The pagination event containing the new page number.
- */
-function onPageChange(event: { page: number }): void {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    filterStore.updateFilters({ page: event.page + 1 });
-}
 
 /**
  * Flies the map to the nearest location based on the current center.
@@ -182,13 +175,13 @@ function onNearestClick(): void {
             </div>
 
             <Paginator
-                v-if="locations?.data?.length"
-                :first="locations.perPage * (locations.page - 1)"
-                :rows="locations.perPage"
-                :total-records="locations.total"
+                :first="first(locations)"
+                :rows="locations?.perPage"
+                :total-records="locations?.total"
                 @page="onPageChange">
             </Paginator>
         </div>
+
         <div class="map-container">
             <div class="sticky top-4 w-full" :style="{ height: 'calc(100vh - 2rem)' }">
                 <BlokMap

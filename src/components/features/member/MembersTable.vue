@@ -1,21 +1,34 @@
 <script lang="ts" setup>
-import ProfileTableCell from '@/components/features/profile/ProfileTableCell.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import { useI18n } from 'vue-i18n';
-import type { Membership } from '@/domain/member';
+import { useRouter } from 'vue-router';
+import ProfileTableCell from '../profile/table/ProfileTableCell.vue';
+import type { Member } from '@/domain/member';
 
 defineProps<{
-    members?: Membership[];
+    members?: Member[];
     isLoading?: boolean;
     isMemberPending?: (memberId: string) => boolean;
 }>();
 
 const { locale } = useI18n();
+const router = useRouter();
+
+/**
+ * Handle clicking on a row.
+ * @param member - The member object to navigate to
+ */
+function onRowClick(member: Member): void {
+    router.push({
+        name: 'dashboard.profile.detail.overview',
+        params: { profileId: member.profile.id },
+    });
+}
 </script>
 
 <template>
-    <Table :value="members" :loading="isLoading">
+    <Table :value="members" :loading="isLoading" @click:row="onRowClick">
         <template #row="{ data: member }">
             <TableCell column="Profiel">
                 <ProfileTableCell :profile="member.profile" />

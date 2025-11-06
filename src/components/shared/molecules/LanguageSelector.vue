@@ -5,7 +5,7 @@ import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getFlagImage } from '@/config/i18n';
+import { getFlagImage } from '@/config/i18nConfig';
 
 const language = defineModel<string>();
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import ProfileTableCell from '@/components/features/profile/ProfileTableCell.vue';
+import ProfileTableCell from '@/components/features/profile/table/ProfileTableCell.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import type { Profile } from '@/domain/profile';

@@ -2,7 +2,7 @@
 import ActionMenu from '@/components/shared/atoms/menu/ActionMenu.vue';
 import ActionMenuButton from '@/components/shared/atoms/menu/ActionMenuButton.vue';
 import { faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
-import type { Role } from '@/domain/auth';
+import type { Role } from '@/domain/member';
 
 const props = defineProps<{
     role: Role;

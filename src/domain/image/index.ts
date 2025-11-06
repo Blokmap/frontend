@@ -1,3 +1,3 @@
-export * from './types';
-export * from './helpers';
-export * from './service';
+export * from './imageTypes';
+export * from './imageHelpers';
+export * from './imageService';

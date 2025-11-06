@@ -3,7 +3,7 @@ import { readAdminCounts, readAdminStats } from '@/domain/admin';
 import { queryKeys } from './queryKeys';
 
 import type { AdminCounts, AdminStats } from '@/domain/admin';
-import type { CompQuery, CompQueryOptions } from '@/types';
+import type { CompQuery, CompQueryOptions } from '@/utils/composable';
 import type { AxiosError } from 'axios';
 
 /**

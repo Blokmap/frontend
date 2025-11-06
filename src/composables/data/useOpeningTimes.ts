@@ -13,7 +13,7 @@ import {
 } from '@/domain/openings';
 import { invalidateQueries } from './queryCache';
 import { queryKeys } from './queryKeys';
-import type { CompMutation, CompMutationOptions, CompQuery } from '@/types';
+import type { CompMutation, CompMutationOptions, CompQuery } from '@/utils/composable';
 import type { AxiosError } from 'axios';
 
 /**

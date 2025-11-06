@@ -8,7 +8,6 @@ import {
     faBuilding,
     faList,
     faMapLocationDot,
-    faUsers,
     faUsersGear,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -43,21 +42,12 @@ const tabs = computed<TabItem[]>(() => [
         },
     },
     {
-        value: 'members',
-        label: 'Leden',
-        icon: faUsers,
-        route: {
-            name: 'dashboard.authorities.detail.members',
-            params: { authorityId: props.authorityId },
-        },
-    },
-    {
         value: 'access',
         label: 'Toegangsbeheer',
         align: 'right',
         icon: faUsersGear,
         route: {
-            name: 'dashboard.authorities.detail.access',
+            name: 'dashboard.authorities.detail.members',
             params: { authorityId: props.authorityId },
         },
     },

@@ -9,8 +9,8 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useReadAuthorityRoles } from '@/composables/data/useAuth';
-import type { Role } from '@/domain/auth';
 import type { Authority } from '@/domain/authority';
+import type { Role } from '@/domain/member';
 
 const props = defineProps<{
     authorityId: string;

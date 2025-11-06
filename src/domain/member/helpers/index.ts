@@ -1,2 +1,2 @@
-export * from './permission';
-export * from './predicate';
+export * from './memberPermissionHelpers';
+export * from './memberPredicateHelpers';

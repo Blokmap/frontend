@@ -9,7 +9,7 @@ import {
     faUserShield,
 } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
-import type { Profile, ProfileState } from '@/domain/profile';
+import { ProfileState, type Profile } from '@/domain/profile';
 
 const props = withDefaults(
     defineProps<{
@@ -27,13 +27,13 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-    'select:state': [status: ProfileState];
+    'select:state': [profielId: string, status: ProfileState];
 }>();
 
 const statusOptions = computed(() => {
     return [
-        { label: 'Actief', value: 'active' as ProfileState, icon: faUser },
-        { label: 'Geblokkeerd', value: 'disabled' as ProfileState, icon: faUserSlash },
+        { label: 'Actief', value: ProfileState.Active, icon: faUser },
+        { label: 'Geblokkeerd', value: ProfileState.Disabled, icon: faUserSlash },
     ];
 });
 
@@ -43,7 +43,7 @@ const statusOptions = computed(() => {
  * @param state - The selected profile state
  */
 function onStateSelect(state: ProfileState): void {
-    emit('select:state', state);
+    emit('select:state', props.profile.id, state);
 }
 </script>
 

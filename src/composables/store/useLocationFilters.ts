@@ -12,7 +12,6 @@ export const useLocationFilters = defineStore('locationFilters', () => {
     const geoLocation = ref<GeoJSON.GeoJsonProperties | null>(null);
 
     const filters = ref<LocationSearchFilter>({
-        query: null,
         isReservable: null,
         openOn: null,
         bounds: config.value.bounds,

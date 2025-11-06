@@ -10,8 +10,8 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useReadLocationRoles } from '@/composables/data/useAuth';
-import type { Role } from '@/domain/auth';
 import type { Location } from '@/domain/location';
+import type { Role } from '@/domain/member';
 
 const props = defineProps<{
     locationId: string;

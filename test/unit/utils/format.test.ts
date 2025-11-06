@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { abbreviateCount } from '@/utils/format';
+import { abbreviateCount } from '@/utils/formatUtils';
 
 describe('format utils', () => {
     describe('abbreviateCount', () => {

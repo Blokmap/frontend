@@ -1,2 +1,2 @@
-export * from './filter';
-export * from './schema';
+export * from './institutionFilterTypes';
+export * from './institutionSchemaTypes';

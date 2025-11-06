@@ -12,6 +12,7 @@ import {
     updateProfileAvatar,
     readProfile,
     scanProfile,
+    readInstitutionProfiles,
 } from '@/domain/profile';
 import {
     type Profile,
@@ -24,8 +25,13 @@ import { invalidateQueries } from './queryCache';
 import { queryKeys } from './queryKeys';
 
 import type { Reservation } from '@/domain/reservation';
-import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
-import type { Paginated } from '@/utils/pagination';
+import type {
+    CompMutation,
+    CompMutationOptions,
+    CompQuery,
+    CompQueryOptions,
+} from '@/utils/composable';
+import type { Paginated, Pagination } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
 
 /**
@@ -73,12 +79,13 @@ export function useReadProfile(
 /**
  * Composable to fetch a list of profiles with filters.
  *
+ * @param pagination - The pagination settings to apply when fetching profiles.
  * @param filters - The filters to apply when fetching profiles.
  * @param options - Additional options for the query.
  * @returns The query object containing the list of profiles and their state.
  */
 export function useReadProfiles(
-    filters: MaybeRefOrGetter<Partial<ProfileFilter>>,
+    filters: MaybeRefOrGetter<ProfileFilter>,
     options: CompMutationOptions = {},
 ): CompQuery<Paginated<Profile>> {
     const query = useQuery<Paginated<Profile>, AxiosError>({
@@ -275,4 +282,18 @@ export function useUpdateProfileState(
     });
 
     return mutation;
+}
+
+export function useReadInstitutionProfiles(
+    institutionId: MaybeRefOrGetter<number>,
+    pagination: MaybeRefOrGetter<Pagination>,
+    options: CompQueryOptions = {},
+): CompQuery<Paginated<Profile>> {
+    const query = useQuery<Paginated<Profile>, AxiosError>({
+        ...options,
+        queryKey: queryKeys.profiles.byInstitution(institutionId, pagination),
+        queryFn: () => readInstitutionProfiles(toValue(institutionId), toValue(pagination)),
+    });
+
+    return query;
 }

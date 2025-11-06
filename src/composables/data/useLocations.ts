@@ -29,7 +29,12 @@ import { invalidateQueries } from './queryCache';
 import { queryKeys } from './queryKeys';
 import type { ImageReorderBody, ImageBody } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
-import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
+import type {
+    CompMutation,
+    CompMutationOptions,
+    CompQuery,
+    CompQueryOptions,
+} from '@/utils/composable';
 import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
 
@@ -41,26 +46,19 @@ import type { AxiosError } from 'axios';
  * @returns An object containing the search results and their state.
  */
 export function useSearchLocations(
-    filters?: MaybeRef<LocationSearchFilter>,
+    filters: MaybeRef<LocationSearchFilter> = {},
     options: CompQueryOptions<LocationIncludes> = {},
 ): CompQuery<Paginated<Location>> {
     const { locale } = useI18n();
 
     const query = useQuery({
         ...options,
-        queryKey: queryKeys.locations.search({
-            ...toValue(filters),
-            language: toValue(locale),
-        }),
+        queryKey: queryKeys.locations.search(filters),
         placeholderData: keepPreviousData,
         queryFn: async () => {
-            const params = toValue(filters);
-            const language = toValue(locale);
+            const params = { ...toValue(filters), locale: toValue(locale) };
 
-            return await searchLocations({
-                ...params,
-                language,
-            });
+            return await searchLocations(params);
         },
     });
 

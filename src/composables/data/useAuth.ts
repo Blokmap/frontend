@@ -1,18 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { readAuthProfile, login, logout, register } from '@/domain/auth';
 import {
-    readAuthProfile,
-    login,
-    logout,
-    register,
+    type Role,
     readLocationRoles,
     readAuthorityRoles,
     readInstitutionRoles,
-} from '@/domain/auth';
-import type { LoginBody, RegisterBody, Role } from '@/domain/auth';
+} from '@/domain/member';
+import type { LoginBody, RegisterBody } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
-import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
+import type {
+    CompMutation,
+    CompMutationOptions,
+    CompQuery,
+    CompQueryOptions,
+} from '@/utils/composable';
 import type { AxiosError } from 'axios';
 
 export const AUTH_QUERY_KEYS = {

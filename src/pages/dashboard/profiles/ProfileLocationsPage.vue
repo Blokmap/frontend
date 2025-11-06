@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import LocationActionMenu from '@/components/features/location/LocationActionMenu.vue';
 import LocationDataItem from '@/components/features/location/LocationDataItem.vue';
+import EmptyState from '@/components/shared/molecules/EmptyState.vue';
 import DataList from '@/components/shared/molecules/datalist/DataList.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
@@ -8,11 +9,8 @@ import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHe
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-import {
-    useDeleteLocation,
-    useUpdateLocationState,
-    useReadProfileLocations,
-} from '@/composables/data/useLocations';
+import { useDeleteLocation, useUpdateLocationState } from '@/composables/data/useLocations';
+import { useReadProfileLocationMemberships } from '@/composables/data/useMembers';
 import type { LocationState } from '@/domain/location';
 import type { Profile } from '@/domain/profile';
 
@@ -22,7 +20,9 @@ const props = defineProps<{
     isOwnProfile: boolean;
 }>();
 
-const { data: locations, isLoading } = useReadProfileLocations(computed(() => props.profile.id));
+const { data: memberships, isLoading } = useReadProfileLocationMemberships(
+    computed(() => props.profile.id),
+);
 
 const {
     mutateAsync: deleteLocation,
@@ -87,13 +87,13 @@ function onDeleteLocation(locationId: number) {
         </DashboardDetailHeader>
 
         <!-- Locations List -->
-        <DataList :items="locations" :loading="isLoading">
-            <template #item="{ item: location }">
-                <LocationDataItem :location="location">
+        <DataList :items="memberships" :loading="isLoading">
+            <template #item="{ item: membership }">
+                <LocationDataItem :location="membership.location">
                     <template #actions>
                         <LocationActionMenu
-                            :location="location"
-                            :is-pending="isLocationPending(location.id)"
+                            :location="membership.location"
+                            :is-pending="isLocationPending(membership.location.id)"
                             :show-state-select="ownProfile.isAdmin"
                             @select:state="onSelectLocationState"
                             @click:delete="onDeleteLocation">

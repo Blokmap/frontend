@@ -18,7 +18,7 @@ import {
     MAX_IMAGE_SIZE,
     SUPPORTED_IMAGE_FORMAT_NAES,
     SUPPORTED_IMAGE_FORMATS,
-} from '@/domain/image/constants';
+} from '@/domain/image/imageConstants';
 import { LOCATION_SETTINGS } from '@/domain/location';
 import type { BuilderSubstep } from '@/components/features/location/builder';
 import type { ImageBody } from '@/domain/image';

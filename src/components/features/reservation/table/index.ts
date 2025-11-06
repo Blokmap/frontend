@@ -1,4 +1,4 @@
-import type { Reservation } from '@/domain/reservation/types/schema';
+import type { Reservation } from '@/domain/reservation/types/reservationSchemaTypes';
 
 export type DayGroup = {
     date: Date;

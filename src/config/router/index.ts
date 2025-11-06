@@ -1,2 +1,2 @@
-export * from './pages';
-export * from './router';
+export * from './routerPages';
+export * from './routerConfig';

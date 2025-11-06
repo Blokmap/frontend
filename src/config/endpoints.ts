@@ -22,6 +22,9 @@ export const endpoints = {
                 update: '/institutions/{id}/members/{profileId}/permissions',
             },
         },
+        profiles: {
+            list: '/institutions/{id}/profiles',
+        },
         authorities: {
             list: '/institutions/{id}/authorities',
             add: '/institutions/{id}/authorities',
@@ -39,9 +42,6 @@ export const endpoints = {
         unblock: '/profiles/{id}/unblock',
         stats: '/profiles/{id}/stats',
         scan: '/profiles/{id}/scan',
-        authorities: {
-            list: '/profiles/{id}/authorities',
-        },
         reservations: {
             list: '/profiles/{id}/reservations',
         },
@@ -50,6 +50,14 @@ export const endpoints = {
         },
         locations: {
             list: '/profiles/{id}/locations',
+            memberships: '/profiles/{id}/locations/memberships',
+        },
+        authorities: {
+            list: '/profiles/{id}/authorities',
+            memberships: '/profiles/{id}/authorities/memberships',
+        },
+        institutions: {
+            memberships: '/profiles/{id}/institutions/memberships',
         },
     },
     authorities: {
@@ -101,6 +109,7 @@ export const endpoints = {
             read: '/locations/{id}/members/{profileId}',
             update: '/locations/{id}/members/{profileId}',
             list: '/locations/{id}/members',
+            add: '/authorities/{id}/members',
             delete: '/locations/{id}/members/{profileId}',
             permissions: {
                 update: '/locations/{id}/members/{profileId}/permissions',

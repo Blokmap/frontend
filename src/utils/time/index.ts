@@ -1,10 +1,10 @@
-import { timeToMinutes, minutesToTime } from './convert';
-import type { Time, TimeGranularity } from './types';
+import { timeToMinutes, minutesToTime } from './timeConvertUtils';
+import type { Time, TimeGranularity } from './timeTypes';
 
-export * from './types';
-export * from './convert';
-export * from './format';
-export * from './overlap';
+export * from './timeTypes';
+export * from './timeConvertUtils';
+export * from './timeFormatUtils';
+export * from './timeOverlapUtils';
 
 /**
  * Rounds a number to the nearest interval.

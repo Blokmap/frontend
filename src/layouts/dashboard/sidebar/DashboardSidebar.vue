@@ -18,7 +18,7 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useAuthLogout } from '@/composables/data/useAuth';
-import { abbreviateCount } from '@/utils/format';
+import { abbreviateCount } from '@/utils/formatUtils';
 import SidebarLink from './SidebarLink.vue';
 import type { Profile } from '@/domain/profile';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';

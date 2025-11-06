@@ -8,12 +8,17 @@ import {
     type Authority,
     type AuthorityFilter,
     type AuthorityBody,
+    readProfileAuthorities,
 } from '@/domain/authority';
-import { readProfileAuthorities } from '@/domain/profile';
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
 import { queryKeys } from './queryKeys';
-import type { CompMutation, CompMutationOptions, CompQuery, CompQueryOptions } from '@/types';
+import type {
+    CompMutation,
+    CompMutationOptions,
+    CompQuery,
+    CompQueryOptions,
+} from '@/utils/composable';
 import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
 

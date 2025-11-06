@@ -1,2 +1,2 @@
-export { vueQueryConfig } from './query';
-export { primevueConfig } from './primevue';
+export { vueQueryConfig } from './queryConfig';
+export { primevueConfig } from './primevueConfig';

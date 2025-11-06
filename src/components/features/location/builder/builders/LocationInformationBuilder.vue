@@ -170,9 +170,7 @@ function resetToCalculatedCoordinates(): void {
                 <div class="flex w-full items-center justify-between">
                     <div>
                         <h3 class="text-xl font-semibold text-gray-900">Basis informatie</h3>
-                        <p class="mt-3 text-sm text-gray-600">
-                            Voer de basisgegevens van uw locatie in
-                        </p>
+                        <p class="text-sm text-gray-600">Voer de basisgegevens van uw locatie in</p>
                     </div>
                     <div class="flex items-center space-x-2">
                         <LanguageSelector v-model="currentLanguage">
@@ -258,7 +256,7 @@ function resetToCalculatedCoordinates(): void {
         <LocationBuilderCard :icon="faHome">
             <template #header>
                 <h3 class="text-xl font-semibold text-gray-900">Adres informatie</h3>
-                <p class="mt-3 text-sm text-gray-600">
+                <p class="text-sm text-gray-600">
                     Voer het adres van uw locatie in op de kaart. Sleep de kaart om de locatie
                     marker precies te positioneren.
                 </p>

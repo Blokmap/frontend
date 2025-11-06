@@ -1,4 +1,4 @@
 export * from './types';
 export * from './helpers';
-export * from './service';
-export * from './constants';
+export * from './reservationService';
+export * from './reservationConstants';

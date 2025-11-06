@@ -5,11 +5,12 @@ import { faSpinner, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { storeToRefs } from 'pinia';
 import { useTemplateRef, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useMapBox } from '@/composables/maps/useMapBox';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
+import { getLocationImageUrl, type Location } from '@/domain/location';
 import Marker from './Marker.vue';
-import type { Location } from '@/domain/location';
 import type { LngLatBounds } from '@/domain/map';
 
 defineProps<{
@@ -26,6 +27,7 @@ const emit = defineEmits<{
     (e: 'update:bounds', bounds: LngLatBounds): void;
 }>();
 
+const { locale } = useI18n();
 const router = useRouter();
 
 const filters = storeToRefs(useLocationFilters());
@@ -96,14 +98,27 @@ defineExpose({ map });
                 @mouseleave="onMarkerMouseLeave">
                 <template #popover>
                     <div class="w-full space-y-2 p-1">
-                        <p class="text-lg font-semibold">
-                            {{ location.name }}
-                        </p>
+                        <div class="flex gap-3">
+                            <img
+                                :src="getLocationImageUrl(location)"
+                                alt="Location Image"
+                                class="aspect-square h-20 flex-shrink-0 rounded object-cover shadow-lg" />
 
-                        <p>
-                            {{ location.street }} {{ location.number }} • {{ location.zip }}
-                            {{ location.city }}
-                        </p>
+                            <div class="flex flex-1 flex-col justify-center gap-1">
+                                <p class="text-lg font-semibold">
+                                    {{ location.name }}
+                                </p>
+
+                                <p class="text-slate-600">
+                                    {{ location.excerpt[locale] }}
+                                </p>
+
+                                <p>
+                                    {{ location.street }} {{ location.number }} • {{ location.zip }}
+                                    {{ location.city }}
+                                </p>
+                            </div>
+                        </div>
 
                         <OpeningsTable class="my-3" :opening-times="location.openingTimes" compact>
                         </OpeningsTable>

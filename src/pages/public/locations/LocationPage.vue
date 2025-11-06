@@ -57,17 +57,13 @@ const {
 );
 
 const showReservationDialog = computed<boolean>({
-    get: () => 'reservation' in route.query && !!profile.value,
+    get: () => route.hash === '#reservations' && !!profile.value,
     set: (value: boolean) => {
-        const query = { ...route.query };
-
         if (value) {
-            query.reservation = '';
+            router.replace({ hash: '#reservations' });
         } else {
-            delete query.reservation;
+            router.replace({ hash: '' });
         }
-
-        router.replace({ query });
     },
 });
 
@@ -85,12 +81,13 @@ watch(
  * Navigate to the login page, storing the current location page as redirect URL
  */
 function onLoginClick(): void {
-    const route = router.resolve({
+    const redirectRoute = router.resolve({
         name: 'locations.detail',
-        params: { locationId, reservation: 'reservation' },
+        params: { locationId },
+        hash: '#reservations',
     });
 
-    pushRedirectUrl(route.fullPath);
+    pushRedirectUrl(redirectRoute.fullPath);
 
     router.push({ name: 'auth' });
 }

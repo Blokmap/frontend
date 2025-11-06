@@ -10,10 +10,24 @@
 
     @apply shadow-playful;
     --shadow-color: var(--color-primary-300);
+
+    /* Faster transitions for touch devices */
+    @media (pointer: coarse) {
+        transition:
+            transform 0.05s ease-out,
+            box-shadow 0.05s ease-out,
+            background-color 0.2s;
+        -webkit-tap-highlight-color: transparent;
+    }
 }
 
 .p-button:active {
     @apply shadow-playful-active;
+
+    /* Add slight brightness change for better touch feedback */
+    @media (pointer: coarse) {
+        filter: brightness(0.95);
+    }
 }
 
 .p-button-icon-right {
@@ -38,7 +52,7 @@
 
 .p-button-icon-only.p-button-rounded {
     @apply h-10 rounded-full;
-    --shadow-size: 0.1rem;
+    --shadow-size: 0.15rem;
 }
 
 .p-button-icon-only .p-button-label {

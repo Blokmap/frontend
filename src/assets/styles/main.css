@@ -184,6 +184,14 @@ body {
     @apply enabled:active:translate-x-[0.125rem] enabled:active:translate-y-[0.125rem];
     box-shadow: var(--shadow-size, 0.25rem) var(--shadow-size, 0.25rem) 0
         var(--shadow-color, currentColor);
+
+    /* Make active state more visible on touch devices */
+    @media (pointer: coarse) {
+        @apply enabled:active:scale-[0.97];
+        transition:
+            transform 0.05s ease-out,
+            box-shadow 0.05s ease-out;
+    }
 }
 
 @utility shadow-playful-no-transform {
@@ -194,4 +202,10 @@ body {
 @utility shadow-playful-active {
     box-shadow: calc(var(--shadow-size, 0.25rem) * 0.5) calc(var(--shadow-size, 0.25rem) * 0.5) 0
         var(--shadow-color, currentColor);
+
+    /* Make the active state more noticeable on touch devices */
+    @media (pointer: coarse) {
+        box-shadow: calc(var(--shadow-size, 0.25rem) * 0.25)
+            calc(var(--shadow-size, 0.25rem) * 0.25) 0 var(--shadow-color, currentColor);
+    }
 }

@@ -33,8 +33,6 @@ const labels: Record<ProfileState, string> = {
 </script>
 
 <template>
-    {{ profile.state }}
-    {{ severities }}
     <Badge :severity="severities[profile.state]" class="w-[90px]">
         <div class="flex w-full items-center justify-center gap-2">
             <FontAwesomeIcon :icon="icons[profile.state]" />

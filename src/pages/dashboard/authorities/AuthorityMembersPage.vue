@@ -15,8 +15,8 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import {
     useAddMemberToAuthority,
+    useDeleteMemberFromAuthority,
     useReadAuthorityMembers,
-    useRemoveMemberFromAuthority,
 } from '@/composables/data/useMembers';
 import { useReadProfiles } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/store/useToast';
@@ -36,15 +36,10 @@ const searchFilters = ref<ProfileFilter>({
     perPage: 25,
 });
 
-const {
-    data: members,
-    isLoading,
-    refetch: refetchMembers,
-} = useReadAuthorityMembers(computed(() => props.authority.id));
-
+const { data: members, isLoading } = useReadAuthorityMembers(computed(() => props.authority.id));
 const { data: searchResults, isLoading: isSearching } = useReadProfiles(searchFilters);
 const { mutateAsync: addMember, isPending: isAdding } = useAddMemberToAuthority();
-const { mutateAsync: removeMember, isPending: isRemoving } = useRemoveMemberFromAuthority();
+const { mutateAsync: deleteMember, isPending: isRemoving } = useDeleteMemberFromAuthority();
 
 const showSelectorDialog = ref(false);
 
@@ -98,49 +93,20 @@ async function onSearchProfiles(query: string): Promise<void> {
  * Handle selecting a profile to add to the authority.
  */
 async function onSelectProfile(profile: Profile): Promise<void> {
-    try {
-        await addMember({
-            id: props.authority.id,
-            profileId: profile.id,
-        });
-        toast.add({
-            severity: 'success',
-            summary: 'Lid toegevoegd',
-            detail: 'Het lid is succesvol toegevoegd aan de autoriteit.',
-        });
-        await refetchMembers();
-        showSelectorDialog.value = false;
-    } catch {
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij toevoegen',
-            detail: 'Er is een fout opgetreden bij het toevoegen van het lid.',
-        });
-    }
+    addMember({
+        id: props.authority.id,
+        memberId: profile.id,
+    });
 }
 
 /**
  * Handle removing a user from the authority.
  */
 async function onRemoveUser(profile: Profile): Promise<void> {
-    try {
-        await removeMember({
-            id: props.authority.id,
-            profileId: profile.id,
-        });
-        toast.add({
-            severity: 'success',
-            summary: 'Lid verwijderd',
-            detail: 'Het lid is succesvol verwijderd uit de autoriteit.',
-        });
-        await refetchMembers();
-    } catch {
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij verwijderen',
-            detail: 'Er is een fout opgetreden bij het verwijderen van het lid.',
-        });
-    }
+    deleteMember({
+        id: props.authority.id,
+        memberId: profile.id,
+    });
 }
 </script>
 

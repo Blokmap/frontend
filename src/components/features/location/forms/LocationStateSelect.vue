@@ -36,7 +36,7 @@ import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { faChartBar, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-import type { LocationState } from '@/domain/location';
+import { LocationState } from '@/domain/location';
 import type { FilterOption } from '@/utils/filter';
 
 const status = defineModel<LocationState | null>('status', {
@@ -44,9 +44,9 @@ const status = defineModel<LocationState | null>('status', {
 });
 
 const options: FilterOption[] = [
-    { label: 'In Afwachting', value: 'pending', icon: faClock },
-    { label: 'Goedgekeurd', value: 'approved', icon: faCheck },
-    { label: 'Afgekeurd', value: 'rejected', icon: faTimes },
+    { label: 'In Afwachting', value: LocationState.Pending, icon: faClock },
+    { label: 'Goedgekeurd', value: LocationState.Approved, icon: faCheck },
+    { label: 'Afgekeurd', value: LocationState.Rejected, icon: faTimes },
 ];
 
 const selectedOption = computed(() => {

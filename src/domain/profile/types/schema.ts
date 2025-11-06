@@ -31,9 +31,9 @@ export type ProfileStats = {
 };
 
 export type ProfileBody = {
-    firstName?: string;
-    lastName?: string;
-    username?: string;
+    firstName: string | null;
+    lastName: string | null;
+    username: string;
 };
 
 export type ProfileScanBody = {

@@ -19,7 +19,9 @@ const severities: Record<ReservationState, string> = {
 <template>
     <Badge :severity="severities[state]">
         <div class="flex w-full items-center justify-around gap-1">
-            <FontAwesomeIcon :icon="RESERVATION_STATE_ICONS[state]" :spin="state === 'pending'" />
+            <FontAwesomeIcon
+                :icon="RESERVATION_STATE_ICONS[state]"
+                :spin="state === ReservationState.Pending" />
             <span>{{ $t(`domains.reservations.state.${state.toLowerCase()}`) }}</span>
         </div>
     </Badge>

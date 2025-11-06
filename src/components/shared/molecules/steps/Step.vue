@@ -2,12 +2,11 @@
 import { faCheck, faCircleNotch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-import type { StepStatus } from '@/types/step';
 
 const props = withDefaults(
     defineProps<{
         title?: string;
-        status?: StepStatus;
+        status?: 'loading' | 'completed' | 'error' | 'idle';
     }>(),
     {
         status: 'idle',

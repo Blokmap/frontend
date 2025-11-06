@@ -2,7 +2,7 @@
 import Button from 'primevue/button';
 import { faSlash, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { RESERVATION_STATE_ICONS, type Reservation } from '@/domain/reservation';
+import { RESERVATION_STATE_ICONS, ReservationState, type Reservation } from '@/domain/reservation';
 import { timeToString } from '@/utils/time';
 import type { Time } from '@/utils/time';
 
@@ -25,7 +25,7 @@ defineEmits<{
             v-if="!isPendingDeletion"
             :icon="RESERVATION_STATE_ICONS[reservation.state]"
             class="state-icon"
-            :spin="reservation.state === 'pending'">
+            :spin="reservation.state === ReservationState.Pending">
         </FontAwesomeIcon>
         <Button
             rounded

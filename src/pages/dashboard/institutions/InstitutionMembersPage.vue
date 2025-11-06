@@ -16,7 +16,7 @@ import { useRouter } from 'vue-router';
 import {
     useAddMemberToInstitution,
     useReadInstitutionMembers,
-    useRemoveMemberFromInstitution,
+    useDeleteMemberFromInstitution,
 } from '@/composables/data/useMembers';
 import { useReadProfiles } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/store/useToast';
@@ -31,11 +31,9 @@ const router = useRouter();
 const toast = useToast();
 
 // Fetch members for this institution
-const {
-    data: members,
-    isLoading,
-    refetch: refetchMembers,
-} = useReadInstitutionMembers(computed(() => props.institution.id));
+const { data: members, isLoading } = useReadInstitutionMembers(
+    computed(() => props.institution.id),
+);
 
 const showSelectorDialog = ref(false);
 
@@ -46,14 +44,11 @@ const searchFilters = ref<ProfileFilter>({
     perPage: 25,
 });
 
-// Fetch profiles for the selector dialog
 const { data: searchResults, isLoading: isSearching } = useReadProfiles(searchFilters);
 
-// Add member mutation
 const { mutateAsync: addMember, isPending: isAdding } = useAddMemberToInstitution();
 
-// Remove member mutation
-const { mutateAsync: removeMember, isPending: isRemoving } = useRemoveMemberFromInstitution();
+const { mutateAsync: removeMember, isPending: isRemoving } = useDeleteMemberFromInstitution();
 
 /**
  * Handle clicking on a profile to view its details.
@@ -105,49 +100,20 @@ async function onSearchProfiles(query: string): Promise<void> {
  * Handle selecting a profile to add to the institution.
  */
 async function onSelectProfile(profile: Profile): Promise<void> {
-    try {
-        await addMember({
-            id: props.institution.id,
-            profileId: profile.id,
-        });
-        toast.add({
-            severity: 'success',
-            summary: 'Lid toegevoegd',
-            detail: 'Het lid is succesvol toegevoegd aan de institutie.',
-        });
-        await refetchMembers();
-        showSelectorDialog.value = false;
-    } catch {
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij toevoegen',
-            detail: 'Er is een fout opgetreden bij het toevoegen van het lid.',
-        });
-    }
+    addMember({
+        id: props.institution.id,
+        memberId: profile.id,
+    });
 }
 
 /**
  * Handle removing a user from the institution.
  */
 async function onRemoveUser(profile: Profile): Promise<void> {
-    try {
-        await removeMember({
-            id: props.institution.id,
-            profileId: profile.id,
-        });
-        toast.add({
-            severity: 'success',
-            summary: 'Lid verwijderd',
-            detail: 'Het lid is succesvol verwijderd uit de institutie.',
-        });
-        await refetchMembers();
-    } catch {
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij verwijderen',
-            detail: 'Er is een fout opgetreden bij het verwijderen van het lid.',
-        });
-    }
+    removeMember({
+        id: props.institution.id,
+        memberId: profile.id,
+    });
 }
 </script>
 

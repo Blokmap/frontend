@@ -1,4 +1,4 @@
-import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import type { IconDefinition } from '@fortawesome/fontawesome-common-types';
 
 export type FilterOption = {
     label: string;

@@ -2,6 +2,7 @@
 import Paginator from 'primevue/paginator';
 import MemberActionMenu from '@/components/features/auth/MemberActionMenu.vue';
 import RoleBadge from '@/components/features/auth/roles/RoleBadge.vue';
+import MemberAddDialog from '@/components/features/member/MemberAddDialog.vue';
 import MembersTable from '@/components/features/member/MembersTable.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
@@ -11,12 +12,14 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import {
     useReadInstitutionRoles,
+    useAddInstitutionMember,
     useDeleteMemberFromInstitution,
     useReadInstitutionMembers,
     useUpdateInstitutionMember,
 } from '@/composables/data/useMembers';
 import { usePagination } from '@/composables/usePagination';
 import type { Institution } from '@/domain/institution';
+import type { CreateMemberBody } from '@/domain/member';
 
 const props = defineProps<{
     institution: Institution;
@@ -34,8 +37,16 @@ const { data: members, isLoading } = useReadInstitutionMembers(
 );
 const { data: roles } = useReadInstitutionRoles(computed(() => props.institution.id));
 
+const { mutate: addInstitutionMember, isPending: addMemberIsPending } = useAddInstitutionMember({
+    onSuccess: () => {
+        showMemberAddDialog.value = false;
+    },
+});
+
 const { mutate: updateInstitutionMember } = useUpdateInstitutionMember();
 const { mutate: deleteInstitutionMember } = useDeleteMemberFromInstitution();
+
+const showMemberAddDialog = ref(false);
 
 /**
  * Handle changing a member's role.
@@ -60,6 +71,18 @@ function onDeleteClick(memberId: string): void {
         memberId,
     });
 }
+
+/**
+ * Handle adding a new member.
+ *
+ * @param body - The body containing the username and role ID
+ */
+function onAddMember(body: CreateMemberBody): void {
+    addInstitutionMember({
+        id: props.institution.id,
+        body,
+    });
+}
 </script>
 
 <template>
@@ -76,7 +99,10 @@ function onDeleteClick(memberId: string): void {
                         <FontAwesomeIcon :icon="faUserTag" />
                     </PageHeaderButton>
                 </RouterLink>
-                <PageHeaderButton severity="contrast" label="Beheerder Toevoegen">
+                <PageHeaderButton
+                    severity="contrast"
+                    label="Beheerder Toevoegen"
+                    @click="showMemberAddDialog = true">
                     <FontAwesomeIcon :icon="faUserPlus" />
                 </PageHeaderButton>
             </template>
@@ -104,5 +130,15 @@ function onDeleteClick(memberId: string): void {
             :total-records="members?.total"
             @page="onPageChange">
         </Paginator>
+
+        <Teleport to="body">
+            <MemberAddDialog
+                v-if="roles"
+                :is-pending="addMemberIsPending"
+                :roles="roles"
+                @click:submit="onAddMember"
+                v-model:is-visible="showMemberAddDialog">
+            </MemberAddDialog>
+        </Teleport>
     </DashboardContent>
 </template>

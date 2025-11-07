@@ -44,6 +44,7 @@ const { mutate: addLocationMember, isPending: addMemberIsPending } = useAddLocat
         showMemberAddDialog.value = false;
     },
 });
+
 const { mutate: updateLocationMember } = useUpdateLocationMember();
 const { mutate: deleteLocationMember } = useDeleteLocationMember();
 

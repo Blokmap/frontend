@@ -88,7 +88,8 @@ function handleDeactivate(): void {
                             v-model="profileData.firstName"
                             class="w-full"
                             placeholder="Voornaam"
-                            :disabled="isUpdating" />
+                            :disabled="isUpdating">
+                        </InputText>
                     </div>
                     <div class="space-y-2">
                         <label for="lastName" class="block text-sm font-medium text-gray-700">

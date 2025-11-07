@@ -15,7 +15,7 @@ import {
     useReadAuthorityMembers,
     useUpdateAuthorityMember,
 } from '@/composables/data/useMembers';
-import { usePagination } from '@/composables/data/usePagination';
+import { usePagination } from '@/composables/usePagination';
 import type { Authority } from '@/domain/authority';
 
 const props = defineProps<{
@@ -28,8 +28,8 @@ const pagination = ref({
 });
 
 const { onPageChange, first } = usePagination(pagination);
-
 const { data: members, isLoading } = useReadAuthorityMembers(computed(() => props.authority.id));
+
 const { data: roles } = useReadAuthorityRoles(computed(() => props.authority.id));
 
 const { mutate: updateAuthorityMember } = useUpdateAuthorityMember();

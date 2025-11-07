@@ -58,6 +58,32 @@ export async function readAuthorities(
 }
 
 /**
+ * Read authorities for a specific institution with optional filters (returns paginated list).
+ *
+ * @param institutionId - The ID of the institution.
+ * @param filters - The filters to apply when reading authorities.
+ * @returns A promise that resolves to a list of authorities.
+ */
+export async function readInstitutionAuthorities(
+    institutionId: number,
+    filters: Partial<AuthorityFilter> = {},
+): Promise<Paginated<Authority>> {
+    const endpoint = endpoints.institutions.authorities.list.replace(
+        '{id}',
+        institutionId.toString(),
+    );
+
+    const transformResponse = transformPaginatedResponseFactory(parseAuthorityResponse);
+
+    const { data } = await client.get<Paginated<Authority>>(endpoint, {
+        params: filters,
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
  * Read a single authority by ID.
  *
  * @param id - The ID of the authority to read.

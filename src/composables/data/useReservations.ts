@@ -17,7 +17,6 @@ import {
     type ReservationState,
 } from '@/domain/reservation';
 import { invalidateQueries } from './queryCache';
-import { queryKeys } from './queryKeys';
 import type {
     CompMutation,
     CompMutationOptions,
@@ -50,8 +49,7 @@ export function useCreateReservation(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all reservations and related location queries
-            invalidateQueries(queryClient, queryKeys.reservations.all());
-            invalidateQueries(queryClient, queryKeys.reservations.all(), data.id);
+            invalidateQueries(queryClient, ['reservations', 'list'], data.id);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -93,7 +91,7 @@ export function useCreateReservations(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all reservations
-            invalidateQueries(queryClient, queryKeys.reservations.all());
+            invalidateQueries(queryClient, ['reservations', 'list']);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -133,7 +131,7 @@ export function useDeleteReservation(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all reservations queries
-            invalidateQueries(queryClient, queryKeys.reservations.all(), variables.reservationId);
+            invalidateQueries(queryClient, ['reservations', 'list'], variables.reservationId);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -174,7 +172,7 @@ export function useDeleteReservations(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all reservations
-            invalidateQueries(queryClient, queryKeys.reservations.all());
+            invalidateQueries(queryClient, ['reservations', 'list']);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -209,7 +207,7 @@ export function useReadLocationReservations(
 ): CompQuery<Reservation[]> {
     const query = useQuery({
         ...options,
-        queryKey: queryKeys.reservations.byLocation(locationId, filters),
+        queryKey: ['reservations', 'list', 'byLocation', locationId, filters],
         queryFn: () => {
             const locationIdValue = toValue(locationId);
             const filtersValue = toValue(filters);
@@ -242,7 +240,7 @@ export function useConfirmReservation(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate reservations queries
-            invalidateQueries(queryClient, queryKeys.reservations.all(), variables.reservationId);
+            invalidateQueries(queryClient, ['reservations', 'list'], variables.reservationId);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -285,7 +283,7 @@ export function useReservationState(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all reservations
-            invalidateQueries(queryClient, queryKeys.reservations.all(), variables.reservationId);
+            invalidateQueries(queryClient, ['reservations'], variables.reservationId);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -322,7 +320,7 @@ export function useReadProfileReservations(
     const enabled = computed(() => toValue(profileId) !== null);
 
     const query = useQuery<Reservation[], AxiosError>({
-        queryKey: queryKeys.reservations.byProfile(profileId, filters),
+        queryKey: ['reservations', 'list', 'byProfile', profileId, filters, includes],
         enabled,
         placeholderData: keepPreviousData,
         queryFn: () => {

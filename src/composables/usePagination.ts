@@ -16,16 +16,22 @@ export function usePagination(pagination: Ref<Pagination>) {
      * Updates the filters ref with the new page number.
      *
      * @param event - The pagination event containing the new page index
+     * @param scroll - Whether to scroll to top after page change (default: true)
      */
-    const onPageChange = (event: { page: number }): void => {
+    const onPageChange = (event: { page: number }, scroll: boolean = true): void => {
         pagination.value.page = event.page + 1;
+
+        if (scroll) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     };
 
     /**
      * Reset pagination to the first page.
-     * Useful when filters change or data is refreshed.
+     *
+     * @param scroll - Whether to scroll to top after resetting page (default: true)
      */
-    const resetPage = (scroll: boolean = false): void => {
+    const resetPage = (scroll: boolean = true): void => {
         pagination.value.page = 1;
 
         if (scroll) {
@@ -35,6 +41,8 @@ export function usePagination(pagination: Ref<Pagination>) {
 
     /**
      * Computed property for the first record index (0-indexed).
+     *
+     * @param paginated - The paginated data object
      */
     const first = (paginated?: Paginated<any>): number | undefined => {
         if (!paginated) return undefined;

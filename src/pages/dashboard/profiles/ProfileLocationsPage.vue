@@ -80,9 +80,11 @@ function onDeleteLocation(locationId: number) {
                 </span>
             </template>
             <template #actions>
-                <PageHeaderButton label="Locatie Indienen" severity="contrast">
-                    <FontAwesomeIcon :icon="faPlus" />
-                </PageHeaderButton>
+                <RouterLink :to="{ name: 'locations.submit' }">
+                    <PageHeaderButton label="Locatie Indienen" severity="contrast">
+                        <FontAwesomeIcon :icon="faPlus" />
+                    </PageHeaderButton>
+                </RouterLink>
             </template>
         </DashboardDetailHeader>
 
@@ -93,8 +95,8 @@ function onDeleteLocation(locationId: number) {
                     <template #actions>
                         <LocationActionMenu
                             :location="membership.location"
-                            :is-pending="isLocationPending(membership.location.id)"
                             :show-state-select="ownProfile.isAdmin"
+                            :is-pending="isLocationPending(membership.location.id)"
                             @select:state="onSelectLocationState"
                             @click:delete="onDeleteLocation">
                         </LocationActionMenu>

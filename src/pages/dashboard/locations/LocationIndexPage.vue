@@ -21,7 +21,7 @@ import {
     useReadLocations,
     useUpdateLocationState,
 } from '@/composables/data/useLocations';
-import { usePagination } from '@/composables/data/usePagination';
+import { usePagination } from '@/composables/usePagination';
 import { abbreviateCount } from '@/utils/formatUtils';
 import type { LocationFilter, LocationState } from '@/domain/location';
 import type { Profile } from '@/domain/profile';

@@ -1,17 +1,20 @@
 import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
 import { parseProfileResponse } from '@/domain/profile';
+import { stringToDate } from '@/utils/date';
 import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/serviceUtils';
 import { parseAuthorityResponse } from '../../authority';
 import { parseInstitutionResponse } from '../../institution';
 import { parseLocationResponse } from '../../location';
 import { parseRoleResponse } from './memberRoleService';
 import type {
+    MemberFilter,
+    LocationMembership,
     AuthorityMembership,
     InstitutionMembership,
-    LocationMembership,
     Member,
-    MemberBody,
+    UpdateMemberBody,
+    CreateMemberBody,
 } from '../types';
 import type { Paginated } from '@/utils/pagination';
 
@@ -67,6 +70,7 @@ export function parseMemberResponse(data: any): Member {
     return {
         profile: parseProfileResponse(data.profile),
         role: parseRoleResponse(data.role),
+        addedAt: stringToDate(data.addedAt),
     };
 }
 
@@ -75,12 +79,13 @@ export function parseMemberResponse(data: any): Member {
  */
 export async function readLocationMembers(
     locationId: number,
+    filters: MemberFilter,
 ): Promise<Paginated<LocationMembership>> {
     const endpoint = endpoints.locations.members.list.replace('{id}', locationId.toString());
 
-    const transformResponse = transformPaginatedResponseFactory(parseLocationMembershipResponse);
+    const transformResponse = transformPaginatedResponseFactory(parseMemberResponse);
 
-    const { data } = await client.get(endpoint, { transformResponse });
+    const { data } = await client.get(endpoint, { params: filters, transformResponse });
 
     return data;
 }
@@ -89,12 +94,12 @@ export async function readLocationMembers(
  * Adds a member to a specific location.
  *
  * @param locationId - The ID of the location
- * @param profileId - The ID of the profile to add as a member
+ * @param body - The member body containing the username and role ID
  */
-export async function addLocationMember(locationId: number, profileId: string): Promise<void> {
+export async function addLocationMember(locationId: number, body: CreateMemberBody): Promise<void> {
     const endpoint = endpoints.locations.members.add.replace('{id}', locationId.toString());
 
-    await client.post(endpoint, { profileId });
+    await client.post(endpoint, body);
 }
 
 /**
@@ -121,7 +126,7 @@ export async function removeLocationMember(locationId: number, profileId: string
 export async function updateLocationMember(
     locationId: number,
     memberId: string,
-    body: MemberBody,
+    body: UpdateMemberBody,
 ): Promise<void> {
     const endpoint = endpoints.locations.members.update
         .replace('{id}', locationId.toString())
@@ -172,12 +177,15 @@ export async function readInstitutionMembers(institutionId: number): Promise<Pag
  * Adds a member to a specific authority.
  *
  * @param authorityId - The ID of the authority
- * @param profileId - The ID of the profile to add as a member
+ * @param body - The member body containing the username and role ID
  */
-export async function addAuthorityMember(authorityId: number, profileId: string): Promise<void> {
+export async function addAuthorityMember(
+    authorityId: number,
+    body: CreateMemberBody,
+): Promise<void> {
     const endpoint = endpoints.authorities.members.add.replace('{id}', authorityId.toString());
 
-    await client.post(endpoint, { profileId });
+    await client.post(endpoint, body);
 }
 
 /**
@@ -190,9 +198,9 @@ export async function addAuthorityMember(authorityId: number, profileId: string)
 export async function updateAuthorityMember(
     authorityId: number,
     memberId: string,
-    body: MemberBody,
+    body: UpdateMemberBody,
 ): Promise<void> {
-    const endpoint = endpoints.authorities.members.permissions.update
+    const endpoint = endpoints.authorities.members.update
         .replace('{id}', authorityId.toString())
         .replace('{profileId}', memberId.toString());
 
@@ -225,15 +233,15 @@ export async function removeAuthorityMember(authorityId: number, profileId: stri
  * Adds a member to a specific institution.
  *
  * @param institutionId - The ID of the institution
- * @param profileId - The ID of the profile to add as a member
+ * @param body - The member body containing the username and role ID
  */
 export async function addInstitutionMember(
     institutionId: number,
-    profileId: string,
+    body: CreateMemberBody,
 ): Promise<void> {
     const endpoint = endpoints.institutions.members.add.replace('{id}', institutionId.toString());
 
-    await client.post(endpoint, { profileId });
+    await client.post(endpoint, body);
 }
 
 /**
@@ -242,7 +250,7 @@ export async function addInstitutionMember(
 export async function updateInstitutionMember(
     institutionId: number,
     memberId: string,
-    body: MemberBody,
+    body: UpdateMemberBody,
 ): Promise<void> {
     const endpoint = endpoints.institutions.members.permissions.update
         .replace('{id}', institutionId.toString())

@@ -9,10 +9,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Paginator } from 'primevue';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useReadAuthorities } from '@/composables/data/useAuthorities';
-import { usePagination } from '@/composables/data/usePagination';
+import { useReadInstitutionAuthorities } from '@/composables/data/useAuthorities';
+import { usePagination } from '@/composables/usePagination';
+import { type Authority, type AuthorityFilter } from '@/domain/authority';
 import { type Institution } from '@/domain/institution';
-import type { Authority } from '@/domain/authority';
 
 const props = defineProps<{
     institution: Institution;
@@ -20,15 +20,16 @@ const props = defineProps<{
 
 const router = useRouter();
 
-const pagination = ref({
+const filters = ref<AuthorityFilter>({
     page: 1,
     perPage: 25,
 });
 
-const { first, onPageChange } = usePagination(pagination);
+const { first, onPageChange } = usePagination(filters);
 
-const { data: authorities, isLoading } = useReadAuthorities(
-    computed(() => ({ institution: props.institution.slug })),
+const { data: authorities, isLoading } = useReadInstitutionAuthorities(
+    computed(() => props.institution.id),
+    filters,
 );
 
 /**
@@ -50,12 +51,11 @@ function onAuthorityClick(authority: Authority) {
             title="Autoriteiten"
             secondary="Beheer autoriteiten gekoppeld aan deze institutie.">
             <template #actions>
-                <PageHeaderButton
-                    label="
-                    Autoriteit Aanmaken"
-                    :to="{ name: 'dashboard.authorities.create' }">
-                    <FontAwesomeIcon :icon="faPlus" class="mr-2" />
-                </PageHeaderButton>
+                <RouterLink :to="{ name: 'dashboard.authorities.create' }">
+                    <PageHeaderButton label="Autoriteit Aanmaken">
+                        <FontAwesomeIcon :icon="faPlus" class="mr-2" />
+                    </PageHeaderButton>
+                </RouterLink>
             </template>
         </DashboardDetailHeader>
 
@@ -70,10 +70,9 @@ function onAuthorityClick(authority: Authority) {
         </AuthorityTable>
 
         <Paginator
-            v-if="authorities?.data?.length"
-            :first="first"
-            :rows="authorities.perPage"
-            :total-records="authorities.total"
+            :first="first(authorities)"
+            :rows="authorities?.perPage"
+            :total-records="authorities?.total"
             @page="onPageChange">
         </Paginator>
     </DashboardContent>

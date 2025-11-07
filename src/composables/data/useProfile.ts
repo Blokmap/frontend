@@ -22,7 +22,6 @@ import {
     type ProfileScanBody,
 } from '@/domain/profile';
 import { invalidateQueries } from './queryCache';
-import { queryKeys } from './queryKeys';
 
 import type { Reservation } from '@/domain/reservation';
 import type {
@@ -31,7 +30,7 @@ import type {
     CompQuery,
     CompQueryOptions,
 } from '@/utils/composable';
-import type { Paginated, Pagination } from '@/utils/pagination';
+import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
 
 /**
@@ -45,7 +44,7 @@ export function useReadProfileStats(
 ): CompQuery<ProfileStats> {
     const enabled = computed(() => toValue(profileId) !== null);
     const query = useQuery<ProfileStats, AxiosError>({
-        queryKey: queryKeys.profiles.stats(profileId),
+        queryKey: ['profiles', 'read', profileId, 'stats'],
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
             return readProfileStats(profileIdValue);
@@ -69,7 +68,7 @@ export function useReadProfile(
 ): CompQuery<Profile | null> {
     const query = useQuery<Profile | null, AxiosError>({
         ...options,
-        queryKey: queryKeys.profiles.detail(profileId),
+        queryKey: ['profiles', 'read', profileId],
         queryFn: () => readProfile(toValue(profileId)),
     });
 
@@ -90,7 +89,7 @@ export function useReadProfiles(
 ): CompQuery<Paginated<Profile>> {
     const query = useQuery<Paginated<Profile>, AxiosError>({
         ...options,
-        queryKey: queryKeys.profiles.list(filters),
+        queryKey: ['profiles', 'list', filters],
         queryFn: () => readProfiles(toValue(filters)),
     });
 
@@ -118,7 +117,7 @@ export function useUpdateProfileAvatar(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate the specific profile query
-            invalidateQueries(queryClient, queryKeys.profiles.all(), variables.profileId);
+            invalidateQueries(queryClient, ['profiles'], variables.profileId);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -159,7 +158,7 @@ export function useUpdateProfile(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all profile queries
-            invalidateQueries(queryClient, queryKeys.profiles.all(), variables.profileId);
+            invalidateQueries(queryClient, ['profiles'], variables.profileId);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -216,7 +215,7 @@ export function useDeleteProfileAvatar(options: CompMutationOptions = {}): CompM
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate the specific profile query
-            invalidateQueries(queryClient, queryKeys.profiles.all(), variables);
+            invalidateQueries(queryClient, ['profiles'], variables);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -255,7 +254,7 @@ export function useUpdateProfileState(
     const mutation = useMutation({
         ...options,
         onSuccess: (data, variables, context) => {
-            invalidateQueries(queryClient, queryKeys.profiles.all(), variables.profileId);
+            invalidateQueries(queryClient, ['profiles'], variables.profileId);
 
             if (!options.disableToasts) {
                 const statusLabel =
@@ -286,13 +285,13 @@ export function useUpdateProfileState(
 
 export function useReadInstitutionProfiles(
     institutionId: MaybeRefOrGetter<number>,
-    pagination: MaybeRefOrGetter<Pagination>,
+    filters: MaybeRefOrGetter<ProfileFilter>,
     options: CompQueryOptions = {},
 ): CompQuery<Paginated<Profile>> {
     const query = useQuery<Paginated<Profile>, AxiosError>({
         ...options,
-        queryKey: queryKeys.profiles.byInstitution(institutionId, pagination),
-        queryFn: () => readInstitutionProfiles(toValue(institutionId), toValue(pagination)),
+        queryKey: ['profiles', 'list', 'byInstitution', institutionId, filters],
+        queryFn: () => readInstitutionProfiles(toValue(institutionId), toValue(filters)),
     });
 
     return query;

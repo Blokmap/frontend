@@ -74,9 +74,7 @@ export const endpoints = {
             list: '/authorities/{id}/members',
             add: '/authorities/{id}/members',
             remove: '/authorities/{id}/members/{profileId}',
-            permissions: {
-                update: '/authorities/{id}/members/{profileId}/permissions',
-            },
+            update: '/authorities/{id}/members/{profileId}',
         },
         permissions: '/authorities/permissions',
     },
@@ -109,7 +107,7 @@ export const endpoints = {
             read: '/locations/{id}/members/{profileId}',
             update: '/locations/{id}/members/{profileId}',
             list: '/locations/{id}/members',
-            add: '/authorities/{id}/members',
+            add: '/locations/{id}/members',
             delete: '/locations/{id}/members/{profileId}',
             permissions: {
                 update: '/locations/{id}/members/{profileId}/permissions',

@@ -58,7 +58,7 @@ function onDeleteClick(): void {
         <template #content>
             <ActionMenuSelect
                 v-if="showRoleSelect"
-                :value="member.role.id"
+                :value="member.role?.id"
                 :options="roleOptions"
                 :loading="isPending"
                 label="Rol wijzigen"

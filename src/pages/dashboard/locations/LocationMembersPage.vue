@@ -2,6 +2,7 @@
 import Paginator from 'primevue/paginator';
 import MemberActionMenu from '@/components/features/auth/MemberActionMenu.vue';
 import RoleBadge from '@/components/features/auth/roles/RoleBadge.vue';
+import MemberAddDialog from '@/components/features/member/MemberAddDialog.vue';
 import MembersTable from '@/components/features/member/MembersTable.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
@@ -11,29 +12,42 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { useReadLocationRoles } from '@/composables/data/useAuth';
 import {
+    useAddLocationMember,
     useDeleteLocationMember,
     useReadLocationMembers,
     useUpdateLocationMember,
 } from '@/composables/data/useMembers';
-import { usePagination } from '@/composables/data/usePagination';
-import type { Location } from '@/domain/location';
+import { usePagination } from '@/composables/usePagination';
+import { type Location } from '@/domain/location';
+import type { CreateMemberBody, MemberFilter } from '@/domain/member';
 
 const props = defineProps<{
     location: Location;
 }>();
 
-const pagination = ref({
+const filters = ref<MemberFilter>({
     page: 1,
     perPage: 25,
 });
 
-const { onPageChange, first } = usePagination(pagination);
+const { onPageChange, first } = usePagination(filters);
 
-const { data: members, isLoading } = useReadLocationMembers(computed(() => props.location.id));
+const { data: members, isLoading } = useReadLocationMembers(
+    computed(() => props.location.id),
+    filters,
+);
+
 const { data: roles } = useReadLocationRoles(computed(() => props.location.id));
 
+const { mutate: addLocationMember, isPending: addMemberIsPending } = useAddLocationMember({
+    onSuccess: () => {
+        showMemberAddDialog.value = false;
+    },
+});
 const { mutate: updateLocationMember } = useUpdateLocationMember();
 const { mutate: deleteLocationMember } = useDeleteLocationMember();
+
+const showMemberAddDialog = ref(false);
 
 /**
  * Handle changing a member's role.
@@ -58,6 +72,18 @@ function onDeleteClick(memberId: string): void {
         memberId,
     });
 }
+
+/**
+ * Handle adding a new member.
+ *
+ * @param body - The body containing the username and role ID
+ */
+function onAddMember(body: CreateMemberBody): void {
+    addLocationMember({
+        id: props.location.id,
+        body,
+    });
+}
 </script>
 
 <template>
@@ -74,7 +100,10 @@ function onDeleteClick(memberId: string): void {
                         <FontAwesomeIcon :icon="faUserTag" />
                     </PageHeaderButton>
                 </RouterLink>
-                <PageHeaderButton severity="contrast" label="Beheerder Toevoegen">
+                <PageHeaderButton
+                    severity="contrast"
+                    label="Beheerder Toevoegen"
+                    @click="showMemberAddDialog = true">
                     <FontAwesomeIcon :icon="faUserPlus" />
                 </PageHeaderButton>
             </template>
@@ -97,11 +126,20 @@ function onDeleteClick(memberId: string): void {
         </MembersTable>
 
         <Paginator
-            v-if="members?.data?.length"
-            :first="first"
-            :rows="members.perPage"
-            :total-records="members.total"
+            :first="first(members)"
+            :rows="members?.perPage"
+            :total-records="members?.total"
             @page="onPageChange">
         </Paginator>
+
+        <Teleport to="body">
+            <MemberAddDialog
+                v-if="roles"
+                :is-pending="addMemberIsPending"
+                :roles="roles"
+                @click:submit="onAddMember"
+                v-model:is-visible="showMemberAddDialog">
+            </MemberAddDialog>
+        </Teleport>
     </DashboardContent>
 </template>

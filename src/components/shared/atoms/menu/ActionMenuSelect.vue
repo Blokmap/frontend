@@ -6,7 +6,7 @@ import type { SelectOption } from '.';
 
 const props = withDefaults(
     defineProps<{
-        value?: T;
+        value?: T | null;
         options: SelectOption<T>[];
         label: string;
         placeholder?: string;
@@ -46,10 +46,13 @@ const selectedOption = computed<SelectOption<T> | undefined>(() => {
             </slot>
         </template>
         <template #value="{ value }">
-            <div class="flex items-center gap-2 text-sm text-slate-800">
+            <div class="flex items-center gap-2 text-sm text-slate-800" v-if="value">
                 <FontAwesomeIcon v-if="value.icon" :icon="value.icon" />
                 <span>{{ value.label }}</span>
             </div>
+        </template>
+        <template #empty>
+            <slot name="empty"> <span class="text-slate-500"> Geen opties beschikbaar </span></slot>
         </template>
     </Select>
 </template>

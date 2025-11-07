@@ -32,6 +32,9 @@ export function isDateObject(value: any): value is Date {
  * @param normalize - If true, assumes the input is in UTC and normalizes to current timezone.
  * @returns The Date object representation of the date.
  */
+export function stringToDate(dateString: any, normalize?: boolean): Date;
+export function stringToDate(dateString: undefined, normalize?: boolean): undefined;
+export function stringToDate(dateString: null, normalize?: boolean): null;
 export function stringToDate(
     dateString?: string | null,
     normalize: boolean = false,

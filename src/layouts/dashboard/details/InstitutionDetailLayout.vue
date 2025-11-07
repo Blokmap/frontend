@@ -51,12 +51,12 @@ const tabs = computed<TabItem[]>(() => [
         },
     },
     {
-        value: 'access',
+        value: 'members',
         label: 'Toegangsbeheer',
         align: 'right',
         icon: faUsersGear,
         route: {
-            name: 'dashboard.institutions.detail.access',
+            name: 'dashboard.institutions.detail.members',
             params: { institutionId: props.institutionId },
         },
     },

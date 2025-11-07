@@ -22,7 +22,7 @@ const severities: Record<ReservationState, string> = {
             <FontAwesomeIcon
                 :icon="RESERVATION_STATE_ICONS[state]"
                 :spin="state === ReservationState.Pending" />
-            <span>{{ $t(`domains.reservations.state.${state.toLowerCase()}`) }}</span>
+            <span>{{ $t(`domains.reservations.state.${state}`) }}</span>
         </div>
     </Badge>
 </template>

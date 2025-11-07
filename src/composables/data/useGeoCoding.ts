@@ -4,7 +4,6 @@ import { useI18n } from 'vue-i18n';
 import { mapBoxClient } from '@/config/axiosConfig';
 import { mapboxEndpoints } from '@/config/endpoints';
 import { geocodeAddress, type GeoSearchFilter, type LngLat } from '@/domain/map';
-import { queryKeys } from './queryKeys';
 
 import type { CompMutation, CompQuery, CompQueryOptions } from '@/utils/composable';
 import type { AxiosError } from 'axios';
@@ -33,10 +32,7 @@ export function useSearchGeoLocations(
 
     const query = useQuery<GeoJSON.GeoJsonProperties[], AxiosError>({
         ...options,
-        queryKey: queryKeys.geo.search({
-            ...toValue(filters),
-            language: toValue(locale),
-        }),
+        queryKey: ['geo', 'search', filters, locale],
         retry: false,
         queryFn: async () => {
             const params = toValue(filters);

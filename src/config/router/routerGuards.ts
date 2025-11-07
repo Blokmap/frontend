@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/vue-query';
 import { computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { AUTH_QUERY_KEYS, useAuthProfile } from '@/composables/data/useAuth';
+import { useAuthProfile } from '@/composables/data/useAuth';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useToast } from '@/composables/store/useToast';
 import { pushRedirectUrl, readAuthProfile } from '@/domain/auth';
@@ -24,7 +24,7 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
     }
 
     const profile = await client.fetchQuery({
-        queryKey: AUTH_QUERY_KEYS.profile(),
+        queryKey: ['auth', 'profile'],
         queryFn: readAuthProfile,
         staleTime: 5000,
     });
@@ -35,8 +35,6 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
             summary: 'Niet ingelogd',
             detail: 'Log in om deze pagina te bekijken.',
         });
-
-        pushRedirectUrl(to.fullPath);
 
         return { name: 'auth' };
     }
@@ -75,6 +73,17 @@ export async function titleRouterGuard(
     } else {
         clearPageTitle();
     }
+}
+
+/**
+ * Guard that sets the redirect URL to the new route being navigated to.
+ *
+ * @param to Route to which we are navigating
+ */
+export async function redirectRouterGuard(
+    to: RouteLocationNormalized,
+): Promise<NavigationGuardReturn> {
+    if (to.name !== 'auth') pushRedirectUrl(to.fullPath);
 }
 
 /**

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Popover from 'primevue/popover';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faTag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, useTemplateRef } from 'vue';
 import {
@@ -61,6 +61,7 @@ function onClickLabel(event: Event): void {
         :class="{ clickable }"
         :style="{ backgroundColor: role?.colour ?? 'whitesmoke', color: textColor }"
         @click.stop="onClickLabel">
+        <FontAwesomeIcon class="mr-1" :icon="faTag" />
         <span class="text-sm font-semibold">{{ role?.name ?? 'Geen Rol' }}</span>
     </div>
 

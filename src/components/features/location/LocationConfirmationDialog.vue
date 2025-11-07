@@ -46,12 +46,9 @@ function onCancel() {
         modal
         :closable="!isLoading"
         :dismissable-mask="!isLoading"
-        class="mx-4 w-full max-w-lg"
         content-class="rounded-lg">
         <template #header>
-            <div class="flex items-center gap-3">
-                <h3 class="text-lg font-semibold text-gray-900">Locatie afkeuren</h3>
-            </div>
+            <h3 class="text-lg font-semibold text-gray-900">Locatie afkeuren</h3>
         </template>
 
         <div class="space-y-4">

@@ -12,7 +12,6 @@ import {
     type OpeningTimeFilter,
 } from '@/domain/openings';
 import { invalidateQueries } from './queryCache';
-import { queryKeys } from './queryKeys';
 import type { CompMutation, CompMutationOptions, CompQuery } from '@/utils/composable';
 import type { AxiosError } from 'axios';
 
@@ -30,8 +29,8 @@ export function useReadOpeningTimes(
     const enabled = computed(() => toValue(locationId) !== null);
 
     const query = useQuery<OpeningTime[], AxiosError>({
-        queryKey: queryKeys.openingTimes.filtered(locationId, filters),
         enabled,
+        queryKey: ['openingTimes', 'list', 'byLocation', locationId, filters],
         queryFn: () => {
             const locationIdValue = toValue(locationId)!;
             const filtersValue = toValue(filters);
@@ -63,8 +62,14 @@ export function useCreateOpeningTimes(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all opening times and location queries
-            invalidateQueries(queryClient, queryKeys.openingTimes.all(variables.locationId));
-            invalidateQueries(queryClient, queryKeys.locations.all(), variables.locationId);
+            invalidateQueries(queryClient, ['locations', 'read', variables.locationId]);
+
+            invalidateQueries(queryClient, [
+                'openingTimes',
+                'list',
+                'byLocation',
+                variables.locationId,
+            ]);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -107,8 +112,14 @@ export function useUpdateOpeningTime(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all opening times and location queries
-            invalidateQueries(queryClient, queryKeys.openingTimes.all(variables.locationId));
-            invalidateQueries(queryClient, queryKeys.locations.all(), variables.locationId);
+            invalidateQueries(queryClient, ['locations', 'read', variables.locationId]);
+
+            invalidateQueries(queryClient, [
+                'openingTimes',
+                'list',
+                'byLocation',
+                variables.locationId,
+            ]);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -150,8 +161,14 @@ export function useDeleteOpeningTime(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all opening times and location queries
-            invalidateQueries(queryClient, queryKeys.openingTimes.all(variables.locationId));
-            invalidateQueries(queryClient, queryKeys.locations.all(), variables.locationId);
+            invalidateQueries(queryClient, ['locations', 'read', variables.locationId]);
+
+            invalidateQueries(queryClient, [
+                'openingTimes',
+                'list',
+                'byLocation',
+                variables.locationId,
+            ]);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -187,8 +204,8 @@ export function useDeleteAllOpeningTimes(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all opening times and location queries
-            invalidateQueries(queryClient, queryKeys.openingTimes.all(variables));
-            invalidateQueries(queryClient, queryKeys.locations.all(), variables);
+            invalidateQueries(queryClient, ['locations', 'read', variables]);
+            invalidateQueries(queryClient, ['openingTimes', 'list', 'byLocation', variables]);
 
             if (!options.disableToasts) {
                 toast.add({

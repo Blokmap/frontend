@@ -9,10 +9,10 @@ import {
     type AuthorityFilter,
     type AuthorityBody,
     readProfileAuthorities,
+    readInstitutionAuthorities,
 } from '@/domain/authority';
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
-import { queryKeys } from './queryKeys';
 import type {
     CompMutation,
     CompMutationOptions,
@@ -38,11 +38,32 @@ export function useReadAuthorities(
 ): CompQuery<Paginated<Authority>> {
     const authorities = useQuery({
         ...options,
-        queryKey: queryKeys.authorities.list(filters),
+        queryKey: ['authorities', 'list'],
         queryFn: () => readAuthorities(toValue(filters)),
     });
 
     return authorities;
+}
+
+/**
+ * Composable to fetch authorities associated with a specific institution.
+ *
+ * @param institutionId - The ID of the institution to fetch authorities for.
+ * @param options - Query options.
+ * @returns The query object containing institution authorities and their state.
+ */
+export function useReadInstitutionAuthorities(
+    institutionId: MaybeRef<number>,
+    filters: MaybeRefOrGetter<Partial<AuthorityFilter>>,
+    options: CompQueryOptions = {},
+): CompQuery<Paginated<Authority>> {
+    const query = useQuery<Paginated<Authority>, AxiosError>({
+        ...options,
+        queryKey: ['authorities', 'list', 'byInstitution', institutionId, filters],
+        queryFn: () => readInstitutionAuthorities(toValue(institutionId), toValue(filters)),
+    });
+
+    return query;
 }
 
 /**
@@ -58,7 +79,7 @@ export function useReadAuthority(
 ): CompQuery<Authority> {
     const authority = useQuery({
         ...options,
-        queryKey: queryKeys.authorities.detail(id),
+        queryKey: ['authorities', 'read', id],
         queryFn: () => readAuthority(toValue(id)),
     });
 
@@ -78,7 +99,7 @@ export function useReadProfileAuthorities(
 
     const query = useQuery<Authority[], AxiosError>({
         enabled,
-        queryKey: queryKeys.authorities.byProfile(profileId),
+        queryKey: ['authorities', 'list', 'byProfile', profileId],
         queryFn: () => readProfileAuthorities(toValue(profileId)!),
     });
 
@@ -98,7 +119,7 @@ export function useCreateAuthority(options: CompMutationOptions = {}): CompMutat
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all authority queries
-            invalidateQueries(queryClient, queryKeys.authorities.all());
+            invalidateQueries(queryClient, ['authorities', 'list']);
 
             options.onSuccess?.(data, variables, context);
         },
@@ -126,7 +147,7 @@ export function useUpdateAuthority(
         onSuccess: (data, variables, context) => {
             // Invalidate all authority queries
             const { id: authorityId } = variables;
-            invalidateQueries(queryClient, queryKeys.authorities.all(), authorityId);
+            invalidateQueries(queryClient, ['authorities'], authorityId);
 
             if (!options.disableToasts) {
                 toast.add({

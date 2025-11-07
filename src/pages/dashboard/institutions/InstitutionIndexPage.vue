@@ -13,7 +13,7 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useReadInstitutions } from '@/composables/data/useInstitutions';
-import { usePagination } from '@/composables/data/usePagination';
+import { usePagination } from '@/composables/usePagination';
 import { abbreviateCount } from '@/utils/formatUtils';
 import type { Institution, InstitutionFilter } from '@/domain/institution';
 import type { Profile } from '@/domain/profile';

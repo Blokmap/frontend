@@ -1,12 +1,9 @@
 @import './button';
 
 .p-dialog {
-    @apply border-surface-200 dark:border-surface-700;
-    @apply bg-surface-0 dark:bg-surface-900;
-    @apply dark:text-surface-0 text-slate-800;
+    @apply border-surface-200 bg-surface-0 rounded-xl border text-slate-800;
     @apply max-h-[90%] scale-100;
-    @apply rounded-xl border;
-    @apply shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)];
+    @apply mx-4 w-full max-w-lg;
 }
 
 .p-dialog-content {

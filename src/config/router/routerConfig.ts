@@ -7,10 +7,9 @@ import ProfileDetailLayout from '@/layouts/dashboard/details/ProfileDetailLayout
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
 import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
-import { AUTH_QUERY_KEYS } from '@/composables/data/useAuth';
 import { useToast } from '@/composables/store/useToast';
 import { readAuthProfile, pullRedirectUrl } from '@/domain/auth';
-import { authRouterGuard, titleRouterGuard } from './routerGuards';
+import { authRouterGuard, redirectRouterGuard, titleRouterGuard } from './routerGuards';
 import {
     AuthPage,
     AuthorityCreatePage,
@@ -421,7 +420,7 @@ const routes: RouteRecordRaw[] = [
                     const client = useQueryClient();
 
                     const profile = await client.fetchQuery({
-                        queryKey: AUTH_QUERY_KEYS.profile(),
+                        queryKey: ['auth', 'profile'],
                         queryFn: readAuthProfile,
                     });
 
@@ -475,6 +474,7 @@ const router = createRouter({
 });
 
 router.beforeEach(authRouterGuard);
+router.afterEach(redirectRouterGuard);
 router.afterEach(titleRouterGuard);
 
 export { router };

@@ -14,7 +14,7 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useReadAuthorities } from '@/composables/data/useAuthorities';
-import { usePagination } from '@/composables/data/usePagination';
+import { usePagination } from '@/composables/usePagination';
 import { abbreviateCount } from '@/utils/formatUtils';
 import type { Authority, AuthorityFilter } from '@/domain/authority';
 import type { Profile } from '@/domain/profile';

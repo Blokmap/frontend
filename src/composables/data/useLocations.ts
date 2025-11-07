@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
+import { type MaybeRef, computed, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
     createLocation,
@@ -20,13 +20,15 @@ import {
     updateLocationState,
     deleteLocationImage,
     reorderLocationImages,
-    readProfileLocations,
     readAuthorityLocations,
 } from '@/domain/location';
-import { readLocationReservations, type Reservation } from '@/domain/reservation';
+import {
+    readLocationReservations,
+    type Reservation,
+    type ReservationFilter,
+} from '@/domain/reservation';
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
-import { queryKeys } from './queryKeys';
 import type { ImageReorderBody, ImageBody } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type {
@@ -53,7 +55,7 @@ export function useSearchLocations(
 
     const query = useQuery({
         ...options,
-        queryKey: queryKeys.locations.search(filters),
+        queryKey: ['locations', 'list', filters],
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const params = { ...toValue(filters), locale: toValue(locale) };
@@ -80,10 +82,7 @@ export function useReadLocations(
 
     const query = useQuery({
         ...options,
-        queryKey: queryKeys.locations.list({
-            ...toValue(filters),
-            language: toValue(locale),
-        }),
+        queryKey: ['locations', 'list', filters, locale],
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const filtersValue = toValue(filters);
@@ -108,7 +107,7 @@ export function useReadLocation(
 ): CompQuery<Location> {
     const query = useQuery({
         ...options,
-        queryKey: queryKeys.locations.detail(id),
+        queryKey: ['locations', 'read', id],
         queryFn: () => {
             const locationId = toValue(id);
             const includes = options.includes ?? [];
@@ -128,42 +127,18 @@ export function useReadLocation(
  */
 export function useReadLocationReservations(
     locationId: MaybeRef<number | null>,
-    inWeekOf: MaybeRefOrGetter<Date> = new Date(),
+    filters: MaybeRef<ReservationFilter> = {},
 ): CompQuery<Reservation[]> {
     const enabled = computed(() => toValue(locationId) !== null);
 
     const query = useQuery<Reservation[], AxiosError>({
-        queryKey: queryKeys.reservations.byLocation(toValue(locationId), {
-            inWeekOf: toValue(inWeekOf),
-        }),
         enabled,
+        queryKey: ['reservations', 'list', 'byLocation', locationId, filters],
         queryFn: () => {
             const locationIdValue = toValue(locationId)!;
-            const inWeekOfValue = toValue(inWeekOf);
-            return readLocationReservations(locationIdValue, { inWeekOf: inWeekOfValue });
+            const filtersValue = toValue(filters);
+            return readLocationReservations(locationIdValue, filtersValue);
         },
-    });
-
-    return query;
-}
-
-/**
- * Composable to fetch locations associated with a specific profile.
- *
- * @param profileId - The ID of the profile to fetch locations for.
- * @returns The query object containing profile locations and their state.
- */
-export function useReadProfileLocations(
-    profileId: MaybeRef<string | null>,
-    options: CompQueryOptions = {},
-): CompQuery<Location[]> {
-    const enabled = computed(() => toValue(profileId) !== null);
-
-    const query = useQuery<Location[], AxiosError>({
-        ...options,
-        queryKey: queryKeys.locations.detail(profileId),
-        enabled,
-        queryFn: () => readProfileLocations(toValue(profileId)!),
     });
 
     return query;
@@ -183,7 +158,7 @@ export function useReadAuthorityLocations(
 
     const query = useQuery<Location[], AxiosError>({
         ...options,
-        queryKey: queryKeys.locations.detail(authorityId),
+        queryKey: ['locations', 'list', 'byAuthority', authorityId],
         enabled,
         queryFn: () => readAuthorityLocations(toValue(authorityId)!),
     });
@@ -224,7 +199,7 @@ export function useCreateLocation(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate all location queries
-            invalidateQueries(queryClient, queryKeys.locations.all());
+            invalidateQueries(queryClient, ['locations']);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -259,7 +234,7 @@ export function useUpdateLocation(
             // Invalidate only queries that contain this location
             const { locationId } = variables;
 
-            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+            invalidateQueries(queryClient, ['locations'], locationId);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -313,7 +288,7 @@ export function useCreateLocationImage(
             // Add the new image to the specific location query
             const { locationId } = variables;
 
-            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+            invalidateQueries(queryClient, ['locations'], locationId);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -349,7 +324,7 @@ export function useDeleteLocationImage(
             // Invalidate specific location query
             const { locationId } = variables;
 
-            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+            invalidateQueries(queryClient, ['locations'], locationId);
 
             if (!options.disableToasts) {
                 const toast = useToast();
@@ -388,7 +363,7 @@ export function useReorderLocationImages(
             // Invalidate specific location query
             const { locationId } = variables;
 
-            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+            invalidateQueries(queryClient, ['locations'], locationId);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -435,7 +410,7 @@ export function useUpdateLocationImages(
             // Invalidate specific location query
             const { locationId } = variables;
 
-            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+            invalidateQueries(queryClient, ['locations'], locationId);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -513,7 +488,7 @@ export function useUpdateLocationState(
             // Invalidate all queries containing this location
             const { locationId } = variables;
 
-            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+            invalidateQueries(queryClient, ['locations'], locationId);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -549,7 +524,7 @@ export function useDeleteLocation(options: CompMutationOptions = {}): CompMutati
             // Remove the location from all queries
             const locationId = variables;
 
-            invalidateQueries(queryClient, queryKeys.locations.all(), locationId);
+            invalidateQueries(queryClient, ['locations', 'list'], locationId);
 
             if (!options.disableToasts) {
                 toast.add({

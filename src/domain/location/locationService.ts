@@ -11,13 +11,13 @@ import { parseImageResponse } from '../image';
 import { parseOpeningTimeResponse } from '../openings';
 import { parseProfileResponse } from '../profile';
 import { parseTranslationResponse } from '../translation';
-import type {
-    Location,
-    LocationSearchFilter,
-    LocationBody,
-    NearestLocation,
-    LocationFilter,
-    LocationStateBody,
+import {
+    type Location,
+    type LocationSearchFilter,
+    type LocationBody,
+    type NearestLocation,
+    type LocationFilter,
+    type LocationStateBody,
 } from './types';
 import type { Image, ImageReorderBody, ImageBody } from '@/domain/image';
 import type { LngLat } from '@/domain/map';

@@ -1,5 +1,5 @@
 import type { LocationState } from './locationSchemaTypes';
-import type { LngLat, LngLatBounds } from '../../map';
+import type { LngLat, LngLatBounds } from '@/domain/map/types/mapTypes';
 import type { Pagination } from '@/utils/pagination';
 
 export type LocationFilter = Pagination & {

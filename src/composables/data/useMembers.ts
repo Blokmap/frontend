@@ -12,7 +12,7 @@ import {
     updateAuthorityMember,
     updateInstitutionMember,
     updateLocationMember,
-    type MemberBody,
+    type UpdateMemberBody,
     type Member,
     type LocationMembership,
     readProfileLocationMemberships,
@@ -20,10 +20,12 @@ import {
     readProfileAuthorityMemberships,
     type InstitutionMembership,
     readProfileInstitutionMemberships,
+    type CreateMemberBody,
+    addLocationMember,
 } from '@/domain/member';
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
-import { queryKeys } from './queryKeys';
+import type { LocationFilter } from '@/domain/location';
 import type {
     CompMutation,
     CompMutationOptions,
@@ -33,15 +35,10 @@ import type {
 import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
 
-export type AddMemberParams = {
-    id: number;
-    memberId: string;
-};
-
 export type UpdateMemberParams = {
     id: number;
     memberId: string;
-    body: MemberBody;
+    body: UpdateMemberBody;
 };
 
 export type DeleteMemberParams = {
@@ -55,12 +52,13 @@ export type DeleteMemberParams = {
  */
 export function useReadLocationMembers(
     locationId: MaybeRef<number>,
+    filters: MaybeRef<LocationFilter> = {},
     options: CompQueryOptions = {},
 ): CompQuery<Paginated<Member>> {
     const query = useQuery({
         ...options,
-        queryKey: queryKeys.members.byLocation(toValue(locationId)),
-        queryFn: () => readLocationMembers(toValue(locationId)),
+        queryKey: ['members', 'list', 'byLocation', locationId, filters],
+        queryFn: () => readLocationMembers(toValue(locationId), toValue(filters)),
     });
 
     return query;
@@ -75,7 +73,7 @@ export function useReadAuthorityMembers(
 ): CompQuery<Paginated<Member>> {
     const query = useQuery<Paginated<Member>, AxiosError>({
         ...options,
-        queryKey: queryKeys.members.byAuthority(toValue(authorityId)),
+        queryKey: ['members', 'list', 'byAuthority', authorityId],
         queryFn: () => readAuthorityMembers(toValue(authorityId)),
     });
 
@@ -91,17 +89,22 @@ export function useReadInstitutionMembers(
 ): CompQuery<Paginated<Member>> {
     const query = useQuery({
         ...options,
-        queryKey: queryKeys.members.byInstitution(toValue(institutionId)),
+        queryKey: ['members', 'list', 'byInstitution', institutionId],
         queryFn: () => readInstitutionMembers(toValue(institutionId)),
     });
 
     return query;
 }
 
+export type AddMemberParams = {
+    id: number;
+    body: CreateMemberBody;
+};
+
 /**
  * Composable to add a member to an authority.
  */
-export function useAddMemberToAuthority(
+export function useAddAuthorityMember(
     options: CompMutationOptions = {},
 ): CompMutation<AddMemberParams> {
     const queryClient = useQueryClient();
@@ -109,10 +112,10 @@ export function useAddMemberToAuthority(
 
     const mutation = useMutation({
         ...options,
-        mutationFn: ({ id, memberId }) => addAuthorityMember(id, memberId),
+        mutationFn: ({ id, body }: AddMemberParams) => addAuthorityMember(id, body),
         onSuccess: (data, variables, context) => {
             // Invalidate all member queries on the authority
-            invalidateQueries(queryClient, queryKeys.members.byAuthority(variables.id));
+            invalidateQueries(queryClient, ['members', 'list', 'byAuthority', variables.id]);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -143,7 +146,7 @@ export function useUpdateAuthorityMember(
         mutationFn: ({ id, memberId, body }) => updateAuthorityMember(id, memberId, body),
         onSuccess: (data, variables, context) => {
             // Invalidate all member queries on the authority
-            invalidateQueries(queryClient, queryKeys.members.byAuthority(variables.id));
+            invalidateQueries(queryClient, ['members', 'list', 'byAuthority', variables.id]);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -174,7 +177,7 @@ export function useDeleteAuthorityMember(
         mutationFn: ({ id, memberId }) => removeAuthorityMember(id, memberId),
         onSuccess: (data, variables, context) => {
             // Invalidate all member queries in the authority
-            invalidateQueries(queryClient, queryKeys.members.byAuthority(variables.id));
+            invalidateQueries(queryClient, ['members', 'list', 'byAuthority', variables.id]);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -193,8 +196,11 @@ export function useDeleteAuthorityMember(
 
 /**
  * Composable to add a member to an institution.
+ *
+ * @param {CompMutationOptions} options - Options for the mutation.
+ * @returns {CompMutation<AddMemberParams>} The mutation object for adding an institution member.
  */
-export function useAddMemberToInstitution(
+export function useAddInstitutionMember(
     options: CompMutationOptions = {},
 ): CompMutation<AddMemberParams> {
     const queryClient = useQueryClient();
@@ -202,10 +208,10 @@ export function useAddMemberToInstitution(
 
     const mutation = useMutation({
         ...options,
-        mutationFn: ({ id, memberId }) => addInstitutionMember(id, memberId),
+        mutationFn: ({ id, body }: AddMemberParams) => addInstitutionMember(id, body),
         onSuccess: (data, variables, context) => {
             // Invalidate all member queries on the institution
-            invalidateQueries(queryClient, queryKeys.members.byInstitution(variables.id));
+            invalidateQueries(queryClient, ['members', 'list', 'byInstitution', variables.id]);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -236,7 +242,7 @@ export function useUpdateInstitutionMember(
         mutationFn: ({ id, memberId, body }) => updateInstitutionMember(id, memberId, body),
         onSuccess: (data, variables, context) => {
             // Invalidate all member queries on the institution
-            invalidateQueries(queryClient, queryKeys.members.byInstitution(variables.id));
+            invalidateQueries(queryClient, ['members', 'list', 'byInstitution', variables.id]);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -267,7 +273,7 @@ export function useDeleteMemberFromInstitution(
         mutationFn: ({ id, memberId }) => removeInstitutionMember(id, memberId),
         onSuccess: (data, variables, context) => {
             // Invalidate all member queries on the institution
-            invalidateQueries(queryClient, queryKeys.members.byInstitution(variables.id));
+            invalidateQueries(queryClient, ['members', 'list', 'byInstitution', variables.id]);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -298,7 +304,7 @@ export function useUpdateLocationMember(
         mutationFn: ({ id, memberId, body }) => updateLocationMember(id, memberId, body),
         onSuccess: (data, variables, context) => {
             // Invalidate all member queries on the location
-            invalidateQueries(queryClient, queryKeys.members.byLocation(variables.id));
+            invalidateQueries(queryClient, ['members', 'list', 'byLocation', variables.id]);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -309,6 +315,50 @@ export function useUpdateLocationMember(
             }
 
             options.onSuccess?.(data, variables, context);
+        },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to add a location member.
+ *
+ * @returns {CompMutation<AddMemberParams>} The mutation object for adding a location member.
+ */
+export function useAddLocationMember(
+    options: CompMutationOptions = {},
+): CompMutation<AddMemberParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: ({ id, body }: AddMemberParams) => addLocationMember(id, body),
+        onSuccess: (data, variables, context) => {
+            // Invalidate all member queries on the location
+            invalidateQueries(queryClient, ['members', 'list', 'byLocation', variables.id]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Lid toegevoegd',
+                    detail: 'Het lid is succesvol toegevoegd aan de locatie.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+        onError: (error, variables, context) => {
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'error',
+                    summary: 'Fout bij toevoegen lid',
+                    detail: 'Er is een fout opgetreden bij het toevoegen van het lid aan de locatie.',
+                });
+            }
+
+            options.onError?.(error, variables, context);
         },
     });
 
@@ -329,7 +379,7 @@ export function useDeleteLocationMember(
         mutationFn: ({ id, memberId }) => removeLocationMember(id, memberId),
         onSuccess: (data, variables, context) => {
             // Invalidate all member queries on the location
-            invalidateQueries(queryClient, queryKeys.members.byLocation(variables.id));
+            invalidateQueries(queryClient, ['members', 'list', 'byLocation', variables.id]);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -355,7 +405,7 @@ export function useReadProfileLocationMemberships(
 ): CompQuery<LocationMembership[]> {
     const query = useQuery({
         ...options,
-        queryKey: queryKeys.members.memberships.byProfileLocations(toValue(profileId)),
+        queryKey: ['memberships', 'list', 'byProfileLocations', profileId],
         queryFn: () => readProfileLocationMemberships(toValue(profileId)),
     });
 
@@ -372,7 +422,7 @@ export function useReadProfileAuthorityMemberships(
 ): CompQuery<AuthorityMembership[]> {
     const query = useQuery({
         ...options,
-        queryKey: queryKeys.members.memberships.byProfileAuthorities(toValue(profileId)),
+        queryKey: ['memberships', 'list', 'byProfileAuthorities', profileId],
         queryFn: () => readProfileAuthorityMemberships(toValue(profileId)),
     });
 
@@ -388,7 +438,7 @@ export function useReadProfileInstitutionMemberships(
 ): CompQuery<InstitutionMembership[]> {
     const query = useQuery({
         ...options,
-        queryKey: queryKeys.members.memberships.byProfileInstitutions(toValue(profileId)),
+        queryKey: ['memberships', 'list', 'byProfileInstitutions', profileId],
         queryFn: () => readProfileInstitutionMemberships(toValue(profileId)),
     });
 

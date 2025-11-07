@@ -21,7 +21,7 @@ const router = useRouter();
  */
 function onRowClick(member: Member): void {
     router.push({
-        name: 'dashboard.profile.detail.overview',
+        name: 'dashboard.profiles.detail.overview',
         params: { profileId: member.profile.id },
     });
 }
@@ -40,7 +40,7 @@ function onRowClick(member: Member): void {
 
             <TableCell column="Toegevoegd Op">
                 {{
-                    member.role.createdAt.toLocaleDateString(locale, {
+                    member.addedAt.toLocaleDateString(locale, {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',

@@ -6,6 +6,8 @@ import LocationBuilderCard from '@/components/features/location/builder/Location
 import LocationMap from '@/components/features/map/LocationMap.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
 import LanguageSelector from '@/components/shared/molecules/LanguageSelector.vue';
+import InputHint from '@/components/shared/molecules/form/InputHint.vue';
+import InputLabel from '@/components/shared/molecules/form/InputLabel.vue';
 import {
     faEdit,
     faHome,
@@ -186,23 +188,17 @@ function resetToCalculatedCoordinates(): void {
             </template>
             <template #default>
                 <div>
-                    <label for="name" class="mb-2 block text-sm font-medium text-gray-700">
-                        Locatie naam *
-                    </label>
+                    <InputLabel for="name"> Locatie naam * </InputLabel>
                     <InputText id="name" v-model="form.name" class="w-full" placeholder="De Krook">
                     </InputText>
-                    <small class="mt-1 block text-gray-500">
-                        Kies een herkenbare naam voor de locatie
-                    </small>
+                    <InputHint> Kies een herkenbare naam voor de locatie </InputHint>
                 </div>
 
                 <!-- Short description (current language) -->
                 <div>
-                    <label
-                        :for="`excerpt-${currentLanguage}`"
-                        class="mb-2 block text-sm font-medium text-gray-700">
+                    <InputLabel :for="`excerpt-${currentLanguage}`">
                         Korte omschrijving ({{ currentLanguage }})
-                    </label>
+                    </InputLabel>
                     <InputText
                         :id="`excerpt-${currentLanguage}`"
                         v-model="form.excerpt![currentLanguage]"
@@ -210,17 +206,19 @@ function resetToCalculatedCoordinates(): void {
                         placeholder="Stadsbibliotheek met zicht op het water"
                         :maxlength="LOCATION_SETTINGS.MAX_EXCERPT_LENGTH">
                     </InputText>
-                    <div class="mt-1 flex justify-between">
-                        <small class="text-gray-500">
-                            Omschrijf de locatie in maximaal 6 beschrijvende woorden
-                        </small>
-                        <small class="text-gray-500">
-                            {{ (form.excerpt?.[currentLanguage] || '').length }}/{{
-                                LOCATION_SETTINGS.MAX_EXCERPT_LENGTH
-                            }}
-                            karakters
-                        </small>
-                    </div>
+                    <InputHint>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">
+                                Omschrijf de locatie in maximaal 6 beschrijvende woorden
+                            </span>
+                            <span class="text-gray-500">
+                                {{ (form.excerpt?.[currentLanguage] || '').length }}/{{
+                                    LOCATION_SETTINGS.MAX_EXCERPT_LENGTH
+                                }}
+                                karakters
+                            </span>
+                        </div>
+                    </InputHint>
                 </div>
 
                 <!-- Detailed Description -->
@@ -229,11 +227,9 @@ function resetToCalculatedCoordinates(): void {
 
                     <!-- Current language description -->
                     <div>
-                        <label
-                            :for="`description-${currentLanguage}`"
-                            class="mb-2 block text-sm font-medium text-gray-700">
+                        <InputLabel :for="`description-${currentLanguage}`">
                             Beschrijving ({{ currentLanguage }})
-                        </label>
+                        </InputLabel>
                         <Textarea
                             :id="`description-${currentLanguage}`"
                             v-model="form.description![currentLanguage]"
@@ -242,12 +238,12 @@ function resetToCalculatedCoordinates(): void {
                             rows="5"
                             placeholder="De Krook is de stadsbibliotheek van Gent, de ideale plek om rustig te studeren tussen andere studenten, met zicht op de Leie.">
                         </Textarea>
-                        <small class="mt-1 block text-gray-500">
+                        <InputHint>
                             {{ (form.description?.[currentLanguage] || '').length }}/{{
                                 LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH
                             }}
                             karakters
-                        </small>
+                        </InputHint>
                     </div>
                 </div>
             </template>

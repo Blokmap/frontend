@@ -15,7 +15,7 @@ import {
     useReadInstitutionMembers,
     useUpdateInstitutionMember,
 } from '@/composables/data/useMembers';
-import { usePagination } from '@/composables/data/usePagination';
+import { usePagination } from '@/composables/usePagination';
 import type { Institution } from '@/domain/institution';
 
 const props = defineProps<{

@@ -47,9 +47,11 @@ function onMembershipClick(membership: AuthorityMembership): void {
                 </span>
             </template>
             <template #actions>
-                <PageHeaderButton label="Autoriteit Aanmaken" severity="contrast">
-                    <FontAwesomeIcon :icon="faPlus" />
-                </PageHeaderButton>
+                <RouterLink :to="{ name: 'dashboard.authorities.create' }">
+                    <PageHeaderButton label="Autoriteit Aanmaken" severity="contrast">
+                        <FontAwesomeIcon :icon="faPlus" />
+                    </PageHeaderButton>
+                </RouterLink>
             </template>
         </DashboardDetailHeader>
 

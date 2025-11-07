@@ -11,8 +11,8 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
-import { usePagination } from '@/composables/data/usePagination';
 import { useReadProfiles, useUpdateProfileState } from '@/composables/data/useProfile';
+import { usePagination } from '@/composables/usePagination';
 import { abbreviateCount } from '@/utils/formatUtils';
 import type { Profile, ProfileFilter } from '@/domain/profile';
 

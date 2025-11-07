@@ -34,7 +34,7 @@ const { t } = useI18n();
 
 const statusOptions = computed(() => {
     return RESERVATION_STATES.filter((s) => s !== ReservationState.Pending).map((value) => ({
-        label: t(`domains.reservations.state.${value.toLowerCase()}`),
+        label: t(`domains.reservations.state.${value}`),
         icon: RESERVATION_STATE_ICONS[value],
         value,
     }));

@@ -1,35 +1,22 @@
 <script setup lang="ts">
-import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
+import FormCheckbox from '@/components/shared/molecules/form/FormCheckbox.vue';
 import { faCircleQuestion, faClock, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { watchEffect } from 'vue';
 import LocationBuilderCard from '../LocationBuilderCard.vue';
-import type { BuilderSubstep } from '..';
 import type { LocationBody } from '@/domain/location';
+import type { AuthorityMembership } from '@/domain/member';
+
+defineProps<{
+    authorities?: AuthorityMembership[];
+}>();
 
 const form = defineModel<LocationBody>('form', { required: true });
-const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
-
-watchEffect(() => {
-    const data = form.value;
-    const hasSeats = data.seatCount > 0;
-
-    substeps.value = [
-        {
-            label: 'Zitplaatsen configureren',
-            isCompleted: hasSeats,
-        },
-        {
-            label: 'Reservatie-instellingen',
-            isCompleted: true,
-        },
-    ];
-});
 </script>
 
 <template>
     <div class="space-y-8">
+        {{ authorities }}
         <!-- Seat Configuration -->
         <LocationBuilderCard :icon="faUsers">
             <template #header>
@@ -62,16 +49,11 @@ watchEffect(() => {
                     </p>
                 </div>
 
-                <div class="checkbox" @click.stop="form.isVisible = !form.isVisible">
-                    <div class="flex gap-3">
-                        <Checkbox v-model="form.isVisible" input-id="visible" @click.stop binary />
-                        <label for="visible"> Meteen zichtbaar maken </label>
-                    </div>
-                    <p>
-                        Vink dit uit als je nog wil wachten met het zichtbaar maken van de locatie
-                        na goedkeuring.
-                    </p>
-                </div>
+                <FormCheckbox
+                    v-model="form.isVisible"
+                    input-id="visible"
+                    label="Meteen zichtbaar maken"
+                    description="Vink dit uit als je nog wil wachten met het zichtbaar maken van de locatie na goedkeuring." />
             </template>
         </LocationBuilderCard>
         <LocationBuilderCard :icon="faClock">
@@ -82,17 +64,11 @@ watchEffect(() => {
                 </p>
             </template>
             <template #default>
-                <div class="checkbox" @click.stop="form.isReservable = !form.isReservable">
-                    <div class="flex gap-3">
-                        <Checkbox
-                            v-model="form.isReservable"
-                            input-id="reservable"
-                            @click.stop
-                            binary />
-                        <label for="reservable"> De locatie is reserveerbaar </label>
-                    </div>
-                    <p>Vink dit aan om gebruik te maken van het reservatiesysteem.</p>
-                </div>
+                <FormCheckbox
+                    v-model="form.isReservable"
+                    input-id="reservable"
+                    label="De locatie is reserveerbaar"
+                    description="Vink dit aan om gebruik te maken van het reservatiesysteem." />
                 <template v-if="form.isReservable" />
             </template>
         </LocationBuilderCard>

@@ -10,8 +10,8 @@ import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHe
 import { faUserPlus, faUserTag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
-import { useReadLocationRoles } from '@/composables/data/useAuth';
 import {
+    useReadLocationRoles,
     useAddLocationMember,
     useDeleteLocationMember,
     useReadLocationMembers,

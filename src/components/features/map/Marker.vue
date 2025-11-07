@@ -59,7 +59,7 @@ onDeactivated(() => {
  */
 function handleClick(event: MouseEvent) {
     emit('click');
-    popoverRef?.value?.toggle(event);
+    popoverRef.value?.toggle(event);
 }
 
 /**

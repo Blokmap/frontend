@@ -2,7 +2,7 @@ import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
 import { stringToDate } from '@/utils/date';
 import { transformResponseFactory } from '@/utils/serviceUtils';
-import type { Role } from '../types';
+import type { CreateRoleBody, Role, UpdateRoleBody } from '../types';
 
 /**
  * Parses a Role response object.
@@ -29,7 +29,7 @@ export function parseRoleResponse(data: any): Role {
  * @returns A promise that resolves to an array of roles for the specified location.
  */
 export async function readLocationRoles(locationId: number): Promise<Role[]> {
-    const endpoint = endpoints.locations.roles.replace('{id}', locationId.toString());
+    const endpoint = endpoints.locations.roles.list.replace('{id}', locationId.toString());
 
     const transformResponse = transformResponseFactory(parseRoleResponse);
 
@@ -47,7 +47,7 @@ export async function readLocationRoles(locationId: number): Promise<Role[]> {
  * @returns A promise that resolves to an array of roles for the specified institution.
  */
 export async function readAuthorityRoles(authorityId: number): Promise<Role[]> {
-    const endpoint = endpoints.authorities.roles.replace('{id}', authorityId.toString());
+    const endpoint = endpoints.authorities.roles.list.replace('{id}', authorityId.toString());
 
     const transformResponse = transformResponseFactory(parseRoleResponse);
 
@@ -65,7 +65,7 @@ export async function readAuthorityRoles(authorityId: number): Promise<Role[]> {
  * @returns A promise that resolves to an array of roles for the specified institution.
  */
 export async function readInstitutionRoles(institutionId: number): Promise<Role[]> {
-    const endpoint = endpoints.institutions.roles.replace('{id}', institutionId.toString());
+    const endpoint = endpoints.institutions.roles.list.replace('{id}', institutionId.toString());
 
     const transformResponse = transformResponseFactory(parseRoleResponse);
 
@@ -74,4 +74,190 @@ export async function readInstitutionRoles(institutionId: number): Promise<Role[
     });
 
     return data;
+}
+
+/**
+ * Creates a new role for a specific location.
+ *
+ * @param locationId - The ID of the location.
+ * @param body - The role data to create.
+ * @returns A promise that resolves to the created role.
+ */
+export async function createLocationRole(locationId: number, body: CreateRoleBody): Promise<Role> {
+    const endpoint = endpoints.locations.roles.create.replace('{id}', locationId.toString());
+
+    const transformResponse = transformResponseFactory(parseRoleResponse);
+
+    const { data } = await client.post(endpoint, body, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Updates an existing role for a specific location.
+ *
+ * @param locationId - The ID of the location.
+ * @param roleId - The ID of the role to update.
+ * @param body - The role data to update.
+ * @returns A promise that resolves to the updated role.
+ */
+export async function updateLocationRole(
+    locationId: number,
+    roleId: number,
+    body: UpdateRoleBody,
+): Promise<Role> {
+    const endpoint = endpoints.locations.roles.update
+        .replace('{id}', locationId.toString())
+        .replace('{roleId}', roleId.toString());
+
+    const transformResponse = transformResponseFactory(parseRoleResponse);
+
+    const { data } = await client.patch(endpoint, body, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Deletes a role for a specific location.
+ *
+ * @param locationId - The ID of the location.
+ * @param roleId - The ID of the role to delete.
+ * @returns A promise that resolves when the role is deleted.
+ */
+export async function deleteLocationRole(locationId: number, roleId: number): Promise<void> {
+    const endpoint = endpoints.locations.roles.delete
+        .replace('{id}', locationId.toString())
+        .replace('{roleId}', roleId.toString());
+
+    await client.delete(endpoint);
+}
+
+/**
+ * Creates a new role for a specific authority.
+ *
+ * @param authorityId - The ID of the authority.
+ * @param body - The role data to create.
+ * @returns A promise that resolves to the created role.
+ */
+export async function createAuthorityRole(
+    authorityId: number,
+    body: CreateRoleBody,
+): Promise<Role> {
+    const endpoint = endpoints.authorities.roles.create.replace('{id}', authorityId.toString());
+
+    const transformResponse = transformResponseFactory(parseRoleResponse);
+
+    const { data } = await client.post(endpoint, body, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Updates an existing role for a specific authority.
+ *
+ * @param authorityId - The ID of the authority.
+ * @param roleId - The ID of the role to update.
+ * @param body - The role data to update.
+ * @returns A promise that resolves to the updated role.
+ */
+export async function updateAuthorityRole(
+    authorityId: number,
+    roleId: number,
+    body: UpdateRoleBody,
+): Promise<Role> {
+    const endpoint = endpoints.authorities.roles.update
+        .replace('{id}', authorityId.toString())
+        .replace('{roleId}', roleId.toString());
+
+    const transformResponse = transformResponseFactory(parseRoleResponse);
+
+    const { data } = await client.patch(endpoint, body, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Deletes a role for a specific authority.
+ *
+ * @param authorityId - The ID of the authority.
+ * @param roleId - The ID of the role to delete.
+ * @returns A promise that resolves when the role is deleted.
+ */
+export async function deleteAuthorityRole(authorityId: number, roleId: number): Promise<void> {
+    const endpoint = endpoints.authorities.roles.delete
+        .replace('{id}', authorityId.toString())
+        .replace('{roleId}', roleId.toString());
+
+    await client.delete(endpoint);
+}
+
+/**
+ * Creates a new role for a specific institution.
+ *
+ * @param institutionId - The ID of the institution.
+ * @param body - The role data to create.
+ * @returns A promise that resolves to the created role.
+ */
+export async function createInstitutionRole(
+    institutionId: number,
+    body: CreateRoleBody,
+): Promise<Role> {
+    const endpoint = endpoints.institutions.roles.create.replace('{id}', institutionId.toString());
+
+    const transformResponse = transformResponseFactory(parseRoleResponse);
+
+    const { data } = await client.post(endpoint, body, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Updates an existing role for a specific institution.
+ *
+ * @param institutionId - The ID of the institution.
+ * @param roleId - The ID of the role to update.
+ * @param body - The role data to update.
+ * @returns A promise that resolves to the updated role.
+ */
+export async function updateInstitutionRole(
+    institutionId: number,
+    roleId: number,
+    body: UpdateRoleBody,
+): Promise<Role> {
+    const endpoint = endpoints.institutions.roles.update
+        .replace('{id}', institutionId.toString())
+        .replace('{roleId}', roleId.toString());
+
+    const transformResponse = transformResponseFactory(parseRoleResponse);
+
+    const { data } = await client.patch(endpoint, body, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Deletes a role for a specific institution.
+ *
+ * @param institutionId - The ID of the institution.
+ * @param roleId - The ID of the role to delete.
+ * @returns A promise that resolves when the role is deleted.
+ */
+export async function deleteInstitutionRole(institutionId: number, roleId: number): Promise<void> {
+    const endpoint = endpoints.institutions.roles.delete
+        .replace('{id}', institutionId.toString())
+        .replace('{roleId}', roleId.toString());
+
+    await client.delete(endpoint);
 }

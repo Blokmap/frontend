@@ -13,18 +13,16 @@ import {
     faUpload,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, onMounted, ref, watchEffect } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import {
     MAX_IMAGE_SIZE,
     SUPPORTED_IMAGE_FORMAT_NAES,
     SUPPORTED_IMAGE_FORMATS,
 } from '@/domain/image/imageConstants';
 import { LOCATION_SETTINGS } from '@/domain/location';
-import type { BuilderSubstep } from '@/components/features/location/builder';
 import type { ImageBody } from '@/domain/image';
 
 const images = defineModel<ImageBody[]>({ required: true, default: () => [] });
-const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
 
 const urlInput = ref('');
 const draggedImage = ref<ImageBody | null>(null);
@@ -45,19 +43,6 @@ onMounted(() => {
     if (images.value.length === 0) {
         showAddDialog.value = true;
     }
-});
-
-watchEffect(() => {
-    substeps.value = [
-        {
-            label: 'Afbeeldingen toevoegen',
-            isCompleted: images.value.length > 0,
-        },
-        {
-            label: 'Hoofdafbeelding instellen',
-            isCompleted: images.value.length > 0,
-        },
-    ];
 });
 
 /**

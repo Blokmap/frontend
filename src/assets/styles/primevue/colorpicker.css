@@ -7,7 +7,7 @@
 }
 
 .p-colorpicker-preview {
-    @apply focus-visible:outline-primary h-6 w-6 cursor-pointer rounded-md border-none p-0 transition-colors duration-200 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 disabled:cursor-auto;
+    @apply focus-visible:outline-primary h-10 w-10 cursor-pointer rounded-md border-none p-0 transition-colors duration-200 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 disabled:cursor-auto;
 }
 
 .p-colorpicker-panel {

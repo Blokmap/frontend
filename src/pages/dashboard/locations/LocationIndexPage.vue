@@ -39,6 +39,8 @@ const filters = ref<LocationFilter>({
     perPage: 5,
 });
 
+const { onPageChange, resetPage, first } = usePagination(filters);
+
 const {
     data: locations,
     isFetching,
@@ -60,7 +62,6 @@ const {
 } = useDeleteLocation();
 
 const { data: counts } = useAdminCounts();
-const { onPageChange, resetPage, first } = usePagination(filters);
 
 const pageTitle = computed(() =>
     t('pages.dashboard.locations.index.title', [
@@ -80,7 +81,6 @@ const onSearchChange = useDebounceFn(() => {
 function isLocationPending(locationId: number): boolean {
     const isUpdating = isUpdatingLocation.value && updateVariables.value?.locationId === locationId;
     const isDeleting = isDeletingLocation.value && deleteVariables.value === locationId;
-
     return isUpdating || isDeleting;
 }
 
@@ -154,10 +154,9 @@ function onDeleteLocation(locationId: number) {
             </DataList>
 
             <Paginator
-                v-if="locations?.data?.length"
-                :first="first"
-                :rows="locations.perPage"
-                :total-records="locations.total"
+                :first="first(locations)"
+                :rows="locations?.perPage"
+                :total-records="locations?.total"
                 @page="onPageChange">
             </Paginator>
         </template>

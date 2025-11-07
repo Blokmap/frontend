@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
 import Card from 'primevue/card';
 import ProfileActionMenu from '@/components/features/profile/ProfileActionMenu.vue';
 import ProfileStateBadge from '@/components/features/profile/ProfileStateBadge.vue';
 import KeyValue from '@/components/shared/atoms/KeyValue.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
+import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { faChevronDown, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -60,15 +60,14 @@ function onChangeStatus(profileId: string, state: ProfileState) {
                     @change:status="onChangeStatus"
                     v-if="ownProfile.isAdmin">
                     <template #trigger="{ toggle }">
-                        <Button
+                        <PageHeaderButton
+                            label="Acties"
                             severity="contrast"
                             :disabled="isUpdatingProfile"
-                            @click="toggle"
-                            size="small">
-                            <span>Acties</span>
+                            @click="toggle">
                             <FontAwesomeIcon v-if="isUpdatingProfile" :icon="faSpinner" spin />
                             <FontAwesomeIcon :icon="faChevronDown" v-else />
-                        </Button>
+                        </PageHeaderButton>
                     </template>
                 </ProfileActionMenu>
             </template>

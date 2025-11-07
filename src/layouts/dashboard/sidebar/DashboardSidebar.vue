@@ -174,22 +174,23 @@ const navSections = computed(() => {
             ],
         },
     ];
+
     return sections;
 });
 
-async function handleLogoutClick(): Promise<void> {
+async function onLogoutClick(): Promise<void> {
     await router.push({ name: 'auth' });
-    await logout();
+    logout();
 }
 
-async function handleNavigation(to: RouteLocationRaw, linkId: string) {
+async function onNavigation(to: RouteLocationRaw, linkId: string) {
     navigatingTo.value = linkId;
     await router.push(to);
     visible.value = false;
     navigatingTo.value = null;
 }
 
-function closeMenu() {
+function onCloseMenu() {
     visible.value = false;
 }
 </script>
@@ -203,7 +204,7 @@ function closeMenu() {
             </RouterLink>
             <button
                 class="sidebar-close-btn"
-                @click="closeMenu"
+                @click="onCloseMenu"
                 aria-label="Close menu"
                 data-testid="sidebar-close">
                 <FontAwesomeIcon :icon="faTimes" />
@@ -231,7 +232,7 @@ function closeMenu() {
                     :pending-count="link.pendingCount?.()"
                     :is-navigating="navigatingTo === link.id"
                     :test-id="link.testId"
-                    @click="handleNavigation(link.to, link.id)">
+                    @click="onNavigation(link.to, link.id)">
                 </SidebarLink>
             </div>
         </div>
@@ -239,7 +240,7 @@ function closeMenu() {
         <div class="sidebar-profile">
             <a
                 class="sidebar-link"
-                @click.prevent="handleNavigation({ name: 'profile' }, 'profile')"
+                @click.prevent="onNavigation({ name: 'profile' }, 'profile')"
                 data-testid="profile-link">
                 <ProfileAvatar :profile="profile" class="h-10 w-10" />
                 <div class="flex-1 space-y-1 leading-tight">
@@ -253,7 +254,7 @@ function closeMenu() {
             <button
                 class="sidebar-link logout-btn"
                 data-testid="logout-button"
-                @click="handleLogoutClick">
+                @click="onLogoutClick">
                 <FontAwesomeIcon :icon="faSignOut" />
                 <span>Uitloggen</span>
             </button>
@@ -265,7 +266,7 @@ function closeMenu() {
 @reference '@/assets/styles/main.css';
 
 .sidebar {
-    @apply flex flex-col gap-5 pt-4 pb-5;
+    @apply flex flex-col gap-5 pt-3 pb-5;
     @apply bg-slate-900 text-slate-300;
 
     .sidebar-header {
@@ -281,7 +282,7 @@ function closeMenu() {
     }
 
     .sidebar-items {
-        @apply flex-1 space-y-6 px-5;
+        @apply flex-1 space-y-6 px-5 md:pt-4;
 
         .sidebar-section {
             @apply space-y-1.5;

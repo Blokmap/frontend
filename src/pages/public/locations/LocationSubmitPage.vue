@@ -7,78 +7,32 @@ import LocationInformationBuilder from '@/components/features/location/builder/b
 import LocationSettingsBuilder from '@/components/features/location/builder/builders/LocationSettingsBuilder.vue';
 import { faArrowLeft, faArrowRight, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useLocalStorage } from '@/composables/useLocalStorage';
-import { DEFAULT_LOCATION_REQUEST, type LocationBody } from '@/domain/location';
-import type { BuilderStep, BuilderSubstep } from '@/components/features/location/builder';
-import type { ImageBody } from '@/domain/image';
+import { ref } from 'vue';
+import { useAuthProfile } from '@/composables/data/useAuth';
+import { useReadProfileAuthorityMemberships } from '@/composables/data/useMembers';
+import { BuilderStep, useLocationBuilder } from '@/composables/useLocationBuilder';
 
-const { t } = useI18n();
+const { profileId } = useAuthProfile();
+const { data: memberships } = useReadProfileAuthorityMemberships(profileId);
 
-const imagesForm = ref<ImageBody[]>([]);
-
-const locationForm = useLocalStorage<LocationBody>('location-form', {
-    defaults: DEFAULT_LOCATION_REQUEST,
-});
+const {
+    locationForm,
+    imagesForm,
+    step,
+    substeps,
+    stepIndex,
+    progress,
+    steps,
+    canGoNext,
+    canGoPrevious,
+    isLastStep,
+    goNext,
+    goPrevious,
+} = useLocationBuilder();
 
 const showSubmissionDialog = ref(false);
-const step = ref<BuilderStep>('basics');
-const substeps = ref<BuilderSubstep[]>([]);
 
-const steps: { id: BuilderStep; label: string; desc: string }[] = [
-    {
-        id: 'basics',
-        label: t('pages.locations.submit.steps.basics.label'),
-        desc: t('pages.locations.submit.steps.basics.desc'),
-    },
-    {
-        id: 'images',
-        label: t('pages.locations.submit.steps.images.label'),
-        desc: t('pages.locations.submit.steps.images.desc'),
-    },
-    {
-        id: 'settings',
-        label: t('pages.locations.submit.steps.settings.label'),
-        desc: t('pages.locations.submit.steps.settings.desc'),
-    },
-];
-
-const stepIndex = computed<number>(() => steps.findIndex((curr) => curr.id === step.value));
-const progress = computed<number>(() => Math.round(((stepIndex.value + 1) * 100) / steps.length));
-
-const canGoNext = computed<boolean>(() => substeps.value.every((substep) => substep.isCompleted));
-const canGoPrevious = computed<boolean>(() => stepIndex.value > 0);
-const isLastStep = computed<boolean>(() => step.value === 'settings');
-const isCreating = computed<boolean>(() => showSubmissionDialog.value);
-
-/**
- * Go to the next step in the wizard
- * @return void
- */
-function goNext(): void {
-    if (canGoNext.value && stepIndex.value < steps.length - 1) {
-        const nextStep = steps[stepIndex.value + 1].id;
-        step.value = nextStep;
-    }
-}
-
-/**
- * Go to the previous step in the wizard
- * @return void
- */
-function goPrevious(): void {
-    if (stepIndex.value > 0) {
-        const prevStep = steps[stepIndex.value - 1].id;
-        step.value = prevStep;
-    }
-}
-
-/**
- * Submit the location form, images and openings to the API
- * @return Promise<void>
- */
-async function submitLocation(): Promise<void> {
+async function submitLocation() {
     showSubmissionDialog.value = true;
 }
 </script>
@@ -124,11 +78,14 @@ async function submitLocation(): Promise<void> {
                 </Button>
 
                 <Button
-                    :disabled="!canGoNext || isCreating"
+                    :disabled="!canGoNext || showSubmissionDialog"
                     size="small"
                     @click="isLastStep ? submitLocation() : goNext()">
                     <template v-if="isLastStep">
-                        <FontAwesomeIcon v-if="!isCreating" :icon="faCheck" class="mr-2" />
+                        <FontAwesomeIcon
+                            v-if="!showSubmissionDialog"
+                            :icon="faCheck"
+                            class="mr-2" />
                         <FontAwesomeIcon v-else :icon="faSpinner" class="mr-2" spin />
                         {{ $t('general.actions.complete') }}
                     </template>
@@ -142,22 +99,16 @@ async function submitLocation(): Promise<void> {
 
         <!-- Builder content -->
         <div class="w-full md:w-5/7">
-            <LocationInformationBuilder
-                v-if="step === 'basics'"
-                v-model="locationForm"
-                v-model:substeps="substeps">
+            <LocationInformationBuilder v-if="step === BuilderStep.Basics" v-model="locationForm">
             </LocationInformationBuilder>
 
-            <LocationImagesBuilder
-                v-if="step === 'images'"
-                v-model="imagesForm"
-                v-model:substeps="substeps">
+            <LocationImagesBuilder v-if="step === BuilderStep.Images" v-model="imagesForm">
             </LocationImagesBuilder>
 
             <LocationSettingsBuilder
-                v-if="step === 'settings'"
+                v-if="step === BuilderStep.Settings"
                 v-model:form="locationForm"
-                v-model:substeps="substeps">
+                :authorities="memberships">
             </LocationSettingsBuilder>
         </div>
     </div>
@@ -200,12 +151,12 @@ async function submitLocation(): Promise<void> {
             </Button>
 
             <Button
-                :disabled="!canGoNext || isCreating"
+                :disabled="!canGoNext || showSubmissionDialog"
                 rounded
                 size="small"
                 @click="isLastStep ? submitLocation() : goNext()">
-                <FontAwesomeIcon v-if="isLastStep && !isCreating" :icon="faCheck" />
-                <FontAwesomeIcon v-else-if="isCreating" :icon="faSpinner" spin />
+                <FontAwesomeIcon v-if="isLastStep && !showSubmissionDialog" :icon="faCheck" />
+                <FontAwesomeIcon v-else-if="showSubmissionDialog" :icon="faSpinner" spin />
                 <FontAwesomeIcon v-else :icon="faArrowRight" />
             </Button>
         </div>

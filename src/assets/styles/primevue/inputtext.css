@@ -12,11 +12,15 @@
     @apply dark:disabled:bg-surface-700 dark:disabled:text-surface-400;
     @apply disabled:opacity-100;
 
-    @apply !w-full px-3 py-2;
+    @apply px-3 py-2;
     @apply transition-colors duration-200;
 
     /* Browser autofill */
     @apply bg-white autofill:bg-white;
+}
+
+.grid .p-inputtext {
+    @apply w-full;
 }
 
 .p-inputtext.p-invalid {

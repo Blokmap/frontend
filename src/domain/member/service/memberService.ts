@@ -252,7 +252,7 @@ export async function updateInstitutionMember(
     memberId: string,
     body: UpdateMemberBody,
 ): Promise<void> {
-    const endpoint = endpoints.institutions.members.permissions.update
+    const endpoint = endpoints.institutions.members.update
         .replace('{id}', institutionId.toString())
         .replace('{profileId}', memberId.toString());
 

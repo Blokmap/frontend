@@ -41,7 +41,7 @@ const handleClick = (event: MouseEvent) => {
 @reference '@/assets/styles/main.css';
 
 .navigation-link {
-    @apply flex w-full items-center gap-3 px-2 py-1;
+    @apply flex min-w-[150px] items-center gap-3 px-2 py-1;
     @apply rounded-md text-sm text-slate-700 transition-colors hover:bg-slate-100;
     @apply cursor-pointer;
 

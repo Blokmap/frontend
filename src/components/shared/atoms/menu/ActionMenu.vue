@@ -9,21 +9,21 @@ defineProps<{
     isPending?: boolean;
 }>();
 
-const actionMenu = useTemplateRef('menu');
+const actionMenuRef = useTemplateRef('menu');
 
-const onToggleActionMenu = (event: Event) => {
+function onToggleActionMenu(event: Event): void {
+    actionMenuRef.value?.toggle(event);
     event.stopPropagation();
-    actionMenu.value?.toggle(event);
-};
+}
 
-const hideMenu = () => {
-    actionMenu.value?.hide();
-};
+function hideMenu(): void {
+    actionMenuRef.value?.hide();
+}
 </script>
 
 <template>
     <div>
-        <slot name="trigger" :toggle="onToggleActionMenu">
+        <slot name="trigger" :toggle="onToggleActionMenu" ref="toggle">
             <Button severity="contrast" aria-haspopup="true" @click="onToggleActionMenu" text>
                 <template #icon>
                     <FontAwesomeIcon :icon="faEllipsisH" v-if="!isPending" />

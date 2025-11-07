@@ -17,19 +17,16 @@ import {
     faChevronCircleRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref, watch, watchEffect } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGeocodeAddress } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/store/useToast';
 import { LOCATION_SETTINGS, formatLocationAddress } from '@/domain/location';
 import { DEFAULT_MAP_OPTIONS } from '@/domain/map';
-import type { BuilderSubstep } from '..';
 import type { LocationBody } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 
 const form = defineModel<LocationBody>({ required: true });
-const complete = defineModel<boolean>('complete', { default: false });
-const substeps = defineModel<BuilderSubstep[]>('substeps', { default: [] });
 
 const toast = useToast();
 
@@ -86,41 +83,6 @@ const needsCoordinateCalculation = computed(() => {
     if (!calculatedCoordinates.value) return true;
 
     return false;
-});
-
-// Update completeness based on form values
-watchEffect(() => {
-    const data = form.value;
-    const ex = data.excerpt;
-    const desc = data.description;
-
-    complete.value = !!(
-        data.name &&
-        ex.nl &&
-        desc.nl &&
-        data.street &&
-        data.zip &&
-        data.city &&
-        hasCoordinates.value
-    );
-});
-
-// Update substeps based on form completeness
-watchEffect(() => {
-    const data = form.value;
-    const ex = data.excerpt;
-    const desc = data.description;
-
-    substeps.value = [
-        {
-            label: 'Naam en beschrijving',
-            isCompleted: !!data.name && !!ex.nl && !!desc.nl,
-        },
-        {
-            label: 'Locatie op kaart',
-            isCompleted: !!data.street && !!data.zip && !!data.city && !!hasCoordinates.value,
-        },
-    ];
 });
 
 // Clear calculated coordinates when address changes

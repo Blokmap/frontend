@@ -7,10 +7,12 @@ import { useRouter } from 'vue-router';
 import ping from '@/assets/sounds/ping.mp3';
 import { useScanProfile } from '@/composables/data/useProfile';
 import { useToast } from '@/composables/store/useToast';
+import type { Location } from '@/domain/location';
 import type { Result } from '@zxing/library';
 
 const props = defineProps<{
     locationId: string;
+    location: Location;
 }>();
 
 const router = useRouter();

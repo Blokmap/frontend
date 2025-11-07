@@ -9,8 +9,8 @@ import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHe
 import { faUserPlus, faUserTag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
-import { useReadAuthorityRoles } from '@/composables/data/useAuth';
 import {
+    useReadAuthorityRoles,
     useDeleteAuthorityMember,
     useReadAuthorityMembers,
     useUpdateAuthorityMember,

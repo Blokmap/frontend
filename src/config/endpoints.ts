@@ -13,14 +13,17 @@ export const endpoints = {
         read: '/institutions/{id}',
         update: '/institutions/{id}',
         list: '/institutions',
-        roles: '/institutions/{id}/roles',
+        roles: {
+            list: '/institutions/{id}/roles',
+            create: '/institutions/{id}/roles',
+            update: '/institutions/{id}/roles/{roleId}',
+            delete: '/institutions/{id}/roles/{roleId}',
+        },
         members: {
             list: '/institutions/{id}/members',
             add: '/institutions/{id}/members',
             remove: '/institutions/{id}/members/{profileId}',
-            permissions: {
-                update: '/institutions/{id}/members/{profileId}/permissions',
-            },
+            update: '/institutions/{id}/members/{profileId}',
         },
         profiles: {
             list: '/institutions/{id}/profiles',
@@ -65,7 +68,6 @@ export const endpoints = {
         read: '/authorities/{id}',
         update: '/authorities/{id}',
         list: '/authorities',
-        roles: '/authorities/{id}/roles',
         locations: {
             list: '/authorities/{id}/locations',
             create: '/authorities/{id}/locations',
@@ -76,7 +78,12 @@ export const endpoints = {
             remove: '/authorities/{id}/members/{profileId}',
             update: '/authorities/{id}/members/{profileId}',
         },
-        permissions: '/authorities/permissions',
+        roles: {
+            list: '/authorities/{id}/roles',
+            create: '/authorities/{id}/roles',
+            update: '/authorities/{id}/roles/{roleId}',
+            delete: '/authorities/{id}/roles/{roleId}',
+        },
     },
     locations: {
         create: '/locations',
@@ -89,7 +96,6 @@ export const endpoints = {
         permissions: '/locations/permissions',
         nearest: '/locations/nearest',
         scan: '/locations/{id}/scan',
-        roles: '/locations/{id}/roles',
         openingTimes: {
             createMany: '/locations/{id}/opening-times',
             updateOne: '/locations/{id}/opening-times/{openingTimeId}',
@@ -109,9 +115,12 @@ export const endpoints = {
             list: '/locations/{id}/members',
             add: '/locations/{id}/members',
             delete: '/locations/{id}/members/{profileId}',
-            permissions: {
-                update: '/locations/{id}/members/{profileId}/permissions',
-            },
+        },
+        roles: {
+            list: '/locations/{id}/roles',
+            create: '/locations/{id}/roles',
+            update: '/locations/{id}/roles/{roleId}',
+            delete: '/locations/{id}/roles/{roleId}',
         },
         reservations: {
             list: '/locations/{id}/reservations',

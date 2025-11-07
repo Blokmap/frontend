@@ -1,8 +1,3 @@
-export type BuilderStep = 'basics' | 'images' | 'settings';
+export type { BuilderStep, BuilderSubstep } from '@/composables/useLocationBuilder';
 
 export type SubmissionStep = 'idle' | 'loading' | 'completed' | 'error';
-
-export type BuilderSubstep = {
-    isCompleted: boolean;
-    label: string;
-};

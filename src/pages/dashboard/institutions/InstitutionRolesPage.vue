@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import RoleActionsMenu from '@/components/features/auth/RoleActionsMenu.vue';
-import Table from '@/components/shared/molecules/table/Table.vue';
-import TableCell from '@/components/shared/molecules/table/TableCell.vue';
+import RoleBuilderDialog from '@/components/features/auth/forms/RoleBuilderDialog.vue';
+import RoleTable from '@/components/features/auth/roles/RoleTable.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed } from 'vue';
-import { useReadInstitutionRoles } from '@/composables/data/useAuth';
+import { computed, ref } from 'vue';
+import {
+    useCreateInstitutionRole,
+    useDeleteInstitutionRole,
+    useReadInstitutionRoles,
+    useUpdateInstitutionRole,
+} from '@/composables/data/useMembers';
 import type { Institution } from '@/domain/institution';
-import type { Role } from '@/domain/member';
+import type { CreateRoleBody, Role } from '@/domain/member';
 
 const props = defineProps<{
     institutionId: string;
@@ -19,28 +24,71 @@ const props = defineProps<{
 
 const { data: roles, isLoading } = useReadInstitutionRoles(computed(() => +props.institutionId));
 
+const showRoleBuilderDialog = ref(false);
+const selectedRole = ref<Role | undefined>(undefined);
+
+const { mutate: createRole, isPending: createIsPending } = useCreateInstitutionRole({
+    onSuccess: () => {
+        showRoleBuilderDialog.value = false;
+        selectedRole.value = undefined;
+    },
+});
+
+const { mutate: updateRole, isPending: updateIsPending } = useUpdateInstitutionRole({
+    onSuccess: () => {
+        showRoleBuilderDialog.value = false;
+        selectedRole.value = undefined;
+    },
+});
+
+const { mutate: deleteRole, isPending: deleteIsPending } = useDeleteInstitutionRole();
+
+const builderIsPending = computed(() => createIsPending.value || updateIsPending.value);
+
 /**
  * Handle adding a new role.
  */
 function onAddRole(): void {
-    // TODO: Implement add role dialog
-    console.log('Add new role');
+    selectedRole.value = undefined;
+    showRoleBuilderDialog.value = true;
 }
 
 /**
  * Handle editing a role.
  */
 function onEditRole(role: Role): void {
-    // TODO: Implement role edit
-    console.log('Edit role', role);
+    selectedRole.value = role;
+    showRoleBuilderDialog.value = true;
 }
 
 /**
  * Handle deleting a role.
  */
 function onDeleteRole(role: Role): void {
-    // TODO: Implement role deletion
-    console.log('Delete role', role);
+    deleteRole({
+        id: +props.institutionId,
+        roleId: role.id,
+    });
+}
+
+/**
+ * Handle form submission from RoleBuilderDialog.
+ */
+function onSubmitRole(form: CreateRoleBody): void {
+    if (selectedRole.value) {
+        // Update existing role
+        updateRole({
+            id: +props.institutionId,
+            roleId: selectedRole.value.id,
+            body: form,
+        });
+    } else {
+        // Create new role
+        createRole({
+            id: +props.institutionId,
+            body: form,
+        });
+    }
 }
 </script>
 
@@ -56,37 +104,25 @@ function onDeleteRole(role: Role): void {
         </DashboardDetailHeader>
 
         <!-- Roles Table -->
-        <Table :value="roles" :loading="isLoading">
-            <template #row="{ data: role }">
-                <TableCell column="Rol">
-                    <div class="flex items-center gap-2">
-                        <span
-                            class="inline-block h-3 w-3 rounded-full"
-                            :style="{ backgroundColor: role.colour }"></span>
-                        <span class="font-medium">{{ role.name }}</span>
-                    </div>
-                </TableCell>
-
-                <TableCell column="Kleur">
-                    <code class="text-xs">{{ role.colour }}</code>
-                </TableCell>
-
-                <TableCell column="Permissies">
-                    {{ role.permissions }}
-                </TableCell>
-
-                <TableCell column="Aangemaakt op">
-                    {{ new Date(role.createdAt).toLocaleDateString('nl-NL') }}
-                </TableCell>
-
-                <TableCell column="Laatst bijgewerkt">
-                    {{ new Date(role.updatedAt).toLocaleDateString('nl-NL') }}
-                </TableCell>
-
-                <TableCell column="Acties">
-                    <RoleActionsMenu :role="role" @edit="onEditRole" @delete="onDeleteRole" />
-                </TableCell>
+        <RoleTable :roles="roles" :is-loading="isLoading" type="institution">
+            <template #actions="{ role }">
+                <RoleActionsMenu
+                    :role="role"
+                    :is-pending="deleteIsPending"
+                    @edit="onEditRole"
+                    @delete="onDeleteRole">
+                </RoleActionsMenu>
             </template>
-        </Table>
+        </RoleTable>
+
+        <Teleport to="body">
+            <RoleBuilderDialog
+                v-model:is-visible="showRoleBuilderDialog"
+                :role="selectedRole"
+                type="institution"
+                :is-pending="builderIsPending"
+                @click:submit="onSubmitRole">
+            </RoleBuilderDialog>
+        </Teleport>
     </DashboardContent>
 </template>

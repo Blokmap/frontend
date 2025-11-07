@@ -1,6 +1,6 @@
 <template>
     <Select
-        class="min-w-[250px]"
+        class="w-auto min-w-[275px]"
         v-model="status"
         :options="options"
         option-label="label"

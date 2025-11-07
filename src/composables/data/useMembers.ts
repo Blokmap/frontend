@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { type MaybeRef, toValue } from 'vue';
+import { computed, type MaybeRef, toValue } from 'vue';
 import {
     addAuthorityMember,
     addInstitutionMember,
@@ -22,6 +22,21 @@ import {
     readProfileInstitutionMemberships,
     type CreateMemberBody,
     addLocationMember,
+    createLocationRole,
+    updateLocationRole,
+    deleteLocationRole,
+    type CreateRoleBody,
+    type UpdateRoleBody,
+    readAuthorityRoles,
+    readInstitutionRoles,
+    readLocationRoles,
+    type Role,
+    createAuthorityRole,
+    updateAuthorityRole,
+    deleteAuthorityRole,
+    createInstitutionRole,
+    updateInstitutionRole,
+    deleteInstitutionRole,
 } from '@/domain/member';
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
@@ -417,13 +432,19 @@ export function useReadProfileLocationMemberships(
  * Composable to read a profile's authority memberships.
  */
 export function useReadProfileAuthorityMemberships(
-    profileId: MaybeRef<string>,
+    profileId: MaybeRef<string | null>,
     options: CompQueryOptions = {},
 ): CompQuery<AuthorityMembership[]> {
+    const enabled = computed(() => toValue(profileId) !== null);
+
     const query = useQuery({
         ...options,
+        enabled,
         queryKey: ['memberships', 'list', 'byProfileAuthorities', profileId],
-        queryFn: () => readProfileAuthorityMemberships(toValue(profileId)),
+        queryFn: () => {
+            const profileIdValue = toValue(profileId);
+            return readProfileAuthorityMemberships(profileIdValue!);
+        },
     });
 
     return query;
@@ -443,4 +464,383 @@ export function useReadProfileInstitutionMemberships(
     });
 
     return query;
+}
+
+export type CreateRoleParams = {
+    id: number;
+    body: CreateRoleBody;
+};
+
+export type UpdateRoleParams = {
+    id: number;
+    roleId: number;
+    body: UpdateRoleBody;
+};
+
+export type DeleteRoleParams = {
+    id: number;
+    roleId: number;
+};
+
+/**
+ * Composable to create a new role for a location.
+ */
+export function useCreateLocationRole(
+    options: CompMutationOptions = {},
+): CompMutation<CreateRoleParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: ({ id, body }) => createLocationRole(id, body),
+        onSuccess: (data, variables, context) => {
+            // Invalidate role queries for the location
+            invalidateQueries(queryClient, ['roles', 'list', 'byLocation', variables.id]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Rol aangemaakt',
+                    detail: 'De rol is succesvol aangemaakt.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to update a location role.
+ */
+export function useUpdateLocationRole(
+    options: CompMutationOptions = {},
+): CompMutation<UpdateRoleParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: (params: UpdateRoleParams) => {
+            const { id, roleId, body } = params;
+            return updateLocationRole(id, roleId, body);
+        },
+        onSuccess: (data, variables: UpdateRoleParams, context) => {
+            const { id } = variables;
+            // Invalidate role queries for the location
+            invalidateQueries(queryClient, ['roles', 'list', 'byLocation', id]);
+            // Also invalidate member queries as role information may have changed
+            invalidateQueries(queryClient, ['members', 'list', 'byLocation', id]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Rol bijgewerkt',
+                    detail: 'De rol is succesvol bijgewerkt.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to delete a location role.
+ */
+export function useDeleteLocationRole(
+    options: CompMutationOptions = {},
+): CompMutation<DeleteRoleParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: ({ id, roleId }) => deleteLocationRole(id, roleId),
+        onSuccess: (data, variables, context) => {
+            // Invalidate role queries for the location
+            invalidateQueries(queryClient, ['roles', 'list', 'byLocation', variables.id]);
+            // Also invalidate member queries as members may need to update their role info
+            invalidateQueries(queryClient, ['members', 'list', 'byLocation', variables.id]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Rol verwijderd',
+                    detail: 'De rol is succesvol verwijderd.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to fetch roles for a specific location.
+ *
+ * @param locationId - The ID of the location.
+ * @param options - Optional query options.
+ * @returns The query object containing the roles data and its state.
+ */
+export function useReadLocationRoles(
+    locationId: MaybeRef<number>,
+    options: CompQueryOptions = {},
+): CompQuery<Role[]> {
+    const query = useQuery<Role[], AxiosError>({
+        ...options,
+        queryKey: ['roles', 'list', 'byLocation', locationId],
+        queryFn: () => readLocationRoles(toValue(locationId)),
+    });
+
+    return query;
+}
+
+/**
+ * Composable to fetch roles for a specific authority.
+ *
+ * @param authorityId - The ID of the authority.
+ * @param options - Optional query options.
+ * @returns The query object containing the roles data and its state.
+ */
+export function useReadAuthorityRoles(
+    authorityId: MaybeRef<number>,
+    options: CompQueryOptions = {},
+): CompQuery<Role[]> {
+    const query = useQuery<Role[], AxiosError>({
+        ...options,
+        queryKey: ['roles', 'list', 'byAuthority', authorityId],
+        queryFn: () => readAuthorityRoles(toValue(authorityId)),
+    });
+
+    return query;
+}
+
+/**
+ * Composable to fetch roles for a specific institution.
+ *
+ * @param institutionId - The ID of the institution.
+ * @param options - Optional query options.
+ * @returns The query object containing the roles data and its state.
+ */
+export function useReadInstitutionRoles(
+    institutionId: MaybeRef<number>,
+    options: CompQueryOptions = {},
+): CompQuery<Role[]> {
+    const query = useQuery<Role[], AxiosError>({
+        ...options,
+        queryKey: ['roles', 'list', 'byInstitution', institutionId],
+        queryFn: () => readInstitutionRoles(toValue(institutionId)),
+    });
+
+    return query;
+}
+
+/**
+ * Composable to create a new role for an authority.
+ */
+export function useCreateAuthorityRole(
+    options: CompMutationOptions = {},
+): CompMutation<CreateRoleParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: ({ id, body }) => createAuthorityRole(id, body),
+        onSuccess: (data, variables, context) => {
+            // Invalidate role queries for the authority
+            invalidateQueries(queryClient, ['roles', 'list', 'byAuthority', variables.id]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Rol aangemaakt',
+                    detail: 'De rol is succesvol aangemaakt.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to update an authority role.
+ */
+export function useUpdateAuthorityRole(
+    options: CompMutationOptions = {},
+): CompMutation<UpdateRoleParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: (params: UpdateRoleParams) => {
+            const { id, roleId, body } = params;
+            return updateAuthorityRole(id, roleId, body);
+        },
+        onSuccess: (data, variables: UpdateRoleParams, context) => {
+            const { id } = variables;
+            // Invalidate role queries for the authority
+            invalidateQueries(queryClient, ['roles', 'list', 'byAuthority', id]);
+            // Also invalidate member queries as role information may have changed
+            invalidateQueries(queryClient, ['members', 'list', 'byAuthority', id]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Rol bijgewerkt',
+                    detail: 'De rol is succesvol bijgewerkt.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to delete an authority role.
+ */
+export function useDeleteAuthorityRole(
+    options: CompMutationOptions = {},
+): CompMutation<DeleteRoleParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: ({ id, roleId }) => deleteAuthorityRole(id, roleId),
+        onSuccess: (data, variables, context) => {
+            // Invalidate role queries for the authority
+            invalidateQueries(queryClient, ['roles', 'list', 'byAuthority', variables.id]);
+            // Also invalidate member queries as members may need to update their role info
+            invalidateQueries(queryClient, ['members', 'list', 'byAuthority', variables.id]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Rol verwijderd',
+                    detail: 'De rol is succesvol verwijderd.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to create a new role for an institution.
+ */
+export function useCreateInstitutionRole(
+    options: CompMutationOptions = {},
+): CompMutation<CreateRoleParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: ({ id, body }) => createInstitutionRole(id, body),
+        onSuccess: (data, variables, context) => {
+            // Invalidate role queries for the institution
+            invalidateQueries(queryClient, ['roles', 'list', 'byInstitution', variables.id]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Rol aangemaakt',
+                    detail: 'De rol is succesvol aangemaakt.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to update an institution role.
+ */
+export function useUpdateInstitutionRole(
+    options: CompMutationOptions = {},
+): CompMutation<UpdateRoleParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: (params: UpdateRoleParams) => {
+            const { id, roleId, body } = params;
+            return updateInstitutionRole(id, roleId, body);
+        },
+        onSuccess: (data, variables: UpdateRoleParams, context) => {
+            const { id } = variables;
+            // Invalidate role queries for the institution
+            invalidateQueries(queryClient, ['roles', 'list', 'byInstitution', id]);
+            // Also invalidate member queries as role information may have changed
+            invalidateQueries(queryClient, ['members', 'list', 'byInstitution', id]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Rol bijgewerkt',
+                    detail: 'De rol is succesvol bijgewerkt.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to delete an institution role.
+ */
+export function useDeleteInstitutionRole(
+    options: CompMutationOptions = {},
+): CompMutation<DeleteRoleParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: ({ id, roleId }) => deleteInstitutionRole(id, roleId),
+        onSuccess: (data, variables, context) => {
+            // Invalidate role queries for the institution
+            invalidateQueries(queryClient, ['roles', 'list', 'byInstitution', variables.id]);
+            // Also invalidate member queries as members may need to update their role info
+            invalidateQueries(queryClient, ['members', 'list', 'byInstitution', variables.id]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Rol verwijderd',
+                    detail: 'De rol is succesvol verwijderd.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+    });
+
+    return mutation;
 }

@@ -1,13 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { type MaybeRef, type Ref, computed, toValue } from 'vue';
+import { type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { readAuthProfile, login, logout, register } from '@/domain/auth';
-import {
-    type Role,
-    readLocationRoles,
-    readAuthorityRoles,
-    readInstitutionRoles,
-} from '@/domain/member';
 import { invalidateQueries } from './queryCache';
 import type { LoginBody, RegisterBody } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
@@ -118,64 +112,4 @@ export function useAuthRegister(options: CompMutationOptions = {}): CompMutation
     });
 
     return mutation;
-}
-
-/**
- * Composable to fetch roles for a specific location.
- *
- * @param locationId - The ID of the location.
- * @param options - Optional query options.
- * @returns The query object containing the roles data and its state.
- */
-export function useReadLocationRoles(
-    locationId: MaybeRef<number>,
-    options: CompQueryOptions = {},
-): CompQuery<Role[]> {
-    const query = useQuery<Role[], AxiosError>({
-        ...options,
-        queryKey: ['roles', 'byLocation', locationId],
-        queryFn: () => readLocationRoles(toValue(locationId)),
-    });
-
-    return query;
-}
-
-/**
- * Composable to fetch roles for a specific authority.
- *
- * @param authorityId - The ID of the authority.
- * @param options - Optional query options.
- * @returns The query object containing the roles data and its state.
- */
-export function useReadAuthorityRoles(
-    authorityId: MaybeRef<number>,
-    options: CompQueryOptions = {},
-): CompQuery<Role[]> {
-    const query = useQuery<Role[], AxiosError>({
-        ...options,
-        queryKey: ['roles', 'byAuthority', authorityId],
-        queryFn: () => readAuthorityRoles(toValue(authorityId)),
-    });
-
-    return query;
-}
-
-/**
- * Composable to fetch roles for a specific institution.
- *
- * @param institutionId - The ID of the institution.
- * @param options - Optional query options.
- * @returns The query object containing the roles data and its state.
- */
-export function useReadInstitutionRoles(
-    institutionId: MaybeRef<number>,
-    options: CompQueryOptions = {},
-): CompQuery<Role[]> {
-    const query = useQuery<Role[], AxiosError>({
-        ...options,
-        queryKey: ['roles', 'byInstitution', institutionId],
-        queryFn: () => readInstitutionRoles(toValue(institutionId)),
-    });
-
-    return query;
 }

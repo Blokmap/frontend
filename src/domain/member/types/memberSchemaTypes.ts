@@ -14,6 +14,18 @@ export type Role = {
     updatedAt: Date;
 };
 
+export type CreateRoleBody = {
+    name: string;
+    permissions: number;
+    colour: string;
+};
+
+export type UpdateRoleBody = {
+    name?: string;
+    permissions?: number;
+    colour?: string;
+};
+
 // A member represents a profile with a specific role in a certain context
 // Contexts are: Location, Authority, Institution
 export type Member = {

@@ -5,7 +5,6 @@ import Skeleton from 'primevue/skeleton';
 import ProfileQrCode from '@/components/features/profile/ProfileQrCode.vue';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import ProfileAvatarDialog from '@/components/features/profile/avatar/ProfileAvatarDialog.vue';
-// import ProfileEditDialog from '@/components/features/profile/edit/ProfileEditDialog.vue';
 import StatsCard from '@/components/features/profile/stats/StatsCard.vue';
 import StatsCardSkeleton from '@/components/features/profile/stats/StatsCardSkeleton.vue';
 import ProfileReservationsTable from '@/components/features/reservation/table/ProfileReservationsTable.vue';

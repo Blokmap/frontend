@@ -188,7 +188,7 @@ function resetToCalculatedCoordinates(): void {
             </template>
             <template #default>
                 <div>
-                    <InputLabel for="name"> Locatie naam * </InputLabel>
+                    <InputLabel htmlFor="name"> Locatie naam * </InputLabel>
                     <InputText id="name" v-model="form.name" class="w-full" placeholder="De Krook">
                     </InputText>
                     <InputHint> Kies een herkenbare naam voor de locatie </InputHint>
@@ -196,7 +196,7 @@ function resetToCalculatedCoordinates(): void {
 
                 <!-- Short description (current language) -->
                 <div>
-                    <InputLabel :for="`excerpt-${currentLanguage}`">
+                    <InputLabel :htmlFor="`excerpt-${currentLanguage}`">
                         Korte omschrijving ({{ currentLanguage }})
                     </InputLabel>
                     <InputText
@@ -227,7 +227,7 @@ function resetToCalculatedCoordinates(): void {
 
                     <!-- Current language description -->
                     <div>
-                        <InputLabel :for="`description-${currentLanguage}`">
+                        <InputLabel :htmlFor="`description-${currentLanguage}`">
                             Beschrijving ({{ currentLanguage }})
                         </InputLabel>
                         <Textarea

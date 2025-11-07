@@ -58,7 +58,7 @@ function onSubmitForm(): void {
                 <form @submit.prevent="onSubmitForm">
                     <div class="grid grid-cols-1 gap-4">
                         <div>
-                            <InputLabel for="username"> Gebruikersnaam </InputLabel>
+                            <InputLabel htmlFor="username"> Gebruikersnaam </InputLabel>
                             <InputText
                                 id="username"
                                 placeholder="Bv. tibo_ulens"
@@ -72,7 +72,7 @@ function onSubmitForm(): void {
                             </InputHint>
                         </div>
                         <div>
-                            <InputLabel for="role"> Rol </InputLabel>
+                            <InputLabel htmlFor="role"> Rol </InputLabel>
 
                             <Select
                                 placeholder="Selecteer rol"

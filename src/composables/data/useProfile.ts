@@ -13,6 +13,7 @@ import {
     readProfile,
     scanProfile,
     readInstitutionProfiles,
+    findProfiles,
 } from '@/domain/profile';
 import {
     type Profile,
@@ -20,6 +21,8 @@ import {
     type ProfileFilter,
     ProfileState,
     type ProfileScanBody,
+    type FoundProfile,
+    type ProfileFindFilter,
 } from '@/domain/profile';
 import { invalidateQueries } from './queryCache';
 
@@ -292,6 +295,32 @@ export function useReadInstitutionProfiles(
         ...options,
         queryKey: ['profiles', 'list', 'byInstitution', institutionId, filters],
         queryFn: () => readInstitutionProfiles(toValue(institutionId), toValue(filters)),
+    });
+
+    return query;
+}
+
+/**
+ * Composable to search/find profiles by query string.
+ *
+ * @param filters - The search filters including the query string and pagination.
+ * @param options - Additional options for the query.
+ * @returns The query object containing the paginated list of found profiles and their state.
+ */
+export function useFindProfiles(
+    filters: MaybeRefOrGetter<ProfileFindFilter>,
+    options: CompQueryOptions = {},
+): CompQuery<Paginated<FoundProfile>> {
+    const enabled = computed(() => {
+        const filtersValue = toValue(filters);
+        return !!filtersValue.query && filtersValue.query.length > 0;
+    });
+
+    const query = useQuery<Paginated<FoundProfile>, AxiosError>({
+        ...options,
+        queryKey: ['profiles', 'find', filters],
+        queryFn: () => findProfiles(toValue(filters)),
+        enabled,
     });
 
     return query;

@@ -36,6 +36,7 @@ export const endpoints = {
     },
     profiles: {
         list: '/profiles',
+        find: '/profiles/find',
         create: '/profiles',
         read: '/profiles/{id}',
         update: '/profiles/{id}',

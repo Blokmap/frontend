@@ -11,7 +11,14 @@ import {
 } from '@/utils/serviceUtils';
 import { parseImageResponse } from '../image';
 import { parseInstitutionResponse } from '../institution';
-import type { Profile, ProfileStats, ProfileFilter, ProfileScanBody } from './types';
+import type {
+    Profile,
+    ProfileStats,
+    ProfileFilter,
+    ProfileScanBody,
+    FoundProfile,
+    ProfileFindFilter,
+} from './types';
 import type { Paginated, Pagination } from '@/utils/pagination';
 
 /**
@@ -139,6 +146,40 @@ export async function readProfiles(
     const transformResponse = transformPaginatedResponseFactory(parseProfileResponse);
 
     const { data } = await client.get<Paginated<Profile>>(endpoint, {
+        params: filters,
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Parses a found profile response object (simplified profile for search results).
+ *
+ * @param data - The raw found profile data from the API.
+ * @returns The parsed FoundProfile object.
+ */
+export function parseFoundProfileResponse(data: any): FoundProfile {
+    if (!data) return data;
+
+    return {
+        ...data,
+        avatarUrl: parseImageResponse(data.avatarUrl),
+    };
+}
+
+/**
+ * Find profiles by query string (normal user endpoint, returns paginated list).
+ *
+ * @param filters - The filters to apply when finding profiles (must include query).
+ * @returns A promise that resolves to a paginated list of found profiles.
+ */
+export async function findProfiles(filters: ProfileFindFilter): Promise<Paginated<FoundProfile>> {
+    const endpoint = endpoints.profiles.find;
+
+    const transformResponse = transformPaginatedResponseFactory(parseFoundProfileResponse);
+
+    const { data } = await client.get<Paginated<FoundProfile>>(endpoint, {
         params: filters,
         transformResponse,
     });

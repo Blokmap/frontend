@@ -6,3 +6,7 @@ export type ProfileFilter = Pagination & {
     isAdmin?: boolean;
     state?: ProfileState | null;
 };
+
+export type ProfileFindFilter = Pagination & {
+    query: string;
+};

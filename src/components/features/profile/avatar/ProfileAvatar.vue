@@ -6,7 +6,7 @@ import type { Profile } from '@/domain/profile';
 
 withDefaults(
     defineProps<{
-        profile: Profile;
+        profile?: Profile;
         image?: string;
         editable?: boolean;
     }>(),
@@ -27,7 +27,7 @@ defineEmits<{ (e: 'click:edit'): void }>();
 
         <!-- Placeholder avatar -->
         <Avatar
-            v-if="!profile.avatarUrl && !image"
+            v-if="!profile?.avatarUrl && !image"
             class="avatar-placeholder"
             shape="circle"
             size="xlarge">
@@ -35,7 +35,7 @@ defineEmits<{ (e: 'click:edit'): void }>();
         </Avatar>
 
         <!-- Profile image -->
-        <img v-else :src="image || profile.avatarUrl?.url" alt="Profile Avatar" loading="lazy" />
+        <img v-else :src="image || profile?.avatarUrl?.url" alt="Profile Avatar" loading="lazy" />
     </div>
 </template>
 

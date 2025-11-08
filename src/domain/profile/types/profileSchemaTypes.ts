@@ -23,6 +23,14 @@ export type Profile = {
     state: ProfileState;
 };
 
+export type FoundProfile = {
+    id: string;
+    username: string;
+    avatarUrl: Image | null;
+    firstName: string | null;
+    lastName: string | null;
+};
+
 export type ProfileStats = {
     totalReservations: number;
     upcomingReservations: number;

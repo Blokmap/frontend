@@ -1,14 +1,20 @@
 <script lang="ts" setup>
+import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import InputHint from '@/components/shared/molecules/form/InputHint.vue';
 import InputLabel from '@/components/shared/molecules/form/InputLabel.vue';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useDebounceFn } from '@vueuse/core';
 import { computed, ref } from 'vue';
+
+import { useFindProfiles } from '@/composables/data/useProfile';
+
+import ProfileAvatar from '../profile/avatar/ProfileAvatar.vue';
 import type { CreateMemberBody, Role } from '@/domain/member';
+import type { FoundProfile } from '@/domain/profile';
 
 const props = defineProps<{
     roles: Role[];
@@ -23,10 +29,22 @@ const isVisible = defineModel<boolean>('isVisible', {
     default: false,
 });
 
+const selectedProfile = ref<FoundProfile | null>(null);
+
 const form = ref<CreateMemberBody>({
     username: '',
     roleId: null,
 });
+
+const filters = ref({
+    query: '',
+    page: 1,
+    limit: 10,
+});
+
+const { data: profiles, isFetching: isLoadingProfiles } = useFindProfiles(filters);
+
+const profileOptions = computed(() => profiles.value?.data || []);
 
 const roleOptions = computed(() => {
     return props.roles.map((role: Role) => ({
@@ -35,10 +53,15 @@ const roleOptions = computed(() => {
     }));
 });
 
-/**
- * Handle submitting the form.
- */
+const debouncedSearch = useDebounceFn((event: { query: string }) => {
+    filters.value.query = event.query || '';
+    filters.value.page = 1;
+}, 300);
+
 function onSubmitForm(): void {
+    if (selectedProfile.value) {
+        form.value.username = selectedProfile.value.username;
+    }
     emit('click:submit', form.value);
 }
 </script>
@@ -59,16 +82,40 @@ function onSubmitForm(): void {
                     <div class="grid grid-cols-1 gap-4">
                         <div>
                             <InputLabel htmlFor="username"> Gebruikersnaam </InputLabel>
-                            <InputText
+                            <AutoComplete
                                 id="username"
-                                placeholder="Bv. tibo_ulens"
-                                v-model="form.username"
+                                class="w-full"
+                                v-model="selectedProfile"
+                                :suggestions="profileOptions"
+                                :loading="isLoadingProfiles"
+                                option-label="username"
+                                placeholder="Zoek een gebruiker..."
+                                @complete="debouncedSearch"
+                                force-selection
                                 required>
-                            </InputText>
+                                <template #option="{ option }">
+                                    <div class="flex items-center gap-2">
+                                        <ProfileAvatar class="h-10" :image="option.avatarUrl" />
+                                        <div class="flex flex-col">
+                                            <span class="text-sm font-medium">
+                                                {{ option.username }}
+                                            </span>
+                                            <span
+                                                v-if="option.firstName || option.lastName"
+                                                class="text-xs text-slate-500">
+                                                {{ option.firstName }} {{ option.lastName }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template #empty>
+                                    <span class="text-sm text-slate-500">
+                                        Geen gebruikers gevonden.
+                                    </span>
+                                </template>
+                            </AutoComplete>
                             <InputHint>
-                                De gebruikersnaam is te vinden op de
-                                <RouterLink :to="{ name: 'profile' }"> profielpagina </RouterLink>
-                                van de gebruiker.
+                                Zoek en selecteer een gebruiker om toe te voegen als beheerder.
                             </InputHint>
                         </div>
                         <div>

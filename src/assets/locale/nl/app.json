@@ -121,9 +121,9 @@
         "institutions": {
             "name": "Institutie | Instituties",
             "category": {
-                "education": "Onderwijs",
-                "organisation": "Organisatie",
-                "government": "Overheid"
+                "Education": "Onderwijs",
+                "Organisation": "Organisatie",
+                "Government": "Overheid"
             },
             "aclType": {
                 "whitelist": "Witte lijst",

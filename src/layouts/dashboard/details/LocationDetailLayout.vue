@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LocationStateCallout from '@/components/features/location/LocationStateCallout.vue';
 import TabNavigation, { type TabItem } from '@/components/shared/molecules/TabNavigation.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
@@ -10,6 +11,7 @@ import { faCalendar, faList, faUsers, faUsersGear } from '@fortawesome/free-soli
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useReadLocation } from '@/composables/data/useLocations';
+import { LocationState } from '@/domain/location';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -74,6 +76,12 @@ const { data: location, isLoading, error } = useReadLocation(computed(() => +pro
 
         <!-- Content -->
         <template v-else>
+            <!-- Message -->
+            <LocationStateCallout
+                v-if="location.state !== LocationState.Approved"
+                :state="location.state"
+                :rejected-reason="location.rejectedReason" />
+
             <!-- Header -->
             <DashboardPageHeader
                 :title="location.name"

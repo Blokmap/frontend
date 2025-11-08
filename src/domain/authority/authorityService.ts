@@ -6,6 +6,8 @@ import { parseProfileResponse } from '../profile';
 import type { Authority, AuthorityFilter, AuthorityBody } from './types';
 import type { Paginated } from '@/utils/pagination';
 
+export type AuthorityIncludes = 'institution' | 'createdBy' | 'updatedBy';
+
 /**
  * Parses an Authority response object.
  *
@@ -89,13 +91,17 @@ export async function readInstitutionAuthorities(
  * @param id - The ID of the authority to read.
  * @returns A promise that resolves to the authority.
  */
-export async function readAuthority(id: number): Promise<Authority> {
+export async function readAuthority(
+    id: number,
+    includes: AuthorityIncludes[] = [],
+): Promise<Authority> {
     const endpoint = endpoints.authorities.read.replace('{id}', id.toString());
 
     const transformResponse = transformResponseFactory(parseAuthorityResponse);
 
     const { data } = await client.get<Authority>(endpoint, {
         transformResponse,
+        params: { authorityIncludes: includes },
     });
 
     return data;

@@ -74,6 +74,7 @@ export type LocationBody = {
     country: string;
     latitude: number;
     longitude: number;
+    authorityId?: number | null;
 };
 
 export type NearestLocation = {

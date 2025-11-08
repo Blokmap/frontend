@@ -5,6 +5,7 @@ import InstitutionDetailLayout from '@/layouts/dashboard/details/InstitutionDeta
 import LocationDetailLayout from '@/layouts/dashboard/details/LocationDetailLayout.vue';
 import ProfileDetailLayout from '@/layouts/dashboard/details/ProfileDetailLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
+import TestPage from '@/pages/TestPage.vue';
 import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 import { useToast } from '@/composables/store/useToast';
@@ -51,6 +52,10 @@ const routes: RouteRecordRaw[] = [
         redirect: { name: 'locations' },
         component: PublicLayout,
         children: [
+            {
+                path: 'test',
+                component: TestPage,
+            },
             {
                 path: 'profile',
                 meta: { auth: { required: true } },

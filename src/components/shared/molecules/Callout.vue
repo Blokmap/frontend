@@ -34,7 +34,7 @@ const icons = {
     <Message :severity="severity">
         <template v-if="showIcon" #icon>
             <slot name="icon">
-                <FontAwesomeIcon class="text-xl" :icon="icon || icons[severity]" />
+                <FontAwesomeIcon class="mt-1 text-xl" :icon="icon || icons[severity]" />
             </slot>
         </template>
         <template #default>

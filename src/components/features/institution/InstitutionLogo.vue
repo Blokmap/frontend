@@ -43,8 +43,8 @@ watchEffect(async () => {
 @reference '@/assets/styles/main.css';
 
 .institution-logo {
-    @apply flex h-full w-full items-center justify-center overflow-hidden p-2;
-    @apply rounded-lg border-1 border-slate-200 bg-slate-50;
+    @apply flex items-center justify-center overflow-hidden;
+    @apply h-full w-full;
 
     .placeholder-icon {
         @apply text-slate-400;

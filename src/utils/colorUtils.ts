@@ -87,9 +87,9 @@ export function getContrastColor(bgColor: string): string {
 
     // For dark backgrounds (low luminance), return a very light tint
     if (luminance < 0.5) {
-        return lighten(bgColor, 0.85); // 85% lighter
+        return lighten(bgColor, 0.6); // 60% lighter
     }
 
     // For light backgrounds (high luminance), return a very dark tint
-    return darken(bgColor, 0.85); // 85% darker
+    return darken(bgColor, 0.6); // 60% darker
 }

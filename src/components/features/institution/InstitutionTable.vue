@@ -27,7 +27,7 @@ const onInstitutionClick = (institution: Institution) => {
         <template #row="{ data: institution }">
             <TableCell column="Institutie">
                 <div class="flex items-center space-x-3">
-                    <div class="h-16 w-16 flex-shrink-0">
+                    <div class="h-14 w-14 flex-shrink-0">
                         <InstitutionLogo :slug="institution.slug" />
                     </div>
                     <div class="min-w-0 flex-1">

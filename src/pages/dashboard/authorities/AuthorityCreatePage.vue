@@ -3,41 +3,29 @@ import Card from 'primevue/card';
 import AuthorityForm from '@/components/features/authority/forms/AuthorityForm.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
-import { useI18n } from 'vue-i18n';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCreateAuthority } from '@/composables/data/useAuthorities';
-import { useToast } from '@/composables/store/useToast';
-import type { AuthorityBody } from '@/domain/authority';
+import { useReadProfileInstitutionMemberships } from '@/composables/data/useMembers';
+import type { Authority } from '@/domain/authority';
+import type { Profile } from '@/domain/profile';
+
+const props = defineProps<{ profile: Profile }>();
 
 const router = useRouter();
-const toast = useToast();
-const { t } = useI18n();
 
-const { mutateAsync: createAuthority, isPending } = useCreateAuthority({});
+const { data: institutions } = useReadProfileInstitutionMemberships(
+    computed(() => props.profile.id),
+);
 
-/**
- * Handles the form submission by creating a new authority.
- */
-async function handleSave(form: AuthorityBody): Promise<void> {
-    try {
-        const authority = await createAuthority(form);
-        toast.add({
-            severity: 'success',
-            summary: t('domains.authorities.success.created'),
-            detail: t('domains.authorities.success.createdDetail'),
-        });
+const { mutateAsync: createAuthority, isPending } = useCreateAuthority({
+    onSuccess: (authority: Authority) => {
         router.push({
             name: 'dashboard.authorities.detail.overview',
             params: { authorityId: authority.id },
         });
-    } catch {
-        toast.add({
-            severity: 'error',
-            summary: t('domains.authorities.errors.createFailed'),
-            detail: t('domains.authorities.errors.createFailedDetail'),
-        });
-    }
-}
+    },
+});
 </script>
 
 <template>
@@ -49,7 +37,10 @@ async function handleSave(form: AuthorityBody): Promise<void> {
 
         <Card class="max-w-4xl">
             <template #content>
-                <AuthorityForm :loading="isPending" @click:save="handleSave" />
+                <AuthorityForm
+                    :institutions="institutions"
+                    :loading="isPending"
+                    @click:save="createAuthority" />
             </template>
         </Card>
     </DashboardContent>

@@ -10,6 +10,7 @@ import {
     type AuthorityBody,
     readProfileAuthorities,
     readInstitutionAuthorities,
+    type AuthorityIncludes,
 } from '@/domain/authority';
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
@@ -75,12 +76,12 @@ export function useReadInstitutionAuthorities(
  */
 export function useReadAuthority(
     id: MaybeRefOrGetter<number>,
-    options: CompQueryOptions = {},
+    options: CompQueryOptions<AuthorityIncludes> = {},
 ): CompQuery<Authority> {
     const authority = useQuery({
         ...options,
         queryKey: ['authorities', 'read', id],
-        queryFn: () => readAuthority(toValue(id)),
+        queryFn: () => readAuthority(toValue(id), options.includes),
     });
 
     return authority;

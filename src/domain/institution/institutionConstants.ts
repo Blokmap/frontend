@@ -7,7 +7,7 @@ export const DEFAULT_INSTITUTION_REQUEST: InstitutionBody = {
         nl: '',
     },
     slug: '',
-    aclType: 'whitelist',
+    aclType: 'Whitelist',
     city: null,
     zip: null,
     country: null,
@@ -24,4 +24,4 @@ export const INSTITUTION_CATEGORIES = [
     InstitutionCategory.Government,
 ] as const;
 
-export const ACL_TYPES = ['whitelist', 'blacklist'] as const;
+export const ACL_TYPES = ['Whitelist', 'Blacklist'] as const;

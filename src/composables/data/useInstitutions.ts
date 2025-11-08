@@ -94,7 +94,7 @@ export function useCreateInstitution(
             if (!options.disableToasts) {
                 toast.add({
                     severity: 'success',
-                    summary: 'Instelling aangemaakt',
+                    summary: 'Institutie aangemaakt',
                     detail: 'De nieuwe instelling is succesvol aangemaakt.',
                 });
             }
@@ -128,7 +128,7 @@ export function useUpdateInstitution(
             if (!options.disableToasts) {
                 toast.add({
                     severity: 'success',
-                    summary: 'Instelling bijgewerkt',
+                    summary: 'Institutie bijgewerkt',
                     detail: 'De instelling is succesvol bijgewerkt.',
                 });
             }

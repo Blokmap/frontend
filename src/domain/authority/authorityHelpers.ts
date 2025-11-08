@@ -10,5 +10,6 @@ export function authorityToBody(authority: Authority): AuthorityBody {
     return {
         name: authority.name,
         description: authority.description,
+        institutionId: authority.institution ? authority.institution.id : null,
     };
 }

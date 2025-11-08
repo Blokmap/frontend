@@ -65,7 +65,7 @@ function handleHoverOut() {
 @reference '@/assets/styles/main.css';
 
 .logo {
-    font-family: 'Armageda';
+    @apply font-[Armageda];
     @apply flex w-fit items-center rounded-lg px-2 py-1;
     @apply cursor-pointer font-black tracking-tight uppercase select-none;
     @apply text-2xl md:text-3xl;

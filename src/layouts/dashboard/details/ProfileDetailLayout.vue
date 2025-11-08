@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
+import ProfileHeader from '@/components/features/profile/ProfileHeader.vue';
 import TabNavigation, { type TabItem } from '@/components/shared/molecules/TabNavigation.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
-import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { faBuilding, faCity, faIdCard, faMapLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
 import { useReadProfile } from '@/composables/data/useProfile';
@@ -85,16 +84,7 @@ const tabs = computed<TabItem[]>(() => [
         <!-- Content -->
         <template v-else>
             <!-- Profile Header -->
-            <DashboardDetailHeader
-                :loading="isLoading"
-                :show-skeletons="true"
-                :title="`${currentProfile?.firstName} ${currentProfile?.lastName}`"
-                :primary="currentProfile?.email"
-                avatar-shape="circle">
-                <template #avatar>
-                    <ProfileAvatar :profile="currentProfile!" />
-                </template>
-            </DashboardDetailHeader>
+            <ProfileHeader :profile="currentProfile" :loading="isLoading"></ProfileHeader>
 
             <!-- Tabs -->
             <TabNavigation :tabs="tabs" />

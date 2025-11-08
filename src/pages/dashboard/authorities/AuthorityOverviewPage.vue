@@ -5,9 +5,11 @@ import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { useUpdateAuthority } from '@/composables/data/useAuthorities';
 import type { Authority, AuthorityBody } from '@/domain/authority';
+import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
     authority: Authority;
+    profile: Profile;
 }>();
 
 const { mutateAsync: updateAuthority, isPending: isUpdating } = useUpdateAuthority();

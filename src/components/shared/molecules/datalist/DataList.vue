@@ -11,7 +11,7 @@ defineProps<{
 <template>
     <div class="flex flex-col gap-4">
         <slot v-if="loading" name="loading">
-            <Skeleton v-for="_ in 5"></Skeleton>
+            <Skeleton height="200px" v-for="_ in 5"></Skeleton>
         </slot>
         <slot v-else-if="!items || items.length === 0" name="empty">
             <EmptyState message="Geen items gevonden"></EmptyState>

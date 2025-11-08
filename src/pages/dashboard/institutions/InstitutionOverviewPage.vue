@@ -4,39 +4,22 @@ import InstitutionForm from '@/components/features/institution/forms/Institution
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
 import { useUpdateInstitution } from '@/composables/data/useInstitutions';
-import { useToast } from '@/composables/store/useToast';
 import type { Institution, InstitutionBody } from '@/domain/institution';
 
 const props = defineProps<{
     institution: Institution;
 }>();
 
-const toast = useToast();
-
 const { mutateAsync: updateInstitution, isPending: isUpdating } = useUpdateInstitution();
 
 /**
  * Handle form submission to update the institution
  */
-async function handleUpdate(form: InstitutionBody): Promise<void> {
-    try {
-        await updateInstitution({
-            id: props.institution.id,
-            data: form,
-        });
-
-        toast.add({
-            severity: 'success',
-            summary: 'Opgeslagen',
-            detail: 'De institutie is succesvol bijgewerkt.',
-        });
-    } catch {
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij opslaan',
-            detail: 'Er is iets misgegaan bij het bijwerken van de institutie.',
-        });
-    }
+function handleUpdate(form: InstitutionBody): void {
+    updateInstitution({
+        id: props.institution.id,
+        data: form,
+    });
 }
 </script>
 

@@ -1,6 +1,6 @@
-import { useToast } from 'primevue/usetoast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
+import { useToast } from '@/composables/store/useToast';
 import {
     readOpeningTimes,
     createOpeningTimes,

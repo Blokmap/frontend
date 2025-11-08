@@ -20,7 +20,16 @@ const props = defineProps<{
     profile: Profile;
 }>();
 
-const { data: authority, isLoading, error } = useReadAuthority(computed(() => +props.authorityId));
+const {
+    data: authority,
+    isLoading,
+    error,
+} = useReadAuthority(
+    computed(() => +props.authorityId),
+    {
+        includes: ['institution'],
+    },
+);
 
 const tabs = computed<TabItem[]>(() => [
     {
@@ -42,7 +51,7 @@ const tabs = computed<TabItem[]>(() => [
         },
     },
     {
-        value: 'access',
+        value: 'members',
         label: 'Toegangsbeheer',
         align: 'right',
         icon: faUsersGear,

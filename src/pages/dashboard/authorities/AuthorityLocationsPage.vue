@@ -4,7 +4,10 @@ import LocationDataItem from '@/components/features/location/LocationDataItem.vu
 import EmptyState from '@/components/shared/molecules/EmptyState.vue';
 import DataList from '@/components/shared/molecules/datalist/DataList.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
+import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import {
     useDeleteLocation,
@@ -77,6 +80,18 @@ function onDeleteClick(locationId: number) {
         <DashboardDetailHeader
             title="Locaties"
             secondary="Bekijk alle locaties die aan deze autoriteit zijn gekoppeld.">
+            <template #actions>
+                <RouterLink
+                    :to="{
+                        name: 'locations.submit',
+                        query: { authorityId: authority.id },
+                    }"
+                    class="btn btn-secondary">
+                    <PageHeaderButton severity="contrast" label="Locatie Indienen">
+                        <FontAwesomeIcon :icon="faPlus" />
+                    </PageHeaderButton>
+                </RouterLink>
+            </template>
         </DashboardDetailHeader>
 
         <!-- Locations List -->

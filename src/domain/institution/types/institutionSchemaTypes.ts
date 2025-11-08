@@ -2,9 +2,9 @@ import type { Image } from '@/domain/image';
 import type { Translation, TranslationBody } from '@/domain/translation';
 
 export enum InstitutionCategory {
-    Education = 'education',
-    Organisation = 'organisation',
-    Government = 'government',
+    Education = 'Education',
+    Organisation = 'Organisation',
+    Government = 'Government',
 }
 
 export type Institution = {
@@ -21,14 +21,14 @@ export type Institution = {
     province: string | null;
     country: string | null;
     category: InstitutionCategory;
-    aclType: 'blacklist' | 'whitelist';
+    aclType: 'Blacklist' | 'Whitelist';
 };
 
 export type InstitutionBody = {
     category: InstitutionCategory;
     name: TranslationBody;
     slug: string;
-    aclType: 'blacklist' | 'whitelist';
+    aclType: 'Blacklist' | 'Whitelist';
     city: string | null;
     zip: string | null;
     country: string | null;

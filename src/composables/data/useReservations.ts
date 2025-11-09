@@ -1,6 +1,6 @@
-import { useToast } from 'primevue/usetoast';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { toValue, type MaybeRef, computed } from 'vue';
+import { useToast } from '@/composables/store/useToast';
 import {
     confirmReservation,
     createReservation,

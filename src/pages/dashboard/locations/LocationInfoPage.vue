@@ -152,7 +152,7 @@ async function saveChanges(): Promise<void> {
     <DashboardContent>
         <!-- Detail Header -->
         <DashboardDetailHeader
-            title="Locatie-Institutieen"
+            title="Locatie-instellingen"
             secondary="Bekijk en beheer de instellingen van deze locatie">
         </DashboardDetailHeader>
 
@@ -170,7 +170,7 @@ async function saveChanges(): Promise<void> {
                     </Tab>
                     <Tab value="settings">
                         <FontAwesomeIcon :icon="faCog" class="tab-icon" />
-                        <span class="tab-label">Institutieen</span>
+                        <span class="tab-label">Instellingen</span>
                     </Tab>
                 </TabList>
             </Tabs>

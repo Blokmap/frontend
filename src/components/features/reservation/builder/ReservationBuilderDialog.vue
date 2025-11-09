@@ -54,7 +54,7 @@ const {
     refetch: refetchReservations,
 } = useReadProfileReservations(profileId, reservationFilters);
 
-const { mutateAsync: createReservations } = useCreateReservations();
+const { mutateAsync: createReservations } = useCreateReservations({});
 const { mutateAsync: deleteReservations } = useDeleteReservations();
 
 const { subscribe } = useWebsocket(computed(() => visible.value && props.location.isReservable));
@@ -258,19 +258,8 @@ async function savePendingChanges(): Promise<void> {
         // Reset pending changes after refetch completes
         reservationsToCreate.value = [];
         reservationsToDelete.value = [];
-
-        toast.add({
-            severity: 'success',
-            summary: 'Wijzigingen opgeslagen',
-            detail: `Wijziging(en) succesvol opgeslagen.`,
-        });
     } catch (e) {
         console.error('Error saving reservation changes:', e);
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij opslaan',
-            detail: 'Er is een fout opgetreden bij het opslaan van je wijzigingen.',
-        });
     } finally {
         isSaving.value = false;
     }
@@ -298,59 +287,61 @@ watch(visible, (newVisible) => {
 
 <template>
     <Dialog
-        class="dialog"
+        class="reservation-dialog"
         v-model:visible="visible"
         modal
         close-on-escape
-        dismissable-mask
-        closable>
-        <!-- Calendar Controls -->
-        <template #header>
-            <CalendarControls class="w-full" v-model:date="currentWeek" />
-        </template>
-
-        <template #closeicon> <i></i> </template>
-
-        <div class="space-y-6">
-            <!-- Loading State -->
-            <div v-if="isLoading" class="flex items-center justify-center py-12">
-                <ProgressSpinner />
+        dismissable-mask>
+        <template #container>
+            <!-- Header -->
+            <div class="dialog__header">
+                <CalendarControls class="w-full" v-model:date="currentWeek" />
             </div>
 
-            <!-- Calendar -->
-            <ReservationBuilderCalendar
-                v-else-if="openings && reservations"
-                :current-week="currentWeek"
-                :opening-times="openings"
-                :reservations="reservations"
-                :reservations-to-create="reservationsToCreate"
-                :reservations-to-delete="reservationsToDelete"
-                :is-saving="isSaving"
-                @click:opening="onOpeningTimeClick"
-                @delete:request="onRequestDelete"
-                @delete:reservation="onReservationDelete">
-            </ReservationBuilderCalendar>
-        </div>
+            <!-- Calendar Content -->
+            <div class="flex-1 overflow-auto">
+                <!-- Loading State -->
+                <div v-if="isLoading" class="flex h-full items-center justify-center">
+                    <ProgressSpinner style="width: 50px; height: 50px" />
+                </div>
 
-        <template #footer>
-            <div class="flex w-full flex-wrap items-center justify-between gap-6">
+                <!-- Calendar -->
+                <ReservationBuilderCalendar
+                    v-else-if="openings && reservations"
+                    :current-week="currentWeek"
+                    :opening-times="openings"
+                    :reservations="reservations"
+                    :reservations-to-create="reservationsToCreate"
+                    :reservations-to-delete="reservationsToDelete"
+                    :is-saving="isSaving"
+                    @click:opening="onOpeningTimeClick"
+                    @delete:request="onRequestDelete"
+                    @delete:reservation="onReservationDelete">
+                </ReservationBuilderCalendar>
+            </div>
+
+            <!-- Footer -->
+            <div class="dialog__footer">
                 <ReservationBuilderLegend
                     :has-additions="reservationsToCreate.length > 0"
                     :has-deletions="reservationsToDelete.length > 0">
                 </ReservationBuilderLegend>
 
-                <div class="flex w-full items-center gap-3 md:w-auto">
+                <div class="flex items-center gap-2">
                     <template v-if="hasPendingChanges">
                         <Button
                             severity="contrast"
                             text
+                            size="small"
                             :disabled="isSaving"
                             @click="cancelPendingChanges">
                             Annuleren
                         </Button>
-                        <Button :loading="isSaving" @click="savePendingChanges"> Opslaan </Button>
+                        <Button size="small" :loading="isSaving" @click="savePendingChanges">
+                            Opslaan
+                        </Button>
                     </template>
-                    <Button v-else severity="contrast" text @click="visible = false">
+                    <Button v-else severity="contrast" text size="small" @click="visible = false">
                         Sluiten
                     </Button>
                 </div>
@@ -398,7 +389,17 @@ watch(visible, (newVisible) => {
 <style>
 @reference '@/assets/styles/main.css';
 
-.dialog {
-    @apply w-full max-w-[1240px];
+.reservation-dialog {
+    @apply flex h-screen max-h-screen w-screen max-w-[1080px] flex-col md:max-h-[90%];
+    @apply rounded-none bg-white md:rounded-xl;
+
+    .dialog__header {
+        @apply flex w-full flex-shrink-0 items-center justify-between;
+        @apply rounded-t-xl px-4 py-3;
+    }
+
+    .dialog__footer {
+        @apply flex flex-shrink-0 items-center justify-between rounded-b-xl bg-gray-50 p-4;
+    }
 }
 </style>

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { useToast } from 'primevue';
 import { toValue, type MaybeRefOrGetter } from 'vue';
+import { useToast } from '@/composables/store/useToast';
 import {
     createInstitution,
     readInstitutions,

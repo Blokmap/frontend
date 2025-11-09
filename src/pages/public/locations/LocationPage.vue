@@ -167,20 +167,20 @@ function onLoginClick(): void {
                 </div>
             </div>
 
-            <!-- Gallery -->
-            <div class="h-[480px] overflow-hidden rounded-2xl">
-                <Gallery
-                    v-if="location?.images"
-                    :images="location.images"
-                    :placeholder="placeholder">
-                </Gallery>
-                <GallerySkeleton v-else-if="isPending" />
-            </div>
-
             <!-- Content Grid -->
             <div class="grid gap-6 lg:grid-cols-3">
                 <!-- Main Content -->
                 <div class="space-y-6 lg:col-span-2">
+                    <!-- Gallery -->
+                    <div class="h-[400px] overflow-hidden rounded-2xl">
+                        <Gallery
+                            v-if="location?.images"
+                            :images="location.images"
+                            :placeholder="placeholder">
+                        </Gallery>
+                        <GallerySkeleton v-else-if="isPending" />
+                    </div>
+
                     <!-- Description Section -->
                     <div class="border-b border-gray-200 pb-8">
                         <h2 class="mb-4 text-2xl font-semibold text-gray-900">
@@ -261,7 +261,7 @@ function onLoginClick(): void {
                 <div class="lg:col-span-1">
                     <div class="sticky top-8">
                         <!-- Reservation/Hours Card -->
-                        <div class="rounded-xl border border-slate-200 bg-white p-6">
+                        <div class="rounded-xl border border-slate-200 bg-white px-3 py-6 md:px-6">
                             <h3 class="text-xl font-semibold text-gray-900">
                                 <template v-if="location?.isReservable">
                                     {{ $t('pages.locations.sections.reservations.title') }}

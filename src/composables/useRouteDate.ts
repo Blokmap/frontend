@@ -49,7 +49,6 @@ export function useRouteDate(options: RouteDateOptions = {}): WritableComputedRe
     const {
         paramName = 'day',
         source = 'query',
-        updateMethod = 'replace',
         defaultDate = new Date(),
         dayOnly = true,
     } = options;
@@ -91,13 +90,10 @@ export function useRouteDate(options: RouteDateOptions = {}): WritableComputedRe
                         ...route.query,
                         [paramName]: dateString,
                     },
+                    hash: route.hash,
                 };
 
-                if (updateMethod === 'push') {
-                    router.push(routeUpdate);
-                } else {
-                    router.replace(routeUpdate);
-                }
+                router.replace(routeUpdate);
             } else {
                 // For params, we need to preserve the route name
                 const routeUpdate = {
@@ -107,13 +103,10 @@ export function useRouteDate(options: RouteDateOptions = {}): WritableComputedRe
                         [paramName]: dateString,
                     },
                     query: route.query,
+                    hash: route.hash,
                 };
 
-                if (updateMethod === 'push') {
-                    router.push(routeUpdate);
-                } else {
-                    router.replace(routeUpdate);
-                }
+                router.replace(routeUpdate);
             }
         },
     });

@@ -2,13 +2,11 @@
 import LocationOpeningBuilder from '@/components/features/location/builder/builders/LocationOpeningBuilder.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import { ref, watchEffect } from 'vue';
-import { useI18n } from 'vue-i18n';
 import {
     useCreateOpeningTimes,
     useDeleteOpeningTime,
     useUpdateOpeningTime,
 } from '@/composables/data/useOpeningTimes';
-import { useToast } from '@/composables/store/useToast';
 import { openingToBody } from '@/domain/openings';
 import type { Location } from '@/domain/location';
 import type { OpeningTimeBody } from '@/domain/openings';
@@ -17,59 +15,9 @@ const props = defineProps<{
     location: Location;
 }>();
 
-const toast = useToast();
-const { t } = useI18n();
-
-const { mutateAsync: createOpeningTimes } = useCreateOpeningTimes({
-    onSuccess: () => {
-        toast.add({
-            severity: 'success',
-            summary: t('domains.openings.success.created'),
-            detail: t('domains.openings.success.createdDetail'),
-        });
-    },
-    onError: () => {
-        toast.add({
-            severity: 'error',
-            summary: t('domains.openings.errors.createFailed'),
-            detail: t('domains.openings.errors.createFailedDetail'),
-        });
-    },
-});
-
-const { mutateAsync: updateOpeningTime } = useUpdateOpeningTime({
-    onSuccess: () => {
-        toast.add({
-            severity: 'success',
-            summary: t('domains.openings.success.updated'),
-            detail: t('domains.openings.success.updatedDetail'),
-        });
-    },
-    onError: () => {
-        toast.add({
-            severity: 'error',
-            summary: t('domains.openings.errors.updateFailed'),
-            detail: t('domains.openings.errors.updateFailedDetail'),
-        });
-    },
-});
-
-const { mutateAsync: deleteOpeningTime } = useDeleteOpeningTime({
-    onSuccess: () => {
-        toast.add({
-            severity: 'success',
-            summary: t('domains.openings.success.deleted'),
-            detail: t('domains.openings.success.deletedDetail'),
-        });
-    },
-    onError: () => {
-        toast.add({
-            severity: 'error',
-            summary: t('domains.openings.errors.deleteFailed'),
-            detail: t('domains.openings.errors.deleteFailedDetail'),
-        });
-    },
-});
+const { mutateAsync: createOpeningTimes } = useCreateOpeningTimes({});
+const { mutateAsync: updateOpeningTime } = useUpdateOpeningTime({});
+const { mutateAsync: deleteOpeningTime } = useDeleteOpeningTime({});
 
 const openingsForm = ref<OpeningTimeBody[]>([]);
 

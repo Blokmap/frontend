@@ -15,6 +15,7 @@ export type CompMutationOptions<D = any, V = any> = Partial<
 export type CompQueryOptions<I = string> = Partial<UseQueryOptions<any, any, any, any, any>> & {
     includes?: I[];
     disableToasts?: boolean;
+    disableInvalidates?: boolean;
 };
 
 export type CompQuery<T = unknown> = UseQueryReturnType<T, AxiosError>;

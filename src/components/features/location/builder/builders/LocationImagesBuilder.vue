@@ -376,7 +376,8 @@ function onDragEnd(): void {
                     v-model="urlInput"
                     class="w-full"
                     placeholder="https://example.com/image.jpg"
-                    @keyup.enter="addImageFromUrl" />
+                    @keyup.enter="addImageFromUrl">
+                </InputText>
             </div>
         </div>
 

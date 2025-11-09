@@ -94,7 +94,7 @@ function handleMouseLeave() {
         <!-- Popover with slot for custom content -->
         <Popover
             ref="popover"
-            class="min-w-[350px]"
+            class="mx-2 w-[400px] max-w-[calc(100vw-1rem)]"
             @show="isShowingPopover = true"
             @hide="isShowingPopover = false">
             <slot name="popover"></slot>

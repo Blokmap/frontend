@@ -2,8 +2,7 @@
 
 .p-dialog {
     @apply border-surface-200 bg-surface-0 rounded-xl border text-slate-800;
-    @apply max-h-[90%] scale-100;
-    @apply mx-4 w-full max-w-lg;
+    @apply scale-100;
 }
 
 .p-dialog-content {

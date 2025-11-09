@@ -95,7 +95,8 @@ function onSubmitForm(): void {
                                 required>
                                 <template #option="{ option }">
                                     <div class="flex items-center gap-2">
-                                        <ProfileAvatar class="h-10" :image="option.avatarUrl" />
+                                        <ProfileAvatar class="h-10" :image="option.avatarUrl?.url">
+                                        </ProfileAvatar>
                                         <div class="flex flex-col">
                                             <span class="text-sm font-medium">
                                                 {{ option.username }}

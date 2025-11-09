@@ -153,11 +153,7 @@ function onReservationDelete(reservation: Reservation): void {
 
 <template>
     <div class="rounded-lg border border-gray-200">
-        <Calendar
-            class="h-full"
-            :current-week="currentWeek"
-            :time-slots="allTimeSlots"
-            :enable-dragging="false">
+        <Calendar :current-week="currentWeek" :time-slots="allTimeSlots" :enable-dragging="false">
             <template #time-slot="{ slot }">
                 <!-- Histogram Slot (rendered on top) -->
                 <template v-if="isHistogramSlot(slot)">

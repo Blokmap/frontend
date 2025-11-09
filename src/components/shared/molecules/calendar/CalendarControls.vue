@@ -60,58 +60,54 @@ function goToNextWeek(): void {
 </script>
 
 <template>
-    <!-- Default navigation implementation -->
-    <div class="space-y-4">
-        <!-- Week navigation controls -->
-        <div class="flex items-center justify-between">
-            <!-- Previous week button -->
-            <Button
-                severity="secondary"
-                outlined
-                rounded
-                size="small"
-                aria-label="Vorige week"
-                @click="goToPreviousWeek">
-                <template #icon>
-                    <FontAwesomeIcon :icon="faChevronLeft" />
-                </template>
-            </Button>
+    <!-- Week navigation controls -->
+    <div class="flex items-center justify-between">
+        <!-- Previous week button -->
+        <Button
+            severity="secondary"
+            outlined
+            size="small"
+            aria-label="Vorige week"
+            @click="goToPreviousWeek"
+            text>
+            <template #icon>
+                <FontAwesomeIcon :icon="faChevronLeft" />
+            </template>
+        </Button>
 
-            <!-- Center controls group -->
-            <DateInput
-                v-model:date="date"
-                v-model:is-visible="showDatePicker"
-                :min-date="minDate"
-                :max-date="maxDate">
-                <template #toggle>
-                    <!-- Custom toggle button with week range -->
-                    <button
-                        :class="['toggle', { active: showDatePicker }]"
-                        @click.stop="onToggleClick">
-                        <FontAwesomeIcon :icon="faCalendarDays" class="text-xs text-gray-500" />
-                        <span>{{ weekRangeText }}</span>
-                        <FontAwesomeIcon
-                            :icon="faChevronDown"
-                            class="text-xs text-gray-400 transition-all duration-200"
-                            :class="{ 'rotate-180': showDatePicker }">
-                        </FontAwesomeIcon>
-                    </button>
-                </template>
-            </DateInput>
+        <!-- Center controls group -->
+        <DateInput
+            v-model:date="date"
+            v-model:is-visible="showDatePicker"
+            :min-date="minDate"
+            :max-date="maxDate">
+            <template #toggle>
+                <!-- Custom toggle button with week range -->
+                <button :class="['toggle', { active: showDatePicker }]" @click.stop="onToggleClick">
+                    <FontAwesomeIcon :icon="faCalendarDays" class="text-xs text-gray-500" />
+                    <span>{{ weekRangeText }}</span>
+                    <FontAwesomeIcon
+                        :icon="faChevronDown"
+                        class="text-xs text-gray-400 transition-all duration-200"
+                        :class="{ 'rotate-180': showDatePicker }">
+                    </FontAwesomeIcon>
+                </button>
+            </template>
+        </DateInput>
 
-            <!-- Next week button -->
-            <Button
-                severity="secondary"
-                outlined
-                rounded
-                size="small"
-                aria-label="Volgende week"
-                @click="goToNextWeek">
-                <template #icon>
-                    <FontAwesomeIcon :icon="faChevronRight" />
-                </template>
-            </Button>
-        </div>
+        <!-- Next week button -->
+        <Button
+            severity="secondary"
+            outlined
+            rounded
+            size="small"
+            aria-label="Volgende week"
+            @click="goToNextWeek"
+            text>
+            <template #icon>
+                <FontAwesomeIcon :icon="faChevronRight" />
+            </template>
+        </Button>
     </div>
 </template>
 

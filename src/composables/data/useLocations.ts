@@ -173,11 +173,20 @@ export function useReadAuthorityLocations(
  * @returns The mutation object for finding the nearest location.
  */
 export function useNearestLocation(
+    callback?: (lngLat: NearestLocation) => Promise<void>,
     options: CompMutationOptions = {},
 ): CompMutation<LngLat, NearestLocation> {
     const mutation = useMutation({
         ...options,
-        mutationFn: readNearestLocation,
+        mutationFn: async (center: LngLat) => {
+            const nearest = await readNearestLocation(center);
+
+            if (callback) {
+                await callback(nearest);
+            }
+
+            return nearest;
+        },
     });
 
     return mutation;

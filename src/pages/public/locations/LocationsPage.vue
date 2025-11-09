@@ -9,20 +9,16 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, ref, useTemplateRef, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useSearchLocations, useNearestLocation } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import { useToast } from '@/composables/store/useToast';
 import { usePagination } from '@/composables/usePagination';
 import { hasNextPage } from '@/utils/pagination';
-import type { Location } from '@/domain/location';
+import type { Location, NearestLocation } from '@/domain/location';
 import type { LngLatBounds } from '@/domain/map';
 
 defineOptions({ name: 'LocationsPage' });
 
 const filterStore = useLocationFilters();
-const toast = useToast();
-const i18n = useI18n();
 
 const { geoLocation, filters } = storeToRefs(filterStore);
 const { first, onPageChange } = usePagination(filters);
@@ -31,19 +27,13 @@ const { data: locations, isPending: locationsIsPending } = useSearchLocations(fi
     enabled: computed(() => !!filterStore.filters.bounds),
 });
 
-const { mutate: flyToNearestLocation, isPending: isFlyingToNearestLocation } = useNearestLocation({
-    onSuccess: (location) => {
+const { mutate: flyToNearestLocation, isPending: isFlyingToNearestLocation } = useNearestLocation(
+    async (location: NearestLocation) => {
         const map = mapRef.value?.map;
-        map?.flyTo([location.longitude, location.latitude]);
+
+        return await map?.flyTo([location.longitude, location.latitude]);
     },
-    onError: () => {
-        toast.add({
-            severity: 'error',
-            summary: i18n.t('domains.locations.errors.fetchNearest'),
-            detail: i18n.t('domains.locations.errors.tryAgainLater'),
-        });
-    },
-});
+);
 
 const mapRef = useTemplateRef('map');
 

@@ -3,10 +3,7 @@ import { pullRedirectUrl, pushRedirectUrl } from '@/domain/auth';
 
 describe('auth helpers', () => {
     beforeEach(() => {
-        // Ensure localStorage exists and clear it
-        if (typeof localStorage !== 'undefined') {
-            localStorage.clear();
-        }
+        localStorage.clear();
     });
 
     describe('pushRedirectUrl', () => {

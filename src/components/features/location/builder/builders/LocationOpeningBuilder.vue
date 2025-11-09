@@ -19,7 +19,7 @@ const emit = defineEmits<{
     delete: [id: number, sequence?: boolean];
 }>();
 
-const inWeekOf = useRouteDate({ paramName: 'inWeekOf', updateMethod: 'push' });
+const inWeekOf = useRouteDate({ paramName: 'inWeekOf' });
 
 const showDialog = ref(false);
 const editingOpeningTime = ref<OpeningTimeBody | null>(null);

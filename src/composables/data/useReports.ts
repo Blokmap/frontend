@@ -9,6 +9,7 @@ import {
     type Report,
     type LocationReport,
     type ReportIncludes,
+    type ReportFilter,
 } from '@/domain/report';
 import { invalidateQueries } from './queryCache';
 import type {
@@ -91,16 +92,14 @@ export function useDeleteLocationReport(
 
 export function useReadLocationReports(
     locationId: MaybeRef<number>,
-    reportIncludes: ReportIncludes[] = [],
-    options: CompQueryOptions = {},
+    options: CompQueryOptions<ReportIncludes> = {},
 ): CompQuery<Paginated<Report>> {
     const query = useQuery({
         ...options,
         queryKey: ['reports', 'list', 'byLocation', locationId],
         queryFn: () => {
             const locationIdValue = toValue(locationId);
-            const includesValue = toValue(reportIncludes);
-            return readLocationReports(locationIdValue, includesValue);
+            return readLocationReports(locationIdValue, options.includes);
         },
     });
 
@@ -108,15 +107,15 @@ export function useReadLocationReports(
 }
 
 export function useReadAllLocationReports(
-    reportIncludes: ReportIncludes[] = [],
-    options: CompQueryOptions = {},
+    filters: MaybeRef<ReportFilter>,
+    options: CompQueryOptions<ReportIncludes> = {},
 ): CompQuery<Paginated<LocationReport>> {
     const query = useQuery({
         ...options,
-        queryKey: ['reports', 'list', 'byLocation'],
+        queryKey: ['reports', 'list', 'all', filters],
         queryFn: () => {
-            const includesValue = toValue(reportIncludes);
-            return readAllLocationReports(includesValue);
+            const filtersValue = toValue(filters);
+            return readAllLocationReports(filtersValue, options.includes);
         },
     });
 

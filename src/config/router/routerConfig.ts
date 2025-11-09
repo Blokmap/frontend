@@ -44,6 +44,7 @@ import {
     ProfileIndexPage,
     ProfileInstitutionsPage,
     LocationMembersPage,
+    ReportsIndexPage,
 } from './routerPages';
 
 const routes: RouteRecordRaw[] = [
@@ -408,6 +409,15 @@ const routes: RouteRecordRaw[] = [
                 component: DashboardReviewsPage,
                 meta: {
                     title: 'Beheer Reviews',
+                },
+            },
+            {
+                path: 'reports',
+                name: 'dashboard.reports.index',
+                component: ReportsIndexPage,
+                meta: {
+                    auth: { admin: true },
+                    title: 'Meldingen',
                 },
             },
         ],

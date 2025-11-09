@@ -4,13 +4,14 @@ import { stringToDate } from '@/utils/date';
 import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/serviceUtils';
 import { parseLocationResponse } from '../location';
 import { parseProfileResponse } from '../profile';
-import type { LocationReport, Report } from './types';
+import type { LocationReport, Report, ReportFilter } from './types';
 import type { Paginated } from '@/utils/pagination';
 
 export type ReportIncludes = 'createdBy';
 
 export function parseReportResponse(data: any): Report {
     const report: Report = {
+        id: data.id,
         reason: data.reason,
         createdAt: stringToDate(data.createdAt),
     };
@@ -24,6 +25,7 @@ export function parseReportResponse(data: any): Report {
 
 export function parseLocationReportResponse(data: any): LocationReport {
     const report: LocationReport = {
+        id: data.id,
         reason: data.reason,
         createdAt: stringToDate(data.createdAt),
         location: parseLocationResponse(data.location),
@@ -60,7 +62,7 @@ export async function deleteLocationReport(locationId: number, reportId: number)
 
 export async function readLocationReports(
     locationId: number,
-    reportIncludes: ReportIncludes[] = [],
+    reportIncludes?: ReportIncludes[],
 ): Promise<Paginated<Report>> {
     const endpoint = endpoints.locations.reports.list.replace('{id}', locationId.toString());
 
@@ -77,11 +79,15 @@ export async function readLocationReports(
 }
 
 export async function readAllLocationReports(
-    reportIncludes: ReportIncludes[] = [],
+    filters: ReportFilter,
+    locationReportIncludes: ReportIncludes[] = [],
 ): Promise<Paginated<LocationReport>> {
     const endpoint = endpoints.locations.reports.all;
 
-    const params = { reportIncludes };
+    const params = {
+        ...filters,
+        locationReportIncludes,
+    };
 
     const transformResponse = transformPaginatedResponseFactory(parseLocationReportResponse);
 

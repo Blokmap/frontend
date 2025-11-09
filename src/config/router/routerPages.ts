@@ -75,3 +75,6 @@ export const DashboardStatisticsPage = () =>
 
 // Dashboard Reviews
 export const DashboardReviewsPage = () => import('@/pages/dashboard/reviews/ReviewsPage.vue');
+
+// Dashboard Reports
+export const ReportsIndexPage = () => import('@/pages/dashboard/reports/ReportsIndexPage.vue');

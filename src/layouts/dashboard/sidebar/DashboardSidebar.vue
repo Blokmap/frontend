@@ -6,6 +6,7 @@ import {
     faChartLine,
     faChartSimple,
     faCity,
+    faExclamationTriangle,
     faList,
     faMapLocationDot,
     faPlus,
@@ -21,7 +22,6 @@ import { useAuthLogout } from '@/composables/data/useAuth';
 import { abbreviateCount } from '@/utils/formatUtils';
 import SidebarLink from './SidebarLink.vue';
 import type { Profile } from '@/domain/profile';
-import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import type { RouteLocationRaw } from 'vue-router';
 
 const props = defineProps<{
@@ -39,144 +39,29 @@ const { data: counts, isLoading: isLoadingCounts } = useAdminCounts({
     enabled: computed(() => props.profile.isAdmin),
 });
 
-interface NavLink {
-    id: string;
-    icon: IconDefinition;
-    label: string;
-    to: RouteLocationRaw;
-    testId?: string;
-    count?: () => string | null | undefined;
-    pendingCount?: () => number | undefined;
-    show?: () => boolean;
-}
+const institutionCount = computed(() =>
+    counts.value && !isLoadingCounts.value
+        ? abbreviateCount(counts.value.institutionCount)
+        : undefined,
+);
 
-interface NavSection {
-    title: string;
-    icon: IconDefinition;
-    links: NavLink[];
-    show?: () => boolean;
-}
+const authorityCount = computed(() =>
+    counts.value && !isLoadingCounts.value
+        ? abbreviateCount(counts.value.authorityCount)
+        : undefined,
+);
 
-const navSections = computed(() => {
-    const sections: NavSection[] = [
-        {
-            title: 'Locaties',
-            icon: faMapLocationDot,
-            links: [
-                {
-                    id: 'my-locations',
-                    icon: faList,
-                    label: 'Mijn Locaties',
-                    to: {
-                        name: 'dashboard.profiles.detail.locations',
-                        params: { profileId: props.profile.id },
-                    },
-                    testId: 'my-locations-link',
-                },
-                {
-                    id: 'new-location',
-                    icon: faPlus,
-                    label: 'Nieuwe Locatie',
-                    to: { name: 'locations.submit' },
-                    testId: 'new-location-link',
-                },
-            ],
-        },
-        {
-            title: 'Autoriteiten',
-            icon: faBuilding,
-            links: [
-                {
-                    id: 'my-authorities',
-                    icon: faList,
-                    label: 'Mijn Autoriteiten',
-                    to: {
-                        name: 'dashboard.profiles.detail.authorities',
-                        params: { profileId: props.profile.id },
-                    },
-                },
-                {
-                    id: 'new-authority',
-                    icon: faPlus,
-                    label: 'Nieuwe Autoriteit',
-                    to: { name: 'dashboard.authorities.create' },
-                    show: () => props.profile.isAdmin,
-                },
-            ],
-        },
-        {
-            title: 'Instituties',
-            icon: faCity,
-            links: [
-                {
-                    id: 'my-institutions',
-                    icon: faList,
-                    label: 'Mijn Instituties',
-                    to: {
-                        name: 'dashboard.profiles.detail.institutions',
-                        params: { profileId: props.profile.id },
-                    },
-                },
-            ],
-        },
-        {
-            title: 'Systeem',
-            icon: faChartLine,
-            show: () => props.profile.isAdmin,
-            links: [
-                {
-                    id: 'statistics',
-                    icon: faChartSimple,
-                    label: 'Statistieken',
-                    to: { name: 'dashboard.statistics' },
-                },
-                {
-                    id: 'institutions',
-                    icon: faCity,
-                    label: 'Instituties',
-                    to: { name: 'dashboard.institutions.index' },
-                    count: () =>
-                        counts.value && !isLoadingCounts.value
-                            ? abbreviateCount(counts.value.institutionCount)
-                            : undefined,
-                },
-                {
-                    id: 'authorities',
-                    icon: faBuilding,
-                    label: 'Autoriteiten',
-                    to: { name: 'dashboard.authorities.index' },
-                    count: () =>
-                        counts.value && !isLoadingCounts.value
-                            ? abbreviateCount(counts.value.authorityCount)
-                            : undefined,
-                },
-                {
-                    id: 'locations',
-                    icon: faMapLocationDot,
-                    label: 'Locaties',
-                    to: { name: 'dashboard.locations.index' },
-                    count: () =>
-                        counts.value && !isLoadingCounts.value
-                            ? abbreviateCount(counts.value.locationCount)
-                            : undefined,
-                    pendingCount: () => counts.value?.pendingLocationCount,
-                },
-                {
-                    id: 'profiles',
-                    icon: faUsers,
-                    label: 'Profielen',
-                    to: { name: 'dashboard.profiles.index' },
-                    count: () =>
-                        counts.value && !isLoadingCounts.value
-                            ? abbreviateCount(counts.value.profileCount)
-                            : undefined,
-                },
-            ],
-        },
-    ];
+const locationCount = computed(() =>
+    counts.value && !isLoadingCounts.value
+        ? abbreviateCount(counts.value.locationCount)
+        : undefined,
+);
 
-    return sections;
-});
+const pendingLocationCount = computed(() => counts.value?.pendingLocationCount);
+
+const profileCount = computed(() =>
+    counts.value && !isLoadingCounts.value ? abbreviateCount(counts.value.profileCount) : undefined,
+);
 
 async function onLogoutClick(): Promise<void> {
     await router.push({ name: 'auth' });
@@ -213,26 +98,135 @@ function onCloseMenu() {
 
         <!-- Navigation Sections -->
         <div class="sidebar-items">
-            <div
-                v-for="section in navSections"
-                :key="section.title"
-                v-show="!section.show || section.show()"
-                class="sidebar-section">
+            <!-- Locaties Section -->
+            <div class="sidebar-section">
                 <h4>
-                    <FontAwesomeIcon class="leading-icon" :icon="section.icon" />
-                    <span>{{ section.title }}</span>
+                    <FontAwesomeIcon class="leading-icon" :icon="faMapLocationDot" />
+                    <span>Locaties</span>
                 </h4>
                 <SidebarLink
-                    v-for="link in section.links"
-                    :key="link.id"
-                    v-show="!link.show || link.show()"
-                    :icon="link.icon"
-                    :label="link.label"
-                    :count="link.count?.()"
-                    :pending-count="link.pendingCount?.()"
-                    :is-navigating="navigatingTo === link.id"
-                    :test-id="link.testId"
-                    @click="onNavigation(link.to, link.id)">
+                    :icon="faList"
+                    label="Mijn Locaties"
+                    :is-navigating="navigatingTo === 'my-locations'"
+                    test-id="my-locations-link"
+                    @click="
+                        onNavigation(
+                            {
+                                name: 'dashboard.profiles.detail.locations',
+                                params: { profileId: profile.id },
+                            },
+                            'my-locations',
+                        )
+                    ">
+                </SidebarLink>
+                <SidebarLink
+                    :icon="faPlus"
+                    label="Nieuwe Locatie"
+                    :is-navigating="navigatingTo === 'new-location'"
+                    test-id="new-location-link"
+                    @click="onNavigation({ name: 'locations.submit' }, 'new-location')">
+                </SidebarLink>
+            </div>
+
+            <!-- Autoriteiten Section -->
+            <div class="sidebar-section">
+                <h4>
+                    <FontAwesomeIcon class="leading-icon" :icon="faBuilding" />
+                    <span>Autoriteiten</span>
+                </h4>
+                <SidebarLink
+                    :icon="faList"
+                    label="Mijn Autoriteiten"
+                    :is-navigating="navigatingTo === 'my-authorities'"
+                    @click="
+                        onNavigation(
+                            {
+                                name: 'dashboard.profiles.detail.authorities',
+                                params: { profileId: profile.id },
+                            },
+                            'my-authorities',
+                        )
+                    ">
+                </SidebarLink>
+                <SidebarLink
+                    v-if="profile.isAdmin"
+                    :icon="faPlus"
+                    label="Nieuwe Autoriteit"
+                    :is-navigating="navigatingTo === 'new-authority'"
+                    @click="
+                        onNavigation({ name: 'dashboard.authorities.create' }, 'new-authority')
+                    ">
+                </SidebarLink>
+            </div>
+
+            <!-- Instituties Section -->
+            <div class="sidebar-section">
+                <h4>
+                    <FontAwesomeIcon class="leading-icon" :icon="faCity" />
+                    <span>Instituties</span>
+                </h4>
+                <SidebarLink
+                    :icon="faList"
+                    label="Mijn Instituties"
+                    :is-navigating="navigatingTo === 'my-institutions'"
+                    @click="
+                        onNavigation(
+                            {
+                                name: 'dashboard.profiles.detail.institutions',
+                                params: { profileId: profile.id },
+                            },
+                            'my-institutions',
+                        )
+                    ">
+                </SidebarLink>
+            </div>
+
+            <!-- Systeem Section (Admin only) -->
+            <div v-if="profile.isAdmin" class="sidebar-section">
+                <h4>
+                    <FontAwesomeIcon class="leading-icon" :icon="faChartLine" />
+                    <span>Systeem</span>
+                </h4>
+                <SidebarLink
+                    :icon="faChartSimple"
+                    label="Statistieken"
+                    :is-navigating="navigatingTo === 'statistics'"
+                    @click="onNavigation({ name: 'dashboard.statistics' }, 'statistics')">
+                </SidebarLink>
+                <SidebarLink
+                    :icon="faCity"
+                    label="Instituties"
+                    :count="institutionCount"
+                    :is-navigating="navigatingTo === 'institutions'"
+                    @click="onNavigation({ name: 'dashboard.institutions.index' }, 'institutions')">
+                </SidebarLink>
+                <SidebarLink
+                    :icon="faBuilding"
+                    label="Autoriteiten"
+                    :count="authorityCount"
+                    :is-navigating="navigatingTo === 'authorities'"
+                    @click="onNavigation({ name: 'dashboard.authorities.index' }, 'authorities')">
+                </SidebarLink>
+                <SidebarLink
+                    :icon="faMapLocationDot"
+                    label="Locaties"
+                    :count="locationCount"
+                    :pending-count="pendingLocationCount"
+                    :is-navigating="navigatingTo === 'locations'"
+                    @click="onNavigation({ name: 'dashboard.locations.index' }, 'locations')">
+                </SidebarLink>
+                <SidebarLink
+                    :icon="faUsers"
+                    label="Profielen"
+                    :count="profileCount"
+                    :is-navigating="navigatingTo === 'profiles'"
+                    @click="onNavigation({ name: 'dashboard.profiles.index' }, 'profiles')">
+                </SidebarLink>
+                <SidebarLink
+                    :icon="faExclamationTriangle"
+                    label="Meldingen"
+                    :is-navigating="navigatingTo === 'reports'"
+                    @click="onNavigation({ name: 'dashboard.reports.index' }, 'reports')">
                 </SidebarLink>
             </div>
         </div>

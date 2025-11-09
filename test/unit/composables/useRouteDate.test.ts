@@ -77,19 +77,6 @@ describe('useRouteDate', () => {
             });
         });
 
-        it('should call router.push when updateMethod is push', () => {
-            const selectedDate = useRouteDate({ paramName: 'day', updateMethod: 'push' });
-            const newDate = new Date('2025-10-20');
-
-            selectedDate.value = newDate;
-
-            expect(mockRouter.push).toHaveBeenCalledWith({
-                query: {
-                    day: '2025-10-20',
-                },
-            });
-        });
-
         it('should preserve existing query params when updating', () => {
             mockRoute.query = { other: 'value', day: '2025-01-01' };
             const selectedDate = useRouteDate({ paramName: 'day' });
@@ -111,13 +98,12 @@ describe('useRouteDate', () => {
             const selectedDate = useRouteDate({
                 paramName: 'inWeekOf',
                 source: 'params',
-                updateMethod: 'push',
             });
             const newDate = new Date('2025-10-20');
 
             selectedDate.value = newDate;
 
-            expect(mockRouter.push).toHaveBeenCalledWith({
+            expect(mockRouter.replace).toHaveBeenCalledWith({
                 name: undefined,
                 params: {
                     id: '123',

@@ -19,12 +19,6 @@ export interface RouteDateOptions {
     source?: RouteDateSource;
 
     /**
-     * The router method to use when updating the date.
-     * @default 'replace'
-     */
-    updateMethod?: RouteDateUpdateMethod;
-
-    /**
      * Default date to use when the param is not present or invalid.
      * @default new Date()
      */

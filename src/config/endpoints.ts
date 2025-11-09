@@ -146,6 +146,12 @@ export const endpoints = {
             reorder: '/locations/{id}/images/reorder',
             read: '/locations/{id}/images',
         },
+        reports: {
+            create: '/locations/{id}/reports',
+            delete: '/locations/{id}/reports/{reportId}',
+            list: '/locations/{id}/reports',
+            all: '/locations/reports',
+        },
     },
     reservations: {
         delete: '/reservations/{id}',

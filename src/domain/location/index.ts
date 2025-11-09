@@ -1,4 +1,4 @@
 export * from './types';
 export * from './locationHelpers';
 export * from './locationConstants';
-export * from './locationService';
+export * from './services/locationService';

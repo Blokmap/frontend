@@ -7,10 +7,10 @@ import {
     transformPaginatedResponseFactory,
     transformResponseFactory,
 } from '@/utils/serviceUtils';
-import { parseImageResponse } from '../image';
-import { parseOpeningTimeResponse } from '../openings';
-import { parseProfileResponse } from '../profile';
-import { parseTranslationResponse } from '../translation';
+import { parseImageResponse } from '../../image';
+import { parseOpeningTimeResponse } from '../../openings';
+import { parseProfileResponse } from '../../profile';
+import { parseTranslationResponse } from '../../translation';
 import {
     type Location,
     type LocationSearchFilter,
@@ -18,7 +18,7 @@ import {
     type NearestLocation,
     type LocationFilter,
     type LocationStateBody,
-} from './types';
+} from '../types';
 import type { Image, ImageReorderBody, ImageBody } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { Paginated } from '@/utils/pagination';
@@ -204,7 +204,7 @@ export async function createLocation(body: LocationBody): Promise<Location> {
  * Set images for a location.
  *
  * @param {number} locationId - The ID of the location to set images for.
- * @param {ImageBody} image - The images to set for the location.
+ * @param {ImageBody} request - The images to set for the location.
  * @returns {Promise<Location>} A promise that resolves to the updated location.
  */
 export async function createLocationImage(

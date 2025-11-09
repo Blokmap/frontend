@@ -17,7 +17,6 @@ describe('image helpers', () => {
                 id: 1,
                 imageUrl: 'https://example.com/image.jpg',
                 tempUrl: 'https://example.com/image.jpg',
-                isPrimary: true,
                 index: 0,
             });
         });
@@ -35,7 +34,6 @@ describe('image helpers', () => {
                 id: 2,
                 imageUrl: 'https://example.com/image2.jpg',
                 tempUrl: 'https://example.com/image2.jpg',
-                isPrimary: false,
                 index: 1,
             });
         });
@@ -49,7 +47,6 @@ describe('image helpers', () => {
 
             const result = imageToBody(image, 4);
 
-            expect(result.isPrimary).toBe(false);
             expect(result.index).toBe(4);
         });
     });
@@ -59,7 +56,6 @@ describe('image helpers', () => {
             const image = createMockImageBody({
                 tempUrl: 'https://temp.com/image.jpg',
                 imageUrl: 'https://original.com/image.jpg',
-                isPrimary: false,
                 index: 0,
             });
 
@@ -70,7 +66,6 @@ describe('image helpers', () => {
             const image = createMockImageBody({
                 tempUrl: null,
                 imageUrl: 'https://original.com/image.jpg',
-                isPrimary: false,
                 index: 0,
             });
 
@@ -81,7 +76,6 @@ describe('image helpers', () => {
             const image = createMockImageBody({
                 tempUrl: null,
                 imageUrl: null,
-                isPrimary: false,
                 index: 0,
             });
 
@@ -92,7 +86,6 @@ describe('image helpers', () => {
             const image = createMockImageBody({
                 tempUrl: 'https://temp.com/image.jpg',
                 imageUrl: 'https://original.com/image.jpg',
-                isPrimary: false,
                 index: 0,
             });
 

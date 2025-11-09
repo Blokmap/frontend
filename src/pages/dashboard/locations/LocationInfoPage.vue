@@ -19,7 +19,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
 import { useUpdateLocation, useUpdateLocationImages } from '@/composables/data/useLocations';
-import { useToast } from '@/composables/store/useToast';
 import { imageToBody, type ImageBody } from '@/domain/image';
 import { locationToBody, type Location, type LocationBody } from '@/domain/location';
 
@@ -27,27 +26,8 @@ const props = defineProps<{
     location: Location;
 }>();
 
-const toast = useToast();
-
-const { mutateAsync: updateLocation, isPending: isUpdatingLocation } = useUpdateLocation({
-    onSuccess: () => {
-        toast.add({
-            severity: 'success',
-            summary: 'Opgeslagen',
-            detail: 'De wijzigingen zijn succesvol opgeslagen.',
-        });
-    },
-});
-
-const { mutateAsync: updateImages, isPending: isUpdatingImages } = useUpdateLocationImages({
-    onSuccess: () => {
-        toast.add({
-            severity: 'success',
-            summary: 'Opgeslagen',
-            detail: 'De afbeeldingen zijn succesvol bijgewerkt.',
-        });
-    },
-});
+const { mutateAsync: updateLocation, isPending: isUpdatingLocation } = useUpdateLocation({});
+const { mutateAsync: updateImages, isPending: isUpdatingImages } = useUpdateLocationImages({});
 
 const locationForm = ref<LocationBody | null>(null);
 const imagesForm = ref<ImageBody[]>([]);
@@ -110,41 +90,30 @@ function resetChanges(): void {
 async function saveChanges(): Promise<void> {
     if (!locationForm.value) return;
 
-    try {
-        if (hasLocationChanges.value) {
-            await updateLocation({
-                locationId: props.location.id,
-                data: locationForm.value,
-            });
-        }
-
-        if (hasImagesChanges.value) {
-            const originalImages = JSON.parse(
-                JSON.stringify(
-                    (props.location.images || []).map((img) => ({
-                        ...img,
-                        locationId: props.location.id,
-                    })),
-                ),
-            );
-
-            await updateImages({
-                locationId: props.location.id,
-                originalImages,
-                currentImages: imagesForm.value,
-            });
-        }
-
-        // Update snapshots after successful save
-        originalFormSnapshot.value = JSON.stringify(locationForm.value);
-        originalImagesSnapshot.value = JSON.stringify(imagesForm.value);
-    } catch {
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij opslaan',
-            detail: 'Er is iets misgegaan bij het opslaan van de wijzigingen.',
+    if (hasLocationChanges.value) {
+        await updateLocation({
+            locationId: props.location.id,
+            data: locationForm.value,
         });
     }
+
+    if (hasImagesChanges.value) {
+        const originalImages: ImageBody[] = (props.location.images || []).map((img) => {
+            const body = imageToBody(img, img.index);
+
+            return { ...body, locationId: props.location.id };
+        });
+
+        await updateImages({
+            locationId: props.location.id,
+            originalImages,
+            currentImages: imagesForm.value,
+        });
+    }
+
+    // Update snapshots after successful save
+    originalFormSnapshot.value = JSON.stringify(locationForm.value);
+    originalImagesSnapshot.value = JSON.stringify(imagesForm.value);
 }
 </script>
 

@@ -54,7 +54,6 @@ function addImageFromUrl(): void {
     images.value.push({
         imageUrl: urlInput.value,
         tempUrl: urlInput.value,
-        isPrimary: images.value.length === 0,
         index: images.value.length,
     });
 
@@ -72,7 +71,6 @@ function removeImage(imageIndex: number): void {
 
     sortedImages.value.forEach((img, i) => {
         img.index = i;
-        img.isPrimary = i === 0;
     });
 }
 
@@ -85,10 +83,8 @@ function setPrimary(imageIndex: number): void {
     images.value.forEach((img) => {
         if (img.index === imageIndex) {
             img.index = 0;
-            img.isPrimary = true;
         } else if ((img.index ?? 0) < imageIndex) {
             img.index = (img.index ?? 0) + 1;
-            img.isPrimary = false;
         }
     });
 }
@@ -108,7 +104,6 @@ function handleFileUpload(event: FileUploadSelectEvent): void {
         .map((file: File, i: number) => ({
             tempUrl: URL.createObjectURL(file),
             file,
-            isPrimary: startIndex + i === 0,
             index: startIndex + i,
         }));
 
@@ -174,11 +169,6 @@ function onDrop(event: DragEvent, targetImageIndex: number): void {
     // Swap the indices
     draggedImage.value.index = targetIdx;
     targetImage.index = draggedIndex;
-
-    // Update isPrimary flags based on new indices
-    images.value.forEach((img) => {
-        img.isPrimary = img.index === 0;
-    });
 
     // Force reactivity update
     images.value = [...images.value];

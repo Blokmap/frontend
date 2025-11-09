@@ -9,7 +9,6 @@ export type ImageBody = {
     imageUrl?: string | null;
     tempUrl?: string | null;
     file?: File | null;
-    isPrimary: boolean;
     index: number;
 };
 

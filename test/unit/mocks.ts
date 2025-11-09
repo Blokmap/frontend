@@ -63,7 +63,6 @@ export function createMockImageBody(overrides?: Partial<ImageBody>): ImageBody {
         imageUrl: 'https://example.com/image.jpg',
         tempUrl: null,
         file: null,
-        isPrimary: false,
         index: 0,
         ...overrides,
     };

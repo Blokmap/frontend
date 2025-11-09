@@ -12,7 +12,6 @@ export function imageToBody(image: Image, index: number): ImageBody {
         id: image.id,
         imageUrl: image.url,
         tempUrl: image.url,
-        isPrimary: index === 0,
         index,
     };
 }

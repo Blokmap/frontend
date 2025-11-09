@@ -2,6 +2,7 @@
 import Badge from 'primevue/badge';
 import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton';
+import Textarea from 'primevue/textarea';
 import AddressCard from '@/components/features/location/details/LocationAddressCard.vue';
 import LocationFeatures from '@/components/features/location/details/LocationFeatures.vue';
 import LocationMap from '@/components/features/map/LocationMap.vue';
@@ -9,19 +10,27 @@ import LocationMapSkeleton from '@/components/features/map/LocationMapSkeleton.v
 import OpeningsTable from '@/components/features/openings/OpeningsTable.vue';
 import OpeningsTableSkeleton from '@/components/features/openings/OpeningsTableSkeleton.vue';
 import ReservationBuilderDialog from '@/components/features/reservation/builder/ReservationBuilderDialog.vue';
+import ConfirmDialog from '@/components/shared/molecules/ConfirmDialog.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import Gallery from '@/components/shared/organisms/image/Gallery.vue';
 import GallerySkeleton from '@/components/shared/organisms/image/GallerySkeleton.vue';
 import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
-import { faArrowRight, faEdit, faLocationDot, faUsers } from '@fortawesome/free-solid-svg-icons';
+import {
+    faArrowRight,
+    faBullhorn,
+    faEdit,
+    faLocationDot,
+    faUsers,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import placeholder from '@/assets/img/placeholder/location-stock-2.jpg';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useReadLocation } from '@/composables/data/useLocations';
 import { useReadOpeningTimes } from '@/composables/data/useOpeningTimes';
+import { useCreateLocationReport } from '@/composables/data/useReports';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useRouteDate } from '@/composables/useRouteDate';
 import { pushRedirectUrl } from '@/domain/auth';
@@ -91,6 +100,37 @@ function onLoginClick(): void {
 
     router.push({ name: 'auth' });
 }
+
+const showReportDialog = ref(false);
+const reportReason = ref('');
+
+const { mutateAsync: createReport, isPending: isCreatingReport } = useCreateLocationReport({
+    onSuccess: () => {
+        showReportDialog.value = false;
+        reportReason.value = '';
+    },
+});
+
+function onReportClick(): void {
+    showReportDialog.value = true;
+    reportReason.value = '';
+}
+
+function onCancelReport(): void {
+    showReportDialog.value = false;
+    reportReason.value = '';
+}
+
+function onConfirmReport(): void {
+    if (!reportReason.value.trim()) {
+        return;
+    }
+
+    createReport({
+        locationId: +locationId,
+        reason: reportReason.value,
+    });
+}
 </script>
 
 <template>
@@ -118,8 +158,8 @@ function onLoginClick(): void {
                         </template>
                         <Skeleton v-else-if="isPending" height="36px" width="400px" />
                     </h1>
-                    <template v-if="profile?.isAdmin">
-                        <div class="flex space-x-3">
+                    <div class="flex space-x-3">
+                        <template v-if="profile?.isAdmin">
                             <RouterLink
                                 :to="{
                                     name: 'dashboard.locations.detail.reservations',
@@ -146,8 +186,14 @@ function onLoginClick(): void {
                                     <FontAwesomeIcon :icon="faEdit" />
                                 </PageHeaderButton>
                             </RouterLink>
-                        </div>
-                    </template>
+                        </template>
+
+                        <template v-if="profileId && !isPending">
+                            <PageHeaderButton severity="danger" @click="onReportClick">
+                                <FontAwesomeIcon :icon="faBullhorn" />
+                            </PageHeaderButton>
+                        </template>
+                    </div>
                 </div>
 
                 <!-- Tags -->
@@ -211,18 +257,6 @@ function onLoginClick(): void {
                         </h2>
                         <LocationFeatures :location="location" />
                     </div>
-
-                    <!-- Host Section -->
-                    <!-- <div
-                        class="space-y-6 border-b border-gray-200 pb-8"
-                        v-if="isPending || location?.createdBy">
-                        <h2 class="text-2xl font-semibold text-gray-900">
-                            <template v-if="location"> Over de inzender </template>
-                            <Skeleton v-else-if="isPending" height="28px" width="200px" />
-                        </h2>
-                        <ProfileSection v-if="location?.createdBy" :profile="location.createdBy" />
-                        <ProfileSectionSkeleton v-else-if="isPending" />
-                    </div> -->
 
                     <!-- Location Section -->
                     <div class="space-y-6">
@@ -320,5 +354,31 @@ function onLoginClick(): void {
             :openings="openingTimes"
             :location="location">
         </ReservationBuilderDialog>
+
+        <!-- Report Location Dialog -->
+        <ConfirmDialog
+            v-model:visible="showReportDialog"
+            title="Locatie melden"
+            confirm-label="Melden"
+            cancel-label="Annuleren"
+            destructive
+            :loading="isCreatingReport"
+            @click:confirm="onConfirmReport"
+            @click:cancel="onCancelReport">
+            <template #content>
+                <div class="space-y-3">
+                    <p class="text-gray-600">
+                        Waarom wil je deze locatie melden? Geef een duidelijke reden op.
+                    </p>
+                    <Textarea
+                        v-model="reportReason"
+                        rows="5"
+                        placeholder="Bijvoorbeeld: onjuiste informatie, ongepaste inhoud, etc."
+                        class="w-full"
+                        :disabled="isCreatingReport">
+                    </Textarea>
+                </div>
+            </template>
+        </ConfirmDialog>
     </template>
 </template>

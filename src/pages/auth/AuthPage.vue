@@ -172,7 +172,7 @@ function switchToRegister(): void {
         </Select>
     </IconField>
     <template v-for="idp in AUTH_IDPS" :key="idp.name">
-        <a :href="'/api/' + endpoints.auth.sso.replace('{provider}', idp.id)">
+        <a :href="'/api' + endpoints.auth.sso.replace('{provider}', idp.id)">
             <Button
                 class="w-[300px]"
                 severity="contrast"

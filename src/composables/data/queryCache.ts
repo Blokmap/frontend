@@ -19,8 +19,6 @@ export function invalidateQueries<T extends { id: number | string }>(
         return queryClient.invalidateQueries({ queryKey });
     }
 
-    console.log('Invalidating queries for item id:', itemId);
-
     const cache = queryClient.getQueryCache();
     const queries = cache.findAll({ queryKey });
 

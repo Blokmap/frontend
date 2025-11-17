@@ -234,7 +234,15 @@ function onCloseMenu() {
         <div class="sidebar-profile">
             <a
                 class="sidebar-link"
-                @click.prevent="onNavigation({ name: 'profile' }, 'profile')"
+                @click.prevent="
+                    onNavigation(
+                        {
+                            name: 'dashboard.profiles.detail.overview',
+                            params: { profileId: profile.id },
+                        },
+                        'profile',
+                    )
+                "
                 data-testid="profile-link">
                 <ProfileAvatar :profile="profile" class="h-10 w-10" />
                 <div class="flex-1 space-y-1 leading-tight">

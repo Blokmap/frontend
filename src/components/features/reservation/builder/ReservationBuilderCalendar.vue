@@ -152,52 +152,50 @@ function onReservationDelete(reservation: Reservation): void {
 </script>
 
 <template>
-    <div class="rounded-lg border border-gray-200">
-        <Calendar :current-week="currentWeek" :time-slots="allTimeSlots" :enable-dragging="false">
-            <template #time-slot="{ slot }">
-                <!-- Histogram Slot (rendered on top) -->
-                <template v-if="isHistogramSlot(slot)">
-                    <OpeningHistogram
-                        :bin-count="100"
-                        :seat-count="slot.metadata.data.seatCount"
-                        :stats="slot.metadata.data.stats!">
-                    </OpeningHistogram>
-                </template>
-
-                <!-- Opening Time Slot -->
-                <template v-if="isOpeningTimeSlot(slot)">
-                    <OpeningTimeslot
-                        :start-time="slot.startTime"
-                        :end-time="slot.endTime"
-                        @click="onOpeningTimeClick(slot, $event)">
-                    </OpeningTimeslot>
-                </template>
-
-                <!-- Reservation Slot -->
-                <template v-else-if="isReservationSlot(slot)">
-                    <ReservationTimeslot
-                        :start-time="slot.startTime"
-                        :end-time="slot.endTime"
-                        :reservation="slot.metadata.data"
-                        :is-pending-deletion="isPendingDeletion(slot.metadata.data)"
-                        :is-saving="isSaving"
-                        @delete="onReservationDelete">
-                    </ReservationTimeslot>
-                </template>
-
-                <!-- Reservation Request Slot -->
-                <template v-else-if="isReservationBodySlot(slot)">
-                    <ReservationBodyTimeslot
-                        :start-time="slot.startTime"
-                        :end-time="slot.endTime"
-                        :request="slot.metadata.data"
-                        :is-saving="isSaving"
-                        @delete="onRequestDelete">
-                    </ReservationBodyTimeslot>
-                </template>
+    <Calendar :current-week="currentWeek" :time-slots="allTimeSlots" :enable-dragging="false">
+        <template #time-slot="{ slot }">
+            <!-- Histogram Slot (rendered on top) -->
+            <template v-if="isHistogramSlot(slot)">
+                <OpeningHistogram
+                    :bin-count="100"
+                    :seat-count="slot.metadata.data.seatCount"
+                    :stats="slot.metadata.data.stats!">
+                </OpeningHistogram>
             </template>
-        </Calendar>
-    </div>
+
+            <!-- Opening Time Slot -->
+            <template v-if="isOpeningTimeSlot(slot)">
+                <OpeningTimeslot
+                    :start-time="slot.startTime"
+                    :end-time="slot.endTime"
+                    @click="onOpeningTimeClick(slot, $event)">
+                </OpeningTimeslot>
+            </template>
+
+            <!-- Reservation Slot -->
+            <template v-else-if="isReservationSlot(slot)">
+                <ReservationTimeslot
+                    :start-time="slot.startTime"
+                    :end-time="slot.endTime"
+                    :reservation="slot.metadata.data"
+                    :is-pending-deletion="isPendingDeletion(slot.metadata.data)"
+                    :is-saving="isSaving"
+                    @delete="onReservationDelete">
+                </ReservationTimeslot>
+            </template>
+
+            <!-- Reservation Request Slot -->
+            <template v-else-if="isReservationBodySlot(slot)">
+                <ReservationBodyTimeslot
+                    :start-time="slot.startTime"
+                    :end-time="slot.endTime"
+                    :request="slot.metadata.data"
+                    :is-saving="isSaving"
+                    @delete="onRequestDelete">
+                </ReservationBodyTimeslot>
+            </template>
+        </template>
+    </Calendar>
 </template>
 
 <style scoped>

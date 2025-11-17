@@ -22,8 +22,8 @@ const visible = defineModel<boolean>('visible', {
     default: false,
 });
 
-const { mutateAsync: createLocation } = useCreateLocation();
-const { mutateAsync: createLocationImage } = useCreateLocationImage();
+const { mutateAsync: createLocation } = useCreateLocation({ disableToasts: true });
+const { mutateAsync: createLocationImage } = useCreateLocationImage({ disableToasts: true });
 
 const error = ref<string | null>(null);
 const locationId = ref<number | null>(null);

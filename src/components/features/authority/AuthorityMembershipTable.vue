@@ -33,10 +33,6 @@ const onMembershipClick = (membership: AuthorityMembership) => {
                 {{ membership.authority.name }}
             </TableCell>
 
-            <TableCell column="Beschrijving">
-                {{ membership.authority.description || '-' }}
-            </TableCell>
-
             <TableCell column="Rol">
                 <RoleBadge :role="membership.role" type="authority" />
             </TableCell>

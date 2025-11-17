@@ -1,3 +1,5 @@
+import type { Predicate } from '../member';
+
 export type Idp = {
     id: string;
     name: string;
@@ -7,9 +9,9 @@ export type Idp = {
 export type AuthSettings = {
     required?: boolean;
     admin?: boolean;
-    authority?: unknown;
-    location?: unknown;
-    institution?: unknown;
+    authority?: Predicate;
+    location?: Predicate;
+    institution?: Predicate;
 };
 
 export type LoginBody = {

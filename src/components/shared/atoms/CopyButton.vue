@@ -35,6 +35,7 @@ const copyToClipboard = async () => {
         @click="copyToClipboard"
         :title="copied ? 'Copied!' : 'Copy to clipboard'">
         <FontAwesomeIcon :icon="copied ? faCheck : faCopy" class="copy-button__icon" />
+        <slot></slot>
     </button>
 </template>
 
@@ -43,7 +44,7 @@ const copyToClipboard = async () => {
 
 .copy-button {
     @apply inline-flex items-center justify-center;
-    @apply h-6 w-6 rounded;
+    @apply rounded;
     @apply text-gray-400 hover:text-gray-600;
     @apply transition-colors duration-200;
     @apply cursor-pointer;

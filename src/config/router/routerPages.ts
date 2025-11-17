@@ -1,6 +1,3 @@
-// Profile
-export const ProfilePage = () => import('@/pages/public/profile/ProfilePage.vue');
-
 // Locations
 export const LocationsPage = () => import('@/pages/public/locations/LocationsPage.vue');
 export const LocationPage = () => import('@/pages/public/locations/LocationPage.vue');
@@ -78,3 +75,7 @@ export const DashboardReviewsPage = () => import('@/pages/dashboard/reviews/Revi
 
 // Dashboard Reports
 export const ReportsIndexPage = () => import('@/pages/dashboard/reports/ReportsIndexPage.vue');
+
+// Error Pages
+export const Error404Page = () => import('@/pages/errors/Error404Page.vue');
+export const Error405Page = () => import('@/pages/errors/Error405Page.vue');

@@ -1,78 +1,26 @@
 import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
-import { parseProfileResponse } from '@/domain/profile';
-import { stringToDate } from '@/utils/date';
 import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/serviceUtils';
-import { parseAuthorityResponse } from '../../authority';
-import { parseInstitutionResponse } from '../../institution';
-import { parseLocationResponse } from '../../location';
-import { parseRoleResponse } from './memberRoleService';
+import {
+    parseAuthorityMembershipResponse,
+    parseInstitutionMembershipResponse,
+    parseLocationMembershipResponse,
+    parseMemberResponse,
+} from '../memberParser';
 import type {
-    MemberFilter,
-    LocationMembership,
     AuthorityMembership,
-    InstitutionMembership,
-    Member,
-    UpdateMemberBody,
     CreateMemberBody,
+    InstitutionMembership,
+    LocationMembership,
+    Member,
+    MemberFilter,
+    RecursivePermissions,
+    UpdateMemberBody,
 } from '../types';
 import type { Paginated } from '@/utils/pagination';
 
 export * from './memberRoleService';
 export * from './memberPermissionService';
-
-/**
- * A membership represents the association of a profile with a context
- *
- * @param data - The raw response data
- * @returns - The parsed Membership object
- */
-export function parseLocationMembershipResponse(data: any): LocationMembership {
-    return {
-        location: parseLocationResponse(data.location),
-        role: parseRoleResponse(data.role),
-    };
-}
-
-/**
- * Parses a membership response from the API.
- *
- * @param data - The raw response data
- * @returns - The parsed Membership object
- */
-export function parseAuthorityMembershipResponse(data: any): AuthorityMembership {
-    return {
-        authority: parseAuthorityResponse(data.authority),
-        role: parseRoleResponse(data.role),
-    };
-}
-
-/**
- * Parses a membership response from the API.
- *
- * @param data - The raw response data
- * @returns - The parsed Membership object
- */
-export function parseInstitutionMembershipResponse(data: any): InstitutionMembership {
-    return {
-        institution: parseInstitutionResponse(data.institution),
-        role: parseRoleResponse(data.role),
-    };
-}
-
-/**
- * Parses a member response from the API.
- *
- * @param data - The raw response data
- * @returns - The parsed Member object
- */
-export function parseMemberResponse(data: any): Member {
-    return {
-        profile: parseProfileResponse(data.profile),
-        role: parseRoleResponse(data.role),
-        addedAt: stringToDate(data.addedAt),
-    };
-}
 
 /**
  * Fetches the members for a specific location.
@@ -330,6 +278,63 @@ export async function readProfileInstitutionMemberships(
     const transformResponse = transformResponseFactory(parseInstitutionMembershipResponse);
 
     const { data } = await client.get(endpoint, { transformResponse });
+
+    return data;
+}
+
+/**
+ * Fetches the recursive permissions for a member in a specific location.
+ *
+ * @param locationId - The ID of the location
+ * @param profileId - The ID of the profile
+ */
+export async function readLocationMemberPermissions(
+    locationId: number,
+    profileId: string,
+): Promise<RecursivePermissions> {
+    const endpoint = endpoints.locations.members.roles
+        .replace('{id}', locationId.toString())
+        .replace('{profileId}', profileId.toString());
+
+    const { data } = await client.get(endpoint);
+
+    return data;
+}
+
+/**
+ * Fetches the recursive permissions for a member in a specific authority.
+ *
+ * @param authorityId - The ID of the authority
+ * @param profileId - The ID of the profile
+ */
+export async function readAuthorityMemberPermissions(
+    authorityId: number,
+    profileId: string,
+): Promise<RecursivePermissions> {
+    const endpoint = endpoints.authorities.members.roles
+        .replace('{id}', authorityId.toString())
+        .replace('{profileId}', profileId.toString());
+
+    const { data } = await client.get(endpoint);
+
+    return data;
+}
+
+/**
+ * Fetches the recursive permissions for a member in a specific institution.
+ *
+ * @param institutionId - The ID of the institution
+ * @param profileId - The ID of the profile
+ */
+export async function readInstitutionMemberPermissions(
+    institutionId: number,
+    profileId: string,
+): Promise<RecursivePermissions> {
+    const endpoint = endpoints.institutions.members.roles
+        .replace('{id}', institutionId.toString())
+        .replace('{profileId}', profileId.toString());
+
+    const { data } = await client.get(endpoint);
 
     return data;
 }

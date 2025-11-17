@@ -534,6 +534,7 @@ export function useDeleteLocation(options: CompMutationOptions = {}): CompMutati
             const locationId = variables;
 
             invalidateQueries(queryClient, ['locations', 'list'], locationId);
+            invalidateQueries(queryClient, ['memberships', 'list', 'locations', 'byProfile']);
 
             if (!options.disableToasts) {
                 toast.add({

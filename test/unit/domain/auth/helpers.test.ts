@@ -1,11 +1,7 @@
-import { describe, expect, it, beforeEach, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { pullRedirectUrl, pushRedirectUrl } from '@/domain/auth';
 
 describe('auth helpers', () => {
-    beforeEach(() => {
-        localStorage.clear();
-    });
-
     describe('pushRedirectUrl', () => {
         it('should store redirect URL in localStorage', () => {
             const url = '/dashboard/profile';

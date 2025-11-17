@@ -233,8 +233,7 @@ onMounted(() => {
     @apply sticky top-0 z-30;
     @apply grid border-b border-gray-200 bg-gray-50;
     @apply min-w-max md:w-full md:min-w-0;
-    grid-template-columns: 55px repeat(7, minmax(100px, 1fr));
-    @apply md:grid-cols-[55px_repeat(7,1fr)];
+    @apply grid-cols-[55px_repeat(7,minmax(120px,1fr))];
 }
 
 .calendar__header-col {
@@ -276,10 +275,8 @@ onMounted(() => {
 .calendar__grid {
     @apply relative grid;
     @apply min-w-max md:min-w-0;
-    grid-template-columns: 55px repeat(7, minmax(100px, 1fr));
-
-    @apply md:w-full;
-    @apply md:grid-cols-[55px_repeat(7,1fr)];
+    @apply w-full;
+    @apply grid-cols-[55px_repeat(7,minmax(120px,1fr))];
 }
 
 .calendar__time-col {
@@ -289,7 +286,7 @@ onMounted(() => {
 
 .calendar__time-label {
     @apply absolute right-0 left-0 -translate-y-[50%];
-    @apply pr-2 text-right text-xs text-gray-600 md:pr-1 md:text-[10px];
+    @apply pr-2 text-right text-[12px] text-gray-600 md:pr-1;
     @apply bg-gray-50;
 
     &:first-child {
@@ -328,7 +325,7 @@ onMounted(() => {
 
 .calendar__slot {
     @apply absolute right-0 left-0 z-10 min-h-[20px];
-    @apply p-1 transition-all duration-150 ease-out;
+    @apply p-1;
     @apply pointer-events-none overflow-visible select-none;
 }
 

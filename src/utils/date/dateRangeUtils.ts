@@ -6,9 +6,12 @@
  * @returns A new Date object representing the start of the week (Monday).
  */
 export function startOfWeek(date: Date = new Date()): Date {
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-    return new Date(date.setDate(diff));
+    // Work on a copy to avoid mutating the incoming date object.
+    const d = new Date(date.getTime());
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    d.setDate(diff);
+    return d;
 }
 
 /**
@@ -19,9 +22,12 @@ export function startOfWeek(date: Date = new Date()): Date {
  * @returns A new Date object representing the end of the week (Sunday).
  */
 export function endOfWeek(date: Date = new Date()): Date {
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? 0 : 7);
-    return new Date(date.setDate(diff));
+    // Work on a copy to avoid mutating the incoming date object.
+    const d = new Date(date.getTime());
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? 0 : 7);
+    d.setDate(diff);
+    return d;
 }
 
 /**

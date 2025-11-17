@@ -10,19 +10,19 @@ const props = defineProps<{
     placeholder?: string;
 }>();
 
-const isFullscreen = ref(false);
-const selectedImageIndex = ref(0);
+const isFullscreen = ref<boolean>(false);
+const selectedImageIndex = ref<number>(0);
 
-const images = computed(() => [...props.images].sort((a, b) => a.index - b.index));
+const images = computed<Image[]>(() => [...props.images].sort((a, b) => a.index - b.index));
 
-const gridClasses = computed(() => {
+const gridClasses = computed<string>(() => {
     const count = props.images.length;
     if (count <= 1) return 'grid-cols-1 grid-rows-1';
     if (count === 2) return 'grid-cols-2 grid-rows-1';
     return 'grid-cols-4 grid-rows-2';
 });
 
-const imageLayout = computed(() => {
+const imageLayout = computed<{ image: Image; index: number; classes?: string }[]>(() => {
     const count = props.images.length;
 
     if (count <= 2) {
@@ -129,7 +129,6 @@ onUnmounted(() => {
                         <FontAwesomeIcon :icon="faChevronLeft" />
                     </template>
                 </Button>
-                <Button severity="contrast" text class="underline"> Delen </Button>
             </div>
 
             <!-- Scrollable image grid -->
@@ -159,10 +158,10 @@ onUnmounted(() => {
 }
 
 .gallery__item {
-    @apply relative cursor-pointer overflow-hidden;
+    @apply relative cursor-pointer overflow-hidden border border-slate-200;
 
     &:hover .gallery__image {
-        @apply scale-110 brightness-75;
+        @apply scale-110 brightness-90;
     }
 
     .gallery__image {
@@ -172,33 +171,33 @@ onUnmounted(() => {
 
 .gallery-fullscreen {
     @apply fixed top-0 left-0 z-50 flex h-full w-full flex-col overflow-y-auto bg-white;
+}
 
-    .gallery-fullscreen__header {
-        @apply flex items-center justify-between p-4;
+.gallery-fullscreen__header {
+    @apply flex items-center justify-between p-4;
+}
+
+.gallery-fullscreen__container {
+    @apply flex flex-1 justify-center p-4 pb-[88px];
+}
+
+.gallery-fullscreen__grid {
+    @apply grid w-full max-w-3xl grid-cols-2 gap-2;
+}
+
+.gallery-fullscreen__grid-item {
+    @apply overflow-hidden rounded-lg;
+
+    &:nth-child(3n + 1) {
+        @apply col-span-2;
     }
 
-    .gallery-fullscreen__container {
-        @apply flex flex-1 justify-center p-4 pb-[88px];
+    &:last-child:nth-child(3n + 2) {
+        @apply col-span-2;
     }
+}
 
-    .gallery-fullscreen__grid {
-        @apply grid w-full max-w-3xl grid-cols-2 gap-2;
-
-        .gallery-fullscreen__grid-item {
-            @apply overflow-hidden rounded-lg;
-
-            &:nth-child(3n + 1) {
-                @apply col-span-2;
-            }
-
-            &:last-child:nth-child(3n + 2) {
-                @apply col-span-2;
-            }
-        }
-
-        .gallery-fullscreen__grid-image {
-            @apply h-full w-full cursor-pointer object-cover;
-        }
-    }
+.gallery-fullscreen__grid-image {
+    @apply h-full w-full cursor-pointer object-cover;
 }
 </style>

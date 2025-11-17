@@ -400,6 +400,7 @@ watch(visible, (newVisible) => {
 
     .dialog__footer {
         @apply flex flex-shrink-0 items-center justify-between rounded-b-xl bg-gray-50 p-4;
+        @apply border-t-1 border-slate-200;
     }
 }
 </style>

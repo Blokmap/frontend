@@ -31,14 +31,13 @@ const imageUrl = computed(() => {
     <div class="location">
         <div class="location__image" :class="{ active }">
             <img :src="imageUrl" />
-            <div v-tooltip="location.city" class="location__address">
-                <FontAwesomeIcon :icon="faLocationDot" class="text-secondary" />
-                {{ location.city }}
-            </div>
         </div>
-        <h2 class="text-md mt-1 truncate font-semibold">
+        <h2 class="mt-1 truncate font-semibold">
             {{ location.name }}
         </h2>
+        <p class="line-clamp-2 text-xs text-gray-600">
+            <FontAwesomeIcon :icon="faLocationDot" /> {{ location.city }}, {{ location.street }}
+        </p>
         <p class="line-clamp-2 text-xs text-gray-600">
             {{ location.excerpt?.[locale] }}
         </p>
@@ -57,12 +56,7 @@ const imageUrl = computed(() => {
 
     .location__image {
         @apply relative h-full w-full overflow-hidden;
-        @apply rounded-2xl shadow-md;
-
-        .location__address {
-            @apply absolute top-2 left-2 flex max-w-30 items-center gap-2 py-0.5;
-            @apply truncate rounded-full bg-white/80 px-2 text-xs font-medium backdrop-blur-xs;
-        }
+        @apply rounded-2xl border border-slate-200;
 
         img {
             @apply aspect-square h-full w-full rounded-xl object-cover;

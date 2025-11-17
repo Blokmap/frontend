@@ -32,6 +32,18 @@
     --color-timber-green-900: #14342b;
     --color-timber-green-950: #0c221d;
 
+    --color-rope-50: #fdfaed;
+    --color-rope-100: #f9f0cc;
+    --color-rope-200: #f2df95;
+    --color-rope-300: #ebc95e;
+    --color-rope-400: #e6b539;
+    --color-rope-500: #de9722;
+    --color-rope-600: #c5751a;
+    --color-rope-700: #a3541a;
+    --color-rope-800: #90481d;
+    --color-rope-900: #6e3819;
+    --color-rope-950: #3f1c09;
+
     --color-glacier: oklch(49.933% 0.11024 250.04);
     --color-glacier-50: oklch(96.247% 0.02001 200.64);
     --color-glacier-100: oklch(92.597% 0.03582 205.23);

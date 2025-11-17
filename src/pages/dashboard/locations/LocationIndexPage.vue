@@ -98,8 +98,9 @@ function onUpdateLocationState(locationId: number, status: LocationState, reason
  * Handle deleting a location.
  * @param locationId The ID of the location to delete.
  */
-function onDeleteLocation(locationId: number) {
-    deleteLocation(locationId);
+async function onDeleteLocation(locationId: number, hideDeleteDialog: () => void) {
+    await deleteLocation(locationId);
+    hideDeleteDialog();
 }
 </script>
 

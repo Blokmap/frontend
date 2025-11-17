@@ -1,3 +1,4 @@
+import type { Authority } from '@/domain/authority';
 import type { Image } from '@/domain/image';
 import type { OpeningTime } from '@/domain/openings';
 import type { Profile } from '@/domain/profile';
@@ -58,6 +59,7 @@ export type Location = {
     updatedBy?: Profile | null;
     rejectedBy?: Profile | null;
     images?: Image[];
+    authority?: Authority;
 };
 
 export type LocationBody = {

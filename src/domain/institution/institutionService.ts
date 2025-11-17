@@ -2,27 +2,10 @@ import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
 import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/serviceUtils';
 import { parseAuthorityResponse } from '../authority';
-import { parseImageResponse } from '../image';
-import { parseTranslationResponse } from '../translation';
+import { parseInstitutionResponse } from './institutionParser';
 import type { Authority } from '../authority';
-import type { Institution, InstitutionFilter, InstitutionBody } from './types';
+import type { Institution, InstitutionBody, InstitutionFilter } from './types';
 import type { Paginated } from '@/utils/pagination';
-
-/**
- * Parses an Institution response object.
- *
- * @param data - The raw institution data from the API.
- * @returns The parsed Institution object.
- */
-export function parseInstitutionResponse(data: any): Institution {
-    const result: Institution = {
-        ...data,
-        name: parseTranslationResponse(data.name),
-        logo: parseImageResponse(data.logo),
-    };
-
-    return result;
-}
 
 /**
  * Read institutions with optional filters (returns paginated list).

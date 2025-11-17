@@ -101,8 +101,8 @@ defineEmits<{
     }
 
     .profile-info {
-        @apply flex flex-1 flex-col space-y-1;
-        @apply md:space-y-3;
+        @apply flex flex-col;
+        @apply md:space-y-1;
 
         .profile-info__name {
             @apply flex flex-row items-center gap-0.5;

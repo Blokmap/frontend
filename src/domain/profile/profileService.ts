@@ -1,52 +1,22 @@
 import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
-import { parseAuthorityResponse } from '@/domain/authority';
 import { parseReservationResponse, type Reservation } from '@/domain/reservation';
-import { stringToDate } from '@/utils/date';
 import {
     formatFormDataBody,
     formatRequest,
     transformPaginatedResponseFactory,
     transformResponseFactory,
 } from '@/utils/serviceUtils';
-import { parseImageResponse } from '../image';
-import { parseInstitutionResponse } from '../institution';
+import { parseFoundProfileResponse, parseProfileResponse } from './profileParser';
 import type {
-    Profile,
-    ProfileStats,
-    ProfileFilter,
-    ProfileScanBody,
     FoundProfile,
+    Profile,
+    ProfileFilter,
     ProfileFindFilter,
+    ProfileScanBody,
+    ProfileStats,
 } from './types';
 import type { Paginated, Pagination } from '@/utils/pagination';
-
-/**
- * Parses a profile response object.
- *
- * @param data - The raw profile data from the API.
- * @returns The parsed Profile object.
- */
-export function parseProfileResponse(data: any): Profile {
-    if (!data) return data;
-
-    const result: Profile = {
-        ...data,
-        avatarUrl: parseImageResponse(data.avatarUrl),
-        createdAt: stringToDate(data.createdAt),
-        updatedAt: stringToDate(data.updatedAt),
-    };
-
-    if (data.institution) {
-        result.institution = parseInstitutionResponse(data.institution);
-    }
-
-    if (data.authorities) {
-        result.authorities = data.authorities.map(parseAuthorityResponse);
-    }
-
-    return result;
-}
 
 /**
  * Fetches the profile statistics for a given profile ID.
@@ -151,21 +121,6 @@ export async function readProfiles(
     });
 
     return data;
-}
-
-/**
- * Parses a found profile response object (simplified profile for search results).
- *
- * @param data - The raw found profile data from the API.
- * @returns The parsed FoundProfile object.
- */
-export function parseFoundProfileResponse(data: any): FoundProfile {
-    if (!data) return data;
-
-    return {
-        ...data,
-        avatarUrl: parseImageResponse(data.avatarUrl),
-    };
 }
 
 /**

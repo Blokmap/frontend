@@ -34,7 +34,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
     'select:state': [id: number, status: LocationState, reason?: string];
-    'click:delete': [id: number];
+    'click:delete': [id: number, hideDeleteDialog: () => void];
 }>();
 
 const { t } = useI18n();
@@ -86,7 +86,9 @@ function onCancelRejection(): void {
  * Confirm location deletion and emit delete event.
  */
 function onConfirmDeletion(): void {
-    emit('click:delete', props.location.id);
+    emit('click:delete', props.location.id, () => {
+        showDeleteDialog.value = false;
+    });
 }
 
 /**

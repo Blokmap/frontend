@@ -1,16 +1,12 @@
 import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
-import { stringToDate } from '@/utils/date';
 import { formatFilters, formatLocationSearchFilters } from '@/utils/filter';
 import {
     formatFormDataBody,
     transformPaginatedResponseFactory,
     transformResponseFactory,
 } from '@/utils/serviceUtils';
-import { parseImageResponse } from '../../image';
-import { parseOpeningTimeResponse } from '../../openings';
-import { parseProfileResponse } from '../../profile';
-import { parseTranslationResponse } from '../../translation';
+import { parseLocationResponse } from '../locationParser';
 import {
     type Location,
     type LocationSearchFilter,
@@ -29,50 +25,6 @@ export type LocationIncludes =
     | 'approvedBy'
     | 'rejectedBy'
     | 'updatedBy';
-
-/**
- * Transform a Location response object.
- *
- * @param data - The raw location data from the API.
- * @returns The parsed Location object.
- */
-export function parseLocationResponse(data: any): Location {
-    const result: Location = {
-        ...data,
-        excerpt: parseTranslationResponse(data.excerpt),
-        description: parseTranslationResponse(data.description),
-        approvedAt: stringToDate(data.approvedAt),
-        createdAt: stringToDate(data.createdAt),
-        updatedAt: stringToDate(data.updatedAt),
-        rejectedAt: stringToDate(data.rejectedAt),
-    };
-
-    if (data.openingTimes) {
-        result.openingTimes = data.openingTimes.map(parseOpeningTimeResponse);
-    }
-
-    if (data.images) {
-        result.images = data.images.map(parseImageResponse);
-    }
-
-    if (data.createdBy) {
-        result.createdBy = parseProfileResponse(data.createdBy);
-    }
-
-    if (data.updatedBy) {
-        result.updatedBy = parseProfileResponse(data.updatedBy);
-    }
-
-    if (data.approvedBy) {
-        result.approvedBy = parseProfileResponse(data.approvedBy);
-    }
-
-    if (data.rejectedBy) {
-        result.rejectedBy = parseProfileResponse(data.rejectedBy);
-    }
-
-    return result;
-}
 
 /**
  * Search for locations based on filters.

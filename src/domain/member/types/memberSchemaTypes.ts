@@ -14,6 +14,12 @@ export type Role = {
     updatedAt: Date;
 };
 
+export type RecursivePermissions = {
+    location: number;
+    authority: number;
+    institution: number;
+};
+
 export type CreateRoleBody = {
     name: string;
     permissions: number;

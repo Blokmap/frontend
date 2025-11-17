@@ -153,7 +153,6 @@ function onNearestClick(): void {
                         v-for="location in locations.data"
                         :key="location.id"
                         :to="{ name: 'locations.detail', params: { locationId: location.id } }"
-                        class="location-card-link"
                         data-testid="location-card-link">
                         <LocationCard
                             :location="location"

@@ -43,7 +43,9 @@ onUnmounted(() => {
             <div class="content">
                 <RouterView v-slot="{ Component }">
                     <KeepAlive :include="['LocationsPage']">
-                        <component :is="Component" />
+                        <Transition name="fade" mode="out-in">
+                            <component :is="Component" />
+                        </Transition>
                     </KeepAlive>
                 </RouterView>
             </div>
@@ -66,19 +68,19 @@ onUnmounted(() => {
     @apply flex flex-1 flex-col;
 
     .content {
-        @apply mx-auto max-w-[1420px] 2xl:w-[80vw];
+        @apply mx-auto max-w-[1420px] 2xl:w-[85vw] 2xl:max-w-[1920px];
         @apply px-3 md:px-6;
     }
 
     .main {
         @apply w-full flex-1 rounded-b-md;
         @apply py-4 md:py-6;
-        @apply bg-slate-50 inset-shadow-sm;
+        @apply bg-slate-50;
     }
 
     .header {
         @apply rounded-t-md bg-white;
-        @apply py-4 md:py-6;
+        @apply border-b border-slate-200 py-4 md:py-6;
     }
 
     .footer {

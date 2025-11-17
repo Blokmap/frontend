@@ -57,7 +57,11 @@ function toggleSidebar(): void {
                 </header>
 
                 <main class="main" role="main">
-                    <RouterView :profile="profile" />
+                    <RouterView v-slot="{ Component }" :profile="profile">
+                        <Transition name="fade" mode="out-in">
+                            <component :is="Component" />
+                        </Transition>
+                    </RouterView>
                 </main>
             </template>
         </div>
@@ -103,7 +107,7 @@ function toggleSidebar(): void {
 
     .content {
         @apply flex flex-1 flex-col;
-        @apply m-3 overflow-hidden rounded-md bg-gray-50;
+        @apply m-3 overflow-hidden rounded-md bg-slate-50;
         @apply md:m-0;
 
         .header {

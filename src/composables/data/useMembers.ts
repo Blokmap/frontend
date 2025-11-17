@@ -37,6 +37,10 @@ import {
     createInstitutionRole,
     updateInstitutionRole,
     deleteInstitutionRole,
+    type RecursivePermissions,
+    readLocationMemberPermissions,
+    readAuthorityMemberPermissions,
+    readInstitutionMemberPermissions,
 } from '@/domain/member';
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
@@ -420,7 +424,7 @@ export function useReadProfileLocationMemberships(
 ): CompQuery<LocationMembership[]> {
     const query = useQuery({
         ...options,
-        queryKey: ['memberships', 'list', 'byProfileLocations', profileId],
+        queryKey: ['memberships', 'list', 'locations', 'byProfile', profileId],
         queryFn: () => readProfileLocationMemberships(toValue(profileId)),
     });
 
@@ -843,4 +847,46 @@ export function useDeleteInstitutionRole(
     });
 
     return mutation;
+}
+
+export function useReadLocationMemberPermissions(
+    locationId: MaybeRef<number>,
+    profileId: MaybeRef<string>,
+    options: CompQueryOptions = {},
+): CompQuery<RecursivePermissions> {
+    const query = useQuery({
+        ...options,
+        queryKey: ['permissions', 'list', 'byLocation', locationId, profileId],
+        queryFn: () => readLocationMemberPermissions(toValue(locationId), toValue(profileId)),
+    });
+
+    return query;
+}
+
+export function useReadAuthorityMemberPermissions(
+    authorityId: MaybeRef<number>,
+    profileId: MaybeRef<string>,
+    options: CompQueryOptions = {},
+): CompQuery<RecursivePermissions> {
+    const query = useQuery({
+        ...options,
+        queryKey: ['permissions', 'list', 'byAuthority', authorityId, profileId],
+        queryFn: () => readAuthorityMemberPermissions(toValue(authorityId), toValue(profileId)),
+    });
+
+    return query;
+}
+
+export function useReadInstitutionMemberPermissions(
+    institutionId: MaybeRef<number>,
+    profileId: MaybeRef<string>,
+    options: CompQueryOptions = {},
+): CompQuery<RecursivePermissions> {
+    const query = useQuery({
+        ...options,
+        queryKey: ['permissions', 'list', 'byInstitution', institutionId, profileId],
+        queryFn: () => readInstitutionMemberPermissions(toValue(institutionId), toValue(profileId)),
+    });
+
+    return query;
 }

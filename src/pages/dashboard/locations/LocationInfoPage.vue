@@ -19,13 +19,17 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
 import { useUpdateLocation, useUpdateLocationImages } from '@/composables/data/useLocations';
+import { useReadProfileAuthorityMemberships } from '@/composables/data/useMembers';
 import { imageToBody, type ImageBody } from '@/domain/image';
 import { locationToBody, type Location, type LocationBody } from '@/domain/location';
+import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
+    profile: Profile;
     location: Location;
 }>();
 
+const { data: memberships } = useReadProfileAuthorityMemberships(props.profile.id);
 const { mutateAsync: updateLocation, isPending: isUpdatingLocation } = useUpdateLocation({});
 const { mutateAsync: updateImages, isPending: isUpdatingImages } = useUpdateLocationImages({});
 
@@ -159,6 +163,7 @@ async function saveChanges(): Promise<void> {
             <!-- Settings Builder -->
             <LocationSettingsBuilder
                 v-if="activeSubTab === 'settings' && locationForm"
+                :authorities="memberships"
                 v-model:form="locationForm">
             </LocationSettingsBuilder>
         </div>

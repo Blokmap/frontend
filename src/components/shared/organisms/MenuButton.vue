@@ -75,7 +75,10 @@ function handleNavigationClick(): void {
             <template v-else-if="profile">
                 <RouterLink
                     class="flex items-center gap-3 rounded-lg bg-slate-100 p-2"
-                    :to="{ name: 'profile' }"
+                    :to="{
+                        name: 'dashboard.profiles.detail.overview',
+                        params: { profileId: profile.id },
+                    }"
                     @click="handleNavigationClick">
                     <ProfileAvatar :profile="profile" class="h-[3rem] w-[3rem]" />
                     <div class="flex-1 space-y-1 leading-tight">
@@ -87,10 +90,13 @@ function handleNavigationClick(): void {
                 </RouterLink>
                 <RouterLink
                     class="menu-link"
-                    :to="{ name: 'profile' }"
+                    :to="{
+                        name: 'dashboard.profiles.detail.overview',
+                        params: { profileId: profile.id },
+                    }"
                     @click="handleNavigationClick">
                     <FontAwesomeIcon :icon="faUser" class="text-secondary fa-icon" />
-                    <span>Profiel en Reservaties</span>
+                    <span>Profiel</span>
                 </RouterLink>
                 <RouterLink
                     class="menu-link"

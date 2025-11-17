@@ -10,24 +10,10 @@
 
     @apply shadow-playful;
     --shadow-color: var(--color-primary-300);
-
-    /* Faster transitions for touch devices */
-    @media (pointer: coarse) {
-        transition:
-            transform 0.05s ease-out,
-            box-shadow 0.05s ease-out,
-            background-color 0.2s;
-        -webkit-tap-highlight-color: transparent;
-    }
 }
 
 .p-button:active {
     @apply shadow-playful-active;
-
-    /* Add slight brightness change for better touch feedback */
-    @media (pointer: coarse) {
-        filter: brightness(0.95);
-    }
 }
 
 .p-button-icon-right {
@@ -175,7 +161,7 @@
 }
 
 .p-button-outlined.p-button-contrast {
-    @apply border-slate-300 text-slate-500;
+    @apply border-0 bg-slate-100 text-slate-500;
 }
 
 .p-button-outlined.p-button-plain {
@@ -191,7 +177,7 @@
     @apply border-transparent;
     @apply enabled:hover:border-transparent enabled:hover:bg-transparent;
     @apply enabled:active:border-transparent enabled:active:bg-transparent;
-    @apply !translate-none !transform-none !shadow-none !transition-none;
+    @apply !translate-none !scale-none !transform-none !shadow-none !transition-none;
 }
 
 .p-button-text.p-button-secondary {

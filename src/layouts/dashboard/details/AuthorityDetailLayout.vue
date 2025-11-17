@@ -93,7 +93,11 @@ const tabs = computed<TabItem[]>(() => [
 
             <!-- Page Content -->
             <div class="tab-content">
-                <RouterView :authority="authority" :profile="profile"></RouterView>
+                <RouterView v-slot="{ Component }" :authority="authority" :profile="profile">
+                    <Transition name="fade" mode="out-in">
+                        <component :is="Component" />
+                    </Transition>
+                </RouterView>
             </div>
         </template>
     </DashboardContent>

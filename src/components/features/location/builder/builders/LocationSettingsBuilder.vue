@@ -6,7 +6,7 @@ import InputHint from '@/components/shared/molecules/form/InputHint.vue';
 import InputLabel from '@/components/shared/molecules/form/InputLabel.vue';
 import { faCircleQuestion, faClock, faCog } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed } from 'vue';
+import { computed, watchEffect } from 'vue';
 import LocationBuilderCard from '../LocationBuilderCard.vue';
 import type { LocationBody } from '@/domain/location';
 import type { AuthorityMembership } from '@/domain/member';
@@ -19,10 +19,17 @@ const form = defineModel<LocationBody>('form', { required: true });
 
 const authorityOptions = computed(() => {
     if (!props.authorities) return [];
+
     return props.authorities.map((membership) => ({
         label: membership.authority.name,
         value: membership.authority.id,
     }));
+});
+
+watchEffect(() => {
+    if (!props.authorities?.length) {
+        form.value.authorityId = null;
+    }
 });
 </script>
 

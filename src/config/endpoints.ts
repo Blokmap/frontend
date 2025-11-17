@@ -24,6 +24,7 @@ export const endpoints = {
             add: '/institutions/{id}/members',
             remove: '/institutions/{id}/members/{profileId}',
             update: '/institutions/{id}/members/{profileId}',
+            roles: '/institutions/{id}/members/{profileId}/roles',
         },
         profiles: {
             list: '/institutions/{id}/profiles',
@@ -78,6 +79,7 @@ export const endpoints = {
             add: '/authorities/{id}/members',
             remove: '/authorities/{id}/members/{profileId}',
             update: '/authorities/{id}/members/{profileId}',
+            roles: '/authorities/{id}/members/{profileId}/roles',
         },
         roles: {
             list: '/authorities/{id}/roles',
@@ -116,6 +118,7 @@ export const endpoints = {
             list: '/locations/{id}/members',
             add: '/locations/{id}/members',
             delete: '/locations/{id}/members/{profileId}',
+            roles: '/locations/{id}/members/{profileId}/roles',
         },
         roles: {
             list: '/locations/{id}/roles',

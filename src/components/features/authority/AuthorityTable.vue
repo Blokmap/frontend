@@ -32,10 +32,6 @@ const onAuthorityClick = (authority: Authority) => {
                 {{ authority.name }}
             </TableCell>
 
-            <TableCell column="Beschrijving">
-                {{ authority.description || '-' }}
-            </TableCell>
-
             <TableCell column="Acties">
                 <slot name="actions" :authority="authority">
                     <AuthorityActionMenu :authority="authority" />

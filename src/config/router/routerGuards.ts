@@ -5,6 +5,11 @@ import { useAuthProfile } from '@/composables/data/useAuth';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useToast } from '@/composables/store/useToast';
 import { pushRedirectUrl, readAuthProfile } from '@/domain/auth';
+import {
+    readAuthorityMemberPermissions,
+    readInstitutionMemberPermissions,
+    readLocationMemberPermissions,
+} from '@/domain/member';
 import { router } from './routerConfig';
 import type { NavigationGuardReturn, RouteLocationNormalized } from 'vue-router';
 
@@ -23,6 +28,7 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
         return;
     }
 
+    // Check for authenticated profile
     const profile = await client.fetchQuery({
         queryKey: ['auth', 'profile'],
         queryFn: readAuthProfile,
@@ -39,8 +45,8 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
         return { name: 'auth' };
     }
 
+    // Check for admin access
     if (authSettings?.admin && !profile.isAdmin) {
-        // Seamlessly redirect to profile locations page for non-admin users
         if (to.name === 'dashboard.locations.index') {
             return {
                 name: 'dashboard.profiles.detail.locations',
@@ -48,13 +54,57 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
             };
         }
 
-        toast.add({
-            severity: 'error',
-            summary: 'Geen toegang',
-            detail: 'Je hebt geen toegang tot deze pagina.',
-        });
+        return { name: 'error.405' };
+    }
 
-        return { name: 'dashboard' };
+    // Check for specific permissions (if not admin)
+    if (!profile.isAdmin) {
+        const locationId = Number(to.params.locationId);
+        const institutionId = Number(to.params.institutionId);
+        const authorityId = Number(to.params.authorityId);
+
+        const permissionChecks = [
+            {
+                id: locationId,
+                type: 'location' as const,
+                queryKey: 'byLocation' as const,
+                fn: readLocationMemberPermissions,
+                predicate: authSettings.location,
+            },
+            {
+                id: authorityId,
+                type: 'authority' as const,
+                queryKey: 'byAuthority' as const,
+                fn: readAuthorityMemberPermissions,
+                predicate: authSettings.authority,
+            },
+            {
+                id: institutionId,
+                type: 'institution' as const,
+                queryKey: 'byInstitution' as const,
+                fn: readInstitutionMemberPermissions,
+                predicate: authSettings.institution,
+            },
+        ];
+
+        for (const check of permissionChecks) {
+            if (check.id && check.predicate) {
+                try {
+                    const permissions = await client.fetchQuery({
+                        queryKey: ['permissions', 'list', check.queryKey, check.id, profile.id],
+                        queryFn: () => check.fn(check.id, profile.id),
+                        staleTime: Infinity,
+                    });
+
+                    if (!check.predicate(permissions[check.type])) {
+                        return { name: 'error.405' };
+                    }
+                } catch {
+                    // If member is not found (404), deny access
+                    return { name: 'error.405' };
+                }
+            }
+        }
     }
 }
 

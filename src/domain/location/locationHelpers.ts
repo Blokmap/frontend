@@ -52,6 +52,7 @@ export function locationToBody(location: Location): LocationBody {
         longitude: location.longitude,
         description: translationToBody(location.description),
         excerpt: translationToBody(location.excerpt),
+        authorityId: location.authority?.id || null,
     };
 }
 

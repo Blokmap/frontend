@@ -1,42 +1,11 @@
 import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
 import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/serviceUtils';
-import { parseLocationResponse } from '../location';
-import { parseProfileResponse } from '../profile';
-import type { Authority, AuthorityFilter, AuthorityBody } from './types';
+import { parseAuthorityResponse } from './authorityParser';
+import type { Authority, AuthorityBody, AuthorityFilter } from './types';
 import type { Paginated } from '@/utils/pagination';
 
 export type AuthorityIncludes = 'institution' | 'createdBy' | 'updatedBy';
-
-/**
- * Parses an Authority response object.
- *
- * @param data - The raw authority data from the API.
- * @returns The parsed Authority object.
- */
-export function parseAuthorityResponse(data: any): Authority {
-    const result: Authority = {
-        ...data,
-    };
-
-    if (data.createdBy) {
-        result.createdBy = parseProfileResponse(data.createdBy);
-    }
-
-    if (data.updatedBy) {
-        result.updatedBy = parseProfileResponse(data.updatedBy);
-    }
-
-    if (data.members) {
-        result.members = data.members.map(parseProfileResponse);
-    }
-
-    if (data.locations) {
-        result.locations = data.locations.map(parseLocationResponse);
-    }
-
-    return result;
-}
 
 /**
  * Read authorities with optional filters (returns paginated list).

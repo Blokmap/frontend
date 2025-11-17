@@ -9,10 +9,7 @@ import type { PermissionType } from '../types';
  * @returns True if actual includes expected, false otherwise.
  */
 export function checkPermissions(actual: number, expected: number): boolean {
-    return (
-        (actual & ADMINISTRATOR_PERMISSION) === ADMINISTRATOR_PERMISSION ||
-        (actual & expected) === expected
-    );
+    return isAdministrator(actual) || (actual & expected) === expected;
 }
 
 /**

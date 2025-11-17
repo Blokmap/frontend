@@ -1,43 +1,12 @@
 import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
-import { stringToDate } from '@/utils/date';
 import { formatFilters } from '@/utils/filter';
 import { formatRequest, transformResponseFactory } from '@/utils/serviceUtils';
-import { stringToTime } from '@/utils/time';
-import { parseProfileResponse } from '../profile';
+import { parseOpeningTimeResponse } from './openingParser';
 import type { OpeningTime, OpeningTimeBody, OpeningTimeFilter } from './types';
 
 export type OpeningTimeIncludes = 'createdBy' | 'updatedBy' | 'openingTimeStatsIncludes';
 export type OpeningTimeStatsIncludes = 'stats';
-
-/**
- * Parses an OpeningTime response object.
- *
- * @param data - The raw opening time data from the API.
- * @returns The parsed OpeningTime object.
- */
-export function parseOpeningTimeResponse(data: any): OpeningTime {
-    const result: OpeningTime = {
-        ...data,
-        day: stringToDate(data.day),
-        reservableFrom: stringToDate(data.reservableFrom),
-        reservableUntil: stringToDate(data.reservableUntil),
-        startTime: stringToTime(data.startTime),
-        endTime: stringToTime(data.endTime),
-        createdAt: stringToDate(data.createdAt),
-        updatedAt: stringToDate(data.updatedAt),
-    };
-
-    if (data.createdBy) {
-        result.createdBy = parseProfileResponse(data.createdBy);
-    }
-
-    if (data.updatedBy) {
-        result.updatedBy = parseProfileResponse(data.updatedBy);
-    }
-
-    return result;
-}
 
 /**
  * Fetch opening times for a specific location and date range.

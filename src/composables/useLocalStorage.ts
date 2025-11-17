@@ -8,6 +8,7 @@ interface VersionedStorageData<T> {
 interface UseVersionedLocalStorageOptions<T> {
     version?: string;
     defaults: T;
+    override?: Partial<T>;
     dateFields?: string[];
 }
 
@@ -53,19 +54,19 @@ export function useLocalStorage<T>(key: string, options: UseVersionedLocalStorag
     const serializer = {
         read: (value: string): T => {
             if (!value) {
-                return JSON.parse(JSON.stringify(defaults)) as T;
+                return JSON.parse(JSON.stringify(defaults));
             }
 
             try {
                 const parsed: VersionedStorageData<T> = JSON.parse(value);
 
                 if (parsed.version !== version) {
-                    return JSON.parse(JSON.stringify(defaults)) as T;
+                    return JSON.parse(JSON.stringify(defaults));
                 }
 
-                return convertDates(parsed.data, dateFields, true) as T;
+                return convertDates(parsed.data, dateFields, true);
             } catch {
-                return JSON.parse(JSON.stringify(defaults)) as T;
+                return JSON.parse(JSON.stringify(defaults));
             }
         },
 
@@ -79,7 +80,7 @@ export function useLocalStorage<T>(key: string, options: UseVersionedLocalStorag
         },
     };
 
-    return _useLocalStorage(key, JSON.parse(JSON.stringify(defaults)) as T, {
+    return _useLocalStorage(key, JSON.parse(JSON.stringify(defaults)), {
         serializer,
         writeDefaults: true,
     });

@@ -2,8 +2,6 @@
 import ReservationStateBadge from '@/components/features/reservation/state/ReservationStateBadge.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
-import { faCalendarDay } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
@@ -106,22 +104,17 @@ const getTotalDuration = (reservations: Reservation[]) => {
         empty-message="Geen reservaties deze week.">
         <template #group="{ data, items }">
             <div class="group-day">
-                <div class="group-day__icon-wrapper">
-                    <FontAwesomeIcon :icon="faCalendarDay" class="text-primary-600 text-lg" />
+                <div class="flex items-center gap-2">
+                    <span class="text-lg font-bold text-slate-900 uppercase">
+                        {{ data.dayName }}
+                    </span>
+                    <span class="text-sm text-slate-600">{{ data.fullDate }}</span>
                 </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-lg font-bold text-slate-900 uppercase">
-                            {{ data.dayName }}
-                        </span>
-                        <span class="text-sm text-slate-600">{{ data.fullDate }}</span>
-                    </div>
-                    <div class="text-xs text-slate-500">
-                        {{ items.length }}
-                        {{ $t('domains.reservations.name', { count: items.length }) }}
-                        •
-                        {{ getTotalDuration(items) }}
-                    </div>
+                <div class="text-xs text-slate-500">
+                    {{ items.length }}
+                    {{ $t('domains.reservations.name', { count: items.length }) }}
+                    •
+                    {{ getTotalDuration(items) }}
                 </div>
             </div>
         </template>
@@ -167,13 +160,4 @@ const getTotalDuration = (reservations: Reservation[]) => {
 
 <style scoped>
 @reference '@/assets/styles/main.css';
-
-.group-day {
-    @apply flex items-center space-x-4;
-
-    .group-day__icon-wrapper {
-        @apply flex h-12 w-12 flex-shrink-0 items-center justify-center;
-        @apply bg-primary-100 rounded-lg;
-    }
-}
 </style>

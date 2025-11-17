@@ -1,26 +1,8 @@
 import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
-import { stringToDate } from '@/utils/date';
 import { transformResponseFactory } from '@/utils/serviceUtils';
+import { parseRoleResponse } from '../memberParser';
 import type { CreateRoleBody, Role, UpdateRoleBody } from '../types';
-
-/**
- * Parses a Role response object.
- *
- * @param data - The raw role data from the API.
- * @returns The parsed Role object.
- */
-export function parseRoleResponse(data: any): Role {
-    if (!data) return data;
-
-    const result: Role = {
-        ...data,
-        createdAt: stringToDate(data.createdAt),
-        updatedAt: stringToDate(data.updatedAt),
-    };
-
-    return result;
-}
 
 /**
  * Fetches the roles for a specific location.

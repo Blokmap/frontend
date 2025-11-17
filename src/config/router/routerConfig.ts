@@ -10,6 +10,13 @@ import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 import { useToast } from '@/composables/store/useToast';
 import { readAuthProfile, pullRedirectUrl } from '@/domain/auth';
+import {
+    has,
+    blank,
+    LocationPermission,
+    AuthorityPermission,
+    InstitutionPermission,
+} from '@/domain/member';
 import { authRouterGuard, redirectRouterGuard, titleRouterGuard } from './routerGuards';
 import {
     AuthPage,
@@ -37,14 +44,15 @@ import {
     LocationSubmitPage,
     LocationIndexPage,
     LocationsPage,
-    ProfilePage,
+    ProfileOverviewPage,
     ProfileAuthoritiesPage,
     ProfileLocationsPage,
-    ProfileOverviewPage,
     ProfileIndexPage,
     ProfileInstitutionsPage,
     LocationMembersPage,
     ReportsIndexPage,
+    Error404Page,
+    Error405Page,
 } from './routerPages';
 
 const routes: RouteRecordRaw[] = [
@@ -56,20 +64,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: 'test',
                 component: TestPage,
-            },
-            {
-                path: 'profile',
-                meta: { auth: { required: true } },
-                children: [
-                    {
-                        path: '',
-                        name: 'profile',
-                        component: ProfilePage,
-                        meta: {
-                            title: 'Profiel',
-                        },
-                    },
-                ],
+                meta: { auth: { admin: true } },
             },
             {
                 path: 'locations',
@@ -147,6 +142,9 @@ const routes: RouteRecordRaw[] = [
                                 props: true,
                                 meta: {
                                     title: 'Locatie Informatie',
+                                    auth: {
+                                        location: blank(),
+                                    },
                                 },
                             },
                             {
@@ -156,6 +154,9 @@ const routes: RouteRecordRaw[] = [
                                 props: true,
                                 meta: {
                                     title: 'Locatie Reservaties',
+                                    auth: {
+                                        location: has(LocationPermission.ManageReservations),
+                                    },
                                 },
                             },
                             {
@@ -165,6 +166,9 @@ const routes: RouteRecordRaw[] = [
                                 props: true,
                                 meta: {
                                     title: 'Scanner',
+                                    auth: {
+                                        location: has(LocationPermission.ManageReservations),
+                                    },
                                 },
                             },
                             {
@@ -174,6 +178,9 @@ const routes: RouteRecordRaw[] = [
                                 props: true,
                                 meta: {
                                     title: 'Locatie Openingstijden',
+                                    auth: {
+                                        location: has(LocationPermission.ManageOpeningTimes),
+                                    },
                                 },
                             },
                             {
@@ -183,6 +190,9 @@ const routes: RouteRecordRaw[] = [
                                 props: true,
                                 meta: {
                                     title: 'Toegangsbeheer',
+                                    auth: {
+                                        location: has(LocationPermission.ManageMembers),
+                                    },
                                 },
                             },
                             {
@@ -192,6 +202,9 @@ const routes: RouteRecordRaw[] = [
                                 props: true,
                                 meta: {
                                     title: 'Rollen beheren',
+                                    auth: {
+                                        location: has(LocationPermission.ManageMembers),
+                                    },
                                 },
                             },
                         ],
@@ -207,6 +220,7 @@ const routes: RouteRecordRaw[] = [
                         component: AuthorityIndexPage,
                         meta: {
                             title: 'Beheer Autoriteiten',
+                            auth: { admin: true },
                         },
                     },
                     {
@@ -231,14 +245,20 @@ const routes: RouteRecordRaw[] = [
                                 name: 'dashboard.authorities.detail.overview',
                                 component: AuthorityOverviewPage,
                                 props: true,
-                                meta: { title: 'Autoriteit Overzicht' },
+                                meta: {
+                                    title: 'Autoriteit Overzicht',
+                                    auth: { authority: blank() },
+                                },
                             },
                             {
                                 path: 'locations',
                                 name: 'dashboard.authorities.detail.locations',
                                 component: AuthorityLocationsPage,
                                 props: true,
-                                meta: { title: 'Autoriteit Locaties' },
+                                meta: {
+                                    title: 'Autoriteit Locaties',
+                                    auth: { authority: blank() },
+                                },
                             },
                             {
                                 path: 'members',
@@ -247,6 +267,7 @@ const routes: RouteRecordRaw[] = [
                                 props: true,
                                 meta: {
                                     title: 'Toegangsbeheer',
+                                    auth: { authority: has(AuthorityPermission.ManageMembers) },
                                 },
                             },
                             {
@@ -256,6 +277,7 @@ const routes: RouteRecordRaw[] = [
                                 props: true,
                                 meta: {
                                     title: 'Rollen beheren',
+                                    auth: { authority: has(AuthorityPermission.ManageMembers) },
                                 },
                             },
                         ],
@@ -271,6 +293,7 @@ const routes: RouteRecordRaw[] = [
                         component: InstitutionIndexPage,
                         meta: {
                             title: 'Beheer Instituties',
+                            auth: { admin: true },
                         },
                     },
                     {
@@ -279,6 +302,7 @@ const routes: RouteRecordRaw[] = [
                         component: InstitutionCreatePage,
                         meta: {
                             title: 'Nieuwe Institutie',
+                            auth: { admin: true },
                         },
                     },
                     {
@@ -295,21 +319,27 @@ const routes: RouteRecordRaw[] = [
                                 name: 'dashboard.institutions.detail.overview',
                                 component: InstitutionOverviewPage,
                                 props: true,
-                                meta: { title: 'Institutie Overzicht' },
+                                meta: {
+                                    title: 'Institutie Overzicht',
+                                    auth: { institution: blank() },
+                                },
                             },
                             {
                                 path: 'users',
                                 name: 'dashboard.institutions.detail.users',
                                 component: InstitutionUsersPage,
                                 props: true,
-                                meta: { title: 'Institutie Leden' },
+                                meta: { title: 'Institutie Leden', auth: { institution: blank() } },
                             },
                             {
                                 path: 'authorities',
                                 name: 'dashboard.institutions.detail.authorities',
                                 component: InstitutionAuthoritiesPage,
                                 props: true,
-                                meta: { title: 'Institutie Autoriteiten' },
+                                meta: {
+                                    title: 'Institutie Autoriteiten',
+                                    auth: { institution: blank() },
+                                },
                             },
                             {
                                 path: 'members',
@@ -318,6 +348,7 @@ const routes: RouteRecordRaw[] = [
                                 props: true,
                                 meta: {
                                     title: 'Toegangsbeheer',
+                                    auth: { institution: has(InstitutionPermission.ManageMembers) },
                                 },
                             },
                             {
@@ -327,6 +358,7 @@ const routes: RouteRecordRaw[] = [
                                 props: true,
                                 meta: {
                                     title: 'Rollen beheren',
+                                    auth: { institution: has(InstitutionPermission.ManageMembers) },
                                 },
                             },
                         ],
@@ -341,8 +373,8 @@ const routes: RouteRecordRaw[] = [
                         name: 'dashboard.profiles.index',
                         component: ProfileIndexPage,
                         meta: {
-                            auth: { admin: true },
                             title: 'Beheer Profielen',
+                            auth: { admin: true },
                         },
                     },
                     {
@@ -400,6 +432,7 @@ const routes: RouteRecordRaw[] = [
                 component: DashboardStatisticsPage,
                 meta: {
                     title: 'Statistieken',
+                    auth: { admin: true },
                 },
             },
 
@@ -409,6 +442,7 @@ const routes: RouteRecordRaw[] = [
                 component: DashboardReviewsPage,
                 meta: {
                     title: 'Beheer Reviews',
+                    auth: { admin: true },
                 },
             },
             {
@@ -416,8 +450,8 @@ const routes: RouteRecordRaw[] = [
                 name: 'dashboard.reports.index',
                 component: ReportsIndexPage,
                 meta: {
-                    auth: { admin: true },
                     title: 'Meldingen',
+                    auth: { admin: true },
                 },
             },
         ],
@@ -446,7 +480,7 @@ const routes: RouteRecordRaw[] = [
                             detail: 'Je bent succesvol ingelogd via je instelling!',
                         });
 
-                        return pullRedirectUrl() || { name: 'profile' };
+                        return pullRedirectUrl() || { name: 'dashboard.profiles.detail.overview' };
                     }
 
                     toast.add({
@@ -475,6 +509,26 @@ const routes: RouteRecordRaw[] = [
                 redirect: { name: 'auth', params: { action: 'register' } },
             },
         ],
+    },
+    {
+        path: '/404',
+        name: 'error.404',
+        component: Error404Page,
+        meta: {
+            auth: { required: false },
+        },
+    },
+    {
+        path: '/405',
+        name: 'error.405',
+        component: Error405Page,
+        meta: {
+            auth: { required: false },
+        },
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        redirect: { name: 'error.404' },
     },
 ];
 

@@ -59,7 +59,16 @@ const tabs = computed<TabItem[]>(() => [
     },
 ]);
 
-const { data: location, isLoading, error } = useReadLocation(computed(() => +props.locationId));
+const {
+    data: location,
+    isLoading,
+    error,
+} = useReadLocation(
+    computed(() => +props.locationId),
+    {
+        includes: ['authority'],
+    },
+);
 </script>
 
 <template>
@@ -80,7 +89,8 @@ const { data: location, isLoading, error } = useReadLocation(computed(() => +pro
             <LocationStateCallout
                 v-if="location.state !== LocationState.Approved"
                 :state="location.state"
-                :rejected-reason="location.rejectedReason" />
+                :rejected-reason="location.rejectedReason">
+            </LocationStateCallout>
 
             <!-- Header -->
             <DashboardPageHeader
@@ -100,7 +110,11 @@ const { data: location, isLoading, error } = useReadLocation(computed(() => +pro
 
             <!-- Page Content -->
             <div class="tab-content">
-                <RouterView :location="location" />
+                <RouterView v-slot="{ Component }" :location="location" :profile="profile">
+                    <Transition name="fade" mode="out-in">
+                        <component :is="Component" />
+                    </Transition>
+                </RouterView>
             </div>
         </template>
     </DashboardContent>

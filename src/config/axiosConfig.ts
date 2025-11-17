@@ -1,4 +1,4 @@
-import axios, { AxiosError, HttpStatusCode } from 'axios';
+import axios, { HttpStatusCode, isAxiosError } from 'axios';
 import { useRouter } from 'vue-router';
 import { useAuthLogout } from '@/composables/data/useAuth';
 import { useToast } from '@/composables/store/useToast';
@@ -37,7 +37,11 @@ export function setupAxiosInterceptors(): void {
             //await getRandomDelay(1000, 2000);
             return response;
         },
-        async (error: AxiosError) => {
+        async (error) => {
+            if (!isAxiosError(error)) {
+                throw error;
+            }
+
             if (error.status === HttpStatusCode.Forbidden) {
                 if (error.request.method === 'GET') {
                     await logout.mutateAsync();
@@ -65,6 +69,16 @@ export function setupAxiosInterceptors(): void {
                     summary: 'Bestand te groot',
                     detail: 'Het geüploade bestand is te groot. Probeer een kleiner bestand te uploaden.',
                 });
+            }
+
+            const isNotFound =
+                error.status === HttpStatusCode.NotFound ||
+                error.status === HttpStatusCode.BadRequest;
+
+            console.log('isNotFound', Object.keys(error), error.status);
+
+            if (isNotFound) {
+                router.push({ name: 'error.404' });
             }
 
             throw error;

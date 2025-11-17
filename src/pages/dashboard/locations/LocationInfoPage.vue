@@ -151,21 +151,27 @@ async function saveChanges(): Promise<void> {
 
         <!-- Tab Content -->
         <div class="tab-content">
-            <!-- Information Builder -->
-            <LocationInformationBuilder
-                v-if="activeSubTab === 'info' && locationForm"
-                v-model="locationForm">
-            </LocationInformationBuilder>
+            <Transition name="fade" mode="out-in">
+                <div :key="activeSubTab">
+                    <!-- Information Builder -->
+                    <LocationInformationBuilder
+                        v-if="activeSubTab === 'info' && locationForm"
+                        v-model="locationForm">
+                    </LocationInformationBuilder>
 
-            <!-- Images Builder -->
-            <LocationImagesBuilder v-if="activeSubTab === 'images'" v-model="imagesForm" />
+                    <!-- Images Builder -->
+                    <LocationImagesBuilder
+                        v-else-if="activeSubTab === 'images'"
+                        v-model="imagesForm" />
 
-            <!-- Settings Builder -->
-            <LocationSettingsBuilder
-                v-if="activeSubTab === 'settings' && locationForm"
-                :authorities="memberships"
-                v-model:form="locationForm">
-            </LocationSettingsBuilder>
+                    <!-- Settings Builder -->
+                    <LocationSettingsBuilder
+                        v-else-if="activeSubTab === 'settings' && locationForm"
+                        :authorities="memberships"
+                        v-model:form="locationForm">
+                    </LocationSettingsBuilder>
+                </div>
+            </Transition>
         </div>
 
         <!-- Sticky Save Bar (teleported outside to prevent layout shift) -->

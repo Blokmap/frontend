@@ -39,7 +39,9 @@ function handleLocaleChange(newLocale: string): void {
             severity="contrast"
             @click="toggleLanguageSelector"
             rounded>
-            <FontAwesomeIcon :icon="faGlobe" />
+            <template #icon>
+                <FontAwesomeIcon :icon="faGlobe" />
+            </template>
         </Button>
     </slot>
     <Popover ref="popover" class="rounded-xl shadow-lg" pt:content:class="p-2 min-w-[160px]">

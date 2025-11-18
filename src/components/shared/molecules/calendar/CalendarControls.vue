@@ -69,6 +69,7 @@ function goToNextWeek(): void {
             size="small"
             aria-label="Vorige week"
             @click="goToPreviousWeek"
+            rounded
             text>
             <template #icon>
                 <FontAwesomeIcon :icon="faChevronLeft" />

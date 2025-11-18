@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
@@ -38,65 +37,41 @@ const openingTimesByDay = computed(() => {
     <div>
         <!-- Loading State -->
         <template v-if="isLoading">
-            <div class="openings-table">
-                <div v-for="n in 7" :key="n" class="table-row-skeleton">
-                    <div class="flex-1 px-4 py-2.5">
-                        <div class="h-4 w-16 animate-pulse rounded bg-gray-200"></div>
-                    </div>
-                    <div class="flex-1 px-4 py-2.5 text-right">
-                        <div class="ml-auto h-4 w-20 animate-pulse rounded bg-gray-200"></div>
-                    </div>
+            <div class="space-y-2">
+                <div v-for="n in 7" :key="n" class="flex items-center justify-between py-2.5">
+                    <div class="h-4 w-16 animate-pulse rounded bg-slate-200"></div>
+                    <div class="h-4 w-24 animate-pulse rounded bg-slate-200"></div>
                 </div>
             </div>
         </template>
 
         <!-- Opening Hours Table -->
         <template v-else-if="openingTimes && openingTimes.length > 0">
-            <div class="openings-table">
+            <div class="space-y-1">
                 <OpeningsTableDay
-                    v-for="(day, index) in weekDays"
+                    v-for="day in weekDays"
                     :key="day.toDateString()"
                     :day="day"
-                    :opening-times-by-day="openingTimesByDay"
-                    :is-last="index === weekDays.length - 1">
+                    :opening-times-by-day="openingTimesByDay">
                 </OpeningsTableDay>
             </div>
         </template>
 
         <!-- No Hours Available -->
         <template v-else>
-            <div class="no-hours">
-                <FontAwesomeIcon :icon="faClock" class="mb-2 h-6 w-6 text-gray-400" />
-                <p class="mb-3 text-sm font-medium text-gray-600">
-                    Geen openingstijden beschikbaar voor deze week
-                </p>
-                <Button
-                    link
-                    size="small"
-                    class="text-xs text-gray-500 underline hover:text-gray-700">
-                    Vraag de beheerder om openingstijden toe te voegen
-                </Button>
+            <div class="flex flex-col items-center gap-3 rounded-lg bg-slate-50 py-8 text-center">
+                <FontAwesomeIcon :icon="faClock" class="h-8 w-8 text-slate-400" />
+                <div>
+                    <p class="text-sm font-medium text-slate-700">
+                        Geen openingstijden beschikbaar
+                    </p>
+                    <p class="mt-1 text-xs text-slate-500">
+                        Vraag de beheerder om openingstijden toe te voegen
+                    </p>
+                </div>
             </div>
         </template>
     </div>
 </template>
 
-<style scoped>
-@reference '@/assets/styles/main.css';
-
-.openings-table {
-    @apply border border-gray-200 bg-white text-sm;
-}
-
-.no-hours {
-    @apply rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center;
-}
-
-.table-row-skeleton {
-    @apply relative flex items-center border-b border-gray-200 bg-white text-sm;
-
-    &::after {
-        @apply absolute top-0 bottom-0 left-1/2 border-l border-gray-200 content-[''];
-    }
-}
-</style>
+<style scoped></style>

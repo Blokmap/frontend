@@ -16,7 +16,13 @@ import Gallery from '@/components/shared/organisms/image/Gallery.vue';
 import GallerySkeleton from '@/components/shared/organisms/image/GallerySkeleton.vue';
 import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
 import PublicContent from '@/layouts/public/PublicContent.vue';
-import { faArrowRight, faBullhorn, faEdit, faUsers } from '@fortawesome/free-solid-svg-icons';
+import {
+    faAlignJustify,
+    faArrowRight,
+    faBullhorn,
+    faEdit,
+    faUsers,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -183,7 +189,7 @@ function onLoginClick(): void {
 
                 <!-- Description Section -->
                 <div class="py-6">
-                    <h2 class="mb-4 text-2xl font-semibold text-gray-900">
+                    <h2 class="mb-6 text-2xl font-semibold text-gray-900">
                         <template v-if="location">
                             {{ location.excerpt[locale] }}
                         </template>
@@ -193,7 +199,12 @@ function onLoginClick(): void {
                     <div class="space-y-4">
                         <p class="leading-relaxed text-gray-600">
                             <template v-if="location">
-                                <EditorOuput :data="location.description[locale]" />
+                                <div class="rounded border border-slate-200 bg-white p-4">
+                                    <p class="mb-2 text-sm text-slate-500">
+                                        <FontAwesomeIcon :icon="faAlignJustify" /> Beschrijving
+                                    </p>
+                                    <EditorOuput :data="location.description[locale]" />
+                                </div>
                             </template>
                             <template v-else-if="isPending">
                                 <Skeleton height="18px" width="100%" class="mb-2" />

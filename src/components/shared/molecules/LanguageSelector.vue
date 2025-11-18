@@ -34,35 +34,39 @@ function handleLocaleChange(newLocale: string): void {
         :current-locale="currentLocale"
         :current-flag="getFlagImage(currentLocale)"
         :current-label="t(`locales.${currentLocale}`)">
-        <Button severity="contrast" @click="toggleLanguageSelector" rounded>
-            <template #icon>
-                <FontAwesomeIcon :icon="faGlobe" />
-            </template>
+        <Button
+            class="aspect-square !p-2.5"
+            severity="contrast"
+            @click="toggleLanguageSelector"
+            rounded>
+            <FontAwesomeIcon :icon="faGlobe" />
         </Button>
     </slot>
-    <Popover ref="popover" pt:content:class="p-0 min-w-[150px]">
-        <div class="flex flex-col">
-            <template v-for="loc in availableLocales" :key="loc">
-                <div
-                    class="locale-item"
-                    :class="{ active: loc === currentLocale }"
-                    @click="handleLocaleChange(loc)">
-                    <img :src="getFlagImage(loc)" alt="flag" class="h-6 w-6" />
-                    <span class="">{{ t(`locales.${loc}`) }}</span>
-                </div>
-            </template>
-        </div>
+    <Popover ref="popover" class="rounded-xl shadow-lg" pt:content:class="p-2 min-w-[160px]">
+        <nav class="space-y-1">
+            <button
+                v-for="loc in availableLocales"
+                :key="loc"
+                @click="handleLocaleChange(loc)"
+                :class="['locale-item', { active: loc === currentLocale }]">
+                <img
+                    :src="getFlagImage(loc)"
+                    :alt="t(`locales.${loc}`)"
+                    class="h-5 w-5 rounded-sm" />
+                <span>{{ t(`locales.${loc}`) }}</span>
+            </button>
+        </nav>
     </Popover>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
-
 .locale-item {
-    @apply flex cursor-pointer items-center gap-2 px-2 py-1 hover:bg-gray-100;
+    @apply flex w-full items-center gap-3 rounded-lg px-3 py-2;
+    @apply text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50;
 
     &.active {
-        @apply bg-primary-100;
+        @apply bg-slate-100 text-slate-900;
     }
 }
 </style>

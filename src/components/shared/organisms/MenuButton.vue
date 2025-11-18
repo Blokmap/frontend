@@ -3,125 +3,107 @@ import Button from 'primevue/button';
 import Popover from 'primevue/popover';
 import Skeleton from 'primevue/skeleton';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
-import {
-    faBars,
-    faCity,
-    faRightToBracket,
-    faSignOut,
-    faUser,
-} from '@fortawesome/free-solid-svg-icons';
+import { faBars, faRightToBracket, faSignOut, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRef } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
 
 const router = useRouter();
-
 const { isLoading: profileIsLoading, data: profile } = useAuthProfile();
 const { mutateAsync: logout } = useAuthLogout();
-
 const popoverRef = useTemplateRef('popover');
 
-function onMenuButtonClick(event: MouseEvent): void {
+function toggleMenu(event: MouseEvent): void {
     popoverRef.value?.toggle(event);
 }
 
-async function onLogoutClick(): Promise<void> {
+async function handleLogout(): Promise<void> {
     await router.push({ name: 'auth' });
     await logout();
     popoverRef.value?.hide();
 }
 
-function onNavigationClick(): void {
+function closeMenu(): void {
     popoverRef.value?.hide();
 }
 </script>
 
 <template>
-    <!-- Menu Toggle -->
-    <Button class="!px-3 !py-2" @click="onMenuButtonClick" rounded>
-        <template #icon>
-            <FontAwesomeIcon :icon="faBars" />
-        </template>
+    <Button @click="toggleMenu" rounded>
+        <template #icon> <FontAwesomeIcon :icon="faBars" /></template>
     </Button>
 
-    <!-- Popover -->
-    <Popover ref="popover" class="w-full max-w-[275px] rounded-lg">
-        <div class="space-y-2 text-slate-800">
-            <!-- Profile Section -->
-            <template v-if="profileIsLoading">
-                <div class="flex items-center gap-3">
-                    <Skeleton shape="circle" size="3rem" />
-                    <div class="flex-1 space-y-1">
-                        <Skeleton width="70%" />
-                        <Skeleton width="40%" />
-                    </div>
-                </div>
-            </template>
+    <Popover ref="popover" class="w-72 rounded-xl shadow-md">
+        <!-- Loading State -->
+        <div v-if="profileIsLoading" class="flex items-center gap-3 p-3">
+            <Skeleton shape="circle" size="3rem" />
+            <div class="flex-1 space-y-2">
+                <Skeleton width="60%" height="1rem" />
+                <Skeleton width="40%" height="0.75rem" />
+            </div>
+        </div>
 
-            <template v-else-if="profile">
-                <RouterLink
-                    class="flex items-center gap-3 rounded-lg bg-slate-100 p-2"
-                    :to="{
-                        name: 'dashboard.profiles.detail.overview',
-                        params: { profileId: profile.id },
-                    }"
-                    @click="onNavigationClick">
-                    <ProfileAvatar :profile="profile" class="h-[3rem] w-[3rem]" />
-                    <div class="flex-1 space-y-1 leading-tight">
-                        <div class="font-semibold text-slate-900 dark:text-white">
-                            {{ profile.firstName }}
-                        </div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400">Welkom terug!</div>
+        <!-- Authenticated User -->
+        <template v-else-if="profile">
+            <!-- Profile Header -->
+            <RouterLink
+                :to="{
+                    name: 'dashboard.profiles.detail.overview',
+                    params: { profileId: profile.id },
+                }"
+                @click="closeMenu"
+                class="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-slate-50">
+                <ProfileAvatar :profile="profile" class="h-12 w-12" />
+                <div class="min-w-0 flex-1">
+                    <div class="truncate font-semibold text-slate-900">
+                        {{ profile.firstName }}
                     </div>
-                </RouterLink>
+                    <div class="text-sm text-slate-500">Welkom terug!</div>
+                </div>
+            </RouterLink>
+
+            <div class="border-t border-slate-100"></div>
+
+            <!-- Menu Items -->
+            <nav class="space-y-1 py-2">
                 <RouterLink
-                    class="menu-link"
                     :to="{
                         name: 'dashboard.profiles.detail.overview',
                         params: { profileId: profile.id },
                     }"
-                    @click="onNavigationClick">
-                    <FontAwesomeIcon :icon="faUser" class="text-secondary fa-icon" />
+                    @click="closeMenu"
+                    class="menu-item">
+                    <FontAwesomeIcon :icon="faUser" class="w-4" />
                     <span>Profiel</span>
                 </RouterLink>
-                <RouterLink
-                    class="menu-link"
-                    :to="{ name: 'dashboard' }"
-                    @click="onNavigationClick">
-                    <FontAwesomeIcon :icon="faCity" class="text-secondary fa-icon" />
-                    <span>Dashboard</span>
-                </RouterLink>
-            </template>
 
-            <template v-else>
-                <h3 class="font-semibold">Profiel</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400">
-                    Reserveer een plek op een van onze locaties of meld zelf een plek aan.
-                </p>
-                <RouterLink class="menu-link" :to="{ name: 'auth' }" @click="onNavigationClick">
-                    <FontAwesomeIcon :icon="faRightToBracket" class="text-secondary fa-icon" />
-                    <span>Inloggen</span>
-                </RouterLink>
-            </template>
-            <template v-if="profile">
-                <div class="menu-link logout-link" @click="onLogoutClick">
-                    <FontAwesomeIcon :icon="faSignOut" class="text-secondary fa-icon" />
+                <button @click="handleLogout" class="menu-item w-full text-red-600">
+                    <FontAwesomeIcon :icon="faSignOut" class="w-4" />
                     <span>Uitloggen</span>
-                </div>
-            </template>
+                </button>
+            </nav>
+        </template>
+
+        <!-- Guest User -->
+        <div v-else class="space-y-3 p-3">
+            <div>
+                <h3 class="font-semibold text-slate-900">Welkom bij Blokmap</h3>
+                <p class="mt-1 text-sm text-slate-600">Log in om plekken te reserveren</p>
+            </div>
+
+            <RouterLink :to="{ name: 'auth' }" @click="closeMenu" class="menu-item bg-slate-50">
+                <FontAwesomeIcon :icon="faRightToBracket" class="w-4" />
+                <span>Inloggen</span>
+            </RouterLink>
         </div>
     </Popover>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
-
-.menu-link {
-    @apply flex w-full cursor-pointer items-center gap-2;
-
-    .fa-icon {
-        @apply w-4 text-center;
-    }
+.menu-item {
+    @apply flex items-center gap-3 rounded-lg px-3 py-2;
+    @apply text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50;
 }
 </style>

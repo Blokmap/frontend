@@ -137,7 +137,7 @@ defineExpose({ map });
 }
 
 .location-popover {
-    @apply w-full max-w-[300px] cursor-pointer;
+    @apply w-[300px] cursor-pointer;
 }
 
 .location-popover__carousel {
@@ -145,7 +145,7 @@ defineExpose({ map });
 }
 
 .location-popover__image {
-    @apply h-full max-h-[200px] w-full object-cover;
+    @apply h-full max-h-[175px] w-full object-cover;
 }
 
 .location-popover__close {

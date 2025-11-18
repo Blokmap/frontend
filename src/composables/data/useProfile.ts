@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { useToast } from 'primevue';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useToast } from '@/composables/store/useToast';
 import {
     blockProfile,
     deleteProfileAvatar,
@@ -120,7 +120,7 @@ export function useUpdateProfileAvatar(
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate the specific profile query
-            invalidateQueries(queryClient, ['profiles'], variables.profileId);
+            invalidateQueries(queryClient, ['auth'], variables.profileId);
 
             if (!options.disableToasts) {
                 toast.add({
@@ -218,7 +218,7 @@ export function useDeleteProfileAvatar(options: CompMutationOptions = {}): CompM
         ...options,
         onSuccess: (data, variables, context) => {
             // Invalidate the specific profile query
-            invalidateQueries(queryClient, ['profiles'], variables);
+            invalidateQueries(queryClient, ['auth'], variables);
 
             if (!options.disableToasts) {
                 toast.add({

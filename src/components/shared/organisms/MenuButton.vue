@@ -16,43 +16,30 @@ import { useRouter } from 'vue-router';
 import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
 
 const router = useRouter();
+
 const { isLoading: profileIsLoading, data: profile } = useAuthProfile();
 const { mutateAsync: logout } = useAuthLogout();
 
 const popoverRef = useTemplateRef('popover');
 
-/**
- * Handle menu button click event.
- * Toggles the popover display.
- *
- * @param event - Mouse event needed for popover positioning
- */
-function handleMenuButtonClick(event: MouseEvent): void {
+function onMenuButtonClick(event: MouseEvent): void {
     popoverRef.value?.toggle(event);
 }
 
-/**
- * Handle logout click event.
- * Logs out the user and navigates to the auth page.
- */
-async function handleLogoutClick(): Promise<void> {
+async function onLogoutClick(): Promise<void> {
     await router.push({ name: 'auth' });
     await logout();
     popoverRef.value?.hide();
 }
 
-/**
- * Handle navigation link click event.
- * Hides the popover.
- */
-function handleNavigationClick(): void {
+function onNavigationClick(): void {
     popoverRef.value?.hide();
 }
 </script>
 
 <template>
     <!-- Menu Toggle -->
-    <Button class="!px-3 !py-2" @click="handleMenuButtonClick" rounded>
+    <Button class="!px-3 !py-2" @click="onMenuButtonClick" rounded>
         <template #icon>
             <FontAwesomeIcon :icon="faBars" />
         </template>
@@ -60,7 +47,7 @@ function handleNavigationClick(): void {
 
     <!-- Popover -->
     <Popover ref="popover" class="w-full max-w-[275px] rounded-lg">
-        <div class="dark:text-slate-20 space-y-2 p-1 text-slate-800">
+        <div class="space-y-2 text-slate-800">
             <!-- Profile Section -->
             <template v-if="profileIsLoading">
                 <div class="flex items-center gap-3">
@@ -79,7 +66,7 @@ function handleNavigationClick(): void {
                         name: 'dashboard.profiles.detail.overview',
                         params: { profileId: profile.id },
                     }"
-                    @click="handleNavigationClick">
+                    @click="onNavigationClick">
                     <ProfileAvatar :profile="profile" class="h-[3rem] w-[3rem]" />
                     <div class="flex-1 space-y-1 leading-tight">
                         <div class="font-semibold text-slate-900 dark:text-white">
@@ -94,14 +81,14 @@ function handleNavigationClick(): void {
                         name: 'dashboard.profiles.detail.overview',
                         params: { profileId: profile.id },
                     }"
-                    @click="handleNavigationClick">
+                    @click="onNavigationClick">
                     <FontAwesomeIcon :icon="faUser" class="text-secondary fa-icon" />
                     <span>Profiel</span>
                 </RouterLink>
                 <RouterLink
                     class="menu-link"
                     :to="{ name: 'dashboard' }"
-                    @click="handleNavigationClick">
+                    @click="onNavigationClick">
                     <FontAwesomeIcon :icon="faCity" class="text-secondary fa-icon" />
                     <span>Dashboard</span>
                 </RouterLink>
@@ -112,13 +99,13 @@ function handleNavigationClick(): void {
                 <p class="text-sm text-slate-500 dark:text-slate-400">
                     Reserveer een plek op een van onze locaties of meld zelf een plek aan.
                 </p>
-                <RouterLink class="menu-link" :to="{ name: 'auth' }" @click="handleNavigationClick">
+                <RouterLink class="menu-link" :to="{ name: 'auth' }" @click="onNavigationClick">
                     <FontAwesomeIcon :icon="faRightToBracket" class="text-secondary fa-icon" />
                     <span>Inloggen</span>
                 </RouterLink>
             </template>
             <template v-if="profile">
-                <div class="menu-link logout-link" @click="handleLogoutClick">
+                <div class="menu-link logout-link" @click="onLogoutClick">
                     <FontAwesomeIcon :icon="faSignOut" class="text-secondary fa-icon" />
                     <span>Uitloggen</span>
                 </div>

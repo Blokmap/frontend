@@ -8,7 +8,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useMapBox } from '@/composables/maps/useMapBox';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import { getLocationPlaceholderImage, type Location } from '@/domain/location';
+import { type Location } from '@/domain/location';
 import Marker from './Marker.vue';
 import type { LngLatBounds } from '@/domain/map';
 
@@ -34,32 +34,18 @@ const filters = storeToRefs(useLocationFilters());
 const mapContainerRef = useTemplateRef('mapContainer');
 const map = useMapBox(mapContainerRef, filters.config.value);
 
-/**
- * Handle marker click event.
- * @param id - Location ID
- */
 function onMarkerClick(id: number): void {
     emit('click:marker', id);
 }
 
-/**
- * Handle marker mouse enter event.
- * @param location - Location data
- */
 function onMarkerMouseEnter(location: Location) {
     hoveredLocation.value = location;
 }
-/**
- * Handle marker mouse leave event.
- */
+
 function onMarkerMouseLeave() {
     hoveredLocation.value = null;
 }
 
-/**
- * Navigate to location detail page.
- * @param locationId - Location ID
- */
 function navigateToDetail(locationId: number): void {
     router.push({ name: 'locations.detail', params: { locationId } });
 }
@@ -100,19 +86,9 @@ defineExpose({ map });
                         <!-- Carousel for location images -->
                         <div class="location-popover__carousel">
                             <Carousel
-                                :items="
-                                    location.images && location.images.length > 0
-                                        ? location.images
-                                        : [
-                                              {
-                                                  id: 0,
-                                                  url: getLocationPlaceholderImage(location),
-                                                  index: 0,
-                                              },
-                                          ]
-                                "
-                                :show-navigation-buttons="true"
-                                :show-dots="true">
+                                :items="location.images ?? []"
+                                show-navigation-buttons
+                                show-dots>
                                 <template #default="{ item }">
                                     <img
                                         :src="item.url"
@@ -161,7 +137,7 @@ defineExpose({ map });
 }
 
 .location-popover {
-    @apply w-full cursor-pointer;
+    @apply w-full max-w-[300px] cursor-pointer;
 }
 
 .location-popover__carousel {
@@ -169,11 +145,13 @@ defineExpose({ map });
 }
 
 .location-popover__image {
-    @apply aspect-[4/3] w-full object-cover;
+    @apply h-full max-h-[200px] w-full object-cover;
 }
 
 .location-popover__close {
-    @apply absolute top-3 right-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-gray-800 shadow-md transition-all hover:scale-110 hover:bg-white;
+    @apply absolute top-3 right-3 z-20;
+    @apply flex h-8 w-8 items-center justify-center;
+    @apply rounded-full bg-white/90 text-gray-800 shadow-md transition-all hover:scale-110 hover:bg-white;
 }
 
 .location-popover__details {

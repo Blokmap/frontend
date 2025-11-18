@@ -4,12 +4,16 @@ import { useToast } from '@/composables/store/useToast';
 import {
     createLocationReport,
     deleteLocationReport,
-    readLocationReports,
+    readAllAuthorityReports,
     readAllLocationReports,
-    type Report,
+    readAllProfileReports,
+    readLocationReports,
+    type AuthorityReport,
     type LocationReport,
-    type ReportIncludes,
+    type ProfileReport,
+    type Report,
     type ReportFilter,
+    type ReportIncludes,
 } from '@/domain/report';
 import { invalidateQueries } from './queryCache';
 import type {
@@ -112,10 +116,42 @@ export function useReadAllLocationReports(
 ): CompQuery<Paginated<LocationReport>> {
     const query = useQuery({
         ...options,
-        queryKey: ['reports', 'list', 'all', filters],
+        queryKey: ['reports', 'list', 'all', 'locations', filters],
         queryFn: () => {
             const filtersValue = toValue(filters);
             return readAllLocationReports(filtersValue, options.includes);
+        },
+    });
+
+    return query;
+}
+
+export function useReadAllAuthorityReports(
+    filters: MaybeRef<ReportFilter>,
+    options: CompQueryOptions<ReportIncludes> = {},
+): CompQuery<Paginated<AuthorityReport>> {
+    const query = useQuery({
+        ...options,
+        queryKey: ['reports', 'list', 'all', 'authorities', filters],
+        queryFn: () => {
+            const filtersValue = toValue(filters);
+            return readAllAuthorityReports(filtersValue, options.includes);
+        },
+    });
+
+    return query;
+}
+
+export function useReadAllProfileReports(
+    filters: MaybeRef<ReportFilter>,
+    options: CompQueryOptions<ReportIncludes> = {},
+): CompQuery<Paginated<ProfileReport>> {
+    const query = useQuery({
+        ...options,
+        queryKey: ['reports', 'list', 'all', 'profiles', filters],
+        queryFn: () => {
+            const filtersValue = toValue(filters);
+            return readAllProfileReports(filtersValue, options.includes);
         },
     });
 

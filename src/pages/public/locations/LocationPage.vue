@@ -172,13 +172,13 @@ function onLoginClick(): void {
             <!-- Main Content -->
             <div class="space-y-6 lg:col-span-2">
                 <!-- Gallery -->
-                <div class="h-[400px] overflow-hidden rounded-2xl">
+                <div class="h-[450px] overflow-hidden rounded-2xl">
                     <Gallery
                         v-if="location?.images"
                         :images="location.images"
                         :placeholder="placeholder">
                     </Gallery>
-                    <GallerySkeleton v-else-if="isPending" />
+                    <GallerySkeleton v-if="isPending" />
                 </div>
 
                 <!-- Description Section -->

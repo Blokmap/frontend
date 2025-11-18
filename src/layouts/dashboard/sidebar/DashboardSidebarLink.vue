@@ -1,24 +1,40 @@
 <script setup lang="ts">
 import { faArrowRight, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import type { RouteLocationRaw } from 'vue-router';
 
-defineProps<{
+const props = defineProps<{
     icon: IconDefinition;
     label: string;
+    to: RouteLocationRaw;
     count?: string | null;
     pendingCount?: number;
-    isNavigating?: boolean;
     testId?: string;
 }>();
 
-defineEmits<{
-    click: [];
+const emit = defineEmits<{
+    navigated: [];
 }>();
+
+const router = useRouter();
+
+const isNavigating = ref<boolean>(false);
+
+async function handleClick() {
+    isNavigating.value = true;
+
+    await router.push(props.to);
+    emit('navigated');
+
+    isNavigating.value = false;
+}
 </script>
 
 <template>
-    <a class="sidebar-link" @click.prevent="$emit('click')" :data-testid="testId">
+    <a class="sidebar-link" @click.prevent="handleClick" :data-testid="testId">
         <FontAwesomeIcon
             :icon="isNavigating ? faSpinner : icon"
             :class="{ 'fa-spin': isNavigating }" />

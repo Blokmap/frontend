@@ -10,6 +10,10 @@
     @apply !pb-0;
 }
 
+.cdx-block {
+    @apply !mb-0;
+}
+
 .ce-block {
     @apply break-after-all overflow-x-auto text-wrap;
 }

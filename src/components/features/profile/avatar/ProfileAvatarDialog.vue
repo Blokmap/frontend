@@ -3,40 +3,27 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { faClose, faImagePortrait, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useQueryClient } from '@tanstack/vue-query';
 import { ref } from 'vue';
 import { useDeleteProfileAvatar, useUpdateProfileAvatar } from '@/composables/data/useProfile';
-import { useToast } from '@/composables/store/useToast';
 import ProfileAvatar from './ProfileAvatar.vue';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{ profile: Profile }>();
-const visible = defineModel<boolean>('visible', { default: false });
 
-const messages = useToast();
-const client = useQueryClient();
+const visible = defineModel<boolean>('visible', {
+    required: true,
+    default: false,
+});
 
 const { mutate: updateAvatar, isPending: isUpdating } = useUpdateProfileAvatar({
     onSuccess: () => {
-        client.invalidateQueries({ queryKey: ['profile'] });
         visible.value = false;
-        messages.add({
-            severity: 'success',
-            summary: 'Profielfoto bijgewerkt',
-            detail: 'Je profielfoto is succesvol bijgewerkt.',
-        });
     },
 });
 
 const { mutate: deleteAvatar, isPending: isDeleting } = useDeleteProfileAvatar({
     onSuccess: () => {
-        client.invalidateQueries({ queryKey: ['profile'] });
         visible.value = false;
-        messages.add({
-            severity: 'success',
-            summary: 'Profielfoto verwijderd',
-            detail: 'Je profielfoto is succesvol verwijderd.',
-        });
     },
 });
 
@@ -68,7 +55,7 @@ function onFileChange(e: Event): void {
         <template #container>
             <div class="overflow-y-auto p-4">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-medium">Profielfoto</h2>
+                    <h2 class="text-xl font-semibold">Profielfoto</h2>
                     <Button severity="contrast" outlined rounded @click="visible = false">
                         <template #icon>
                             <FontAwesomeIcon :icon="faClose" />

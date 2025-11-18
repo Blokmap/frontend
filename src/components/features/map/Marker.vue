@@ -99,7 +99,7 @@ function closePopover() {
         <!-- Popover with slot for custom content -->
         <Popover
             ref="popover"
-            class="map-popover mx-2 w-[400px] max-w-[calc(100vw-1rem)] overflow-hidden"
+            class="map-popover mx-2 overflow-hidden"
             @show="isShowingPopover = true"
             @hide="isShowingPopover = false">
             <slot name="popover" :close-popover="closePopover"></slot>

@@ -12,6 +12,7 @@ const props = defineProps<{
 
 const isFullscreen = ref<boolean>(false);
 const selectedImageIndex = ref<number>(0);
+const loadedImages = ref<Set<number>>(new Set());
 
 const images = computed<Image[]>(() => [...props.images].sort((a, b) => a.index - b.index));
 
@@ -91,6 +92,10 @@ function handleKeydown(event: KeyboardEvent): void {
     }
 }
 
+function onImageLoad(index: number): void {
+    loadedImages.value.add(index);
+}
+
 onMounted(() => {
     document.addEventListener('keydown', handleKeydown);
 });
@@ -108,7 +113,18 @@ onUnmounted(() => {
             :key="item.index"
             :class="['gallery__item', item.classes]"
             @click="openFullScreen(item.index)">
-            <img v-if="item.image" :src="item.image.url" class="gallery__image" />
+            <Transition name="slide-up">
+                <img
+                    v-if="item.image && loadedImages.has(item.index)"
+                    :src="item.image.url"
+                    class="gallery__image"
+                    @load="onImageLoad(item.index)" />
+            </Transition>
+            <img
+                v-if="item.image && !loadedImages.has(item.index)"
+                :src="item.image.url"
+                class="gallery__image gallery__image--loading"
+                @load="onImageLoad(item.index)" />
         </div>
     </div>
 
@@ -166,6 +182,10 @@ onUnmounted(() => {
 
     .gallery__image {
         @apply h-full w-full object-cover shadow-md transition-all duration-300;
+    }
+
+    .gallery__image--loading {
+        @apply opacity-0;
     }
 }
 

@@ -1,8 +1,13 @@
 import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
 import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/serviceUtils';
-import { parseLocationReportResponse, parseReportResponse } from './reportParser';
-import type { LocationReport, Report, ReportFilter } from './types';
+import {
+    parseAuthorityReportResponse,
+    parseLocationReportResponse,
+    parseProfileReportResponse,
+    parseReportResponse,
+} from './reportParser';
+import type { AuthorityReport, LocationReport, ProfileReport, Report, ReportFilter } from './types';
 import type { Paginated } from '@/utils/pagination';
 
 export type ReportIncludes = 'createdBy';
@@ -59,6 +64,48 @@ export async function readAllLocationReports(
     };
 
     const transformResponse = transformPaginatedResponseFactory(parseLocationReportResponse);
+
+    const { data } = await client.get(endpoint, {
+        params,
+        transformResponse,
+    });
+
+    return data;
+}
+
+export async function readAllAuthorityReports(
+    filters: ReportFilter,
+    authorityReportIncludes: ReportIncludes[] = [],
+): Promise<Paginated<AuthorityReport>> {
+    const endpoint = endpoints.authorities.reports.all;
+
+    const params = {
+        ...filters,
+        authorityReportIncludes,
+    };
+
+    const transformResponse = transformPaginatedResponseFactory(parseAuthorityReportResponse);
+
+    const { data } = await client.get(endpoint, {
+        params,
+        transformResponse,
+    });
+
+    return data;
+}
+
+export async function readAllProfileReports(
+    filters: ReportFilter,
+    profileReportIncludes: ReportIncludes[] = [],
+): Promise<Paginated<ProfileReport>> {
+    const endpoint = endpoints.profiles.reports.all;
+
+    const params = {
+        ...filters,
+        profileReportIncludes,
+    };
+
+    const transformResponse = transformPaginatedResponseFactory(parseProfileReportResponse);
 
     const { data } = await client.get(endpoint, {
         params,

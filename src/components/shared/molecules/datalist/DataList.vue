@@ -1,5 +1,5 @@
 <script lang="ts" generic="T" setup>
-import Skeleton from 'primevue/skeleton';
+import { ProgressSpinner } from 'primevue';
 import EmptyState from '../EmptyState.vue';
 
 defineProps<{
@@ -11,7 +11,9 @@ defineProps<{
 <template>
     <div class="flex flex-col gap-4">
         <slot v-if="loading" name="loading">
-            <Skeleton height="200px" v-for="_ in 5"></Skeleton>
+            <div class="rounded-lg border border-slate-200 bg-white px-6 py-12 text-center">
+                <ProgressSpinner />
+            </div>
         </slot>
         <slot v-else-if="!items || items.length === 0" name="empty">
             <EmptyState message="Geen items gevonden"></EmptyState>

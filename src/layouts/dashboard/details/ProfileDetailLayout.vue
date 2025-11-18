@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import ProfileHeader from '@/components/features/profile/ProfileHeader.vue';
+import ProfileAvatarDialog from '@/components/features/profile/avatar/ProfileAvatarDialog.vue';
 import TabNavigation, { type TabItem } from '@/components/shared/molecules/TabNavigation.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
 import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
 import { faBuilding, faCity, faIdCard, faMapLocationDot } from '@fortawesome/free-solid-svg-icons';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useReadProfile } from '@/composables/data/useProfile';
 import type { Profile } from '@/domain/profile';
 
@@ -26,6 +27,8 @@ const {
         enabled: computed(() => !isOwnProfile.value),
     },
 );
+
+const showAvatarDialog = ref<boolean>(false);
 
 const currentProfile = computed(() => (!isOwnProfile.value ? fetchedProfile.value : props.profile));
 
@@ -67,6 +70,10 @@ const tabs = computed<TabItem[]>(() => [
         },
     },
 ]);
+
+function onAvatarEditClick(): void {
+    showAvatarDialog.value = true;
+}
 </script>
 
 <template>
@@ -84,7 +91,12 @@ const tabs = computed<TabItem[]>(() => [
         <!-- Content -->
         <template v-else>
             <!-- Profile Header -->
-            <ProfileHeader :profile="currentProfile" :loading="isLoading"></ProfileHeader>
+            <ProfileHeader
+                :profile="currentProfile"
+                :loading="isLoading"
+                :editable="isOwnProfile"
+                @click:edit="onAvatarEditClick">
+            </ProfileHeader>
 
             <!-- Tabs -->
             <TabNavigation :tabs="tabs" />
@@ -102,6 +114,9 @@ const tabs = computed<TabItem[]>(() => [
                 </RouterView>
             </div>
         </template>
+        <Teleport to="body">
+            <ProfileAvatarDialog :profile="profile" :visible="showAvatarDialog" />
+        </Teleport>
     </DashboardContent>
 </template>
 

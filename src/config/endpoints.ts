@@ -64,6 +64,9 @@ export const endpoints = {
         institutions: {
             memberships: '/profiles/{id}/institutions/memberships',
         },
+        reports: {
+            all: '/profiles/reports',
+        },
     },
     authorities: {
         create: '/authorities',
@@ -87,6 +90,9 @@ export const endpoints = {
             create: '/authorities/{id}/roles',
             update: '/authorities/{id}/roles/{roleId}',
             delete: '/authorities/{id}/roles/{roleId}',
+        },
+        reports: {
+            all: '/authorities/reports',
         },
     },
     locations: {

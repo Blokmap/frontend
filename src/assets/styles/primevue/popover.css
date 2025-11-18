@@ -9,7 +9,7 @@
 }
 
 .p-popover-content {
-    @apply p-2;
+    @apply p-0;
 }
 
 .p-popover-flipped {

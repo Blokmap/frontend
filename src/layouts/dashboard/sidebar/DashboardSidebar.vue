@@ -15,14 +15,13 @@ import {
     faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import { useAuthLogout } from '@/composables/data/useAuth';
 import { abbreviateCount } from '@/utils/formatUtils';
-import SidebarLink from './SidebarLink.vue';
+import DashboardSidebarLink from './DashboardSidebarLink.vue';
 import type { Profile } from '@/domain/profile';
-import type { RouteLocationRaw } from 'vue-router';
 
 const props = defineProps<{
     profile: Profile;
@@ -31,7 +30,6 @@ const props = defineProps<{
 const visible = defineModel<boolean>('visible', { default: false });
 
 const router = useRouter();
-const navigatingTo = ref<string | null>(null);
 
 const { mutateAsync: logout } = useAuthLogout();
 
@@ -68,11 +66,8 @@ async function onLogoutClick(): Promise<void> {
     logout();
 }
 
-async function onNavigation(to: RouteLocationRaw, linkId: string) {
-    navigatingTo.value = linkId;
-    await router.push(to);
+function onNavigated() {
     visible.value = false;
-    navigatingTo.value = null;
 }
 
 function onCloseMenu() {
@@ -85,7 +80,7 @@ function onCloseMenu() {
         <!-- Logo and Close Button Section -->
         <div class="sidebar-header">
             <RouterLink :to="{ name: 'locations' }" data-testid="logo-link">
-                <Logo :show-subtitle="false" variant="dark" />
+                <Logo variant="dark" />
             </RouterLink>
             <button
                 class="sidebar-close-btn"
@@ -104,28 +99,21 @@ function onCloseMenu() {
                     <FontAwesomeIcon class="leading-icon" :icon="faMapLocationDot" />
                     <span>Locaties</span>
                 </h4>
-                <SidebarLink
+                <DashboardSidebarLink
                     :icon="faList"
                     label="Mijn Locaties"
-                    :is-navigating="navigatingTo === 'my-locations'"
-                    test-id="my-locations-link"
-                    @click="
-                        onNavigation(
-                            {
-                                name: 'dashboard.profiles.detail.locations',
-                                params: { profileId: profile.id },
-                            },
-                            'my-locations',
-                        )
-                    ">
-                </SidebarLink>
-                <SidebarLink
+                    :to="{
+                        name: 'dashboard.profiles.detail.locations',
+                        params: { profileId: profile.id },
+                    }"
+                    @navigated="onNavigated">
+                </DashboardSidebarLink>
+                <DashboardSidebarLink
                     :icon="faPlus"
                     label="Nieuwe Locatie"
-                    :is-navigating="navigatingTo === 'new-location'"
-                    test-id="new-location-link"
-                    @click="onNavigation({ name: 'locations.submit' }, 'new-location')">
-                </SidebarLink>
+                    :to="{ name: 'locations.submit' }"
+                    @navigated="onNavigated">
+                </DashboardSidebarLink>
             </div>
 
             <!-- Autoriteiten Section -->
@@ -134,29 +122,22 @@ function onCloseMenu() {
                     <FontAwesomeIcon class="leading-icon" :icon="faBuilding" />
                     <span>Autoriteiten</span>
                 </h4>
-                <SidebarLink
+                <DashboardSidebarLink
                     :icon="faList"
                     label="Mijn Autoriteiten"
-                    :is-navigating="navigatingTo === 'my-authorities'"
-                    @click="
-                        onNavigation(
-                            {
-                                name: 'dashboard.profiles.detail.authorities',
-                                params: { profileId: profile.id },
-                            },
-                            'my-authorities',
-                        )
-                    ">
-                </SidebarLink>
-                <SidebarLink
+                    :to="{
+                        name: 'dashboard.profiles.detail.authorities',
+                        params: { profileId: profile.id },
+                    }"
+                    @navigated="onNavigated">
+                </DashboardSidebarLink>
+                <DashboardSidebarLink
                     v-if="profile.isAdmin"
                     :icon="faPlus"
                     label="Nieuwe Autoriteit"
-                    :is-navigating="navigatingTo === 'new-authority'"
-                    @click="
-                        onNavigation({ name: 'dashboard.authorities.create' }, 'new-authority')
-                    ">
-                </SidebarLink>
+                    :to="{ name: 'dashboard.authorities.create' }"
+                    @navigated="onNavigated">
+                </DashboardSidebarLink>
             </div>
 
             <!-- Instituties Section -->
@@ -165,20 +146,15 @@ function onCloseMenu() {
                     <FontAwesomeIcon class="leading-icon" :icon="faCity" />
                     <span>Instituties</span>
                 </h4>
-                <SidebarLink
+                <DashboardSidebarLink
                     :icon="faList"
                     label="Mijn Instituties"
-                    :is-navigating="navigatingTo === 'my-institutions'"
-                    @click="
-                        onNavigation(
-                            {
-                                name: 'dashboard.profiles.detail.institutions',
-                                params: { profileId: profile.id },
-                            },
-                            'my-institutions',
-                        )
-                    ">
-                </SidebarLink>
+                    :to="{
+                        name: 'dashboard.profiles.detail.institutions',
+                        params: { profileId: profile.id },
+                    }"
+                    @navigated="onNavigated">
+                </DashboardSidebarLink>
             </div>
 
             <!-- Systeem Section (Admin only) -->
@@ -187,62 +163,58 @@ function onCloseMenu() {
                     <FontAwesomeIcon class="leading-icon" :icon="faChartLine" />
                     <span>Systeem</span>
                 </h4>
-                <SidebarLink
+                <DashboardSidebarLink
                     :icon="faChartSimple"
                     label="Statistieken"
-                    :is-navigating="navigatingTo === 'statistics'"
-                    @click="onNavigation({ name: 'dashboard.statistics' }, 'statistics')">
-                </SidebarLink>
-                <SidebarLink
+                    :to="{ name: 'dashboard.statistics' }"
+                    @navigated="onNavigated">
+                </DashboardSidebarLink>
+                <DashboardSidebarLink
                     :icon="faCity"
                     label="Instituties"
                     :count="institutionCount"
-                    :is-navigating="navigatingTo === 'institutions'"
-                    @click="onNavigation({ name: 'dashboard.institutions.index' }, 'institutions')">
-                </SidebarLink>
-                <SidebarLink
+                    :to="{ name: 'dashboard.institutions.index' }"
+                    @navigated="onNavigated">
+                </DashboardSidebarLink>
+                <DashboardSidebarLink
                     :icon="faBuilding"
                     label="Autoriteiten"
                     :count="authorityCount"
-                    :is-navigating="navigatingTo === 'authorities'"
-                    @click="onNavigation({ name: 'dashboard.authorities.index' }, 'authorities')">
-                </SidebarLink>
-                <SidebarLink
+                    :to="{ name: 'dashboard.authorities.index' }"
+                    @navigated="onNavigated">
+                </DashboardSidebarLink>
+                <DashboardSidebarLink
                     :icon="faMapLocationDot"
                     label="Locaties"
                     :count="locationCount"
                     :pending-count="pendingLocationCount"
-                    :is-navigating="navigatingTo === 'locations'"
-                    @click="onNavigation({ name: 'dashboard.locations.index' }, 'locations')">
-                </SidebarLink>
-                <SidebarLink
+                    :to="{ name: 'dashboard.locations.index' }"
+                    @navigated="onNavigated">
+                </DashboardSidebarLink>
+                <DashboardSidebarLink
                     :icon="faUsers"
                     label="Profielen"
                     :count="profileCount"
-                    :is-navigating="navigatingTo === 'profiles'"
-                    @click="onNavigation({ name: 'dashboard.profiles.index' }, 'profiles')">
-                </SidebarLink>
-                <SidebarLink
+                    :to="{ name: 'dashboard.profiles.index' }"
+                    @navigated="onNavigated">
+                </DashboardSidebarLink>
+                <DashboardSidebarLink
                     :icon="faExclamationTriangle"
                     label="Meldingen"
-                    :is-navigating="navigatingTo === 'reports'"
-                    @click="onNavigation({ name: 'dashboard.reports.index' }, 'reports')">
-                </SidebarLink>
+                    :to="{ name: 'dashboard.reports.index' }"
+                    @navigated="onNavigated">
+                </DashboardSidebarLink>
             </div>
         </div>
 
         <div class="sidebar-profile">
-            <a
+            <RouterLink
+                :to="{
+                    name: 'dashboard.profiles.detail.overview',
+                    params: { profileId: profile.id },
+                }"
                 class="sidebar-link"
-                @click.prevent="
-                    onNavigation(
-                        {
-                            name: 'dashboard.profiles.detail.overview',
-                            params: { profileId: profile.id },
-                        },
-                        'profile',
-                    )
-                "
+                @click="onNavigated"
                 data-testid="profile-link">
                 <ProfileAvatar :profile="profile" class="h-10 w-10" />
                 <div class="flex-1 space-y-1 leading-tight">
@@ -251,7 +223,7 @@ function onCloseMenu() {
                     </div>
                     <div class="text-xs text-slate-400">Welkom terug!</div>
                 </div>
-            </a>
+            </RouterLink>
 
             <button
                 class="sidebar-link logout-btn"
@@ -270,6 +242,7 @@ function onCloseMenu() {
 .sidebar {
     @apply flex flex-col gap-5 pt-3 pb-5;
     @apply bg-slate-900 text-slate-300;
+    @apply max-h-screen overflow-y-auto md:overflow-y-visible;
 
     .sidebar-header {
         @apply flex items-center justify-between px-3;

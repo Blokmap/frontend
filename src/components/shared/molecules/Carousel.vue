@@ -84,7 +84,7 @@ function goTo(index: number) {
                 class="carousel__dot"
                 :class="{ 'carousel__dot--active': index === currentIndex }"
                 @click.stop="goTo(index)"
-                :aria-label="`Go to slide ${index + 1}`" />
+                :aria-label="`Go to slide ${index + 1}`"></button>
         </div>
     </div>
 </template>
@@ -101,7 +101,9 @@ function goTo(index: number) {
 }
 
 .carousel__button {
-    @apply absolute top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-800 shadow-md transition-all hover:scale-110 hover:bg-white;
+    @apply absolute top-1/2 z-10 -translate-y-1/2;
+    @apply flex h-8 w-8 items-center justify-center;
+    @apply rounded-full bg-white/90 text-gray-800 shadow-md transition-all hover:scale-110 hover:bg-white;
 }
 
 .carousel__button--prev {

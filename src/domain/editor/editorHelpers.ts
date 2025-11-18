@@ -7,16 +7,23 @@ import { type OutputBlockData, type OutputData } from '@editorjs/editorjs';
  * @returns The OutputData object containing the string as a paragraph block.
  */
 export function toEditorData(input?: string | null | OutputData): OutputData {
+    // If input is already OutputData, return it directly
     if (typeof input !== 'string') {
         return input || { blocks: [] };
     }
 
-    const parsed = JSON.parse(input || '{}');
+    // Try to parse the string as JSON
+    try {
+        const parsed = JSON.parse(input || '{}');
 
-    if (parsed && parsed.blocks) {
-        return parsed;
+        if (parsed && parsed.blocks) {
+            return parsed;
+        }
+    } catch {
+        // Ignore JSON parse errors
     }
 
+    // Return as a single paragraph block
     return {
         blocks: [
             {

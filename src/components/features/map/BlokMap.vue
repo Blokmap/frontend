@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import Button from 'primevue/button';
-import OpeningsTable from '@/components/features/openings/OpeningsTable.vue';
-import { faSpinner, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import Carousel from '@/components/shared/molecules/Carousel.vue';
+import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { storeToRefs } from 'pinia';
 import { useTemplateRef, watch } from 'vue';
@@ -9,7 +8,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useMapBox } from '@/composables/maps/useMapBox';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import { getLocationImageUrl, type Location } from '@/domain/location';
+import { getLocationPlaceholderImage, type Location } from '@/domain/location';
 import Marker from './Marker.vue';
 import type { LngLatBounds } from '@/domain/map';
 
@@ -61,7 +60,7 @@ function onMarkerMouseLeave() {
  * Navigate to location detail page.
  * @param locationId - Location ID
  */
-function onLocationDetailClick(locationId: number): void {
+function navigateToDetail(locationId: number): void {
     router.push({ name: 'locations.detail', params: { locationId } });
 }
 
@@ -96,38 +95,54 @@ defineExpose({ map });
                 @click="onMarkerClick(location.id)"
                 @mouseenter="onMarkerMouseEnter(location)"
                 @mouseleave="onMarkerMouseLeave">
-                <template #popover>
-                    <div class="w-full space-y-2 p-1">
-                        <div class="flex gap-3">
-                            <img
-                                :src="getLocationImageUrl(location)"
-                                alt="Location Image"
-                                class="aspect-square h-20 flex-shrink-0 rounded object-cover shadow-lg" />
+                <template #popover="{ closePopover }">
+                    <div class="location-popover" @click="navigateToDetail(location.id)">
+                        <!-- Carousel for location images -->
+                        <div class="location-popover__carousel">
+                            <Carousel
+                                :items="
+                                    location.images && location.images.length > 0
+                                        ? location.images
+                                        : [
+                                              {
+                                                  id: 0,
+                                                  url: getLocationPlaceholderImage(location),
+                                                  index: 0,
+                                              },
+                                          ]
+                                "
+                                :show-navigation-buttons="true"
+                                :show-dots="true">
+                                <template #default="{ item }">
+                                    <img
+                                        :src="item.url"
+                                        alt="Location Image"
+                                        class="location-popover__image" />
+                                </template>
+                            </Carousel>
 
-                            <div class="flex flex-1 flex-col justify-center gap-1">
-                                <p class="text-lg font-semibold">
-                                    {{ location.name }}
-                                </p>
-
-                                <p class="text-slate-600">
-                                    {{ location.excerpt[locale] }}
-                                </p>
-
-                                <p>
-                                    {{ location.street }} {{ location.number }} • {{ location.zip }}
-                                    {{ location.city }}
-                                </p>
-                            </div>
+                            <!-- Close button overlayed on carousel -->
+                            <button
+                                type="button"
+                                class="location-popover__close"
+                                @click.stop="closePopover"
+                                aria-label="Close">
+                                <FontAwesomeIcon :icon="faTimes" />
+                            </button>
                         </div>
 
-                        <OpeningsTable class="my-3" :opening-times="location.openingTimes" compact>
-                        </OpeningsTable>
-
-                        <div class="flex justify-end">
-                            <Button @click="onLocationDetailClick(location.id)" size="small" text>
-                                Meer Informatie
-                                <FontAwesomeIcon :icon="faArrowRight" class="ml-2" />
-                            </Button>
+                        <!-- Location details -->
+                        <div class="location-popover__details">
+                            <h3 class="location-popover__name">
+                                {{ location.name }}
+                            </h3>
+                            <p class="location-popover__excerpt">
+                                {{ location.excerpt[locale] }}
+                            </p>
+                            <p class="location-popover__address">
+                                {{ location.street }} {{ location.number }}, {{ location.zip }}
+                                {{ location.city }}
+                            </p>
                         </div>
                     </div>
                 </template>
@@ -143,5 +158,37 @@ defineExpose({ map });
     @apply absolute top-4 left-1/2 z-50 -translate-x-1/2 transform;
     @apply rounded bg-white px-6 py-2 text-sm font-medium text-slate-700 shadow-md;
     @apply flex items-center justify-center gap-2;
+}
+
+.location-popover {
+    @apply w-full cursor-pointer;
+}
+
+.location-popover__carousel {
+    @apply relative w-full;
+}
+
+.location-popover__image {
+    @apply aspect-[4/3] w-full object-cover;
+}
+
+.location-popover__close {
+    @apply absolute top-3 right-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-gray-800 shadow-md transition-all hover:scale-110 hover:bg-white;
+}
+
+.location-popover__details {
+    @apply space-y-1.5 px-4 py-3;
+}
+
+.location-popover__name {
+    @apply text-lg font-semibold text-gray-900;
+}
+
+.location-popover__excerpt {
+    @apply text-sm text-gray-600;
+}
+
+.location-popover__address {
+    @apply text-sm text-gray-500;
 }
 </style>

@@ -11,6 +11,7 @@ import {
     readProfileAuthorities,
     readInstitutionAuthorities,
     type AuthorityIncludes,
+    deleteAuthority,
 } from '@/domain/authority';
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
@@ -155,6 +156,33 @@ export function useUpdateAuthority(
                     severity: 'success',
                     summary: 'Success',
                     detail: 'Authority updated successfully.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+    });
+
+    return mutation;
+}
+
+export function useDeleteAuthority(options: CompMutationOptions = {}): CompMutation<number> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: deleteAuthority,
+        onSuccess: (data, variables, context) => {
+            // Invalidate all authority queries
+            const authorityId = variables;
+            invalidateQueries(queryClient, ['authorities'], authorityId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Authority deleted successfully.',
                 });
             }
 

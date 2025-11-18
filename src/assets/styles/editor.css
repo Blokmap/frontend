@@ -1,0 +1,50 @@
+/* Style overrides for Editor.js */
+
+/* Editor container styles */
+.codex-editor {
+    @apply shadow-playful-no-transform rounded-md border border-slate-200 px-6 py-3;
+    --shadow-color: var(--color-slate-200);
+}
+
+.codex-editor__redactor {
+    @apply !pb-0;
+}
+
+.ce-block {
+    @apply break-after-all overflow-x-auto text-wrap;
+}
+
+.ce-block__content {
+    @apply max-w-full;
+}
+
+.ce-toolbar {
+    @apply right-0 left-auto;
+}
+
+.ce-toolbar__content {
+    @apply right-0 max-w-full;
+}
+
+/* Block styles */
+
+.ce-paragraph,
+.cdx-list {
+    @apply mb-2 text-slate-800;
+}
+
+.cdx-list {
+    @apply !ps-8;
+
+    .cdx-list__item {
+        @apply m-0;
+    }
+}
+
+ul.cdx-list {
+    @apply list-disc;
+}
+
+ol.cdx-list {
+    @apply list-decimal;
+}

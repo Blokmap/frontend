@@ -75,6 +75,13 @@ function handleMouseEnter() {
 function handleMouseLeave() {
     emit('mouseleave');
 }
+
+/**
+ * Close the popover.
+ */
+function closePopover() {
+    popoverRef.value?.hide();
+}
 </script>
 
 <template>
@@ -85,19 +92,17 @@ function handleMouseLeave() {
             @mouseenter="handleMouseEnter"
             @mouseleave="handleMouseLeave">
             <Transition name="bounce-scale" appear>
-                <div class="marker" :class="{ active }">
-                    <FontAwesomeIcon :icon="faLocationDot" class="icon text-slate-50" />
-                </div>
+                <FontAwesomeIcon :icon="faLocationDot" class="marker" :class="active" />
             </Transition>
         </div>
 
         <!-- Popover with slot for custom content -->
         <Popover
             ref="popover"
-            class="mx-2 w-[400px] max-w-[calc(100vw-1rem)]"
+            class="map-popover mx-2 w-[400px] max-w-[calc(100vw-1rem)] overflow-hidden"
             @show="isShowingPopover = true"
             @hide="isShowingPopover = false">
-            <slot name="popover"></slot>
+            <slot name="popover" :close-popover="closePopover"></slot>
         </Popover>
     </Teleport>
 </template>
@@ -106,10 +111,14 @@ function handleMouseLeave() {
 @reference '@/assets/styles/main.css';
 
 .marker {
-    @apply flex h-6 w-9 cursor-pointer items-center justify-center rounded-full bg-slate-800 transition-all duration-200 hover:scale-110;
+    @apply h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-all duration-200 hover:scale-110;
 
     &.active {
         @apply scale-115;
     }
+}
+
+:deep(.map-popover .p-popover-content) {
+    padding: 0 !important;
 }
 </style>

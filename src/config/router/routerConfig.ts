@@ -480,7 +480,12 @@ const routes: RouteRecordRaw[] = [
                             detail: 'Je bent succesvol ingelogd via je instelling!',
                         });
 
-                        return pullRedirectUrl() || { name: 'dashboard.profiles.detail.overview' };
+                        return (
+                            pullRedirectUrl() || {
+                                name: 'dashboard.profiles.detail.overview',
+                                params: { profileId: profile.id },
+                            }
+                        );
                     }
 
                     toast.add({

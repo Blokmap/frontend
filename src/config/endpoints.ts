@@ -70,6 +70,7 @@ export const endpoints = {
         read: '/authorities/{id}',
         update: '/authorities/{id}',
         list: '/authorities',
+        delete: '/authorities/{id}',
         locations: {
             list: '/authorities/{id}/locations',
             create: '/authorities/{id}/locations',

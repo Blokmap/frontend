@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AuthorityActionMenu from '@/components/features/authority/AuthorityActionMenu.vue';
 import AuthorityMembershipTable from '@/components/features/authority/AuthorityMembershipTable.vue';
 import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
 import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
@@ -7,6 +8,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useDeleteAuthority } from '@/composables/data/useAuthorities';
 import { useReadProfileAuthorityMemberships } from '@/composables/data/useMembers';
 import type { AuthorityMembership } from '@/domain/member';
 import type { Profile } from '@/domain/profile';
@@ -18,19 +20,29 @@ const props = defineProps<{
 
 const router = useRouter();
 
+const {
+    mutateAsync: deleteAuthority,
+    isPending: isPendingDelete,
+    variables,
+} = useDeleteAuthority();
+
 const { data: memberships, isLoading } = useReadProfileAuthorityMemberships(
     computed(() => props.profile.id),
 );
 
-/**
- * Handle clicking on an authority to view its details.
- * @param membership - The membership that was clicked.
- */
+function isAuthorityPending(authority: { id: number }): boolean {
+    return variables.value === authority.id && isPendingDelete.value;
+}
+
 function onMembershipClick(membership: AuthorityMembership): void {
     router.push({
         name: 'dashboard.authorities.detail.overview',
         params: { authorityId: membership.authority.id },
     });
+}
+
+function onAuthorityDeleteClick(authorityId: number): void {
+    deleteAuthority(authorityId);
 }
 </script>
 
@@ -61,6 +73,13 @@ function onMembershipClick(membership: AuthorityMembership): void {
             :loading="isLoading"
             empty-message="Dit profiel is niet gekoppeld aan autoriteiten."
             @click:membership="onMembershipClick">
+            <template #actions="{ authority }">
+                <AuthorityActionMenu
+                    :authority="authority"
+                    :is-pending="isAuthorityPending(authority)"
+                    @click:delete="onAuthorityDeleteClick">
+                </AuthorityActionMenu>
+            </template>
         </AuthorityMembershipTable>
     </DashboardContent>
 </template>

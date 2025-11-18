@@ -9,7 +9,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Paginator } from 'primevue';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useReadInstitutionAuthorities } from '@/composables/data/useAuthorities';
+import {
+    useDeleteAuthority,
+    useReadInstitutionAuthorities,
+} from '@/composables/data/useAuthorities';
 import { usePagination } from '@/composables/usePagination';
 import { type Authority, type AuthorityFilter } from '@/domain/authority';
 import { type Institution } from '@/domain/institution';
@@ -19,6 +22,12 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
+
+const {
+    mutateAsync: deleteAuthority,
+    isPending: isPendingDelete,
+    variables,
+} = useDeleteAuthority();
 
 const filters = ref<AuthorityFilter>({
     page: 1,
@@ -33,6 +42,14 @@ const { data: authorities, isLoading } = useReadInstitutionAuthorities(
 );
 
 /**
+ * Check if a specific authority is pending deletion.
+ * @param authority - The authority to check.
+ */
+function isAuthorityPending(authority: { id: number }): boolean {
+    return variables.value === authority.id && isPendingDelete.value;
+}
+
+/**
  * Handle clicking on an authority to view its details.
  * @param authority - The authority that was clicked.
  */
@@ -41,6 +58,14 @@ function onAuthorityClick(authority: Authority) {
         name: 'dashboard.authorities.detail.overview',
         params: { authorityId: authority.id },
     });
+}
+
+/**
+ * Handle deleting an authority.
+ * @param authorityId - The ID of the authority to delete.
+ */
+function onAuthorityDeleteClick(authorityId: number): void {
+    deleteAuthority(authorityId);
 }
 </script>
 
@@ -65,7 +90,10 @@ function onAuthorityClick(authority: Authority) {
             :loading="isLoading"
             @click:authority="onAuthorityClick">
             <template #actions="{ authority }">
-                <AuthorityActionMenu :show-delete="false" :authority="authority" />
+                <AuthorityActionMenu
+                    :authority="authority"
+                    :is-pending="isAuthorityPending(authority)"
+                    @click:delete="onAuthorityDeleteClick" />
             </template>
         </AuthorityTable>
 

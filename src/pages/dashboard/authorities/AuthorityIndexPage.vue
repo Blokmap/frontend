@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Paginator from 'primevue/paginator';
+import AuthorityActionMenu from '@/components/features/authority/AuthorityActionMenu.vue';
 import AuthorityTable from '@/components/features/authority/AuthorityTable.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
@@ -13,7 +14,7 @@ import { useDebounceFn } from '@vueuse/core';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAdminCounts } from '@/composables/data/useAdmin';
-import { useReadAuthorities } from '@/composables/data/useAuthorities';
+import { useDeleteAuthority, useReadAuthorities } from '@/composables/data/useAuthorities';
 import { usePagination } from '@/composables/usePagination';
 import { abbreviateCount } from '@/utils/formatUtils';
 import type { Authority, AuthorityFilter } from '@/domain/authority';
@@ -32,6 +33,7 @@ const filters = ref<AuthorityFilter>({
 });
 
 const { first, onPageChange, resetPage } = usePagination(filters);
+const { mutateAsync: deleteAuthority } = useDeleteAuthority();
 const { data: authorities, isFetching, isLoading } = useReadAuthorities(filters);
 
 const { data: counts } = useAdminCounts();
@@ -45,16 +47,20 @@ const onSearchChange = useDebounceFn(() => {
     resetPage();
 }, 300);
 
-const onAuthorityClick = (authority: Authority) => {
+function onAuthorityClick(authority: Authority): void {
     router.push({
         name: 'dashboard.authorities.detail.overview',
         params: { authorityId: authority.id },
     });
-};
+}
 
-const onCreateAuthority = () => {
+function onAuthorityCreateClick(): void {
     router.push({ name: 'dashboard.authorities.create' });
-};
+}
+
+function onAuthorityDeleteClick(authorityId: number): void {
+    deleteAuthority(authorityId);
+}
 </script>
 
 <template>
@@ -67,7 +73,7 @@ const onCreateAuthority = () => {
                     <PageHeaderButton
                         severity="secondary"
                         label="Nieuwe Autoriteit"
-                        @click="onCreateAuthority">
+                        @click="onAuthorityCreateClick">
                         <FontAwesomeIcon :icon="faPlus" />
                     </PageHeaderButton>
                 </template>
@@ -93,6 +99,12 @@ const onCreateAuthority = () => {
                 :authorities="authorities?.data"
                 :loading="isLoading"
                 @click:authority="onAuthorityClick">
+                <template #actions="{ authority }">
+                    <AuthorityActionMenu
+                        :authority="authority"
+                        @click:delete="onAuthorityDeleteClick">
+                    </AuthorityActionMenu>
+                </template>
             </AuthorityTable>
 
             <Paginator

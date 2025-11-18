@@ -3,6 +3,7 @@
 @import 'tailwindcss';
 
 @import './primevue/tailwind.css' layer(components);
+@import './editor.css';
 @import './maps.css';
 @import './transitions.css';
 @import './utilities.css';

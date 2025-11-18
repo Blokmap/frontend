@@ -117,6 +117,18 @@ export async function updateAuthority(
 }
 
 /**
+ * Delete an authority by ID.
+ *
+ * @param id - The ID of the authority to delete.
+ * @returns A promise that resolves when the authority is deleted.
+ */
+export async function deleteAuthority(id: number): Promise<void> {
+    const endpoint = endpoints.authorities.delete.replace('{id}', id.toString());
+
+    await client.delete<void>(endpoint);
+}
+
+/**
  * Fetches the authorities associated with a specific profile.
  *
  * @param profileId - The ID of the profile whose authorities are to be fetched.

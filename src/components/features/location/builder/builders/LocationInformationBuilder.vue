@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import Textarea from 'primevue/textarea';
 import LocationBuilderCard from '@/components/features/location/builder/LocationBuilderCard.vue';
 import LocationMap from '@/components/features/map/LocationMap.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
 import LanguageSelector from '@/components/shared/molecules/LanguageSelector.vue';
+import EditorInput from '@/components/shared/molecules/editor/EditorInput.vue';
 import InputHint from '@/components/shared/molecules/form/InputHint.vue';
 import InputLabel from '@/components/shared/molecules/form/InputLabel.vue';
 import {
@@ -21,6 +21,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGeocodeAddress } from '@/composables/data/useGeoCoding';
 import { useToast } from '@/composables/store/useToast';
+import { getOutputDataLength } from '@/domain/editor/editorHelpers';
 import { LOCATION_SETTINGS, formatLocationAddress } from '@/domain/location';
 import { DEFAULT_MAP_OPTIONS } from '@/domain/map';
 import type { LocationBody } from '@/domain/location';
@@ -31,7 +32,9 @@ const form = defineModel<LocationBody>({ required: true });
 const toast = useToast();
 
 const { locale } = useI18n();
-const { mutateAsync: geocodeAddress, isPending: isPendingCoordinates } = useGeocodeAddress();
+const { mutateAsync: geocodeAddress, isPending: isPendingCoordinates } = useGeocodeAddress({
+    disableToasts: true,
+});
 
 const mapZoom = ref<number>(18);
 const currentLanguage = ref(locale.value);
@@ -46,8 +49,6 @@ const mapCenter = computed<LngLat>({
         return DEFAULT_MAP_OPTIONS.center;
     },
     set([lng, lat]: LngLat) {
-        // Round to 6 decimal places (~11cm precision) to
-        // prevent micro-changes from triggering form updates
         form.value.longitude = Number(lng.toFixed(6));
         form.value.latitude = Number(lat.toFixed(6));
     },
@@ -65,7 +66,7 @@ const hasManuallyAdjusted = computed(() => {
     if (!calculatedCoordinates.value || !hasCoordinates.value) return false;
 
     const [calcLng, calcLat] = calculatedCoordinates.value;
-    const threshold = 0.00001; // ~1 meter precision
+    const threshold = 0.00001;
 
     return (
         Math.abs(form.value.longitude! - calcLng) > threshold ||
@@ -163,10 +164,10 @@ function resetToCalculatedCoordinates(): void {
                     </InputLabel>
                     <InputText
                         :id="`excerpt-${currentLanguage}`"
+                        :maxlength="LOCATION_SETTINGS.MAX_EXCERPT_LENGTH"
                         v-model="form.excerpt![currentLanguage]"
                         class="w-full"
-                        placeholder="Stadsbibliotheek met zicht op het water"
-                        :maxlength="LOCATION_SETTINGS.MAX_EXCERPT_LENGTH">
+                        placeholder="Stadsbibliotheek met zicht op het water">
                     </InputText>
                     <InputHint>
                         <div class="flex justify-between">
@@ -174,7 +175,7 @@ function resetToCalculatedCoordinates(): void {
                                 Omschrijf de locatie in maximaal 6 beschrijvende woorden
                             </span>
                             <span class="text-gray-500">
-                                {{ (form.excerpt?.[currentLanguage] || '').length }}/{{
+                                {{ form.excerpt?.[currentLanguage] || '' }}/{{
                                     LOCATION_SETTINGS.MAX_EXCERPT_LENGTH
                                 }}
                                 karakters
@@ -192,16 +193,13 @@ function resetToCalculatedCoordinates(): void {
                         <InputLabel :htmlFor="`description-${currentLanguage}`">
                             Beschrijving ({{ currentLanguage }})
                         </InputLabel>
-                        <Textarea
+                        <EditorInput
                             :id="`description-${currentLanguage}`"
-                            v-model="form.description![currentLanguage]"
-                            class="w-full"
-                            :maxlength="LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH"
-                            rows="5"
-                            placeholder="De Krook is de stadsbibliotheek van Gent, de ideale plek om rustig te studeren tussen andere studenten, met zicht op de Leie.">
-                        </Textarea>
+                            :max-length="LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH"
+                            v-model="form.description![currentLanguage]">
+                        </EditorInput>
                         <InputHint>
-                            {{ (form.description?.[currentLanguage] || '').length }}/{{
+                            {{ getOutputDataLength(form.description?.[currentLanguage] || '') }}/{{
                                 LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH
                             }}
                             karakters

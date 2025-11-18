@@ -11,6 +11,7 @@ import OpeningsTableSkeleton from '@/components/features/openings/OpeningsTableS
 import ReservationBuilderDialog from '@/components/features/reservation/builder/ReservationBuilderDialog.vue';
 import ConfirmDialog from '@/components/shared/molecules/ConfirmDialog.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
+import EditorOuput from '@/components/shared/molecules/editor/EditorOuput.vue';
 import Gallery from '@/components/shared/organisms/image/Gallery.vue';
 import GallerySkeleton from '@/components/shared/organisms/image/GallerySkeleton.vue';
 import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
@@ -192,7 +193,7 @@ function onLoginClick(): void {
                     <div class="space-y-4">
                         <p class="leading-relaxed text-gray-600">
                             <template v-if="location">
-                                {{ location.description[locale] }}
+                                <EditorOuput :data="location.description[locale]" />
                             </template>
                             <template v-else-if="isPending">
                                 <Skeleton height="18px" width="100%" class="mb-2" />

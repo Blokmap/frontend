@@ -17,7 +17,7 @@ const props = withDefaults(
         showMembers: true,
         showLocations: true,
         showEdit: true,
-        showDelete: false,
+        showDelete: true,
     },
 );
 
@@ -36,7 +36,7 @@ function onDeleteClick(): void {
 <template>
     <ActionMenu :is-pending="isPending">
         <template #trigger="{ toggle }">
-            <slot name="trigger" :toggle="toggle" />
+            <slot name="trigger" :toggle="toggle"></slot>
         </template>
 
         <template #navigation>
@@ -47,7 +47,8 @@ function onDeleteClick(): void {
                 :to="{
                     name: 'dashboard.authorities.detail.members',
                     params: { authorityId: props.authority.id },
-                }" />
+                }">
+            </ActionMenuButton>
             <ActionMenuButton
                 v-if="showLocations"
                 :icon="faMapLocationDot"
@@ -55,7 +56,8 @@ function onDeleteClick(): void {
                 :to="{
                     name: 'dashboard.authorities.detail.locations',
                     params: { authorityId: props.authority.id },
-                }" />
+                }">
+            </ActionMenuButton>
             <ActionMenuButton
                 v-if="showEdit"
                 :icon="faEdit"
@@ -63,13 +65,15 @@ function onDeleteClick(): void {
                 :to="{
                     name: 'dashboard.authorities.detail.overview',
                     params: { authorityId: props.authority.id },
-                }" />
+                }">
+            </ActionMenuButton>
             <ActionMenuButton
                 v-if="showDelete"
                 :icon="faTrash"
                 label="Verwijderen"
                 destructive
-                @click="onDeleteClick" />
+                @click="onDeleteClick">
+            </ActionMenuButton>
         </template>
     </ActionMenu>
 </template>

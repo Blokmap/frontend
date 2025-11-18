@@ -111,56 +111,56 @@ async function submitLocation() {
                 :authorities="memberships">
             </LocationSettingsBuilder>
         </div>
+
+        <!-- Submission Dialog -->
+        <Teleport to="body">
+            <SubmissionDialog
+                v-model:visible="showSubmissionDialog"
+                :can-submit="isLastStep && canGoNext"
+                :location="locationForm"
+                :images="imagesForm">
+            </SubmissionDialog>
+        </Teleport>
+
+        <!-- Mobile sticky bottom bar -->
+        <Teleport to="body">
+            <div class="mobile-bottom-bar">
+                <!-- Progress bar -->
+                <div class="progressbar flex-1">
+                    <div class="indicator" :style="{ width: progress + '%' }" />
+                </div>
+
+                <!-- Steps indicator -->
+                <div class="flex items-center gap-2 text-xs text-slate-600">
+                    <span>{{ stepIndex + 1 }}/{{ steps.length }}</span>
+                    <span class="text-slate-400">•</span>
+                    <span>
+                        {{ substeps.filter((s) => s.isCompleted).length }}/{{ substeps.length }}
+                    </span>
+                </div>
+
+                <!-- Navigation buttons -->
+                <Button
+                    :disabled="!canGoPrevious"
+                    severity="secondary"
+                    rounded
+                    size="small"
+                    @click="goPrevious">
+                    <FontAwesomeIcon :icon="faArrowLeft" />
+                </Button>
+
+                <Button
+                    :disabled="!canGoNext || showSubmissionDialog"
+                    rounded
+                    size="small"
+                    @click="isLastStep ? submitLocation() : goNext()">
+                    <FontAwesomeIcon v-if="isLastStep && !showSubmissionDialog" :icon="faCheck" />
+                    <FontAwesomeIcon v-else-if="showSubmissionDialog" :icon="faSpinner" spin />
+                    <FontAwesomeIcon v-else :icon="faArrowRight" />
+                </Button>
+            </div>
+        </Teleport>
     </div>
-
-    <!-- Submission Dialog -->
-    <Teleport to="body">
-        <SubmissionDialog
-            v-model:visible="showSubmissionDialog"
-            :can-submit="isLastStep && canGoNext"
-            :location="locationForm"
-            :images="imagesForm">
-        </SubmissionDialog>
-    </Teleport>
-
-    <!-- Mobile sticky bottom bar -->
-    <Teleport to="body">
-        <div class="mobile-bottom-bar">
-            <!-- Progress bar -->
-            <div class="progressbar flex-1">
-                <div class="indicator" :style="{ width: progress + '%' }" />
-            </div>
-
-            <!-- Steps indicator -->
-            <div class="flex items-center gap-2 text-xs text-slate-600">
-                <span>{{ stepIndex + 1 }}/{{ steps.length }}</span>
-                <span class="text-slate-400">•</span>
-                <span>
-                    {{ substeps.filter((s) => s.isCompleted).length }}/{{ substeps.length }}
-                </span>
-            </div>
-
-            <!-- Navigation buttons -->
-            <Button
-                :disabled="!canGoPrevious"
-                severity="secondary"
-                rounded
-                size="small"
-                @click="goPrevious">
-                <FontAwesomeIcon :icon="faArrowLeft" />
-            </Button>
-
-            <Button
-                :disabled="!canGoNext || showSubmissionDialog"
-                rounded
-                size="small"
-                @click="isLastStep ? submitLocation() : goNext()">
-                <FontAwesomeIcon v-if="isLastStep && !showSubmissionDialog" :icon="faCheck" />
-                <FontAwesomeIcon v-else-if="showSubmissionDialog" :icon="faSpinner" spin />
-                <FontAwesomeIcon v-else :icon="faArrowRight" />
-            </Button>
-        </div>
-    </Teleport>
 </template>
 
 <style scoped>

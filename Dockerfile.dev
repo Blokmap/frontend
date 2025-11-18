@@ -8,6 +8,4 @@ RUN npm install -g npm
 RUN npm install -g vite
 RUN npm ci
 
-COPY . ./
-
 CMD [ "npm", "run", "dev" ]

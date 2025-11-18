@@ -5,7 +5,12 @@ import { mapBoxClient } from '@/config/axiosConfig';
 import { mapboxEndpoints } from '@/config/endpoints';
 import { geocodeAddress, type GeoSearchFilter, type LngLat } from '@/domain/map';
 
-import type { CompMutation, CompQuery, CompQueryOptions } from '@/utils/composable';
+import type {
+    CompMutation,
+    CompMutationOptions,
+    CompQuery,
+    CompQueryOptions,
+} from '@/utils/composable';
 import type { AxiosError } from 'axios';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
@@ -80,8 +85,9 @@ export function useSearchGeoLocations(
  * A composable function to perform forward geocoding using Mapbox's geocoding API.
  * Returns coordinates for a given address string.
  */
-export function useGeocodeAddress(): CompMutation<string, LngLat> {
+export function useGeocodeAddress(options: CompMutationOptions = {}): CompMutation<string, LngLat> {
     const mutation = useMutation({
+        ...options,
         mutationFn: async (address: string) => {
             return geocodeAddress(address);
         },

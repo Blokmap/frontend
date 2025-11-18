@@ -54,7 +54,9 @@ const {
     refetch: refetchReservations,
 } = useReadProfileReservations(profileId, reservationFilters);
 
-const { mutateAsync: createReservations } = useCreateReservations({});
+const { mutateAsync: createReservations } = useCreateReservations({
+    disableToasts: true,
+});
 const { mutateAsync: deleteReservations } = useDeleteReservations();
 
 const { subscribe } = useWebsocket(computed(() => visible.value && props.location.isReservable));

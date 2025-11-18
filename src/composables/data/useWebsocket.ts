@@ -54,10 +54,10 @@ export function useWebsocket(enabled: MaybeRef<boolean> = true) {
 
             // (Re-)subscribe to all existing channels on connection
             for (const subscription of subscriptions.value.values()) {
-                const command = JSON.stringify({
+                const command = {
                     channel: subscription.channel,
                     event: WebsocketCommandEvent.SUBSCRIBE,
-                });
+                };
 
                 send(command);
             }

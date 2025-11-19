@@ -244,6 +244,7 @@ export function useUpdateLocation(
             const { locationId } = variables;
 
             invalidateQueries(queryClient, ['locations'], locationId);
+            invalidateQueries(queryClient, ['memberships', 'list', 'locations', 'byProfile']);
 
             if (!options.disableToasts) {
                 toast.add({

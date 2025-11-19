@@ -3,6 +3,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import Logo from '@/components/shared/atoms/Logo.vue';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useLocalStorage } from '@vueuse/core';
 import { ref } from 'vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import DashboardHeader from './DashboardHeader.vue';
@@ -11,6 +12,7 @@ import DashboardSidebar from './sidebar/DashboardSidebar.vue';
 const { data: profile } = useAuthProfile();
 
 const isSidebarOpen = ref<boolean>(false);
+const isSidebarCollapsed = useLocalStorage('sidebar-collapsed', false);
 
 /**
  * Toggle the visibility of the sidebar
@@ -33,14 +35,19 @@ function toggleSidebar(): void {
         </header>
 
         <!-- Sidebar Navigation -->
-        <nav class="sidebar" :class="{ 'mobile-hidden': !isSidebarOpen }">
+        <nav
+            class="sidebar"
+            :class="{ 'mobile-hidden': !isSidebarOpen, collapsed: isSidebarCollapsed }">
             <template v-if="!profile">
                 <div class="flex h-full w-full items-center justify-center">
                     <ProgressSpinner />
                 </div>
             </template>
             <template v-else>
-                <DashboardSidebar v-model:visible="isSidebarOpen" :profile="profile" />
+                <DashboardSidebar
+                    v-model:visible="isSidebarOpen"
+                    v-model:collapsed="isSidebarCollapsed"
+                    :profile="profile" />
             </template>
         </nav>
 
@@ -91,6 +98,12 @@ function toggleSidebar(): void {
         @apply flex-shrink-0;
         @apply fixed top-0 left-0 z-50 md:sticky md:top-6;
         @apply min-h-screen w-full md:min-h-[calc(100vh-3rem)] md:w-72;
+        @apply transition-all duration-300;
+        @apply md:overflow-hidden;
+
+        &.collapsed {
+            @apply md:w-20;
+        }
 
         &.mobile-hidden {
             @apply hidden md:block;

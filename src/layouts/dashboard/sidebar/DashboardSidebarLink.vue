@@ -13,6 +13,7 @@ const props = defineProps<{
     count?: string | null;
     pendingCount?: number;
     testId?: string;
+    collapsed?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -34,7 +35,11 @@ async function handleClick() {
 </script>
 
 <template>
-    <a class="sidebar-link" @click.prevent="handleClick" :data-testid="testId">
+    <a
+        class="sidebar-link"
+        :class="{ collapsed }"
+        @click.prevent="handleClick"
+        :data-testid="testId">
         <FontAwesomeIcon
             :icon="isNavigating ? faSpinner : icon"
             :class="{ 'fa-spin': isNavigating }" />
@@ -85,10 +90,13 @@ async function handleClick() {
 
     p {
         @apply flex-1 text-sm font-medium;
+        @apply transition-all duration-300;
+        @apply whitespace-nowrap;
     }
 
     .count {
         @apply text-xs font-medium text-slate-400;
+        @apply transition-all duration-300;
 
         .pending {
             @apply text-primary-400;
@@ -97,6 +105,20 @@ async function handleClick() {
 
     .arrow-icon {
         @apply translate-x-2 opacity-0 transition-all duration-200;
+    }
+
+    &.collapsed {
+        @apply md:justify-center md:gap-0 md:space-x-0 md:py-2;
+
+        p,
+        .count,
+        .arrow-icon {
+            @apply md:hidden;
+        }
+
+        > *:first-child {
+            @apply md:text-lg;
+        }
     }
 }
 </style>

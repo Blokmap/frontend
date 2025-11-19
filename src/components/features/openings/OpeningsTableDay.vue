@@ -14,9 +14,7 @@ const { locale } = useI18n();
 </script>
 
 <template>
-    <div
-        class="flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors"
-        :class="isToday(day) ? 'bg-primary-50' : 'hover:bg-slate-50'">
+    <div class="openings-day" :class="isToday(day) ? 'bg-primary-50' : 'hover:bg-slate-50'">
         <span
             class="text-sm font-medium"
             :class="isToday(day) ? 'text-primary-700' : 'text-slate-700'">
@@ -47,4 +45,10 @@ const { locale } = useI18n();
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.openings-day {
+    @apply flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors;
+}
+</style>

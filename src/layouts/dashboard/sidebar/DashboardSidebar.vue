@@ -5,6 +5,8 @@ import {
     faBuilding,
     faChartLine,
     faChartSimple,
+    faChevronLeft,
+    faChevronRight,
     faCity,
     faExclamationTriangle,
     faList,
@@ -28,6 +30,7 @@ const props = defineProps<{
 }>();
 
 const visible = defineModel<boolean>('visible', { default: false });
+const collapsed = defineModel<boolean>('collapsed', { default: false });
 
 const router = useRouter();
 
@@ -73,10 +76,14 @@ function onNavigated() {
 function onCloseMenu() {
     visible.value = false;
 }
+
+function toggleCollapsed() {
+    collapsed.value = !collapsed.value;
+}
 </script>
 
 <template>
-    <div class="sidebar" data-testid="dashboard-sidebar">
+    <div class="sidebar" :class="{ collapsed }" data-testid="dashboard-sidebar">
         <!-- Logo and Close Button Section -->
         <div class="sidebar-header">
             <RouterLink :to="{ name: 'locations' }" data-testid="logo-link">
@@ -88,6 +95,13 @@ function onCloseMenu() {
                 aria-label="Close menu"
                 data-testid="sidebar-close">
                 <FontAwesomeIcon :icon="faTimes" />
+            </button>
+            <button
+                class="sidebar-collapse-btn"
+                @click="toggleCollapsed"
+                :aria-label="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+                data-testid="sidebar-collapse">
+                <FontAwesomeIcon :icon="collapsed ? faChevronRight : faChevronLeft" />
             </button>
         </div>
 
@@ -102,6 +116,7 @@ function onCloseMenu() {
                 <DashboardSidebarLink
                     :icon="faList"
                     label="Mijn Locaties"
+                    :collapsed="collapsed"
                     :to="{
                         name: 'dashboard.profiles.detail.locations',
                         params: { profileId: profile.id },
@@ -111,6 +126,7 @@ function onCloseMenu() {
                 <DashboardSidebarLink
                     :icon="faPlus"
                     label="Nieuwe Locatie"
+                    :collapsed="collapsed"
                     :to="{ name: 'locations.submit' }"
                     @navigated="onNavigated">
                 </DashboardSidebarLink>
@@ -125,6 +141,7 @@ function onCloseMenu() {
                 <DashboardSidebarLink
                     :icon="faList"
                     label="Mijn Autoriteiten"
+                    :collapsed="collapsed"
                     :to="{
                         name: 'dashboard.profiles.detail.authorities',
                         params: { profileId: profile.id },
@@ -135,6 +152,7 @@ function onCloseMenu() {
                     v-if="profile.isAdmin"
                     :icon="faPlus"
                     label="Nieuwe Autoriteit"
+                    :collapsed="collapsed"
                     :to="{ name: 'dashboard.authorities.create' }"
                     @navigated="onNavigated">
                 </DashboardSidebarLink>
@@ -149,6 +167,7 @@ function onCloseMenu() {
                 <DashboardSidebarLink
                     :icon="faList"
                     label="Mijn Instituties"
+                    :collapsed="collapsed"
                     :to="{
                         name: 'dashboard.profiles.detail.institutions',
                         params: { profileId: profile.id },
@@ -166,6 +185,7 @@ function onCloseMenu() {
                 <DashboardSidebarLink
                     :icon="faChartSimple"
                     label="Statistieken"
+                    :collapsed="collapsed"
                     :to="{ name: 'dashboard.statistics' }"
                     @navigated="onNavigated">
                 </DashboardSidebarLink>
@@ -173,6 +193,7 @@ function onCloseMenu() {
                     :icon="faCity"
                     label="Instituties"
                     :count="institutionCount"
+                    :collapsed="collapsed"
                     :to="{ name: 'dashboard.institutions.index' }"
                     @navigated="onNavigated">
                 </DashboardSidebarLink>
@@ -180,6 +201,7 @@ function onCloseMenu() {
                     :icon="faBuilding"
                     label="Autoriteiten"
                     :count="authorityCount"
+                    :collapsed="collapsed"
                     :to="{ name: 'dashboard.authorities.index' }"
                     @navigated="onNavigated">
                 </DashboardSidebarLink>
@@ -188,6 +210,7 @@ function onCloseMenu() {
                     label="Locaties"
                     :count="locationCount"
                     :pending-count="pendingLocationCount"
+                    :collapsed="collapsed"
                     :to="{ name: 'dashboard.locations.index' }"
                     @navigated="onNavigated">
                 </DashboardSidebarLink>
@@ -195,12 +218,14 @@ function onCloseMenu() {
                     :icon="faUsers"
                     label="Profielen"
                     :count="profileCount"
+                    :collapsed="collapsed"
                     :to="{ name: 'dashboard.profiles.index' }"
                     @navigated="onNavigated">
                 </DashboardSidebarLink>
                 <DashboardSidebarLink
                     :icon="faExclamationTriangle"
                     label="Meldingen"
+                    :collapsed="collapsed"
                     :to="{ name: 'dashboard.reports.index' }"
                     @navigated="onNavigated">
                 </DashboardSidebarLink>
@@ -243,10 +268,11 @@ function onCloseMenu() {
     @apply flex flex-col gap-5 pt-3 pb-5;
     @apply bg-slate-900 text-slate-300;
     @apply max-h-screen overflow-y-auto md:overflow-y-visible;
+    @apply transition-all duration-300;
 
     .sidebar-header {
         @apply flex items-center justify-between px-3;
-        @apply md:justify-center md:px-3;
+        @apply md:relative md:justify-center md:px-3;
 
         .sidebar-close-btn {
             @apply flex h-10 w-10 items-center justify-center;
@@ -254,10 +280,18 @@ function onCloseMenu() {
             @apply transition-colors hover:bg-slate-700;
             @apply md:hidden;
         }
+
+        .sidebar-collapse-btn {
+            @apply hidden h-8 w-8 items-center justify-center md:flex;
+            @apply absolute top-1/2 right-3 -translate-y-1/2;
+            @apply rounded-md bg-slate-800 text-sm text-white;
+            @apply transition-all duration-300 hover:bg-slate-700;
+        }
     }
 
     .sidebar-items {
         @apply flex-1 space-y-6 px-5 md:pt-4;
+        @apply transition-opacity duration-300;
 
         .sidebar-section {
             @apply space-y-1.5;
@@ -268,6 +302,12 @@ function onCloseMenu() {
 
             h4 {
                 @apply mb-3 flex items-center text-[15px] font-bold text-white;
+                @apply transition-all duration-300;
+
+                span {
+                    @apply transition-all duration-300;
+                    @apply whitespace-nowrap;
+                }
             }
 
             .leading-icon {
@@ -280,14 +320,70 @@ function onCloseMenu() {
 
     .sidebar-profile {
         @apply space-y-3 border-t border-slate-700 p-4 pb-0;
+        @apply transition-opacity duration-300;
 
         .sidebar-link {
             @apply flex w-full items-center;
             @apply cursor-pointer transition-colors duration-200 hover:text-slate-300;
             @apply gap-3 rounded-lg p-2 hover:bg-slate-800;
 
+            > div {
+                @apply whitespace-nowrap;
+            }
+
+            span {
+                @apply whitespace-nowrap;
+            }
+
             &.logout-btn {
                 @apply w-full cursor-pointer;
+            }
+        }
+    }
+    &.collapsed {
+        .sidebar-header {
+            @apply md:px-2;
+
+            a {
+                @apply md:hidden;
+            }
+
+            .sidebar-collapse-btn {
+                @apply md:relative md:right-auto md:translate-y-0;
+            }
+        }
+
+        .sidebar-items {
+            @apply md:px-2;
+
+            .sidebar-section {
+                h4 {
+                    @apply md:justify-center;
+
+                    span {
+                        @apply md:hidden;
+                    }
+
+                    .leading-icon {
+                        @apply md:mr-0 md:text-lg;
+                    }
+                }
+            }
+        }
+
+        .sidebar-profile {
+            @apply md:p-2;
+
+            .sidebar-link {
+                @apply md:flex-col md:gap-1 md:text-center;
+
+                > div {
+                    @apply md:hidden;
+                }
+
+                span {
+                    @apply md:hidden md:text-xs;
+                }
             }
         }
     }

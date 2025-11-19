@@ -39,14 +39,14 @@
     a {
         @apply inline-flex items-center px-1 py-0.5;
         @apply rounded-t-sm font-semibold no-underline;
-        @apply border-primary-700 text-primary-700 border-b;
+        @apply border-secondary-700 text-secondary-700 border-b;
         @apply bg-[length:1px_0] bg-bottom bg-repeat-x;
         @apply transition-[background-size] duration-200;
 
         background-image: linear-gradient(
             to bottom,
-            var(--color-primary-50) 0%,
-            var(--color-primary-50) 100%
+            var(--color-secondary-50) 0%,
+            var(--color-secondary-50) 100%
         );
 
         &:hover {

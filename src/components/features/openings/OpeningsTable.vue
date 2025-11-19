@@ -47,14 +47,12 @@ const openingTimesByDay = computed(() => {
 
         <!-- Opening Hours Table -->
         <template v-else-if="openingTimes && openingTimes.length > 0">
-            <div class="space-y-1">
-                <OpeningsTableDay
-                    v-for="day in weekDays"
-                    :key="day.toDateString()"
-                    :day="day"
-                    :opening-times-by-day="openingTimesByDay">
-                </OpeningsTableDay>
-            </div>
+            <OpeningsTableDay
+                v-for="day in weekDays"
+                :key="day.toDateString()"
+                :day="day"
+                :opening-times-by-day="openingTimesByDay">
+            </OpeningsTableDay>
         </template>
 
         <!-- No Hours Available -->

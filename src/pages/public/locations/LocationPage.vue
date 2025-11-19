@@ -182,7 +182,7 @@ function onLoginClick(): void {
                 </div>
 
                 <!-- Description Section -->
-                <div class="py-6">
+                <div class="max-w-[850px] py-6">
                     <h2 class="mb-6 text-2xl font-semibold text-gray-900">
                         <template v-if="location">
                             {{ location.excerpt[locale] }}

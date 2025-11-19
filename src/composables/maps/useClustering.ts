@@ -21,6 +21,7 @@ export function useClustering<T = number>(options: MapOptions): ClusteringAdapte
     });
 
     const currentClusters = ref<ClusterData[]>([]);
+    const clusterIdMap = new Map<string, number>(); // Maps stable composite IDs to Supercluster numeric IDs
 
     /**
      * Update clusters based on current map bounds and zoom.
@@ -37,6 +38,7 @@ export function useClustering<T = number>(options: MapOptions): ClusteringAdapte
         );
 
         const newClusters: ClusterData[] = [];
+        clusterIdMap.clear();
 
         clusters.forEach((cluster) => {
             if (cluster.properties.cluster && cluster.id !== undefined) {
@@ -46,8 +48,12 @@ export function useClustering<T = number>(options: MapOptions): ClusteringAdapte
                     .map((leaf) => leaf.properties.id as number)
                     .sort((a, b) => a - b);
 
+                // Create stable ID based on marker composition
+                const clusterId = `cluster-${markerIds.join('-')}`;
+                clusterIdMap.set(clusterId, cluster.id as number);
+
                 newClusters.push({
-                    id: cluster.id.toString(),
+                    id: clusterId,
                     position: cluster.geometry.coordinates as LngLat,
                     count: cluster.properties.point_count,
                     markers: markerIds,
@@ -105,7 +111,10 @@ export function useClustering<T = number>(options: MapOptions): ClusteringAdapte
      * @returns The expansion zoom level or null if not found.
      */
     function getExpansionZoom(clusterId: string): number | null {
-        const numericId = parseInt(clusterId, 10);
+        const numericId = clusterIdMap.get(clusterId);
+        if (numericId === undefined) {
+            return null;
+        }
         return clusterIndex.getClusterExpansionZoom(numericId);
     }
 

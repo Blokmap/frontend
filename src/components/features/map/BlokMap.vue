@@ -3,16 +3,17 @@ import Carousel from '@/components/shared/molecules/Carousel.vue';
 import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { storeToRefs } from 'pinia';
-import { useTemplateRef, watch } from 'vue';
+import { computed, useTemplateRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useMapBox } from '@/composables/maps/useMapBox';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { type Location } from '@/domain/location';
+import Cluster from './Cluster.vue';
 import Marker from './Marker.vue';
 import type { LngLatBounds } from '@/domain/map';
 
-defineProps<{
+const props = defineProps<{
     locations?: Location[];
     isLoading?: boolean;
 }>();
@@ -34,6 +35,24 @@ const filters = storeToRefs(useLocationFilters());
 const mapContainerRef = useTemplateRef('mapContainer');
 const map = useMapBox(mapContainerRef, filters.config.value);
 
+// Track clusters
+const clusters = computed(() => map.getClusters?.() || []);
+
+// Get the set of marker IDs that are currently in clusters
+const clusteredMarkerIds = computed(() => {
+    const ids = new Set<number>();
+    clusters.value.forEach((cluster) => {
+        cluster.markers.forEach((markerId) => ids.add(markerId));
+    });
+    return ids;
+});
+
+// Filter locations to show only unclustered markers
+const visibleLocations = computed(() => {
+    if (!props.locations) return [];
+    return props.locations.filter((location) => !clusteredMarkerIds.value.has(location.id));
+});
+
 function onMarkerClick(id: number): void {
     emit('click:marker', id);
 }
@@ -50,6 +69,10 @@ function navigateToDetail(locationId: number): void {
     router.push({ name: 'locations.detail', params: { locationId } });
 }
 
+function onClusterClick(clusterId: string): void {
+    map.zoomToCluster?.(clusterId);
+}
+
 watch(
     map.bounds,
     (newBounds) => {
@@ -59,6 +82,24 @@ watch(
         filters.config.value.bounds = newBounds;
     },
     { deep: true },
+);
+
+// Update clustered markers when locations change or map loads
+watch(
+    [() => props.locations, () => map.isLoaded.value],
+    ([newLocations, loaded]) => {
+        if (map.updateClusteredMarkers && newLocations && loaded) {
+            const features = newLocations.map((location: Location) => ({
+                id: location.id,
+                coord: [location.longitude, location.latitude] as [number, number],
+                properties: {
+                    name: location.name,
+                },
+            }));
+            map.updateClusteredMarkers(features);
+        }
+    },
+    { immediate: true, deep: true },
 );
 
 defineExpose({ map });
@@ -71,8 +112,19 @@ defineExpose({ map });
             <FontAwesomeIcon :icon="faSpinner" spin />
         </div>
         <slot v-if="map.isLoaded.value">
+            <!-- Render clusters -->
+            <Cluster
+                v-for="cluster in clusters"
+                :key="cluster.id"
+                :id="cluster.id"
+                :position="cluster.position"
+                :count="cluster.count"
+                :map="map"
+                @click="onClusterClick(cluster.id)" />
+
+            <!-- Render unclustered markers -->
             <Marker
-                v-for="location in locations"
+                v-for="location in visibleLocations"
                 :id="location.id"
                 :key="location.id"
                 :position="[location.longitude, location.latitude]"

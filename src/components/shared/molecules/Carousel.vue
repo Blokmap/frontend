@@ -13,14 +13,11 @@ const emit = defineEmits<{
     (e: 'change', index: number): void;
 }>();
 
-const currentIndex = ref(0);
+const currentIndex = ref<number>(0);
 
-const currentItem = computed(() => props.items[currentIndex.value]);
-const hasMultipleItems = computed(() => props.items.length > 1);
+const currentItem = computed<T>(() => props.items[currentIndex.value]);
+const hasMultipleItems = computed<boolean>(() => props.items.length > 1);
 
-/**
- * Navigate to the next item
- */
 function next() {
     if (currentIndex.value < props.items.length - 1) {
         currentIndex.value++;
@@ -30,9 +27,6 @@ function next() {
     emit('change', currentIndex.value);
 }
 
-/**
- * Navigate to the previous item
- */
 function previous() {
     if (currentIndex.value > 0) {
         currentIndex.value--;
@@ -42,9 +36,6 @@ function previous() {
     emit('change', currentIndex.value);
 }
 
-/**
- * Go to a specific item by index
- */
 function goTo(index: number) {
     currentIndex.value = index;
     emit('change', currentIndex.value);
@@ -54,7 +45,11 @@ function goTo(index: number) {
 <template>
     <div class="carousel">
         <div class="carousel__content">
-            <slot :item="currentItem" :index="currentIndex" :total="items.length" />
+            <slot
+                v-if="currentItem"
+                :item="currentItem"
+                :index="currentIndex"
+                :total="items.length"></slot>
         </div>
 
         <!-- Navigation Buttons -->

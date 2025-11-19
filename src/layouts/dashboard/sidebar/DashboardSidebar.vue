@@ -270,10 +270,8 @@ function toggleCollapsed() {
 .sidebar {
     @apply flex flex-col gap-5 pt-3 pb-5;
     @apply bg-slate-900 text-slate-300;
-    @apply max-h-screen overflow-x-hidden overflow-y-auto md:overflow-y-visible;
+    @apply max-h-screen overflow-y-auto md:overflow-y-visible;
     @apply transition-all duration-300;
-    @apply w-full;
-    min-width: 0;
 }
 
 .sidebar__header {

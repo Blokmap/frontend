@@ -1,8 +1,18 @@
 import mapboxgl from 'mapbox-gl';
 import { type Ref, isRef, onActivated, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useClustering } from '@/composables/maps/useClustering';
+import { useMapBindings } from '@/composables/maps/useMapBindings';
 import { DEFAULT_MAP_OPTIONS } from '@/domain/map';
-import type { LngLat, LngLatBounds, MapAdapter, MapOptions, Marker } from '@/domain/map';
+import type {
+    ClusterData,
+    ClusteringAdapter,
+    LngLat,
+    LngLatBounds,
+    MapAdapter,
+    MapOptions,
+    Marker,
+} from '@/domain/map';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 
@@ -11,7 +21,7 @@ const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
  *
  * @param container - A reference to the HTML element that will contain the map.
  * @param options - Optional configuration options for the map.
- * @returns - An object containing the map instance.
+ * @returns An adapter with map methods and state.
  */
 export function useMapBox<T>(
     container: Ref<HTMLElement | null>,
@@ -19,33 +29,37 @@ export function useMapBox<T>(
 ): MapAdapter<T> {
     const { locale } = useI18n();
 
-    // Merge default options with provided options
-    // This allows for overriding default values while keeping the defaults intact.
     options = {
         ...DEFAULT_MAP_OPTIONS,
         ...options,
     };
 
-    // Bypass deep type inference issues with mapbox-gl types
-    // by explictely casting the correct types.
-    const markers = new Map<T, mapboxgl.Marker>() as Map<T, mapboxgl.Marker>;
-    const map = ref(null) as Ref<mapboxgl.Map | null>;
+    const map = ref<any>(null);
+    const markers = new Map<number | string, mapboxgl.Marker>();
 
+    // State refs
     const markerCount = ref(0);
     const isLoaded = ref(false);
     const isMoving = ref(false);
     const isZooming = ref(false);
     const isDragging = ref(false);
 
-    // Handle MaybeRef options - convert to reactive refs or use provided refs
+    // Map property refs - handle MaybeRef options
     const center = isRef(options.center) ? options.center : ref<LngLat>(options.center || [0, 0]);
     const zoom = isRef(options.zoom) ? options.zoom : ref<number>(options.zoom || 1);
     const maxBounds = isRef(options.maxBounds) ? options.maxBounds : ref(options.maxBounds);
-
-    const bounds: Ref<LngLatBounds> = ref([
+    const bounds = ref<LngLatBounds>([
         [-180, -90],
         [180, 90],
     ]);
+
+    // Initialize clustering if enabled
+    const clustering: ClusteringAdapter<T> | null = options.clustering
+        ? useClustering<T>(options)
+        : null;
+
+    // Setup two-way bindings
+    useMapBindings(map, isLoaded, center, zoom, maxBounds);
 
     onMounted(() => {
         if (container.value === null) {
@@ -98,6 +112,11 @@ export function useMapBox<T>(
 
         newMap.on('moveend', () => {
             isMoving.value = false;
+
+            // Update clusters when map stops moving
+            if (options.clustering && clustering) {
+                clustering.updateClusters(bounds.value, map.value?.getZoom() || 0);
+            }
         });
 
         newMap.on('zoomend', () => {
@@ -202,18 +221,17 @@ export function useMapBox<T>(
 
     /**
      * Adds a marker to the map.
-     *
-     * @param marker - The marker to add, containing an identifier, coordinates, and an HTML element.
      */
-    function addMarker(marker: Marker<T>): void {
-        if (!map.value) {
+    function addMarker(marker: Marker<T> | Marker<string>): void {
+        const mapInstance = map.value;
+        if (!mapInstance) {
             console.error('Map is not initialized, cannot add marker');
             return;
         }
 
         const { id, coord, el } = marker;
-        const mbMarker = new mapboxgl.Marker(el).setLngLat(coord).addTo(map.value);
-        markers.set(id, mbMarker);
+        const mbMarker = new mapboxgl.Marker(el).setLngLat(coord).addTo(mapInstance);
+        markers.set(id as number | string, mbMarker);
         markerCount.value = markers.size;
     }
 
@@ -222,9 +240,9 @@ export function useMapBox<T>(
      *
      * @param id - The identifier of the marker to remove.
      */
-    function removeMarker(id: T): void {
-        markers.get(id)?.remove();
-        markers.delete(id);
+    function removeMarker(id: T | string): void {
+        markers.get(id as number | string)?.remove();
+        markers.delete(id as number | string);
         markerCount.value = markers.size;
     }
 
@@ -234,12 +252,12 @@ export function useMapBox<T>(
      * @param entries - An array of tuples containing the marker identifier and its longitude/latitude coordinates.
      */
     function setMarkers(entries: Marker<T>[]): void {
-        const newIds = new Set(entries.map((marker) => marker.id));
+        const newIds = new Set(entries.map((marker) => marker.id as number | string));
         const existingIds = new Set(markers.keys());
 
         // Add new markers
         for (const marker of entries) {
-            if (!markers.has(marker.id)) {
+            if (!markers.has(marker.id as number | string)) {
                 addMarker(marker);
             }
         }
@@ -247,7 +265,7 @@ export function useMapBox<T>(
         // Remove stale markers
         for (const id of existingIds) {
             if (!newIds.has(id)) {
-                removeMarker(id);
+                removeMarker(id as T);
             }
         }
     }
@@ -304,12 +322,55 @@ export function useMapBox<T>(
         });
     }
 
+    /**
+     * Update clustered markers.
+     *
+     * @param features - Array of features with id, coordinates, and optional properties.
+     */
+    function updateClusteredMarkers(
+        features: Array<{ id: T; coord: LngLat; properties?: Record<string, any> }>,
+    ): void {
+        if (!clustering || !map.value) {
+            return;
+        }
+
+        clustering.loadMarkers(features, bounds.value, map.value.getZoom());
+    }
+
+    /**
+     * Get current clusters.
+     *
+     * @returns Array of cluster data.
+     */
+    function getClusters(): ClusterData[] {
+        return clustering?.getClusters() || [];
+    }
+
+    /**
+     * Zoom into a cluster to expand it.
+     *
+     * @param clusterId - The cluster ID to zoom into.
+     */
+    function zoomToCluster(clusterId: string): void {
+        if (!clustering) return;
+
+        const expansionZoom = clustering.getExpansionZoom(clusterId);
+        const cluster = clustering.getClusters().find((c) => c.id === clusterId);
+
+        if (cluster && expansionZoom) {
+            flyTo(cluster.position, expansionZoom);
+        }
+    }
+
     return {
         setMarkers,
         addMarker,
         removeMarker,
         flyToBounds,
         flyTo,
+        updateClusteredMarkers: options.clustering ? updateClusteredMarkers : undefined,
+        getClusters: options.clustering ? getClusters : undefined,
+        zoomToCluster: options.clustering ? zoomToCluster : undefined,
         center,
         zoom,
         bounds: bounds,
@@ -317,5 +378,5 @@ export function useMapBox<T>(
         isDragging: readonly(isDragging),
         isZooming: readonly(isZooming),
         isMoving: readonly(isMoving),
-    };
+    } as MapAdapter<T>;
 }

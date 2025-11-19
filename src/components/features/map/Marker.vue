@@ -111,14 +111,11 @@ function closePopover() {
 @reference '@/assets/styles/main.css';
 
 .marker {
-    @apply h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-all duration-200 hover:scale-110;
+    @apply h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-all duration-200 hover:scale-110;
+    @apply text-slate-800;
 
     &.active {
         @apply scale-115;
     }
-}
-
-:deep(.map-popover .p-popover-content) {
-    padding: 0 !important;
 }
 </style>

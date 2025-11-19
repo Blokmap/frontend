@@ -64,24 +64,39 @@ function handleClick() {
 }
 
 .cluster {
-    @apply flex items-center justify-center rounded-full;
-    @apply bg-primary font-semibold text-white shadow-lg;
+    @apply relative flex items-center justify-center rounded-full;
+    @apply font-bold text-white shadow-xl;
     @apply transition-all duration-200 hover:scale-110;
+    @apply border-4 border-white;
+}
+
+.cluster::before {
+    content: '';
+    @apply absolute inset-0 rounded-full;
+    @apply from-primary-400 to-primary-600 bg-gradient-to-br;
+    @apply opacity-90;
+    z-index: -1;
+}
+
+.cluster:hover::before {
+    @apply opacity-100;
 }
 
 .cluster--small {
-    @apply h-10 w-10 text-sm;
+    @apply h-12 w-12 text-sm;
 }
 
 .cluster--medium {
-    @apply h-14 w-14 text-base;
+    @apply h-16 w-16 text-base;
 }
 
 .cluster--large {
-    @apply h-16 w-16 text-lg;
+    @apply h-20 w-20 text-lg;
 }
 
 .cluster__count {
-    @apply select-none;
+    @apply drop-shadow-sm select-none;
+    position: relative;
+    z-index: 1;
 }
 </style>

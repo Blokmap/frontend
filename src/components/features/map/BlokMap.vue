@@ -11,7 +11,7 @@ import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { type Location } from '@/domain/location';
 import Cluster from './Cluster.vue';
 import Marker from './Marker.vue';
-import type { LngLatBounds } from '@/domain/map';
+import type { LngLat, LngLatBounds } from '@/domain/map';
 
 const props = defineProps<{
     locations?: Location[];
@@ -91,7 +91,7 @@ watch(
         if (map.updateClusteredMarkers && newLocations && loaded) {
             const features = newLocations.map((location: Location) => ({
                 id: location.id,
-                coord: [location.longitude, location.latitude] as [number, number],
+                coord: [location.longitude, location.latitude] as LngLat,
                 properties: {
                     name: location.name,
                 },
@@ -120,7 +120,8 @@ defineExpose({ map });
                 :position="cluster.position"
                 :count="cluster.count"
                 :map="map"
-                @click="onClusterClick(cluster.id)" />
+                @click="onClusterClick(cluster.id)">
+            </Cluster>
 
             <!-- Render unclustered markers -->
             <Marker

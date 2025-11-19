@@ -39,16 +39,18 @@ export function useClustering<T = number>(options: MapOptions): ClusteringAdapte
         const newClusters: ClusterData[] = [];
 
         clusters.forEach((cluster) => {
-            if (cluster.properties.cluster) {
-                // It's a cluster
-                const clusterId = `cluster-${cluster.id}`;
+            if (cluster.properties.cluster && cluster.id !== undefined) {
                 const leaves = clusterIndex.getLeaves(cluster.id as number, Infinity);
 
+                const markerIds = leaves
+                    .map((leaf) => leaf.properties.id as number)
+                    .sort((a, b) => a - b);
+
                 newClusters.push({
-                    id: clusterId,
+                    id: cluster.id.toString(),
                     position: cluster.geometry.coordinates as LngLat,
                     count: cluster.properties.point_count,
-                    markers: leaves.map((leaf) => leaf.properties.id as number),
+                    markers: markerIds,
                 });
             }
         });
@@ -103,8 +105,8 @@ export function useClustering<T = number>(options: MapOptions): ClusteringAdapte
      * @returns The expansion zoom level or null if not found.
      */
     function getExpansionZoom(clusterId: string): number | null {
-        const clusterNumericId = parseInt(clusterId.replace('cluster-', ''));
-        return clusterIndex.getClusterExpansionZoom(clusterNumericId);
+        const numericId = parseInt(clusterId, 10);
+        return clusterIndex.getClusterExpansionZoom(numericId);
     }
 
     return {

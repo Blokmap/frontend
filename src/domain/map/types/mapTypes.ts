@@ -11,6 +11,12 @@ export type Marker<T = number> = {
     el: HTMLElement;
 };
 
+export type ClusterFeature<T> = {
+    id: T;
+    coord: LngLat;
+    properties?: Record<string, any>;
+};
+
 export type ClusterData = {
     id: string;
     position: LngLat;
@@ -20,11 +26,7 @@ export type ClusterData = {
 
 export interface ClusteringAdapter<T = number> {
     updateClusters(bounds: LngLatBounds, zoom: number): void;
-    loadMarkers(
-        features: Array<{ id: T; coord: LngLat; properties?: Record<string, any> }>,
-        bounds: LngLatBounds,
-        zoom: number,
-    ): void;
+    loadMarkers(features: ClusterFeature<T>[], bounds: LngLatBounds, zoom: number): void;
     getClusters(): ClusterData[];
     getExpansionZoom(clusterId: string): number | null;
 }
@@ -43,14 +45,11 @@ export interface MapOptions {
 }
 
 export interface MapAdapter<T = number> {
-    setMarkers(markers: Marker<T>[]): void;
     addMarker(marker: Marker<T | string>): void;
     removeMarker(id: T | string): void;
     flyToBounds(bounds: LngLatBounds): Promise<void>;
     flyTo(lngLat: LngLat, zoom?: number): Promise<void>;
-    updateClusteredMarkers?(
-        features: Array<{ id: T; coord: LngLat; properties?: Record<string, any> }>,
-    ): void;
+    updateClusteredMarkers?(features: ClusterFeature<T>[]): void;
     getClusters?(): ClusterData[];
     zoomToCluster?(clusterId: string): void;
     center: Ref<LngLat>;

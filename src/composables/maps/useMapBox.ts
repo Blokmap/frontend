@@ -12,6 +12,7 @@ import type {
     MapAdapter,
     MapOptions,
     Marker,
+    ClusterFeature,
 } from '@/domain/map';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
@@ -35,7 +36,7 @@ export function useMapBox<T>(
     };
 
     const map = ref<any>(null);
-    const markers = new Map<number | string, mapboxgl.Marker>();
+    const markers = new Map<T | string, mapboxgl.Marker>();
 
     // State refs
     const markerCount = ref(0);
@@ -231,7 +232,7 @@ export function useMapBox<T>(
 
         const { id, coord, el } = marker;
         const mbMarker = new mapboxgl.Marker(el).setLngLat(coord).addTo(mapInstance);
-        markers.set(id as number | string, mbMarker);
+        markers.set(id, mbMarker);
         markerCount.value = markers.size;
     }
 
@@ -241,33 +242,9 @@ export function useMapBox<T>(
      * @param id - The identifier of the marker to remove.
      */
     function removeMarker(id: T | string): void {
-        markers.get(id as number | string)?.remove();
-        markers.delete(id as number | string);
+        markers.get(id)?.remove();
+        markers.delete(id);
         markerCount.value = markers.size;
-    }
-
-    /**
-     * Sets markers on the map.
-     *
-     * @param entries - An array of tuples containing the marker identifier and its longitude/latitude coordinates.
-     */
-    function setMarkers(entries: Marker<T>[]): void {
-        const newIds = new Set(entries.map((marker) => marker.id as number | string));
-        const existingIds = new Set(markers.keys());
-
-        // Add new markers
-        for (const marker of entries) {
-            if (!markers.has(marker.id as number | string)) {
-                addMarker(marker);
-            }
-        }
-
-        // Remove stale markers
-        for (const id of existingIds) {
-            if (!newIds.has(id)) {
-                removeMarker(id as T);
-            }
-        }
     }
 
     /**
@@ -327,14 +304,17 @@ export function useMapBox<T>(
      *
      * @param features - Array of features with id, coordinates, and optional properties.
      */
-    function updateClusteredMarkers(
-        features: Array<{ id: T; coord: LngLat; properties?: Record<string, any> }>,
-    ): void {
-        if (!clustering || !map.value) {
+    function updateClusteredMarkers(features: ClusterFeature<T>[]): void {
+        if (!map.value) {
             return;
         }
 
-        clustering.loadMarkers(features, bounds.value, map.value.getZoom());
+        // If clustering is enabled, use clustering logic
+        if (clustering) {
+            clustering.loadMarkers(features, bounds.value, map.value.getZoom());
+        }
+        // Otherwise, just track the markers without clustering
+        // (Individual Marker components will call addMarker themselves)
     }
 
     /**
@@ -363,7 +343,6 @@ export function useMapBox<T>(
     }
 
     return {
-        setMarkers,
         addMarker,
         removeMarker,
         flyToBounds,
@@ -378,5 +357,5 @@ export function useMapBox<T>(
         isDragging: readonly(isDragging),
         isZooming: readonly(isZooming),
         isMoving: readonly(isMoving),
-    } as MapAdapter<T>;
+    };
 }

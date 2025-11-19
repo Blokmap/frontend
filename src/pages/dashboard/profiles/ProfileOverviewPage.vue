@@ -49,11 +49,11 @@ const reservationHours = computed(() => profileStatsData.value?.totalReservation
 
 <template>
     <DashboardContent>
-        <div class="grid grid-cols-4 items-start gap-4">
+        <div class="grid grid-cols-1 items-start gap-4 md:grid-cols-4">
             <!-- Left Column -->
-            <div class="space-y-4 md:col-span-3">
+            <div class="order-1 space-y-4 md:col-span-3">
                 <!-- Stats Cards -->
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4">
                     <template v-if="profileStatsIsLoading || profileStatsIsPending">
                         <StatsCardSkeleton v-for="n in 3" :key="n" />
                     </template>
@@ -81,7 +81,8 @@ const reservationHours = computed(() => profileStatsData.value?.totalReservation
                             :label="
                                 $t('pages.profile.stats.upcomingReservations', upcomingReservations)
                             "
-                            icon-color="text-slate-500">
+                            icon-color="text-slate-500"
+                            class="col-span-2 sm:col-span-1">
                         </StatsCard>
                     </template>
                 </div>
@@ -97,10 +98,10 @@ const reservationHours = computed(() => profileStatsData.value?.totalReservation
             </div>
 
             <!-- Right Column: QR Code Card -->
-            <Card v-if="!profileIsLoading && profile" class="md:col-span-1">
+            <Card v-if="!profileIsLoading && profile" class="order-2 md:col-span-1">
                 <template #content>
-                    <div class="flex flex-col items-center gap-5 text-center">
-                        <h3 class="text-lg font-semibold text-gray-900">
+                    <div class="flex flex-col items-center gap-4 text-center sm:gap-5">
+                        <h3 class="text-base font-semibold text-gray-900 sm:text-lg">
                             {{ $t('pages.profile.qrCode.title') }}
                         </h3>
                         <ProfileQrCode :profile="profile" />

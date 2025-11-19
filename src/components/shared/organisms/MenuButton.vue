@@ -3,15 +3,23 @@ import Button from 'primevue/button';
 import Popover from 'primevue/popover';
 import Skeleton from 'primevue/skeleton';
 import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
-import { faBars, faRightToBracket, faSignOut, faUser } from '@fortawesome/free-solid-svg-icons';
+import {
+    faBars,
+    faMapLocationDot,
+    faRightToBracket,
+    faSignOut,
+    faUser,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRef } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthLogout, useAuthProfile } from '@/composables/data/useAuth';
 
 const router = useRouter();
+
 const { isLoading: profileIsLoading, data: profile } = useAuthProfile();
 const { mutateAsync: logout } = useAuthLogout();
+
 const popoverRef = useTemplateRef('popover');
 
 function toggleMenu(event: MouseEvent): void {
@@ -75,7 +83,17 @@ function closeMenu(): void {
                     @click="closeMenu"
                     class="menu-item">
                     <FontAwesomeIcon :icon="faUser" class="w-4" />
-                    <span>Profiel</span>
+                    <span>Overzicht</span>
+                </RouterLink>
+
+                <RouterLink
+                    :to="{
+                        name: 'locations',
+                    }"
+                    @click="closeMenu"
+                    class="menu-item">
+                    <FontAwesomeIcon :icon="faMapLocationDot" class="w-4" />
+                    <span>Locaties</span>
                 </RouterLink>
 
                 <button @click="handleLogout" class="menu-item w-full text-red-600">

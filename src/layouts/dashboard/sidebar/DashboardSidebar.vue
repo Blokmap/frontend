@@ -83,21 +83,24 @@ function toggleCollapsed() {
 </script>
 
 <template>
-    <div class="sidebar" :class="{ collapsed }" data-testid="dashboard-sidebar">
+    <div
+        class="sidebar"
+        :class="{ 'sidebar--collapsed': collapsed }"
+        data-testid="dashboard-sidebar">
         <!-- Logo and Close Button Section -->
-        <div class="sidebar-header">
-            <RouterLink :to="{ name: 'locations' }" data-testid="logo-link">
+        <div class="sidebar__header">
+            <RouterLink :to="{ name: 'locations' }" class="sidebar__logo" data-testid="logo-link">
                 <Logo variant="dark" />
             </RouterLink>
             <button
-                class="sidebar-close-btn"
+                class="sidebar__close-btn"
                 @click="onCloseMenu"
                 aria-label="Close menu"
                 data-testid="sidebar-close">
                 <FontAwesomeIcon :icon="faTimes" />
             </button>
             <button
-                class="sidebar-collapse-btn"
+                class="sidebar__collapse-btn"
                 @click="toggleCollapsed"
                 :aria-label="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
                 data-testid="sidebar-collapse">
@@ -106,12 +109,12 @@ function toggleCollapsed() {
         </div>
 
         <!-- Navigation Sections -->
-        <div class="sidebar-items">
+        <div class="sidebar__items">
             <!-- Locaties Section -->
-            <div class="sidebar-section">
-                <h4>
-                    <FontAwesomeIcon class="leading-icon" :icon="faMapLocationDot" />
-                    <span>Locaties</span>
+            <div class="sidebar__section">
+                <h4 class="sidebar__section-title">
+                    <FontAwesomeIcon class="sidebar__section-icon" :icon="faMapLocationDot" />
+                    <span class="sidebar__section-text">Locaties</span>
                 </h4>
                 <DashboardSidebarLink
                     :icon="faList"
@@ -133,10 +136,10 @@ function toggleCollapsed() {
             </div>
 
             <!-- Autoriteiten Section -->
-            <div class="sidebar-section">
-                <h4>
-                    <FontAwesomeIcon class="leading-icon" :icon="faBuilding" />
-                    <span>Autoriteiten</span>
+            <div class="sidebar__section">
+                <h4 class="sidebar__section-title">
+                    <FontAwesomeIcon class="sidebar__section-icon" :icon="faBuilding" />
+                    <span class="sidebar__section-text">Autoriteiten</span>
                 </h4>
                 <DashboardSidebarLink
                     :icon="faList"
@@ -159,10 +162,10 @@ function toggleCollapsed() {
             </div>
 
             <!-- Instituties Section -->
-            <div class="sidebar-section">
-                <h4>
-                    <FontAwesomeIcon class="leading-icon" :icon="faCity" />
-                    <span>Instituties</span>
+            <div class="sidebar__section">
+                <h4 class="sidebar__section-title">
+                    <FontAwesomeIcon class="sidebar__section-icon" :icon="faCity" />
+                    <span class="sidebar__section-text">Instituties</span>
                 </h4>
                 <DashboardSidebarLink
                     :icon="faList"
@@ -177,10 +180,10 @@ function toggleCollapsed() {
             </div>
 
             <!-- Systeem Section (Admin only) -->
-            <div v-if="profile.isAdmin" class="sidebar-section">
-                <h4>
-                    <FontAwesomeIcon class="leading-icon" :icon="faChartLine" />
-                    <span>Systeem</span>
+            <div v-if="profile.isAdmin" class="sidebar__section">
+                <h4 class="sidebar__section-title">
+                    <FontAwesomeIcon class="sidebar__section-icon" :icon="faChartLine" />
+                    <span class="sidebar__section-text">Systeem</span>
                 </h4>
                 <DashboardSidebarLink
                     :icon="faChartSimple"
@@ -232,13 +235,13 @@ function toggleCollapsed() {
             </div>
         </div>
 
-        <div class="sidebar-profile">
+        <div class="sidebar__profile">
             <RouterLink
                 :to="{
                     name: 'dashboard.profiles.detail.overview',
                     params: { profileId: profile.id },
                 }"
-                class="sidebar-link"
+                class="sidebar__profile-link"
                 @click="onNavigated"
                 data-testid="profile-link">
                 <ProfileAvatar :profile="profile" class="h-10 w-10" />
@@ -251,7 +254,7 @@ function toggleCollapsed() {
             </RouterLink>
 
             <button
-                class="sidebar-link logout-btn"
+                class="sidebar__profile-link sidebar__profile-link--logout"
                 data-testid="logout-button"
                 @click="onLogoutClick">
                 <FontAwesomeIcon :icon="faSignOut" />
@@ -267,124 +270,126 @@ function toggleCollapsed() {
 .sidebar {
     @apply flex flex-col gap-5 pt-3 pb-5;
     @apply bg-slate-900 text-slate-300;
-    @apply max-h-screen overflow-y-auto md:overflow-y-visible;
+    @apply max-h-screen overflow-x-hidden overflow-y-auto md:overflow-y-visible;
     @apply transition-all duration-300;
+    @apply w-full;
+    min-width: 0;
+}
 
-    .sidebar-header {
-        @apply flex items-center justify-between px-3;
-        @apply md:relative md:justify-center md:px-3;
+.sidebar__header {
+    @apply flex items-center justify-between px-3;
+    @apply md:relative md:justify-center md:px-3;
+}
 
-        .sidebar-close-btn {
-            @apply flex h-10 w-10 items-center justify-center;
-            @apply rounded-md bg-slate-800 text-xl text-white;
-            @apply transition-colors hover:bg-slate-700;
+.sidebar__close-btn {
+    @apply flex h-10 w-10 items-center justify-center;
+    @apply rounded-md bg-slate-800 text-xl text-white;
+    @apply transition-colors hover:bg-slate-700;
+    @apply md:hidden;
+}
+
+.sidebar__collapse-btn {
+    @apply hidden h-8 w-8 items-center justify-center md:flex;
+    @apply absolute top-1/2 right-3 -translate-y-1/2;
+    @apply rounded-md bg-slate-800 text-sm text-white;
+    @apply transition-all duration-300 hover:bg-slate-700;
+}
+
+.sidebar__items {
+    @apply flex-1 space-y-6 px-5 md:pt-4;
+    @apply transition-opacity duration-300;
+}
+
+.sidebar__section {
+    @apply space-y-1.5;
+
+    &:not(:last-child) {
+        @apply border-b border-slate-700 pb-6;
+    }
+}
+
+.sidebar__section-title {
+    @apply mb-3 flex items-center text-[15px] font-bold text-white;
+    @apply transition-all duration-300;
+}
+
+.sidebar__section-text {
+    @apply transition-all duration-300;
+    @apply whitespace-nowrap;
+}
+
+.sidebar__section-icon {
+    @apply text-primary-300 mr-2 flex-shrink-0;
+    width: 1rem;
+    text-align: center;
+}
+
+.sidebar__profile {
+    @apply space-y-3 border-t border-slate-700 p-4 pb-0;
+    @apply transition-opacity duration-300;
+}
+
+.sidebar__profile-link {
+    @apply flex w-full items-center;
+    @apply cursor-pointer transition-colors duration-200 hover:text-slate-300;
+    @apply gap-3 rounded-lg p-2 hover:bg-slate-800;
+
+    > div {
+        @apply whitespace-nowrap;
+    }
+
+    span {
+        @apply whitespace-nowrap;
+    }
+}
+
+.sidebar__profile-link--logout {
+    @apply w-full cursor-pointer;
+}
+
+/* Modifier: collapsed */
+.sidebar--collapsed {
+    .sidebar__header {
+        @apply md:px-2;
+    }
+
+    .sidebar__logo {
+        @apply md:hidden;
+    }
+
+    .sidebar__collapse-btn {
+        @apply md:relative md:right-auto md:translate-y-0;
+    }
+
+    .sidebar__items {
+        @apply md:px-2;
+    }
+
+    .sidebar__section-title {
+        @apply md:justify-center;
+    }
+
+    .sidebar__section-text {
+        @apply md:hidden;
+    }
+
+    .sidebar__section-icon {
+        @apply md:mr-0 md:text-lg;
+    }
+
+    .sidebar__profile {
+        @apply md:p-2;
+    }
+
+    .sidebar__profile-link {
+        @apply md:flex-col md:gap-1 md:text-center;
+
+        > div {
             @apply md:hidden;
         }
 
-        .sidebar-collapse-btn {
-            @apply hidden h-8 w-8 items-center justify-center md:flex;
-            @apply absolute top-1/2 right-3 -translate-y-1/2;
-            @apply rounded-md bg-slate-800 text-sm text-white;
-            @apply transition-all duration-300 hover:bg-slate-700;
-        }
-    }
-
-    .sidebar-items {
-        @apply flex-1 space-y-6 px-5 md:pt-4;
-        @apply transition-opacity duration-300;
-
-        .sidebar-section {
-            @apply space-y-1.5;
-
-            &:not(:last-child) {
-                @apply border-b border-slate-700 pb-6;
-            }
-
-            h4 {
-                @apply mb-3 flex items-center text-[15px] font-bold text-white;
-                @apply transition-all duration-300;
-
-                span {
-                    @apply transition-all duration-300;
-                    @apply whitespace-nowrap;
-                }
-            }
-
-            .leading-icon {
-                @apply text-primary-300 mr-2 flex-shrink-0;
-                width: 1rem;
-                text-align: center;
-            }
-        }
-    }
-
-    .sidebar-profile {
-        @apply space-y-3 border-t border-slate-700 p-4 pb-0;
-        @apply transition-opacity duration-300;
-
-        .sidebar-link {
-            @apply flex w-full items-center;
-            @apply cursor-pointer transition-colors duration-200 hover:text-slate-300;
-            @apply gap-3 rounded-lg p-2 hover:bg-slate-800;
-
-            > div {
-                @apply whitespace-nowrap;
-            }
-
-            span {
-                @apply whitespace-nowrap;
-            }
-
-            &.logout-btn {
-                @apply w-full cursor-pointer;
-            }
-        }
-    }
-    &.collapsed {
-        .sidebar-header {
-            @apply md:px-2;
-
-            a {
-                @apply md:hidden;
-            }
-
-            .sidebar-collapse-btn {
-                @apply md:relative md:right-auto md:translate-y-0;
-            }
-        }
-
-        .sidebar-items {
-            @apply md:px-2;
-
-            .sidebar-section {
-                h4 {
-                    @apply md:justify-center;
-
-                    span {
-                        @apply md:hidden;
-                    }
-
-                    .leading-icon {
-                        @apply md:mr-0 md:text-lg;
-                    }
-                }
-            }
-        }
-
-        .sidebar-profile {
-            @apply md:p-2;
-
-            .sidebar-link {
-                @apply md:flex-col md:gap-1 md:text-center;
-
-                > div {
-                    @apply md:hidden;
-                }
-
-                span {
-                    @apply md:hidden md:text-xs;
-                }
-            }
+        span {
+            @apply md:hidden md:text-xs;
         }
     }
 }

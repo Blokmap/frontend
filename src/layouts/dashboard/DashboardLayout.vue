@@ -23,21 +23,27 @@ function toggleSidebar(): void {
 </script>
 
 <template>
-    <div class="wrapper">
+    <div class="dashboard-layout">
         <!-- Mobile Header -->
-        <header class="mobile-header">
+        <header class="dashboard-layout__mobile-header">
             <RouterLink :to="{ name: 'locations' }">
                 <Logo :show-subtitle="false" variant="dark" />
             </RouterLink>
-            <button class="mobile-menu-btn" @click="toggleSidebar" aria-label="Toggle menu">
+            <button
+                class="dashboard-layout__mobile-menu-btn"
+                @click="toggleSidebar"
+                aria-label="Toggle menu">
                 <FontAwesomeIcon :icon="faBars" />
             </button>
         </header>
 
         <!-- Sidebar Navigation -->
         <nav
-            class="sidebar"
-            :class="{ 'mobile-hidden': !isSidebarOpen, collapsed: isSidebarCollapsed }">
+            class="dashboard-layout__sidebar"
+            :class="{
+                'dashboard-layout__sidebar--mobile-hidden': !isSidebarOpen,
+                'dashboard-layout__sidebar--collapsed': isSidebarCollapsed,
+            }">
             <template v-if="!profile">
                 <div class="flex h-full w-full items-center justify-center">
                     <ProgressSpinner />
@@ -47,23 +53,24 @@ function toggleSidebar(): void {
                 <DashboardSidebar
                     v-model:visible="isSidebarOpen"
                     v-model:collapsed="isSidebarCollapsed"
-                    :profile="profile" />
+                    :profile="profile">
+                </DashboardSidebar>
             </template>
         </nav>
 
         <!-- Main Content -->
-        <div class="content">
+        <div class="dashboard-layout__content">
             <template v-if="!profile">
                 <div class="flex h-full w-full items-center justify-center">
                     <ProgressSpinner />
                 </div>
             </template>
             <template v-else>
-                <header class="header">
+                <header class="dashboard-layout__header">
                     <DashboardHeader />
                 </header>
 
-                <main class="main" role="main">
+                <main class="dashboard-layout__main" role="main">
                     <RouterView v-slot="{ Component }" :profile="profile">
                         <Transition name="fade" mode="out-in">
                             <component :is="Component" />
@@ -78,63 +85,54 @@ function toggleSidebar(): void {
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.wrapper {
+.dashboard-layout {
     @apply relative flex flex-1 flex-col md:flex-row;
     @apply md:py-6 md:pr-6;
+}
 
-    .mobile-header {
-        @apply flex items-center justify-between;
-        @apply px-3 pt-3;
-        @apply md:hidden;
+.dashboard-layout__mobile-header {
+    @apply flex items-center justify-between;
+    @apply px-3 pt-3;
+    @apply md:hidden;
+}
 
-        .mobile-menu-btn {
-            @apply flex h-10 w-10 items-center justify-center;
-            @apply rounded-md bg-slate-900 text-xl text-white;
-            @apply transition-colors hover:bg-slate-800;
-        }
-    }
+.dashboard-layout__mobile-menu-btn {
+    @apply flex h-10 w-10 items-center justify-center;
+    @apply rounded-md bg-slate-900 text-xl text-white;
+    @apply transition-colors hover:bg-slate-800;
+}
 
-    .sidebar {
-        @apply flex-shrink-0;
-        @apply fixed top-0 left-0 z-50 md:sticky md:top-6;
-        @apply min-h-screen w-full md:min-h-[calc(100vh-3rem)] md:w-72;
-        @apply transition-all duration-300;
-        @apply md:overflow-hidden;
+.dashboard-layout__sidebar {
+    @apply flex-shrink-0;
+    @apply fixed top-0 left-0 z-50 md:sticky md:top-6;
+    @apply min-h-screen w-full md:min-h-[calc(100vh-3rem)] md:w-72;
+    @apply transition-all duration-300;
+}
 
-        &.collapsed {
-            @apply md:w-20;
-        }
+.dashboard-layout__sidebar--collapsed {
+    @apply md:!w-20;
+}
 
-        &.mobile-hidden {
-            @apply hidden md:block;
-        }
+.dashboard-layout__sidebar--mobile-hidden {
+    @apply hidden md:block;
+}
 
-        .sidebar-close-btn {
-            @apply absolute top-3 right-3 z-50;
-            @apply flex h-10 w-10 items-center justify-center;
-            @apply rounded-md bg-slate-800 text-xl text-white;
-            @apply transition-colors hover:bg-slate-700;
-            @apply md:hidden;
-        }
-    }
+.dashboard-layout__content {
+    @apply flex flex-1 flex-col;
+    @apply m-3 overflow-hidden rounded-md bg-slate-50;
+    @apply md:m-0;
+}
 
-    .content {
-        @apply flex flex-1 flex-col;
-        @apply m-3 overflow-hidden rounded-md bg-slate-50;
-        @apply md:m-0;
+.dashboard-layout__header {
+    @apply hidden;
+    @apply md:flex md:items-center;
+    @apply border-b-1 border-slate-200 bg-transparent;
+    @apply p-4;
+}
 
-        .header {
-            @apply hidden;
-            @apply md:flex md:items-center;
-            @apply border-b-1 border-slate-200 bg-transparent;
-            @apply p-4;
-        }
-
-        .main {
-            @apply mx-auto w-full max-w-[1200px] flex-1 px-3 py-4;
-            @apply bg-transparent;
-            @apply md:px-4 md:py-8;
-        }
-    }
+.dashboard-layout__main {
+    @apply mx-auto w-full max-w-[1200px] flex-1 px-3 py-4;
+    @apply bg-transparent;
+    @apply md:px-4 md:py-8;
 }
 </style>

@@ -33,7 +33,7 @@ function hideMenu(): void {
         </slot>
 
         <Popover ref="menu">
-            <div class="p-1">
+            <div class="p-2">
                 <p class="mb-3 text-sm font-medium text-slate-500">Acties</p>
                 <div class="space-y-3">
                     <!-- Main content slot -->

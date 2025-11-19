@@ -175,7 +175,7 @@ function resetToCalculatedCoordinates(): void {
                                 Omschrijf de locatie in maximaal 6 beschrijvende woorden
                             </span>
                             <span class="text-gray-500">
-                                {{ form.excerpt?.[currentLanguage] || '' }}/{{
+                                {{ (form.excerpt?.[currentLanguage] || '').length }}/{{
                                     LOCATION_SETTINGS.MAX_EXCERPT_LENGTH
                                 }}
                                 karakters

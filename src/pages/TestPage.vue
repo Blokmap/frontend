@@ -1,8 +1,10 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+</script>
 
 <template>
     <div class="flex w-full items-center justify-center">
-        <span class="logo">B</span>
+        <FontAwesomeIcon :icon="['fas', 'star']" />
     </div>
 </template>
 

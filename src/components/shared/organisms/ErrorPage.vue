@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
 import { faArrowLeft, faHome } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useRouter } from 'vue-router';
@@ -23,22 +22,24 @@ const goBack = () => {
 
 <template>
     <div class="error-page">
-        <Transition name="slide-up" appear>
-            <div class="error-page__container">
-                <h1 class="error-page__code">{{ code }}</h1>
-                <h2 class="error-page__title">{{ title }}</h2>
+        <Transition name="fade" appear mode="out-in">
+            <div class="error-page__content">
+                <div class="error-page__code-wrapper">
+                    <span class="error-page__code">{{ code }}</span>
+                </div>
+                <h1 class="error-page__title">{{ title }}</h1>
                 <p class="error-page__description">{{ description }}</p>
                 <div class="error-page__actions">
-                    <Button label="Terug" severity="secondary" @click="goBack">
-                        <template #icon>
-                            <FontAwesomeIcon :icon="faArrowLeft" />
-                        </template>
-                    </Button>
-                    <Button label="Naar Dashboard" @click="goHome">
-                        <template #icon>
-                            <FontAwesomeIcon :icon="faHome" />
-                        </template>
-                    </Button>
+                    <button
+                        class="error-page__button error-page__button--secondary"
+                        @click="goBack">
+                        <FontAwesomeIcon :icon="faArrowLeft" />
+                        <span>Terug</span>
+                    </button>
+                    <button class="error-page__button error-page__button--primary" @click="goHome">
+                        <FontAwesomeIcon :icon="faHome" />
+                        <span>Dashboard</span>
+                    </button>
                 </div>
             </div>
         </Transition>
@@ -49,26 +50,53 @@ const goBack = () => {
 @reference '@/assets/styles/main.css';
 
 .error-page {
-    @apply flex min-h-screen w-full items-center justify-center bg-slate-900 p-8;
+    @apply flex min-h-screen w-full items-center justify-center bg-white p-6;
 }
 
-.error-page__container {
-    @apply w-full max-w-2xl rounded-3xl bg-slate-700 p-12 text-center shadow-md md:p-16;
+.error-page__content {
+    @apply flex max-w-md flex-col items-center;
+}
+
+.error-page__code-wrapper {
+    @apply relative mb-8;
 }
 
 .error-page__code {
-    @apply m-0 text-9xl leading-tight font-extrabold text-slate-100;
+    @apply text-8xl font-light tracking-tight text-gray-900;
+    font-variant-numeric: tabular-nums;
 }
 
 .error-page__title {
-    @apply mt-4 mb-2 text-4xl font-semibold text-slate-100;
+    @apply mb-3 text-center text-2xl font-medium text-gray-900;
 }
 
 .error-page__description {
-    @apply mt-6 mb-10 text-xl leading-relaxed text-slate-300;
+    @apply mb-8 text-center text-base leading-relaxed text-gray-600;
 }
 
 .error-page__actions {
-    @apply flex flex-wrap justify-center gap-4;
+    @apply flex items-center gap-3;
+}
+
+.error-page__button {
+    @apply flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-all duration-200;
+}
+
+.error-page__button--primary {
+    @apply bg-gray-900 text-white hover:bg-gray-800;
+}
+
+.error-page__button--secondary {
+    @apply border border-gray-300 bg-transparent text-gray-700 hover:bg-gray-100;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
 }
 </style>

@@ -10,6 +10,7 @@ import { useDebounceFn } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, ref, useTemplateRef, watch } from 'vue';
 import { useSearchLocations, useNearestLocation } from '@/composables/data/useLocations';
+import { useMapBox } from '@/composables/maps/useMapBox';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { usePagination } from '@/composables/usePagination';
 import { hasNextPage } from '@/utils/pagination';
@@ -20,7 +21,7 @@ defineOptions({ name: 'LocationsPage' });
 
 const filterStore = useLocationFilters();
 
-const { geoLocation, filters } = storeToRefs(filterStore);
+const { geoLocation, filters, config } = storeToRefs(filterStore);
 const { first, onPageChange } = usePagination(filters);
 
 const { data: locations, isPending: locationsIsPending } = useSearchLocations(filterStore.filters, {
@@ -29,13 +30,13 @@ const { data: locations, isPending: locationsIsPending } = useSearchLocations(fi
 
 const { mutate: flyToNearestLocation, isPending: isFlyingToNearestLocation } = useNearestLocation(
     async (location: NearestLocation) => {
-        const map = mapRef.value?.map;
-
-        return await map?.flyTo([location.longitude, location.latitude]);
+        return await map.flyTo([location.longitude, location.latitude]);
     },
 );
 
-const mapRef = useTemplateRef('map');
+const blokMapRef = useTemplateRef('blokMapRef');
+const mapContainerRef = computed(() => blokMapRef.value?.mapContainer ?? null);
+const map = useMapBox(mapContainerRef, config.value);
 
 const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
@@ -46,20 +47,28 @@ watch(locations, (locations) => {
 });
 
 watch(
-    [geoLocation, () => mapRef.value?.map.isLoaded],
+    [geoLocation, () => map.isLoaded],
     ([geoLocation, isLoaded]) => {
         try {
             if (isLoaded && geoLocation) {
-                mapRef.value?.map.flyTo([
-                    geoLocation.coordinates.longitude,
-                    geoLocation.coordinates.latitude,
-                ]);
+                map.flyTo([geoLocation.coordinates.longitude, geoLocation.coordinates.latitude]);
             }
         } catch (error) {
             console.error('Error flying to geo location:', error);
         }
     },
     { deep: true, immediate: true },
+);
+
+// Watch for changes in map bounds to update filters
+watch(
+    map.bounds,
+    (newBounds) => {
+        config.value.center = map.center.value;
+        config.value.zoom = map.zoom.value;
+        config.value.bounds = newBounds;
+    },
+    { deep: true },
 );
 
 /**
@@ -74,7 +83,7 @@ const onBoundsChange = useDebounceFn(async (bounds: LngLatBounds | null) => {
  * Flies the map to the nearest location based on the current center.
  */
 function onNearestClick(): void {
-    const center = mapRef.value?.map.center.value;
+    const center = map.center.value;
 
     if (center) {
         flyToNearestLocation(center);
@@ -172,17 +181,16 @@ function onNearestClick(): void {
         </div>
 
         <div class="map-container">
-            <div class="sticky top-4 w-full" :style="{ height: 'calc(100vh - 2rem)' }">
-                <BlokMap
-                    ref="map"
-                    v-model:hovered-location="hoveredLocation"
-                    class="shadow-md"
-                    data-testid="locations-map"
-                    :locations="locations?.data"
-                    :loading="locationsIsPending"
-                    @update:bounds="onBoundsChange">
-                </BlokMap>
-            </div>
+            <BlokMap
+                ref="blokMapRef"
+                :map="map"
+                v-model:hovered-location="hoveredLocation"
+                class="sticky top-4 w-full shadow-md"
+                :style="{ height: 'calc(100vh - 2rem)' }"
+                :locations="locations?.data"
+                :loading="locationsIsPending"
+                @update:bounds="onBoundsChange">
+            </BlokMap>
         </div>
     </div>
 </template>

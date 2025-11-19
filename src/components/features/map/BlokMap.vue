@@ -2,18 +2,17 @@
 import Carousel from '@/components/shared/molecules/Carousel.vue';
 import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { storeToRefs } from 'pinia';
+import { useGeolocation } from '@vueuse/core';
 import { computed, useTemplateRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { useMapBox } from '@/composables/maps/useMapBox';
-import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { type Location } from '@/domain/location';
 import Cluster from './Cluster.vue';
 import Marker from './Marker.vue';
-import type { LngLat, LngLatBounds } from '@/domain/map';
+import type { LngLat, LngLatBounds, MapAdapter } from '@/domain/map';
 
 const props = defineProps<{
+    map: MapAdapter;
     locations?: Location[];
     isLoading?: boolean;
 }>();
@@ -28,22 +27,22 @@ const emit = defineEmits<{
 }>();
 
 const { locale } = useI18n();
+const { coords } = useGeolocation();
+
 const router = useRouter();
-
-const filters = storeToRefs(useLocationFilters());
-
-const mapContainerRef = useTemplateRef('mapContainer');
-const map = useMapBox(mapContainerRef, filters.config.value);
+const mapContainer = useTemplateRef('mapContainer');
 
 // Track clusters
-const clusters = computed(() => map.getClusters?.() || []);
+const clusters = computed(() => props.map.getClusters?.() || []);
 
 // Get the set of marker IDs that are currently in clusters
 const clusteredMarkerIds = computed(() => {
     const ids = new Set<number>();
+
     clusters.value.forEach((cluster) => {
         cluster.markers.forEach((markerId) => ids.add(markerId));
     });
+
     return ids;
 });
 
@@ -70,25 +69,23 @@ function navigateToDetail(locationId: number): void {
 }
 
 function onClusterClick(clusterId: string): void {
-    map.zoomToCluster?.(clusterId);
+    props.map.zoomToCluster?.(clusterId);
 }
 
+// Watch for changes in map bounds to emit event
 watch(
-    map.bounds,
+    () => props.map.bounds,
     (newBounds) => {
-        emit('update:bounds', newBounds);
-        filters.config.value.center = map.center.value;
-        filters.config.value.zoom = map.zoom.value;
-        filters.config.value.bounds = newBounds;
+        emit('update:bounds', newBounds.value);
     },
     { deep: true },
 );
 
 // Update clustered markers when locations change or map loads
 watch(
-    [() => props.locations, () => map.isLoaded.value],
+    [() => props.locations, () => props.map.isLoaded.value],
     ([newLocations, loaded]) => {
-        if (map.updateClusteredMarkers && newLocations && loaded) {
+        if (props.map.updateClusteredMarkers && newLocations && loaded) {
             const features = newLocations.map((location: Location) => ({
                 id: location.id,
                 coord: [location.longitude, location.latitude] as LngLat,
@@ -96,13 +93,24 @@ watch(
                     name: location.name,
                 },
             }));
-            map.updateClusteredMarkers(features);
+            props.map.updateClusteredMarkers(features);
         }
     },
     { immediate: true, deep: true },
 );
 
-defineExpose({ map });
+// Fly to user's geolocation when available
+watch(
+    () => coords.value,
+    (newCoords) => {
+        if (props.map.isLoaded.value && newCoords) {
+            props.map.flyTo([newCoords.longitude, newCoords.latitude], 15);
+        }
+    },
+    { immediate: true },
+);
+
+defineExpose({ mapContainer });
 </script>
 
 <template>
@@ -111,7 +119,7 @@ defineExpose({ map });
             <span>Loading</span>
             <FontAwesomeIcon :icon="faSpinner" spin />
         </div>
-        <slot v-if="map.isLoaded.value">
+        <slot v-if="props.map.isLoaded.value">
             <!-- Render clusters -->
             <Cluster
                 v-for="cluster in clusters"
@@ -119,7 +127,7 @@ defineExpose({ map });
                 :id="cluster.id"
                 :position="cluster.position"
                 :count="cluster.count"
-                :map="map"
+                :map="props.map"
                 @click="onClusterClick(cluster.id)">
             </Cluster>
 
@@ -129,7 +137,7 @@ defineExpose({ map });
                 :id="location.id"
                 :key="location.id"
                 :position="[location.longitude, location.latitude]"
-                :map="map"
+                :map="props.map"
                 :active="location.id === hoveredLocation?.id"
                 @click="onMarkerClick(location.id)"
                 @mouseenter="onMarkerMouseEnter(location)"

@@ -15,17 +15,15 @@ import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { usePagination } from '@/composables/usePagination';
 import { hasNextPage } from '@/utils/pagination';
 import type { Location, NearestLocation } from '@/domain/location';
-import type { LngLatBounds } from '@/domain/map';
 
 defineOptions({ name: 'LocationsPage' });
 
 const filterStore = useLocationFilters();
-
 const { geoLocation, filters, config } = storeToRefs(filterStore);
 const { first, onPageChange } = usePagination(filters);
 
-const { data: locations, isPending: locationsIsPending } = useSearchLocations(filterStore.filters, {
-    enabled: computed(() => !!filterStore.filters.bounds),
+const { data: locations, isPending: locationsIsPending } = useSearchLocations(filters, {
+    enabled: computed(() => !!filters.value.bounds),
 });
 
 const { mutate: flyToNearestLocation, isPending: isFlyingToNearestLocation } = useNearestLocation(
@@ -63,20 +61,19 @@ watch(
 // Watch for changes in map bounds to update filters
 watch(
     map.bounds,
-    (newBounds) => {
-        config.value.center = map.center.value;
-        config.value.zoom = map.zoom.value;
-        config.value.bounds = newBounds;
+    () => {
+        debouncedConfigUpdate();
+        debouncedFilterUpdate();
     },
     { deep: true },
 );
 
-/**
- * Handles bounds change events from the map.
- * @param bounds - The new bounds of the map.
- */
-const onBoundsChange = useDebounceFn(async (bounds: LngLatBounds | null) => {
-    filterStore.updateFilters({ bounds, page: 1 });
+const debouncedFilterUpdate = useDebounceFn(() => {
+    filterStore.updateFilters({ bounds: map.bounds.value, page: 1 });
+}, 400);
+
+const debouncedConfigUpdate = useDebounceFn(() => {
+    filterStore.updateConfig({ center: map.center.value, zoom: map.zoom.value });
 }, 400);
 
 /**
@@ -188,8 +185,7 @@ function onNearestClick(): void {
                 class="sticky top-4 w-full shadow-md"
                 :style="{ height: 'calc(100vh - 2rem)' }"
                 :locations="locations?.data"
-                :loading="locationsIsPending"
-                @update:bounds="onBoundsChange">
+                :loading="locationsIsPending">
             </BlokMap>
         </div>
     </div>

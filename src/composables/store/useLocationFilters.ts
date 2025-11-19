@@ -26,7 +26,12 @@ export const useLocationFilters = defineStore('locationFilters', () => {
      * @returns {void}
      */
     function updateFilters(newFilters: Partial<LocationSearchFilter>): void {
+        Object.assign(config.value, newFilters);
         Object.assign(filters.value, newFilters);
+    }
+
+    function updateConfig(newConfig: Partial<MapOptions & { bounds?: LngLatBounds | null }>): void {
+        Object.assign(config.value, newConfig);
     }
 
     return {
@@ -34,5 +39,6 @@ export const useLocationFilters = defineStore('locationFilters', () => {
         config,
         geoLocation,
         updateFilters,
+        updateConfig,
     };
 });

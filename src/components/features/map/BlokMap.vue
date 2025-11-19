@@ -9,7 +9,7 @@ import { useRouter } from 'vue-router';
 import { type Location } from '@/domain/location';
 import Cluster from './Cluster.vue';
 import Marker from './Marker.vue';
-import type { LngLat, LngLatBounds, MapAdapter } from '@/domain/map';
+import type { LngLat, MapAdapter } from '@/domain/map';
 
 const props = defineProps<{
     map: MapAdapter;
@@ -23,7 +23,6 @@ const hoveredLocation = defineModel<Location | null>('hoveredLocation', {
 
 const emit = defineEmits<{
     (e: 'click:marker', id: number): void;
-    (e: 'update:bounds', bounds: LngLatBounds): void;
 }>();
 
 const { locale } = useI18n();
@@ -71,15 +70,6 @@ function navigateToDetail(locationId: number): void {
 function onClusterClick(clusterId: string): void {
     props.map.zoomToCluster?.(clusterId);
 }
-
-// Watch for changes in map bounds to emit event
-watch(
-    () => props.map.bounds,
-    (newBounds) => {
-        emit('update:bounds', newBounds.value);
-    },
-    { deep: true },
-);
 
 // Update clustered markers when locations change or map loads
 watch(

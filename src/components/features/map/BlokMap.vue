@@ -91,13 +91,13 @@ watch(
 
 // Fly to user's geolocation when available
 watch(
-    () => coords.value,
+    coords,
     (newCoords) => {
         if (props.map.isLoaded.value && newCoords) {
             props.map.flyTo([newCoords.longitude, newCoords.latitude], 15);
         }
     },
-    { immediate: true },
+    { once: true },
 );
 
 defineExpose({ mapContainer });

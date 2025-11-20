@@ -1,7 +1,7 @@
 .p-popover {
     /* Base styles */
     @apply bg-surface-0 text-surface-700;
-    @apply rounded-md border border-slate-200;
+    @apply rounded-md shadow-md;
     @apply mt-[10px];
 
     @apply before:pointer-events-none before:absolute before:bottom-full before:-ms-[6px] before:h-0 before:w-0 before:border-[6px] before:border-transparent before:border-b-slate-200;

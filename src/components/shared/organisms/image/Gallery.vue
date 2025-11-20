@@ -170,11 +170,11 @@ onUnmounted(() => {
 @reference '@/assets/styles/main.css';
 
 .gallery {
-    @apply grid h-full w-full gap-2 overflow-hidden;
+    @apply grid h-full w-full gap-1 overflow-hidden;
 }
 
 .gallery__item {
-    @apply relative cursor-pointer overflow-hidden border border-slate-200;
+    @apply relative cursor-pointer overflow-hidden;
 
     &:hover .gallery__image {
         @apply scale-110 brightness-90;

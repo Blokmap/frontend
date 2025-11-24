@@ -92,7 +92,7 @@ function closePopover() {
             @mouseenter="handleMouseEnter"
             @mouseleave="handleMouseLeave">
             <Transition name="bounce-scale" appear>
-                <img class="marker" :src="getLocationImageUrl(location)" alt="Location Image"></img>
+                <img class="marker" :src="getLocationImageUrl(location)" alt="Location Image" />
             </Transition>
         </div>
 
@@ -111,7 +111,7 @@ function closePopover() {
 @reference '@/assets/styles/main.css';
 
 .marker {
-    @apply h-11 w-11 object-cover cursor-pointer rounded-full transition-all duration-200 hover:scale-110;
+    @apply h-11 w-11 cursor-pointer rounded-full object-cover transition-all duration-200 hover:scale-110;
 
     &.active {
         @apply scale-115;

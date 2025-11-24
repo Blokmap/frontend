@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import Popover from 'primevue/popover';
-import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { onDeactivated, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
+import { getLocationImageUrl, type Location } from '@/domain/location';
 import type { LngLat, MapAdapter } from '@/domain/map';
 
 const { id, position, map } = defineProps<{
     map: MapAdapter;
     id: number;
+    location: Location;
     position: LngLat;
     active?: boolean;
 }>();
@@ -92,7 +92,7 @@ function closePopover() {
             @mouseenter="handleMouseEnter"
             @mouseleave="handleMouseLeave">
             <Transition name="bounce-scale" appear>
-                <FontAwesomeIcon :icon="faLocationDot" class="marker" :class="active" />
+                <img class="marker" :src="getLocationImageUrl(location)" alt="Location Image"></img>
             </Transition>
         </div>
 
@@ -111,8 +111,7 @@ function closePopover() {
 @reference '@/assets/styles/main.css';
 
 .marker {
-    @apply h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-all duration-200 hover:scale-110;
-    @apply text-slate-800;
+    @apply h-11 w-11 object-cover cursor-pointer rounded-full transition-all duration-200 hover:scale-110;
 
     &.active {
         @apply scale-115;

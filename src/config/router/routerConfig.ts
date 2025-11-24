@@ -1,9 +1,10 @@
-import AuthLayout from '@/layouts/auth/AuthLayout.vue';
-import DashboardLayout from '@/layouts/dashboard/DashboardLayout.vue';
-import AuthorityDetailLayout from '@/layouts/dashboard/details/AuthorityDetailLayout.vue';
-import InstitutionDetailLayout from '@/layouts/dashboard/details/InstitutionDetailLayout.vue';
-import LocationDetailLayout from '@/layouts/dashboard/details/LocationDetailLayout.vue';
-import ProfileDetailLayout from '@/layouts/dashboard/details/ProfileDetailLayout.vue';
+import DashboardLayout from '@/layouts/manage/DashboardLayout.vue';
+import AuthorityDetailLayout from '@/layouts/manage/details/AuthorityDetailLayout.vue';
+import InstitutionDetailLayout from '@/layouts/manage/details/InstitutionDetailLayout.vue';
+import LocationDetailLayout from '@/layouts/manage/details/LocationDetailLayout.vue';
+import ProfileDetailLayout from '@/layouts/manage/details/ProfileDetailLayout.vue';
+import AuthLayout from '@/layouts/profile/AuthLayout.vue';
+import ProfileLayout from '@/layouts/profile/ProfileLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
 import TestPage from '@/pages/TestPage.vue';
 import { useQueryClient } from '@tanstack/vue-query';
@@ -57,15 +58,15 @@ import {
 
 const routes: RouteRecordRaw[] = [
     {
+        path: '/test',
+        component: TestPage,
+        meta: { auth: { admin: true } },
+    },
+    {
         path: '/',
         redirect: { name: 'locations' },
         component: PublicLayout,
         children: [
-            {
-                path: 'test',
-                component: TestPage,
-                meta: { auth: { admin: true } },
-            },
             {
                 path: 'locations',
                 meta: {
@@ -100,10 +101,28 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: LocationSubmitPage,
             },
+            {
+                path: 'profile',
+                name: 'profile',
+                meta: { auth: { required: true } },
+                component: ProfileLayout,
+                children: [
+                    {
+                        path: 'about',
+                        name: 'profile.about',
+                        redirect: { name: 'profile', hash: '#about' },
+                    },
+                    {
+                        path: 'reservations',
+                        name: 'profile.reservations',
+                        redirect: { name: 'profile', hash: '#reservations' },
+                    },
+                ],
+            },
         ],
     },
     {
-        path: '/dashboard',
+        path: '/manage',
         component: DashboardLayout,
         meta: {
             auth: { required: true },
@@ -539,7 +558,16 @@ const routes: RouteRecordRaw[] = [
 
 const router = createRouter({
     history: createWebHistory(),
+    linkActiveClass: 'active',
+    linkExactActiveClass: 'exact-active',
     scrollBehavior: (to, from) => {
+        if (to.hash) {
+            return {
+                el: to.hash,
+                behavior: 'smooth',
+            };
+        }
+
         if (to.name !== from.name) {
             return { left: 0, top: 0, behavior: 'smooth' };
         }

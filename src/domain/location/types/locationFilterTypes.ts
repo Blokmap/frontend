@@ -19,3 +19,7 @@ export type LocationSearchFilter = Pagination & {
     } | null;
     language?: string | null;
 };
+
+export type RecentLocationFilter = {
+    maxCount?: number | null;
+};

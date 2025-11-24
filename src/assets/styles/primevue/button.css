@@ -38,11 +38,27 @@
 
 .p-button-icon-only.p-button-rounded {
     @apply h-10 rounded-full;
-    --shadow-size: 0.15rem;
+    --shadow-size: 0.2rem;
 }
 
 .p-button-icon-only .p-button-label {
     @apply invisible w-0;
+}
+
+.p-button-sm.p-button-icon-only {
+    @apply w-8;
+}
+
+.p-button-sm.p-button-icon-only.p-button-rounded {
+    @apply h-8;
+}
+
+.p-button-lg.p-button-icon-only {
+    @apply w-12;
+}
+
+.p-button-lg.p-button-icon-only.p-button-rounded {
+    @apply h-12;
 }
 
 .p-button-sm {
@@ -175,9 +191,8 @@
 .p-button-text {
     @apply text-color bg-transparent;
     @apply border-transparent;
-    @apply enabled:hover:border-transparent enabled:hover:bg-transparent;
-    @apply enabled:active:border-transparent enabled:active:bg-transparent;
-    @apply !translate-none !scale-none !transform-none !shadow-none !transition-none;
+    @apply enabled:hover:border-transparent enabled:hover:bg-slate-100;
+    @apply !translate-none !scale-none !transform-none !shadow-none;
 }
 
 .p-button-text.p-button-secondary {

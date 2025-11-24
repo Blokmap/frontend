@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import LocationStateCallout from '@/components/features/location/LocationStateCallout.vue';
 import TabNavigation, { type TabItem } from '@/components/shared/molecules/TabNavigation.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
-import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
-import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
-import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import DashboardLoading from '@/layouts/manage/DashboardLoading.vue';
+import DashboardNotFound from '@/layouts/manage/DashboardNotFound.vue';
+import DashboardPageHeader from '@/layouts/manage/DashboardPageHeader.vue';
+import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { faCalendar, faList, faUsers, faUsersGear } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

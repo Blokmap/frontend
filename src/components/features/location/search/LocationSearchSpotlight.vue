@@ -6,68 +6,85 @@
             @click="isVisible = false"
             @keydown.escape="isVisible = false"
             v-focustrap>
-            <div class="search" @click.stop>
-                <div class="flex items-center">
-                    <FontAwesomeIcon :icon="faMagnifyingGlass" class="search-icon" />
+            <div class="container" @click.stop>
+                <div class="flex w-full items-center gap-2.5">
+                    <div
+                        class="from-primary-400 to-primary-600 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br shadow-sm">
+                        <FontAwesomeIcon :icon="faMagnifyingGlass" class="h-4 w-4 text-white" />
+                    </div>
                     <input
                         ref="searchInput"
                         v-model="search"
                         type="text"
                         placeholder="Zoek bloklocaties..."
-                        class="search-input"
+                        class="flex-1 border-none bg-transparent text-base text-gray-700 placeholder-gray-400 outline-none"
                         aria-label="Zoek naar bloklocaties en locaties"
                         :aria-describedby="hasResults ? 'search-results' : undefined" />
 
-                    <FontAwesomeIcon v-if="isSearching" :icon="faSpinner" class="search-icon" spin>
-                    </FontAwesomeIcon>
-                    <FontAwesomeIcon
-                        v-else
-                        :icon="faSliders"
-                        class="search-icon"
-                        @click="emit('filter')">
-                    </FontAwesomeIcon>
+                    <button
+                        v-if="!isSearching"
+                        type="button"
+                        class="filter-button"
+                        @click="emit('filter')"
+                        aria-label="Open filters">
+                        <FontAwesomeIcon :icon="faSliders" class="h-3.5 w-3.5 text-slate-600" />
+                    </button>
+                    <div v-else class="flex h-8 w-8 flex-shrink-0 items-center justify-center">
+                        <FontAwesomeIcon :icon="faSpinner" class="text-primary-400 h-5 w-5" spin />
+                    </div>
                 </div>
 
                 <!-- Results Section -->
-                <div v-if="hasResults" class="results" aria-label="Zoekresultaten">
+                <div
+                    v-if="hasResults"
+                    class="mt-5 space-y-4 border-t-2 border-gray-100 pt-5"
+                    aria-label="Zoekresultaten">
                     <!-- Location Results -->
                     <div class="space-y-2" v-if="locations?.data.length">
-                        <h3>Bloklocaties</h3>
+                        <h3 class="mb-3 text-sm font-semibold text-gray-600">Bloklocaties</h3>
                         <button
                             v-for="location in locations.data"
                             :key="location.id"
                             type="button"
-                            class="result"
+                            class="result-item"
                             :aria-label="`Ga naar ${location.name} op ${location.street} ${location.number}, ${location.city}`"
-                            @click="handleLocationClick(location)">
-                            <div class="result-content">
-                                <div>{{ location.name }}</div>
-                                <div class="address">
+                            @click="onLocationClick(location)">
+                            <div class="min-w-0 flex-1">
+                                <div class="truncate font-medium text-gray-800">
+                                    {{ location.name }}
+                                </div>
+                                <div class="mt-1 truncate text-sm text-gray-500">
                                     {{ location.street }} {{ location.number }},
                                     {{ location.city }}
                                 </div>
                             </div>
-                            <FontAwesomeIcon :icon="faChevronRight" class="result-arrow" />
+                            <FontAwesomeIcon
+                                :icon="faChevronRight"
+                                class="h-4 w-4 flex-shrink-0 translate-x-2 transform text-gray-400 opacity-0 transition-all duration-200" />
                         </button>
                     </div>
 
                     <!-- Geolocation Results -->
                     <div class="space-y-2" v-if="geolocations?.length">
-                        <h3>Locaties</h3>
+                        <h3 class="mb-3 text-sm font-semibold text-gray-600">Locaties</h3>
                         <button
                             v-for="(geo, index) in geolocations"
                             :key="index"
                             type="button"
-                            class="result"
+                            class="result-item"
                             :aria-label="`Ga naar ${geo?.name || 'Unknown'} op ${geo?.place_formatted || geo?.full_address || 'No address'}`"
-                            @click="handleGeoClick(geo)">
-                            <div class="result-content">
-                                <div>{{ geo?.name || 'Unknown' }}</div>
-                                <div class="address">
+                            @click="onGeoClick(geo)">
+                            <div class="min-w-0 flex-1">
+                                <div class="truncate font-medium text-gray-800">
+                                    {{ geo?.name || 'Unknown' }}
+                                </div>
+                                <div class="mt-1 truncate text-sm text-gray-500">
                                     {{ geo?.place_formatted || geo?.full_address || 'No address' }}
                                 </div>
                             </div>
-                            <FontAwesomeIcon :icon="faChevronRight" class="result-arrow" />
+                            <FontAwesomeIcon
+                                :icon="faChevronRight"
+                                class="h-4 w-4 flex-shrink-0 translate-x-2 transform text-gray-400 opacity-0 transition-all duration-200" />
                         </button>
                     </div>
                 </div>
@@ -106,18 +123,16 @@ const debouncedSearch = useDebounce(search, 500);
 const router = useRouter();
 const filters = storeToRefs(useLocationFilters());
 
+const enabled = computed(() => debouncedSearch.value.length >= 2);
+
 const { data: locations, isFetching: isFetchingLocations } = useSearchLocations(
     computed(() => ({ query: debouncedSearch.value, perPage: 5 })),
-    {
-        enabled: computed(() => debouncedSearch.value.length >= 2),
-    },
+    { enabled },
 );
 
 const { data: geolocations, isFetching: isFetchingGeolocations } = useSearchGeoLocations(
     computed(() => ({ search: debouncedSearch.value, limit: 5 })),
-    {
-        enabled: computed(() => debouncedSearch.value.length >= 2),
-    },
+    { enabled },
 );
 
 const searchInput = useTemplateRef<HTMLInputElement>('searchInput');
@@ -132,80 +147,76 @@ const hasResults = computed(() => {
     return hasLocations > 0 || hasGeos > 0;
 });
 
-function handleLocationClick(location: Location) {
-    router.push({ name: 'locations.detail', params: { locationId: location.id } });
-    isVisible.value = false;
-}
-
-function handleGeoClick(geo: GeoJsonProperties) {
-    router.push({ name: 'locations' });
-    filters.geoLocation.value = geo;
-    isVisible.value = false;
-}
-
+// Focus the search input when the spotlight becomes visible
 watch(isVisible, async (newValue) => {
     if (!newValue) return;
     await nextTick();
     searchInput.value?.focus();
 });
+
+function onLocationClick(location: Location) {
+    router.push({ name: 'locations.detail', params: { locationId: location.id } });
+    isVisible.value = false;
+}
+
+function onGeoClick(geo: GeoJsonProperties) {
+    router.push({ name: 'locations' });
+    filters.geoLocation.value = geo;
+    isVisible.value = false;
+}
 </script>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
 .spotlight {
-    @apply fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs;
-    @apply items-start md:items-center;
-    @apply px-3 pt-20 md:pt-0;
+    @apply fixed inset-0 z-50 flex items-start justify-center bg-black/20 backdrop-blur-xs;
+    @apply px-3 pt-20;
 }
 
-.search {
-    @apply w-full max-w-2xl rounded-2xl bg-white/90 px-6 py-4 backdrop-blur-xs;
+.container {
+    @apply w-full max-w-2xl overflow-hidden;
+    @apply rounded-3xl bg-white px-6 py-5;
+    @apply border-primary-200 border-3;
+    @apply shadow-playful;
     @apply transition-all duration-300 ease-out;
-    @apply overflow-hidden;
+    --shadow-color: var(--p-primary-200);
+    --shadow-size: 0.35rem;
+}
 
-    .search-icon {
-        @apply mr-4 text-xl text-gray-500;
+.filter-button {
+    @apply flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full;
+    @apply bg-slate-100 transition-colors duration-150;
+    @apply cursor-pointer border-none;
 
-        &:last-child {
-            @apply mr-0 ml-4 cursor-pointer hover:text-gray-700;
-        }
+    &:hover {
+        @apply bg-slate-200;
     }
 
-    .search-input {
-        @apply flex-1 border-none bg-transparent text-lg text-gray-700 placeholder-gray-400 outline-none;
+    &:focus-visible {
+        @apply outline-primary-500 outline-2 outline-offset-2;
+    }
+}
+
+.result-item {
+    @apply flex w-full cursor-pointer items-center justify-between gap-3;
+    @apply rounded-2xl border-2 border-transparent bg-transparent p-3;
+    @apply text-left transition-all duration-200;
+
+    &:hover {
+        @apply bg-gray-50;
     }
 
-    .results {
-        @apply mt-4 space-y-3 border-t border-gray-100 pt-4;
+    &:hover svg {
+        @apply text-primary-400 translate-x-0 opacity-100;
+    }
 
-        h3 {
-            @apply mb-3 text-sm font-medium text-gray-600;
-        }
+    &:focus-visible {
+        @apply border-primary-400 bg-gray-50 outline-none;
+    }
 
-        .result {
-            @apply flex w-full cursor-pointer items-center justify-between;
-            @apply border-none bg-transparent p-0 text-left;
-            @apply transition-all duration-200;
-
-            .result-content .address {
-                @apply mt-1 text-sm text-gray-500;
-            }
-
-            .result-arrow {
-                @apply translate-x-2 transform text-gray-400 opacity-0;
-                @apply transition-all duration-200;
-            }
-
-            &:hover .result-arrow,
-            &:focus .result-arrow {
-                @apply translate-x-0 transform opacity-100;
-            }
-
-            &:focus {
-                @apply outline-none;
-            }
-        }
+    &:focus-visible svg {
+        @apply translate-x-0 opacity-100;
     }
 }
 </style>

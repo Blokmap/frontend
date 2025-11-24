@@ -93,17 +93,3 @@ onUnmounted(() => {
         </Transition>
     </Teleport>
 </template>
-
-<style scoped>
-@reference '@/assets/styles/main.css';
-
-.slide-down-enter-active,
-.slide-down-leave-active {
-    @apply transition-all duration-200;
-}
-
-.slide-down-enter-from,
-.slide-down-leave-to {
-    @apply -translate-y-2 opacity-0;
-}
-</style>

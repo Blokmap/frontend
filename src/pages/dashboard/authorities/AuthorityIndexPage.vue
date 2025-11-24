@@ -4,10 +4,10 @@ import AuthorityActionMenu from '@/components/features/authority/AuthorityAction
 import AuthorityTable from '@/components/features/authority/AuthorityTable.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
-import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
-import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import DashboardLoading from '@/layouts/manage/DashboardLoading.vue';
+import DashboardPageHeader from '@/layouts/manage/DashboardPageHeader.vue';
+import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';

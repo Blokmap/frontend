@@ -70,7 +70,7 @@ async function submitLocation() {
             <div class="sidebar-navigation hidden w-full justify-between md:flex">
                 <Button
                     :disabled="!canGoPrevious"
-                    severity="secondary"
+                    severity="contrast"
                     size="small"
                     @click="goPrevious">
                     <FontAwesomeIcon :icon="faArrowLeft" class="mr-2" />

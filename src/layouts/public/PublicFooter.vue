@@ -3,7 +3,7 @@
 <template>
     <div class="footer-bottom">
         <div class="text-xs">
-            © {{ new Date().getFullYear() }} Blokmap. Alle rechten voorbehouden.
+            &copy; {{ new Date().getFullYear() }} Blokmap. Alle rechten voorbehouden.
         </div>
         <div class="flex space-x-4 text-xs">
             <a href="#"> Privacybeleid </a>

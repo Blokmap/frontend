@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import FileUpload, { type FileUploadSelectEvent } from 'primevue/fileupload';
 import InputText from 'primevue/inputtext';
@@ -24,13 +23,13 @@ import type { ImageBody } from '@/domain/image';
 
 const images = defineModel<ImageBody[]>({ required: true, default: () => [] });
 
-const urlInput = ref('');
+const urlInput = ref<string>('');
 const draggedImage = ref<ImageBody | null>(null);
 
-const showAddDialog = ref(false);
-const isDragging = ref(false);
+const showAddDialog = ref<boolean>(false);
+const isDragging = ref<boolean>(false);
 
-const canAddMore = computed(() => images.value.length < LOCATION_SETTINGS.MAX_IMAGES);
+const canAddMore = computed<boolean>(() => images.value.length < LOCATION_SETTINGS.MAX_IMAGES);
 
 const sortedImages = computed(() =>
     [...images.value].sort((a, b) => (a.index ?? 0) - (b.index ?? 0)),
@@ -123,12 +122,9 @@ function openAddDialog(): void {
  * Handle drag start event for an image.
  *
  * @param event The drag event.
- * @param imageIndex The index of the image being dragged.
+ * @param image The image being dragged.
  */
-function onDragStart(event: DragEvent, imageIndex: number): void {
-    const image = images.value.find((img) => img.index === imageIndex);
-    if (!image) return;
-
+function onDragStart(event: DragEvent, image: ImageBody): void {
     draggedImage.value = image;
     isDragging.value = true;
     if (event.dataTransfer) {
@@ -153,25 +149,35 @@ function onDragOver(event: DragEvent): void {
  * Handle drop event for an image.
  *
  * @param event The drag event.
- * @param targetImageIndex The index of the target image where the dragged image is dropped.
+ * @param targetImage The target image where the dragged image is dropped.
  */
-function onDrop(event: DragEvent, targetImageIndex: number): void {
+function onDrop(event: DragEvent, targetImage: ImageBody): void {
     event.preventDefault();
 
-    if (!draggedImage.value) return;
+    if (!draggedImage.value || draggedImage.value === targetImage) return;
 
-    const targetImage = images.value.find((img) => img.index === targetImageIndex);
-    if (!targetImage || draggedImage.value === targetImage) return;
+    // Get sorted array
+    const sorted = [...images.value].sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
 
-    const draggedIndex = draggedImage.value.index ?? 0;
-    const targetIdx = targetImage.index ?? 0;
+    // Find positions in sorted array
+    const draggedPos = sorted.findIndex((img) => img === draggedImage.value);
+    const targetPos = sorted.findIndex((img) => img === targetImage);
 
-    // Swap the indices
-    draggedImage.value.index = targetIdx;
-    targetImage.index = draggedIndex;
+    if (draggedPos === -1 || targetPos === -1) return;
 
-    // Force reactivity update
-    images.value = [...images.value];
+    // Remove from old position
+    const [removed] = sorted.splice(draggedPos, 1);
+
+    // Insert at new position
+    sorted.splice(targetPos, 0, removed);
+
+    // Reassign all indices
+    sorted.forEach((img, i) => {
+        img.index = i;
+    });
+
+    // Update reactive array
+    images.value = [...sorted];
 }
 
 /**
@@ -212,14 +218,11 @@ function onDragEnd(): void {
                         <!-- Actions -->
                         <div class="image-actions">
                             <div class="image-actions__buttons">
-                                <Button
-                                    size="small"
-                                    severity="danger"
-                                    class="action-button action-button--danger"
-                                    rounded
+                                <button
+                                    class="action-button action-button--delete"
                                     @click.stop="removeImage(0)">
                                     <FontAwesomeIcon :icon="faTrash" />
-                                </Button>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -227,52 +230,44 @@ function onDragEnd(): void {
 
                 <!-- Additional Images Grid -->
                 <div v-if="secondaryImages.length > 0 || canAddMore" class="images-grid">
-                    <TransitionGroup tag="div" class="contents">
-                        <div
-                            v-for="(image, index) in secondaryImages"
-                            :key="image.tempUrl || image.imageUrl || index"
-                            class="secondary-image group"
-                            :class="{
-                                dragging: isDragging && draggedImage === image,
-                            }"
-                            @dragstart="onDragStart($event, image.index ?? 0)"
-                            @dragover="onDragOver"
-                            @drop="onDrop($event, image.index ?? 0)"
-                            @dragend="onDragEnd"
-                            draggable>
-                            <img
-                                v-if="image.tempUrl"
-                                :src="image.tempUrl"
-                                :alt="`Afbeelding ${index + 2}`" />
+                    <div
+                        v-for="(image, index) in secondaryImages"
+                        :key="image.tempUrl || image.imageUrl || `image-${index}`"
+                        class="secondary-image group"
+                        :class="{
+                            dragging: isDragging && draggedImage === image,
+                        }"
+                        draggable="true"
+                        @dragstart="onDragStart($event, image)"
+                        @dragover="onDragOver"
+                        @drop="onDrop($event, image)"
+                        @dragend="onDragEnd">
+                        <img
+                            v-if="image.tempUrl"
+                            :src="image.tempUrl"
+                            :alt="`Afbeelding ${index + 2}`" />
 
-                            <!-- Actions -->
-                            <div class="image-actions">
-                                <div class="image-actions__buttons">
-                                    <Button
-                                        size="small"
-                                        severity="secondary"
-                                        class="action-button action-button--secondary"
-                                        rounded
-                                        @click.stop="setPrimary(image.index ?? 0)">
-                                        <FontAwesomeIcon :icon="faStar" />
-                                    </Button>
-                                    <Button
-                                        size="small"
-                                        severity="danger"
-                                        class="action-button action-button--danger"
-                                        rounded
-                                        @click.stop="removeImage(image.index ?? 0)">
-                                        <FontAwesomeIcon :icon="faTrash" />
-                                    </Button>
-                                </div>
-                            </div>
-
-                            <!-- Index Number -->
-                            <div class="image-index">
-                                {{ index + 2 }}
+                        <!-- Actions -->
+                        <div class="image-actions" @mousedown.stop @touchstart.stop>
+                            <div class="image-actions__buttons">
+                                <button
+                                    class="action-button action-button--star"
+                                    @click.stop="setPrimary(image.index ?? 0)">
+                                    <FontAwesomeIcon :icon="faStar" />
+                                </button>
+                                <button
+                                    class="action-button action-button--delete"
+                                    @click.stop="removeImage(image.index ?? 0)">
+                                    <FontAwesomeIcon :icon="faTrash" />
+                                </button>
                             </div>
                         </div>
-                    </TransitionGroup>
+
+                        <!-- Index Number -->
+                        <div class="image-index">
+                            {{ index + 2 }}
+                        </div>
+                    </div>
 
                     <!-- Add New Image Placeholder -->
                     <div v-if="canAddMore" class="add-placeholder" @click="openAddDialog">
@@ -373,13 +368,18 @@ function onDragEnd(): void {
 
         <template #footer>
             <div class="flex justify-end gap-3">
-                <Button severity="secondary" outlined size="small" @click="showAddDialog = false">
+                <button
+                    class="dialog-button dialog-button--secondary"
+                    @click="showAddDialog = false">
                     Annuleren
-                </Button>
-                <Button :disabled="!urlInput" size="small" @click="addImageFromUrl">
+                </button>
+                <button
+                    class="dialog-button dialog-button--primary"
+                    :disabled="!urlInput"
+                    @click="addImageFromUrl">
                     <FontAwesomeIcon :icon="faPlus" class="mr-2" />
                     Toevoegen
-                </Button>
+                </button>
             </div>
         </template>
     </Dialog>
@@ -402,7 +402,7 @@ function onDragEnd(): void {
 
 .primary-image {
     @apply relative overflow-hidden rounded-lg bg-gray-100;
-    @apply aspect-[16/9] transition-all duration-200;
+    @apply aspect-[16/9] transition-all duration-300;
     @apply select-none;
 
     img {
@@ -413,6 +413,7 @@ function onDragEnd(): void {
     .primary-image__badge {
         @apply absolute top-3 right-3 flex items-center gap-1 rounded-full px-2 py-1;
         @apply bg-white text-sm font-medium;
+        @apply transition-all duration-200;
     }
 }
 
@@ -422,7 +423,10 @@ function onDragEnd(): void {
 
     .secondary-image {
         @apply relative aspect-square cursor-move overflow-hidden rounded-lg bg-gray-100;
-        @apply transition-all duration-200;
+        @apply transition-all duration-300;
+
+        /* Smooth transitions for reordering */
+        transition-property: transform, opacity, grid-column, grid-row;
 
         &:active {
             @apply scale-95 opacity-80;
@@ -435,6 +439,7 @@ function onDragEnd(): void {
 
         &.dragging {
             @apply scale-95 opacity-50;
+            transition-duration: 150ms;
         }
     }
 }
@@ -467,15 +472,40 @@ function onDragEnd(): void {
 }
 
 .action-button {
-    @apply !bg-white/90 hover:!bg-white;
+    @apply flex h-9 w-9 items-center justify-center rounded-full;
+    @apply bg-white/95 shadow-sm backdrop-blur-sm;
+    @apply transition-all duration-200;
+    @apply hover:scale-110 active:scale-95;
+    @apply focus:ring-2 focus:ring-offset-2 focus:outline-none;
+
+    &.action-button--delete {
+        @apply text-red-600 hover:bg-red-50 hover:text-red-700;
+        @apply focus:ring-red-500;
+    }
+
+    &.action-button--star {
+        @apply text-yellow-500 hover:bg-yellow-50 hover:text-yellow-600;
+        @apply focus:ring-yellow-500;
+    }
 }
 
-.action-button--danger {
-    @apply !text-red-600;
-}
+.dialog-button {
+    @apply rounded-lg px-4 py-2 font-medium;
+    @apply transition-all duration-200;
+    @apply focus:ring-2 focus:ring-offset-2 focus:outline-none;
 
-.action-button--secondary {
-    @apply !text-gray-700;
+    &.dialog-button--secondary {
+        @apply bg-gray-100 text-gray-700;
+        @apply hover:bg-gray-200 active:bg-gray-300;
+        @apply focus:ring-gray-500;
+    }
+
+    &.dialog-button--primary {
+        @apply bg-primary-600 text-white;
+        @apply hover:bg-primary-700 active:bg-primary-800;
+        @apply focus:ring-primary-500;
+        @apply disabled:hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50;
+    }
 }
 
 .add-placeholder {

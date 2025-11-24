@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import InstitutionMembershipTable from '@/components/features/institution/InstitutionMembershipTable.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import DashboardDetailHeader from '@/layouts/manage/details/DashboardDetailHeader.vue';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useReadProfileInstitutionMemberships } from '@/composables/data/useMembers';

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import LocationSearch from '@/components/features/location/search/LocationSearchSpotlight.vue';
+import Container from '@/components/shared/atoms/Container.vue';
 import PublicHeader from '@/layouts/public//PublicHeader.vue';
 import PublicFooter from '@/layouts/public/PublicFooter.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
@@ -31,16 +32,16 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="wrapper">
+    <div class="public-layout">
         <Teleport to="body"> <LocationSearch v-model:visible="showSpotlight" /> </Teleport>
-        <header class="header">
-            <div class="content">
+        <header class="public-layout__header">
+            <Container>
                 <PublicHeader @click:search="showSpotlight = true" />
-            </div>
+            </Container>
         </header>
 
-        <main class="main">
-            <div class="content">
+        <main class="public-layout__main">
+            <Container>
                 <RouterView v-slot="{ Component }">
                     <KeepAlive :include="['LocationsPage']">
                         <Transition name="fade" mode="out-in">
@@ -48,13 +49,13 @@ onUnmounted(() => {
                         </Transition>
                     </KeepAlive>
                 </RouterView>
-            </div>
+            </Container>
         </main>
 
-        <footer class="footer">
-            <div class="content">
+        <footer class="public-layout__footer">
+            <Container>
                 <PublicFooter />
-            </div>
+            </Container>
         </footer>
     </div>
 </template>
@@ -62,30 +63,24 @@ onUnmounted(() => {
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.wrapper {
-    @apply w-full;
+.public-layout {
     @apply m-2 md:m-6;
     @apply flex flex-1 flex-col;
+}
 
-    .content {
-        @apply mx-auto max-w-[1420px] 2xl:w-[85vw] 2xl:max-w-[1920px];
-        @apply px-3 md:px-6;
-    }
+.public-layout__main {
+    @apply w-full flex-1 rounded-b-md;
+    @apply py-4 md:py-6;
+    @apply bg-slate-50;
+}
 
-    .main {
-        @apply w-full flex-1 rounded-b-md;
-        @apply py-4 md:py-6;
-        @apply bg-slate-50;
-    }
+.public-layout__header {
+    @apply rounded-t-md bg-white;
+    @apply border-b-2 border-slate-200 py-4 md:py-6;
+}
 
-    .header {
-        @apply rounded-t-md bg-white;
-        @apply border-b border-slate-200 py-4 md:py-6;
-    }
-
-    .footer {
-        @apply bg-slate-900 text-slate-300;
-        @apply pt-4 pb-1 md:pt-6;
-    }
+.public-layout__footer {
+    @apply bg-slate-900 text-slate-300;
+    @apply pt-4 pb-1 md:pt-6;
 }
 </style>

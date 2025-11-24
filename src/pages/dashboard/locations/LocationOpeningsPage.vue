@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import LocationOpeningBuilder from '@/components/features/location/builder/builders/LocationOpeningBuilder.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
 import { ref, watchEffect } from 'vue';
 import {
     useCreateOpeningTimes,

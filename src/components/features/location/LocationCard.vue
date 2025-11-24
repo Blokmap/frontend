@@ -3,7 +3,7 @@ import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getLocationPlaceholderImage } from '@/domain/location';
+import { getLocationImageUrl, getLocationPlaceholderImage } from '@/domain/location';
 import type { Location } from '@/domain/location';
 
 const { locale } = useI18n();
@@ -20,7 +20,7 @@ const props = withDefaults(
 
 const imageUrl = computed(() => {
     if (props.location.images?.length) {
-        return props.location.images[0].url;
+        return getLocationImageUrl(props.location);
     }
 
     return getLocationPlaceholderImage(props.location);
@@ -56,7 +56,7 @@ const imageUrl = computed(() => {
 
     .location__image {
         @apply relative h-full w-full overflow-hidden;
-        @apply rounded-2xl border border-slate-200;
+        @apply rounded-2xl shadow-md;
 
         img {
             @apply aspect-square h-full w-full rounded-xl object-cover;

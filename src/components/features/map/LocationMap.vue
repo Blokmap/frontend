@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Skeleton from 'primevue/skeleton';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useTemplateRef } from 'vue';
@@ -10,11 +11,13 @@ const props = withDefaults(
         interactive?: boolean;
         geoLocationControl?: boolean;
         autoGeolocation?: boolean;
+        loading?: boolean;
     }>(),
     {
         interactive: true,
         geoLocationControl: true,
         autoGeolocation: false,
+        loading: false,
     },
 );
 
@@ -38,7 +41,11 @@ useMapBox(mapContainer, {
 </script>
 
 <template>
-    <div ref="mapContainer" class="map relative h-full w-full rounded-lg">
+    <div v-if="loading" class="h-full w-full rounded-lg border border-slate-200">
+        <Skeleton class="rounded-lg" height="100%" width="100%" />
+    </div>
+
+    <div v-else ref="mapContainer" class="map relative h-full w-full rounded-lg">
         <FontAwesomeIcon class="crosshair" :icon="faLocationDot" />
     </div>
 </template>

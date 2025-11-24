@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
-import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import DashboardLoading from '@/layouts/manage/DashboardLoading.vue';
+import DashboardPageHeader from '@/layouts/manage/DashboardPageHeader.vue';
 
 // TODO: Add reviews loading logic
 const isLoading = false;

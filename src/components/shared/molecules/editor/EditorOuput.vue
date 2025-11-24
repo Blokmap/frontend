@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import Skeleton from 'primevue/skeleton';
 import DOMPurify from 'dompurify';
 import { computed } from 'vue';
 
@@ -8,6 +9,7 @@ import type { OutputData } from '@editorjs/editorjs';
 
 const props = defineProps<{
     data?: OutputData | string | null;
+    loading?: boolean;
 }>();
 
 const data = computed<OutputData>(() => {
@@ -23,7 +25,13 @@ function sanitize(html: string): string {
 </script>
 
 <template>
-    <template v-for="block in data.blocks">
+    <div v-if="loading">
+        <Skeleton height="18px" width="100%" class="mb-2" />
+        <Skeleton height="18px" width="90%" class="mb-2" />
+        <Skeleton height="18px" width="80%" />
+    </div>
+
+    <template v-else v-for="block in data.blocks">
         <template v-if="block.type.toLowerCase() === 'paragraph'">
             <p :key="block.id" class="ce-paragraph" v-html="sanitize(block.data.text)"></p>
         </template>

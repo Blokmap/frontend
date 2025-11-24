@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Card from 'primevue/card';
 import AuthorityForm from '@/components/features/authority/forms/AuthorityForm.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import DashboardDetailHeader from '@/layouts/manage/details/DashboardDetailHeader.vue';
 import { useUpdateAuthority } from '@/composables/data/useAuthorities';
 import type { Authority, AuthorityBody } from '@/domain/authority';
 import type { Profile } from '@/domain/profile';

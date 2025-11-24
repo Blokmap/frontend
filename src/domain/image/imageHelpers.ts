@@ -1,4 +1,42 @@
+import placeholder1 from '@/assets/img/placeholder/location-stock-1.jpg';
+import placeholder2 from '@/assets/img/placeholder/location-stock-2.jpg';
+import placeholder3 from '@/assets/img/placeholder/location-stock-3.jpg';
 import type { Image, ImageBody } from './imageTypes';
+import type { Location } from '../location';
+
+/**
+ * Returns up to 3 recent location images, filled with placeholders if needed.
+ * @param locations Array of locations, each with an images array
+ */
+export function getLocationImages(locations?: Location[]): Image[] {
+    const allImages = (locations ?? []).flatMap((loc, locIdx) =>
+        (loc.images ?? []).map((img) => ({ img, locIdx })),
+    );
+
+    allImages.sort((a, b) => {
+        if (a.img.index !== b.img.index) {
+            return a.img.index - b.img.index;
+        }
+        return a.locIdx - b.locIdx;
+    });
+
+    const images = allImages.map((x) => x.img).slice(0, 3);
+
+    const PLACEHOLDERS: string[] = [placeholder1, placeholder2, placeholder3];
+
+    if (images.length < 3) {
+        const missing = 3 - images.length;
+        for (let i = 0; i < missing; i++) {
+            images.push({
+                id: -1 - i,
+                url: PLACEHOLDERS[i % PLACEHOLDERS.length],
+                index: images.length + i,
+            });
+        }
+    }
+
+    return images;
+}
 
 /**
  * Converts an Image to an ImageBody for editing.

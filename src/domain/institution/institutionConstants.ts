@@ -1,5 +1,7 @@
 import { InstitutionCategory, type InstitutionBody } from './types';
 
+export const DEFAULT_INSTITUTION_SLUG = 'blokmap';
+
 export const DEFAULT_INSTITUTION_REQUEST: InstitutionBody = {
     category: InstitutionCategory.Education,
     name: {

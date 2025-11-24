@@ -6,8 +6,8 @@ import Tabs from 'primevue/tabs';
 import LocationImagesBuilder from '@/components/features/location/builder/builders/LocationImagesBuilder.vue';
 import LocationInformationBuilder from '@/components/features/location/builder/builders/LocationInformationBuilder.vue';
 import LocationSettingsBuilder from '@/components/features/location/builder/builders/LocationSettingsBuilder.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import DashboardDetailHeader from '@/layouts/manage/details/DashboardDetailHeader.vue';
 import {
     faCog,
     faImages,

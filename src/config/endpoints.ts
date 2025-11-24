@@ -56,6 +56,7 @@ export const endpoints = {
         locations: {
             list: '/profiles/{id}/locations',
             memberships: '/profiles/{id}/locations/memberships',
+            recent: '/profiles/{id}/locations/recent',
         },
         authorities: {
             list: '/profiles/{id}/authorities',

@@ -22,6 +22,8 @@ export function useFloatingPosition(
         const triggerRect = triggerRef.value.getBoundingClientRect();
         const overlayRect = overlayRef.value.getBoundingClientRect();
         const viewportHeight = window.innerHeight;
+        const scrollX = window.scrollX || window.pageXOffset;
+        const scrollY = window.scrollY || window.pageYOffset;
 
         // Position above if there's more space above and overlay won't fit below
         const spaceBelow = viewportHeight - triggerRect.bottom - 16;
@@ -29,8 +31,10 @@ export function useFloatingPosition(
         const positionOnTop = spaceBelow < overlayRect.height && spaceAbove > spaceBelow;
 
         // Calculate top position with an 8px margin
-        const left = triggerRect.left;
-        const top = positionOnTop ? triggerRect.top - overlayRect.height - 24 : triggerRect.bottom;
+        const left = triggerRect.left + scrollX;
+        const top = positionOnTop
+            ? triggerRect.top + scrollY - overlayRect.height - 8
+            : triggerRect.bottom + scrollY + 8;
 
         // Apply calculated styles
         positionStyles.value = {

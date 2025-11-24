@@ -2,8 +2,8 @@
 import Paginator from 'primevue/paginator';
 import ProfileTable from '@/components/features/profile/table/ProfileTable.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import DashboardDetailHeader from '@/layouts/manage/details/DashboardDetailHeader.vue';
 import { useDebounceFn } from '@vueuse/core';
 import { computed, ref } from 'vue';
 import { useReadInstitutionProfiles } from '@/composables/data/useProfile';

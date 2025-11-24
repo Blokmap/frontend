@@ -2,9 +2,9 @@
 import RoleActionsMenu from '@/components/features/auth/RoleActionsMenu.vue';
 import RoleBuilderDialog from '@/components/features/auth/forms/RoleBuilderDialog.vue';
 import RoleTable from '@/components/features/auth/roles/RoleTable.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
-import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
+import DashboardDetailHeader from '@/layouts/manage/details/DashboardDetailHeader.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { faMagnifyingGlass, faSliders } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 defineEmits<{
@@ -8,11 +8,15 @@ defineEmits<{
 </script>
 
 <template>
-    <button @click="$emit('click:search')" class="search-button">
-        <div class="flex w-full items-center">
-            <FontAwesomeIcon :icon="faMagnifyingGlass" class="search-icon" />
-            <span class="search-input">Zoek bloklocaties...</span>
-            <FontAwesomeIcon :icon="faSliders" class="filter-icon" />
+    <button @click="$emit('click:search')" class="location-search">
+        <div class="location-search__content">
+            <div class="location-search__icon-wrapper">
+                <FontAwesomeIcon :icon="faMagnifyingGlass" class="location-search__icon" />
+            </div>
+            <span class="location-search__text">Zoek bloklocaties...</span>
+            <!-- <div class="location-search__filter">
+                <FontAwesomeIcon :icon="faSliders" class="location-search__filter-icon" />
+            </div> -->
         </div>
     </button>
 </template>
@@ -20,29 +24,49 @@ defineEmits<{
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.search-button {
-    @apply px-4 py-2;
-    @apply w-full md:min-w-[280px];
-    @apply rounded-xl bg-slate-100;
-    @apply transition-all duration-150 ease-in-out;
-    @apply cursor-pointer text-[15px];
+.location-search {
+    @apply relative w-full md:min-w-[320px];
+    @apply cursor-pointer rounded-full;
+    @apply bg-slate-50 px-4 py-2;
     @apply shadow-playful;
-    --shadow-color: rgb(148 163 184 / 0.3);
+    @apply transition-all duration-200 ease-out;
+    @apply border-3 border-slate-200;
+    --shadow-color: var(--color-slate-200);
+    --shadow-size: 0.25rem;
 
     &:active {
         @apply shadow-playful-active;
     }
+}
 
-    .search-icon {
-        @apply h-4 w-4 text-gray-500;
-    }
+.location-search__content {
+    @apply flex w-full items-center gap-2.5;
+}
 
-    .search-input {
-        @apply mx-3 flex-1 font-medium text-gray-600;
-    }
+.location-search__icon-wrapper {
+    @apply flex h-7 w-7 items-center justify-center rounded-full;
+    @apply bg-gradient-to-br from-slate-300 to-slate-500;
+    @apply shadow-sm;
+}
 
-    .filter-icon {
-        @apply h-4 w-4 text-gray-400;
+.location-search__icon {
+    @apply h-4 w-4 text-white;
+}
+
+.location-search__text {
+    @apply flex-1 text-sm text-slate-600;
+}
+
+.location-search__filter {
+    @apply flex h-7 w-7 items-center justify-center rounded-full;
+    @apply bg-slate-100 transition-colors duration-150;
+
+    .location-search:hover & {
+        @apply bg-slate-200;
     }
+}
+
+.location-search__filter-icon {
+    @apply h-3.5 w-3.5 text-slate-600;
 }
 </style>

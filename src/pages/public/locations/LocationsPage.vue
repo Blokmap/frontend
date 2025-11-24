@@ -45,7 +45,7 @@ watch(locations, (locations) => {
 });
 
 watch(
-    [geoLocation, () => map.isLoaded],
+    [geoLocation, map.isLoaded],
     ([geoLocation, isLoaded]) => {
         try {
             if (isLoaded && geoLocation) {
@@ -76,9 +76,6 @@ const debouncedConfigUpdate = useDebounceFn(() => {
     filterStore.updateConfig({ center: map.center.value, zoom: map.zoom.value });
 }, 400);
 
-/**
- * Flies the map to the nearest location based on the current center.
- */
 function onNearestClick(): void {
     const center = map.center.value;
 
@@ -97,20 +94,19 @@ function onNearestClick(): void {
             </div>
 
             <div class="space-y-4" v-else>
-                <h2
-                    class="flex items-center justify-between text-lg font-semibold"
-                    data-testid="locations-title">
+                <h2 class="flex items-center justify-between text-lg font-semibold">
                     <span>
                         <template v-if="locations?.data?.length">
                             <span v-if="locations.truncated">
                                 {{
-                                    $t('pages.locations.filters.foundResultsTruncated', [
+                                    $t(
+                                        'pages.locations.filters.foundResultsTruncated',
                                         locations.total,
-                                    ])
+                                    )
                                 }}
                             </span>
                             <span v-else>
-                                {{ $t('pages.locations.filters.foundResults', [locations.total]) }}
+                                {{ $t('pages.locations.filters.foundResults', locations.total) }}
                             </span>
                         </template>
                         <template v-else>
@@ -148,26 +144,45 @@ function onNearestClick(): void {
                 </template>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 xl:grid-cols-3" data-testid="locations-grid">
-                <template v-if="locationsIsPending">
-                    <LocationCardSkeleton v-for="n in previousLocationCount" :key="n">
-                    </LocationCardSkeleton>
-                </template>
+            <Transition name="fade" mode="out-in">
+                <TransitionGroup
+                    :key="locations?.data?.map((l) => l.id).join(',')"
+                    name="staggered-cards"
+                    tag="div"
+                    appear
+                    class="locations-grid grid grid-cols-2 gap-4 xl:grid-cols-3">
+                    <template v-if="locationsIsPending">
+                        <div
+                            v-for="n in previousLocationCount"
+                            :key="`skeleton-${n}`"
+                            class="locations-grid__item"
+                            :style="{ '--i': n - 1 }">
+                            <LocationCardSkeleton></LocationCardSkeleton>
+                        </div>
+                    </template>
 
-                <template v-else-if="locations?.data?.length">
-                    <RouterLink
-                        v-for="location in locations.data"
-                        :key="location.id"
-                        :to="{ name: 'locations.detail', params: { locationId: location.id } }"
-                        data-testid="location-card-link">
-                        <LocationCard
-                            :location="location"
-                            @mouseenter="hoveredLocation = location"
-                            @mouseleave="hoveredLocation = null">
-                        </LocationCard>
-                    </RouterLink>
-                </template>
-            </div>
+                    <template v-else-if="locations?.data?.length">
+                        <div
+                            v-for="(location, index) in locations.data"
+                            :key="location.id"
+                            class="locations-grid__item"
+                            :style="{ '--i': index }">
+                            <RouterLink
+                                class="locations-grid__link"
+                                :to="{
+                                    name: 'locations.detail',
+                                    params: { locationId: location.id },
+                                }">
+                                <LocationCard
+                                    :location="location"
+                                    @mouseenter="hoveredLocation = location"
+                                    @mouseleave="hoveredLocation = null">
+                                </LocationCard>
+                            </RouterLink>
+                        </div>
+                    </template>
+                </TransitionGroup>
+            </Transition>
 
             <Paginator
                 :first="first(locations)"
@@ -177,12 +192,12 @@ function onNearestClick(): void {
             </Paginator>
         </div>
 
-        <div class="map-container">
+        <div class="map-container sticky top-4">
             <BlokMap
                 ref="blokMapRef"
                 :map="map"
                 v-model:hovered-location="hoveredLocation"
-                class="sticky top-4 w-full shadow-md"
+                class="w-full shadow-md"
                 :style="{ height: 'calc(100vh - 2rem)' }"
                 :locations="locations?.data"
                 :loading="locationsIsPending">
@@ -196,7 +211,7 @@ function onNearestClick(): void {
 
 .page-container {
     @apply flex w-full flex-col items-stretch gap-3;
-    @apply md:flex-row md:gap-6;
+    @apply md:flex-row md:items-start md:gap-6;
 }
 
 .locations-list {
@@ -207,5 +222,26 @@ function onNearestClick(): void {
 .map-container {
     @apply -mx-3 -my-4 w-[calc(100%+1.5rem)];
     @apply md:mx-0 md:my-0 md:flex md:w-1/2;
+}
+
+.locations-grid {
+    position: relative;
+}
+
+.locations-grid__item {
+    display: block;
+}
+
+.locations-grid__link {
+    display: block;
+    height: 100%;
+}
+
+.staggered-cards-enter-active {
+    transition-delay: calc(var(--i) * 0.04s);
+}
+
+.staggered-cards-leave-active {
+    transition-delay: calc(var(--i) * 0.02s);
 }
 </style>

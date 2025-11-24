@@ -1,18 +1,22 @@
 <script lang="ts" setup>
+import Skeleton from 'primevue/skeleton';
 import { faCalendarWeek, faChair, faClock, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { type Location, getLocationFeatures } from '@/domain/location';
 
 const props = defineProps<{
-    location: Location;
+    location?: Location;
+    loading?: boolean;
 }>();
 
 const features = computed(() => {
-    return getLocationFeatures(props.location);
+    return props.location ? getLocationFeatures(props.location) : null;
 });
 
 const featuresList = computed(() => {
+    if (!props.location || !features.value) return [];
+
     const list = [];
 
     if (features.value.openInMorning) {
@@ -75,19 +79,19 @@ const featuresList = computed(() => {
 </script>
 
 <template>
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-if="loading" class="features-grid">
+        <div v-for="n in 4" :key="n" class="flex items-center gap-3">
+            <Skeleton width="2rem" height="2rem" />
+            <Skeleton width="8rem" height="1rem" />
+        </div>
+    </div>
+
+    <div v-else class="features-grid">
         <div v-for="feature in featuresList" :key="feature.title" class="feature">
-            <div class="flex-shrink-0">
-                <FontAwesomeIcon :icon="feature.icon" :class="['h-5 w-5', feature.iconColor]" />
+            <div class="feature__icon">
+                <FontAwesomeIcon :icon="feature.icon" />
             </div>
-            <div class="min-w-0 flex-1">
-                <h4 class="font-medium text-gray-900">
-                    {{ feature.title }}
-                </h4>
-                <p class="mt-1 text-sm text-gray-600">
-                    {{ feature.description }}
-                </p>
-            </div>
+            <span class="feature__title">{{ feature.title }}</span>
         </div>
     </div>
 </template>
@@ -95,9 +99,19 @@ const featuresList = computed(() => {
 <style scoped>
 @reference '@/assets/styles/main.css';
 
+.features-grid {
+    @apply grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-3;
+}
+
 .feature {
-    @apply flex items-start gap-3 p-4;
-    @apply rounded-xl border border-slate-200 bg-white;
-    @apply transition-all hover:border-slate-300;
+    @apply flex items-center gap-3 text-lg;
+}
+
+.feature__icon {
+    @apply flex h-8 w-8 items-center justify-center text-gray-700;
+}
+
+.feature__title {
+    @apply text-sm text-gray-700;
 }
 </style>

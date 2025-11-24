@@ -3,9 +3,9 @@ import LocationActionMenu from '@/components/features/location/LocationActionMen
 import LocationDataItem from '@/components/features/location/LocationDataItem.vue';
 import EmptyState from '@/components/shared/molecules/EmptyState.vue';
 import DataList from '@/components/shared/molecules/datalist/DataList.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
-import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
+import DashboardDetailHeader from '@/layouts/manage/details/DashboardDetailHeader.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
@@ -80,7 +80,7 @@ function onDeleteLocation(locationId: number) {
                 </span>
             </template>
             <template #actions>
-                <RouterLink :to="{ name: 'locations.submit' }">
+                <RouterLink :to="{ name: 'locations.submit' }" v-if="isOwnProfile">
                     <PageHeaderButton label="Locatie Indienen" severity="contrast">
                         <FontAwesomeIcon :icon="faPlus" />
                     </PageHeaderButton>

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import TabNavigation, { type TabItem } from '@/components/shared/molecules/TabNavigation.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
-import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
-import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import DashboardLoading from '@/layouts/manage/DashboardLoading.vue';
+import DashboardNotFound from '@/layouts/manage/DashboardNotFound.vue';
+import DashboardDetailHeader from '@/layouts/manage/details/DashboardDetailHeader.vue';
 import {
     faBuilding,
     faList,

@@ -1,11 +1,13 @@
 .p-popover {
     /* Base styles */
     @apply bg-surface-0 text-surface-700;
-    @apply rounded-md shadow-md;
-    @apply mt-[10px];
+    @apply rounded-md shadow-lg;
+    @apply mt-[12px];
 
-    @apply before:pointer-events-none before:absolute before:bottom-full before:-ms-[6px] before:h-0 before:w-0 before:border-[6px] before:border-transparent before:border-b-slate-200;
-    @apply after:border-b-surface-0 after:pointer-events-none after:absolute after:bottom-full after:-ms-[5px] after:h-0 after:w-0 after:border-[5px] after:border-transparent;
+    &:after,
+    &:before {
+        @apply hidden;
+    }
 }
 
 .p-popover-content {
@@ -30,22 +32,4 @@
 
 .p-popover-leave-active {
     @apply transition-opacity duration-100 ease-linear;
-}
-
-.p-popover-flipped:after,
-.p-popover-flipped:before {
-    @apply top-full bottom-auto;
-}
-
-.p-popover.p-popover-flipped:after {
-    @apply border-t-surface-0 border-b-transparent;
-}
-
-.p-popover.p-popover-flipped:before {
-    @apply border-t-surface-200 border-b-transparent;
-}
-
-.p-popover:after,
-.p-popover:before {
-    left: calc(1.25rem + var(--p-popover-arrow-left));
 }

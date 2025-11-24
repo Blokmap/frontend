@@ -120,7 +120,6 @@ function goToNextWeek(): void {
     @apply rounded-lg text-sm font-medium text-gray-700;
     @apply transition-all duration-200;
     @apply hover:bg-gray-100;
-    @apply focus:ring-secondary-400 focus:ring-2 focus:ring-offset-1 focus:outline-none;
 
     &.active {
         @apply bg-gray-100;

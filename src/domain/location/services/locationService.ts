@@ -14,6 +14,7 @@ import {
     type NearestLocation,
     type LocationFilter,
     type LocationStateBody,
+    type RecentLocationFilter,
 } from '../types';
 import type { Image, ImageReorderBody, ImageBody } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
@@ -310,6 +311,29 @@ export async function readAuthorityLocations(authorityId: number): Promise<Locat
     const transformResponse = transformResponseFactory(parseLocationResponse);
 
     const { data } = await client.get<Location[]>(endpoint, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
+ * Fetches the recent locations associated with a specific profile.
+ * A recent location is defined as a location that the profile has most recently made reservations for.
+ *
+ * @param profileId - The ID of the profile whose recent locations are to be fetched.
+ * @returns A promise that resolves to a list of recent locations.
+ */
+export async function readRecentProfileLocations(
+    profileId: string,
+    filters: RecentLocationFilter = {},
+): Promise<Location[]> {
+    const endpoint = endpoints.profiles.locations.recent.replace('{id}', profileId.toString());
+
+    const transformResponse = transformResponseFactory(parseLocationResponse);
+
+    const { data } = await client.get<Location[]>(endpoint, {
+        params: filters,
         transformResponse,
     });
 

@@ -68,14 +68,14 @@
 /* Smooth Move Transition */
 /* Used for: Reordering list items, position changes with smooth movement */
 .slide-up-move {
-    @apply transition-transform duration-300 ease-out;
+    @apply transition-transform duration-100 ease-out;
 }
 
 /* Fade Transition */
 /* Used for: Simple fade in/out effects */
 .fade-enter-active,
 .fade-leave-active {
-    @apply transition-opacity duration-300 ease-out;
+    @apply transition-opacity duration-100 ease-out;
 }
 
 .fade-enter-from,
@@ -118,4 +118,62 @@
         opacity: 1;
         transform: translateX(0);
     }
+}
+
+/* Slide In Left Transition */
+.slide-in-left-enter-active {
+    @apply transition-all duration-500 ease-out;
+}
+
+.slide-in-left-enter-from {
+    @apply -translate-x-4 opacity-0;
+}
+
+.slide-in-left-enter-to {
+    @apply translate-x-0 opacity-100;
+}
+
+/* Staggered Cards Transition */
+/* Used for: Grid items with delayed enter/leave animations */
+.staggered-cards-enter-active {
+    transition:
+        opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+        transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.staggered-cards-enter-from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+}
+
+/* Fade Slide Up Transition */
+/* Used for: Page sections that fade in with a subtle upward motion */
+.fade-slide-up-enter-active {
+    @apply transition-all duration-500 ease-out;
+}
+
+.fade-slide-up-enter-from {
+    @apply translate-y-4 opacity-0;
+}
+
+.fade-slide-up-enter-to {
+    @apply translate-y-0 opacity-100;
+}
+
+/* Staggered Fade In Transition */
+/* Used for: Sequential content sections with delayed entrance */
+.stagger-fade-enter-active {
+    transition:
+        opacity 0.6s ease-out,
+        transform 0.6s ease-out;
+}
+
+.stagger-fade-enter-from {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.stagger-fade-enter-to {
+    opacity: 1;
+    transform: translateY(0);
 }

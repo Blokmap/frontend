@@ -2,9 +2,9 @@
 import ProfileHeader from '@/components/features/profile/ProfileHeader.vue';
 import ProfileAvatarDialog from '@/components/features/profile/avatar/ProfileAvatarDialog.vue';
 import TabNavigation, { type TabItem } from '@/components/shared/molecules/TabNavigation.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardLoading from '@/layouts/dashboard/DashboardLoading.vue';
-import DashboardNotFound from '@/layouts/dashboard/DashboardNotFound.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import DashboardLoading from '@/layouts/manage/DashboardLoading.vue';
+import DashboardNotFound from '@/layouts/manage/DashboardNotFound.vue';
 import { faBuilding, faCity, faIdCard, faMapLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { computed, ref } from 'vue';
 import { useReadProfile } from '@/composables/data/useProfile';

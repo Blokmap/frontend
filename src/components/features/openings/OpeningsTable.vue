@@ -34,11 +34,11 @@ const openingTimesByDay = computed(() => {
 </script>
 
 <template>
-    <div>
+    <div class="openings-table">
         <!-- Loading State -->
         <template v-if="isLoading">
-            <div class="space-y-2">
-                <div v-for="n in 7" :key="n" class="flex items-center justify-between py-2.5">
+            <div class="openings-table__loading">
+                <div v-for="n in 7" :key="n" class="openings-table__loading-item">
                     <div class="h-4 w-16 animate-pulse rounded bg-slate-200"></div>
                     <div class="h-4 w-24 animate-pulse rounded bg-slate-200"></div>
                 </div>
@@ -57,13 +57,11 @@ const openingTimesByDay = computed(() => {
 
         <!-- No Hours Available -->
         <template v-else>
-            <div class="flex flex-col items-center gap-3 rounded-lg bg-slate-50 py-8 text-center">
-                <FontAwesomeIcon :icon="faClock" class="h-8 w-8 text-slate-400" />
+            <div class="openings-table__empty">
+                <FontAwesomeIcon :icon="faClock" class="openings-table__empty-icon" />
                 <div>
-                    <p class="text-sm font-medium text-slate-700">
-                        Geen openingstijden beschikbaar
-                    </p>
-                    <p class="mt-1 text-xs text-slate-500">
+                    <p class="openings-table__empty-title">Geen openingstijden beschikbaar</p>
+                    <p class="openings-table__empty-subtitle">
                         Vraag de beheerder om openingstijden toe te voegen
                     </p>
                 </div>
@@ -72,4 +70,34 @@ const openingTimesByDay = computed(() => {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.openings-table {
+    @apply w-full;
+}
+
+.openings-table__loading {
+    @apply space-y-0 divide-y divide-slate-200;
+}
+
+.openings-table__loading-item {
+    @apply flex items-center justify-between py-2.5;
+}
+
+.openings-table__empty {
+    @apply flex flex-col items-center gap-3 border-2 border-dashed border-slate-200 py-8 text-center;
+}
+
+.openings-table__empty-icon {
+    @apply h-8 w-8 text-slate-400;
+}
+
+.openings-table__empty-title {
+    @apply text-sm font-medium text-slate-700;
+}
+
+.openings-table__empty-subtitle {
+    @apply mt-1 text-xs text-slate-500;
+}
+</style>

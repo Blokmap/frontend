@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Card from 'primevue/card';
 import InstitutionForm from '@/components/features/institution/forms/InstitutionForm.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardDetailHeader from '@/layouts/dashboard/details/DashboardDetailHeader.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import DashboardDetailHeader from '@/layouts/manage/details/DashboardDetailHeader.vue';
 import { useUpdateInstitution } from '@/composables/data/useInstitutions';
 import type { Institution, InstitutionBody } from '@/domain/institution';
 

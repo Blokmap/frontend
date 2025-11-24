@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
+import Skeleton from 'primevue/skeleton';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
@@ -8,6 +9,7 @@ import type { Image } from '@/domain/image';
 const props = defineProps<{
     images: Image[];
     placeholder?: string;
+    loading?: boolean;
 }>();
 
 const isFullscreen = ref<boolean>(false);
@@ -15,6 +17,12 @@ const selectedImageIndex = ref<number>(0);
 const loadedImages = ref<Set<number>>(new Set());
 
 const images = computed<Image[]>(() => [...props.images].sort((a, b) => a.index - b.index));
+
+const remainingImagesCount = computed<number>(() => {
+    const count = props.images.length;
+    if (count <= 4) return 0;
+    return count - 4;
+});
 
 const gridClasses = computed<string>(() => {
     const count = props.images.length;
@@ -106,8 +114,14 @@ onUnmounted(() => {
 </script>
 
 <template>
+    <!-- Loading State -->
+    <div v-if="loading" class="gallery gallery--skeleton grid-cols-4 grid-rows-2">
+        <Skeleton class="col-span-2 row-span-2" height="100%" width="100%" />
+        <Skeleton v-for="idx in 4" :key="idx" height="100%" width="100%" />
+    </div>
+
     <!-- Image grid -->
-    <div v-if="images.length > 0" :class="['gallery', gridClasses]">
+    <div v-else-if="images.length > 0" :class="['gallery', gridClasses]">
         <div
             v-for="item in imageLayout"
             :key="item.index"
@@ -125,6 +139,16 @@ onUnmounted(() => {
                 :src="item.image.url"
                 class="gallery__image gallery__image--loading"
                 @load="onImageLoad(item.index)" />
+
+            <!-- Overlay for last image -->
+            <div
+                v-if="item.index === imageLayout.length - 1 && images.length > 1"
+                class="gallery__overlay">
+                <span v-if="remainingImagesCount > 0" class="gallery__overlay-text">
+                    +{{ remainingImagesCount }} meer
+                </span>
+                <span v-else class="gallery__overlay-text"> Open in fullscreen </span>
+            </div>
         </div>
     </div>
 
@@ -170,23 +194,35 @@ onUnmounted(() => {
 @reference '@/assets/styles/main.css';
 
 .gallery {
-    @apply grid h-full w-full gap-1 overflow-hidden;
+    @apply grid h-full w-full gap-4 overflow-hidden;
+}
+
+.gallery--skeleton {
+    @apply gap-2 overflow-hidden rounded-xl;
 }
 
 .gallery__item {
-    @apply relative cursor-pointer overflow-hidden;
+    @apply relative cursor-pointer overflow-hidden rounded-lg;
 
     &:hover .gallery__image {
         @apply scale-110 brightness-90;
     }
 
     .gallery__image {
-        @apply h-full w-full object-cover shadow-md transition-all duration-300;
+        @apply h-full w-full rounded-lg object-cover shadow-md transition-all duration-300;
     }
 
     .gallery__image--loading {
         @apply opacity-0;
     }
+}
+
+.gallery__overlay {
+    @apply absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 transition-opacity duration-300;
+}
+
+.gallery__overlay-text {
+    @apply font-semibold text-white;
 }
 
 .gallery-fullscreen {

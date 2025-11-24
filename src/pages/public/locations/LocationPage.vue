@@ -2,19 +2,16 @@
 import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton';
 import Textarea from 'primevue/textarea';
-import AddressCard from '@/components/features/location/details/LocationAddressCard.vue';
+import LocationAddress from '@/components/features/location/details/LocationAddress.vue';
 import LocationFeatures from '@/components/features/location/details/LocationFeatures.vue';
 import LocationMap from '@/components/features/map/LocationMap.vue';
-import LocationMapSkeleton from '@/components/features/map/LocationMapSkeleton.vue';
 import OpeningsTable from '@/components/features/openings/OpeningsTable.vue';
-import OpeningsTableSkeleton from '@/components/features/openings/OpeningsTableSkeleton.vue';
 import ReservationBuilderDialog from '@/components/features/reservation/builder/ReservationBuilderDialog.vue';
 import ConfirmDialog from '@/components/shared/molecules/ConfirmDialog.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import EditorOuput from '@/components/shared/molecules/editor/EditorOuput.vue';
 import Gallery from '@/components/shared/organisms/image/Gallery.vue';
-import GallerySkeleton from '@/components/shared/organisms/image/GallerySkeleton.vue';
-import PageHeaderButton from '@/layouts/dashboard/PageHeaderButton.vue';
+import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
 import PublicContent from '@/layouts/public/PublicContent.vue';
 import { faArrowRight, faBullhorn, faEdit, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -29,6 +26,7 @@ import { useCreateLocationReport } from '@/composables/data/useReports';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useRouteDate } from '@/composables/useRouteDate';
 import { pushRedirectUrl } from '@/domain/auth';
+import { formatLocationAddress } from '@/domain/location';
 
 const { locationId } = defineProps<{ locationId: string }>();
 
@@ -122,23 +120,22 @@ function onLoginClick(): void {
 </script>
 
 <template>
-    <PublicContent>
-        <!-- Title and Quick Info -->
-        <div class="flex items-center justify-between gap-3">
-            <h1 class="text-3xl font-semibold text-gray-900" data-testid="location-name">
-                <template v-if="location">
-                    {{ location.name }}
-                </template>
-                <Skeleton v-else-if="isPending" height="36px" width="400px" />
-            </h1>
-            <div class="flex space-x-3">
+    <PublicContent class="location-page">
+        <!-- Header -->
+        <div v-if="!isPending && location" class="location-page__header">
+            <div class="my-4 space-y-1">
+                <h1 class="location-page__title">{{ location.name }}</h1>
+                <p class="location-page__subtitle">{{ formatLocationAddress(location) }}</p>
+            </div>
+
+            <div class="location-page__actions">
                 <template v-if="profile?.isAdmin">
                     <RouterLink
+                        v-if="location.isReservable"
                         :to="{
                             name: 'dashboard.locations.detail.reservations',
                             params: { locationId },
-                        }"
-                        v-if="location && location?.isReservable">
+                        }">
                         <PageHeaderButton
                             severity="contrast"
                             :label="$t('domains.reservations.name', 2)">
@@ -146,140 +143,144 @@ function onLoginClick(): void {
                         </PageHeaderButton>
                     </RouterLink>
 
-                    <Skeleton v-else-if="isPending" height="36px" width="120px" />
-
                     <RouterLink
-                        :to="{
-                            name: 'dashboard.locations.detail.info',
-                            params: { locationId },
-                        }">
+                        :to="{ name: 'dashboard.locations.detail.info', params: { locationId } }">
                         <PageHeaderButton severity="secondary" :label="$t('general.actions.edit')">
                             <FontAwesomeIcon :icon="faEdit" />
                         </PageHeaderButton>
                     </RouterLink>
                 </template>
 
-                <template v-if="profileId && !isPending">
-                    <PageHeaderButton severity="contrast" @click="onReportClick" text>
-                        <FontAwesomeIcon :icon="faBullhorn" />
-                    </PageHeaderButton>
-                </template>
+                <PageHeaderButton v-if="profileId" severity="contrast" text @click="onReportClick">
+                    <FontAwesomeIcon :icon="faBullhorn" />
+                </PageHeaderButton>
+            </div>
+        </div>
+
+        <div v-else-if="isPending" class="location-page__header">
+            <h1 class="location-page__title" data-testid="location-name">
+                <Skeleton height="36px" width="400px" />
+            </h1>
+            <div class="location-page__actions">
+                <Skeleton height="36px" width="120px" />
             </div>
         </div>
 
         <!-- Content Grid -->
-        <div class="grid gap-6 lg:grid-cols-3">
-            <!-- Main Content -->
-            <div class="space-y-6 lg:col-span-2">
-                <!-- Gallery -->
-                <div class="h-[450px] overflow-hidden rounded-2xl" v-if="location?.images?.length">
-                    <Gallery :images="location.images" :placeholder="placeholder"> </Gallery>
-                    <GallerySkeleton v-if="isPending" />
+        <div class="location-page__content">
+            <!-- Gallery -->
+            <Transition name="fade-slide-up" appear>
+                <div class="location-page__gallery">
+                    <Gallery
+                        :images="location?.images ?? []"
+                        :placeholder="placeholder"
+                        :loading="isPending" />
                 </div>
+            </Transition>
 
-                <!-- Description Section -->
-                <div class="max-w-[850px] py-6">
-                    <h2 class="mb-6 text-2xl font-semibold text-gray-900">
-                        <template v-if="location">
-                            {{ location.excerpt[locale] }}
-                        </template>
-                        <Skeleton v-else-if="isPending" height="28px" width="400px" />
-                    </h2>
+            <div class="location-page__grid">
+                <!-- Main Content -->
+                <div class="location-page__main">
+                    <Transition name="stagger-fade" appear>
+                        <div class="location-page__description">
+                            <h2
+                                v-if="!isPending && location"
+                                class="location-page__section-title !mb-5">
+                                {{ location.excerpt[locale] }}
+                            </h2>
+                            <Skeleton v-else height="28px" width="400px" class="mb-5" />
 
-                    <div class="space-y-4">
-                        <template v-if="location">
-                            <EditorOuput :data="location.description[locale]" />
-                        </template>
-                        <template v-else-if="isPending">
-                            <Skeleton height="18px" width="100%" class="mb-2" />
-                            <Skeleton height="18px" width="90%" class="mb-2" />
-                            <Skeleton height="18px" width="80%" />
-                        </template>
-                    </div>
-                </div>
-
-                <!-- Features Section -->
-                <div v-if="location" class="space-y-6 pb-6">
-                    <h2 class="text-2xl font-semibold text-gray-900">
-                        {{ $t('pages.locations.sections.features.title') }}
-                    </h2>
-                    <LocationFeatures :location="location" />
-                </div>
-
-                <!-- Location Section -->
-                <div class="space-y-6">
-                    <h2 class="text-2xl font-semibold text-gray-900">
-                        <template v-if="location">
-                            {{ $t('pages.locations.sections.geolocation.title') }}
-                        </template>
-                        <Skeleton v-else-if="isPending" height="28px" width="200px" />
-                    </h2>
-
-                    <!-- Address Card -->
-                    <AddressCard v-if="location" :location="location" />
-
-                    <Skeleton v-else-if="isPending" height="88px" width="100%" class="rounded-xl">
-                    </Skeleton>
-
-                    <!-- Map -->
-                    <div class="h-[400px] overflow-hidden rounded-xl shadow-sm">
-                        <LocationMap
-                            v-if="location"
-                            :center="[location.longitude, location.latitude]"
-                            :zoom="17"
-                            :interactive="false"
-                            :geo-location-control="false">
-                        </LocationMap>
-                        <LocationMapSkeleton v-else-if="isPending" />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sidebar -->
-            <div class="lg:col-span-1">
-                <div
-                    class="sticky top-8 rounded-xl border border-slate-200 bg-white px-3 py-6 md:px-6">
-                    <h3 class="text-xl font-semibold text-gray-900">
-                        <template v-if="location?.isReservable">
-                            {{ $t('pages.locations.sections.reservations.title') }}
-                        </template>
-                        <template v-else>
-                            {{ $t('domains.openings.name', 2) }}
-                        </template>
-                    </h3>
-
-                    <div class="my-6">
-                        <div class="space-y-6" v-if="location">
-                            <CalendarControls v-model:date="currentWeek" />
-                            <OpeningsTable
-                                :opening-times="openingTimes"
-                                :current-week="currentWeek"
-                                :loading="openingTimesIsPending">
-                            </OpeningsTable>
+                            <EditorOuput :data="location?.description[locale]" :loading="isPending">
+                            </EditorOuput>
                         </div>
-                        <OpeningsTableSkeleton v-else-if="isPending" />
-                    </div>
+                    </Transition>
 
-                    <!-- Action Button or No Reservation Needed -->
-                    <template v-if="location?.isReservable">
-                        <Button
-                            class="w-full"
-                            @click="showReservationDialog = true"
-                            v-if="profileId">
-                            {{ $t('pages.locations.sections.reservations.create') }}
-                            <FontAwesomeIcon :icon="faArrowRight" />
-                        </Button>
-                        <Button class="w-full" severity="contrast" @click="onLoginClick" v-else>
-                            {{ $t('pages.locations.sections.reservations.login') }}
-                            <FontAwesomeIcon :icon="faArrowRight" />
-                        </Button>
-                    </template>
-                    <template v-else-if="location && !location.isReservable">
-                        <div class="text-center">
-                            {{ $t('pages.locations.sections.reservations.notNeeded') }}
+                    <div class="location-page__divider"></div>
+
+                    <Transition name="stagger-fade" appear>
+                        <div class="location-page__features">
+                            <h2 class="location-page__section-title">
+                                {{ $t('pages.locations.sections.features.title') }}
+                            </h2>
+                            <LocationFeatures :location="location" :loading="isPending" />
                         </div>
-                    </template>
+                    </Transition>
+
+                    <div class="location-page__divider"></div>
+
+                    <Transition name="stagger-fade" appear>
+                        <div class="location-page__location">
+                            <h2 class="location-page__section-title">
+                                {{ $t('pages.locations.sections.geolocation.title') }}
+                            </h2>
+
+                            <LocationAddress :location="location" :loading="isPending" />
+
+                            <div class="location-page__map">
+                                <LocationMap
+                                    v-if="location"
+                                    :center="[location.longitude, location.latitude]"
+                                    :zoom="17"
+                                    :interactive="false"
+                                    :geo-location-control="false"
+                                    :loading="isPending">
+                                </LocationMap>
+                                <LocationMap v-else :loading="true"></LocationMap>
+                            </div>
+                        </div>
+                    </Transition>
                 </div>
+
+                <!-- Sidebar -->
+                <Transition name="stagger-fade" appear>
+                    <div class="location-page__sidebar">
+                        <div class="location-page__sidebar-card">
+                            <h3 v-if="!isPending && location" class="location-page__sidebar-title">
+                                <template v-if="location.isReservable">
+                                    {{ $t('pages.locations.sections.reservations.title') }}
+                                </template>
+                                <template v-else>
+                                    {{ $t('domains.openings.name', 2) }}
+                                </template>
+                            </h3>
+                            <Skeleton v-else height="24px" width="150px" class="mb-6" />
+
+                            <div class="location-page__sidebar-content">
+                                <CalendarControls v-model:date="currentWeek" />
+                                <OpeningsTable
+                                    :opening-times="openingTimes"
+                                    :current-week="currentWeek"
+                                    :loading="openingTimesIsPending">
+                                </OpeningsTable>
+                            </div>
+
+                            <div
+                                v-if="!isPending && location?.isReservable"
+                                class="location-page__cta">
+                                <Button
+                                    v-if="profileId"
+                                    class="w-full"
+                                    @click="showReservationDialog = true">
+                                    {{ $t('pages.locations.sections.reservations.create') }}
+                                    <FontAwesomeIcon :icon="faArrowRight" />
+                                </Button>
+                                <Button
+                                    v-else
+                                    class="w-full"
+                                    severity="secondary"
+                                    @click="onLoginClick">
+                                    {{ $t('pages.locations.sections.reservations.login') }}
+                                    <FontAwesomeIcon :icon="faArrowRight" />
+                                </Button>
+                            </div>
+                            <div
+                                v-else-if="!isPending && location && !location.isReservable"
+                                class="location-page__no-reservation">
+                                {{ $t('pages.locations.sections.reservations.notNeeded') }}
+                            </div>
+                        </div>
+                    </div>
+                </Transition>
             </div>
         </div>
 
@@ -321,3 +322,108 @@ function onLoginClick(): void {
         </Teleport>
     </PublicContent>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.location-page {
+    @apply mx-auto w-full max-w-[1280px] space-y-6;
+}
+
+.location-page__header {
+    @apply flex items-center justify-between gap-3;
+}
+
+.location-page__title {
+    @apply text-3xl font-extrabold text-gray-900;
+}
+
+.location-page__subtitle {
+    @apply text-slate-500;
+}
+
+.location-page__actions {
+    @apply flex space-x-3;
+}
+
+.location-page__content {
+    @apply space-y-6;
+}
+
+.location-page__grid {
+    @apply mt-8 grid gap-8 lg:grid-cols-3;
+}
+
+.location-page__gallery {
+    @apply h-[450px] overflow-hidden rounded-2xl;
+}
+
+.location-page__address {
+    @apply w-full;
+}
+
+.location-page__main {
+    @apply lg:col-span-2;
+}
+
+.location-page__divider {
+    @apply my-8 h-[2px] bg-slate-200;
+}
+
+.location-page__description {
+    @apply max-w-[850px];
+}
+
+.location-page__section-title {
+    @apply mt-0 mb-8 text-2xl font-semibold text-gray-900;
+}
+
+.location-page__content {
+    @apply space-y-4;
+}
+
+.location-page__map {
+    @apply mt-8 h-[400px] overflow-hidden rounded-xl shadow-sm;
+}
+
+.location-page__sidebar {
+    @apply pt-6 lg:col-span-1;
+}
+
+.location-page__sidebar-card {
+    @apply sticky top-8 rounded-xl bg-white p-6 shadow-md;
+}
+
+.location-page__sidebar-title {
+    @apply mb-6 text-2xl font-semibold text-gray-900;
+}
+
+.location-page__sidebar-content {
+    @apply space-y-4;
+}
+
+.location-page__cta {
+    @apply mt-6 w-full;
+}
+
+.location-page__no-reservation {
+    @apply mt-6 text-center;
+}
+
+/* Staggered transition delays for sections */
+.location-page__description {
+    transition-delay: 0.1s;
+}
+
+.location-page__features {
+    transition-delay: 0.2s;
+}
+
+.location-page__location {
+    transition-delay: 0.3s;
+}
+
+.location-page__sidebar {
+    transition-delay: 0.4s;
+}
+</style>

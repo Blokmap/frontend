@@ -21,6 +21,8 @@ import {
     deleteLocationImage,
     reorderLocationImages,
     readAuthorityLocations,
+    readRecentProfileLocations,
+    type RecentLocationFilter,
 } from '@/domain/location';
 import {
     readLocationReservations,
@@ -561,4 +563,25 @@ export function useDeleteLocation(options: CompMutationOptions = {}): CompMutati
     });
 
     return mutation;
+}
+
+export function useReadRecentProfileLocations(
+    profileId: MaybeRef<string | null>,
+    filters: MaybeRef<RecentLocationFilter> = {},
+    options: CompQueryOptions = {},
+): CompQuery<Location[]> {
+    const enabled = computed(() => toValue(profileId) !== null);
+
+    const query = useQuery<Location[], AxiosError>({
+        ...options,
+        enabled,
+        queryKey: ['locations', 'list', 'byProfile', 'recent', profileId, filters],
+        queryFn: () => {
+            const profileIdValue = toValue(profileId)!;
+            const filtersValue = toValue(filters);
+            return readRecentProfileLocations(profileIdValue, filtersValue);
+        },
+    });
+
+    return query;
 }

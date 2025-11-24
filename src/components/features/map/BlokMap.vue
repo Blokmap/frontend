@@ -128,6 +128,7 @@ defineExpose({ mapContainer });
                 :key="location.id"
                 :position="[location.longitude, location.latitude]"
                 :map="props.map"
+                :location="location"
                 :active="location.id === hoveredLocation?.id"
                 @click="onMarkerClick(location.id)"
                 @mouseenter="onMarkerMouseEnter(location)"

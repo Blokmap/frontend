@@ -116,10 +116,6 @@ body {
         @apply text-inherit;
     }
 
-    #app {
-        @apply flex h-full min-h-[100vh];
-    }
-
     &.dark {
         @apply bg-surface-900 text-surface-0;
     }

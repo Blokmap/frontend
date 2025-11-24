@@ -43,8 +43,7 @@ const copyToClipboard = async () => {
 @reference '@/assets/styles/main.css';
 
 .copy-button {
-    @apply inline-flex items-center justify-center;
-    @apply rounded;
+    @apply inline-flex items-center justify-center rounded;
     @apply text-gray-400 hover:text-gray-600;
     @apply transition-colors duration-200;
     @apply cursor-pointer;
@@ -56,9 +55,5 @@ const copyToClipboard = async () => {
     &--copied {
         @apply text-green-600;
     }
-}
-
-.copy-button__icon {
-    @apply text-sm;
 }
 </style>

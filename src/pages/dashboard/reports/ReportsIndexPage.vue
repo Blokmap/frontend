@@ -13,8 +13,8 @@ import ProfileReportDataItem from '@/components/features/profile/ProfileReportDa
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
 import DataList from '@/components/shared/molecules/datalist/DataList.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import DashboardPageHeader from '@/layouts/manage/DashboardPageHeader.vue';
 
 import { useDebounceFn } from '@vueuse/core';
 import { computed, ref } from 'vue';

@@ -4,8 +4,8 @@ import ProfileActionMenu from '@/components/features/profile/ProfileActionMenu.v
 import ProfileTable from '@/components/features/profile/table/ProfileTable.vue';
 import ResultSummary from '@/components/shared/atoms/ResultSummary.vue';
 import SearchField from '@/components/shared/atoms/SearchField.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import DashboardPageHeader from '@/layouts/manage/DashboardPageHeader.vue';
 import { useDebounceFn } from '@vueuse/core';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Card from 'primevue/card';
 import AuthorityForm from '@/components/features/authority/forms/AuthorityForm.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
-import DashboardPageHeader from '@/layouts/dashboard/DashboardPageHeader.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import DashboardPageHeader from '@/layouts/manage/DashboardPageHeader.vue';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCreateAuthority } from '@/composables/data/useAuthorities';

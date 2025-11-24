@@ -3,7 +3,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import LocationReservationsTable from '@/components/features/reservation/table/LocationReservationsTable.vue';
 import DateInput from '@/components/shared/molecules/form/DateInput.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
 import { faQrcode, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';

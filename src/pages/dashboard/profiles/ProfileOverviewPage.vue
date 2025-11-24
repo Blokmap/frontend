@@ -6,7 +6,7 @@ import StatsCard from '@/components/features/profile/stats/StatsCard.vue';
 import StatsCardSkeleton from '@/components/features/profile/stats/StatsCardSkeleton.vue';
 import ProfileReservationsTable from '@/components/features/reservation/table/ProfileReservationsTable.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
-import DashboardContent from '@/layouts/dashboard/DashboardContent.vue';
+import DashboardContent from '@/layouts/manage/DashboardContent.vue';
 import { faCalendarDays, faChartLine, faClock } from '@fortawesome/free-solid-svg-icons';
 import { computed, ref } from 'vue';
 import { useAuthProfile } from '@/composables/data/useAuth';

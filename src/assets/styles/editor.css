@@ -39,7 +39,7 @@
     a {
         @apply inline-flex items-center px-1 py-0.5;
         @apply rounded-t-sm font-semibold no-underline;
-        @apply border-secondary-700 text-secondary-700 border-b;
+        @apply border-secondary-500 text-secondary-500 border-b;
         @apply bg-[length:1px_0] bg-bottom bg-repeat-x;
         @apply transition-[background-size] duration-200;
 

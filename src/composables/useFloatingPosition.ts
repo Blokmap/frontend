@@ -1,4 +1,4 @@
-import { nextTick, ref, watch, type Ref } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 
 /**
  * Composable to manage the floating position of an overlay element relative to a trigger element.
@@ -7,17 +7,21 @@ import { nextTick, ref, watch, type Ref } from 'vue';
  * @param triggerRef - Ref to the trigger HTMLElement
  * @param overlayRef - Ref to the overlay HTMLElement
  * @param isVisible - Ref indicating whether the overlay is visible
+ * @param enforceMaxWidth - Whether to enforce the overlay's max-width to match the trigger's width
  * @returns An object containing styles for positioning and a method to update the position
  */
 export function useFloatingPosition(
     triggerRef: Ref<HTMLElement | null>,
     overlayRef: Ref<HTMLElement | null>,
     isVisible: Ref<boolean>,
+    enforceMaxWidth: boolean = false,
 ) {
     const positionStyles = ref<Record<string, string>>({});
 
     function updatePosition() {
-        if (!triggerRef.value || !overlayRef.value) return;
+        if (!triggerRef.value || !overlayRef.value) {
+            return;
+        }
 
         const triggerRect = triggerRef.value.getBoundingClientRect();
         const overlayRect = overlayRef.value.getBoundingClientRect();
@@ -42,7 +46,22 @@ export function useFloatingPosition(
             left: `${left}px`,
             top: `${top}px`,
             zIndex: '9999',
+            ...(enforceMaxWidth ? { maxWidth: `${triggerRect.width}px` } : {}),
         };
+    }
+
+    function onOutsideClick(event: MouseEvent) {
+        const triggerEl = triggerRef.value;
+        const containerEl = overlayRef.value;
+
+        if (
+            containerEl &&
+            !containerEl.contains(event.target as Node) &&
+            triggerEl &&
+            !triggerEl.contains(event.target as Node)
+        ) {
+            isVisible.value = false;
+        }
     }
 
     watch(isVisible, async (visible) => {
@@ -50,6 +69,14 @@ export function useFloatingPosition(
             await nextTick();
             updatePosition();
         }
+    });
+
+    onMounted(() => {
+        document.addEventListener('click', onOutsideClick);
+    });
+
+    onUnmounted(() => {
+        document.removeEventListener('click', onOutsideClick);
     });
 
     return {

@@ -7,6 +7,7 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import LoginForm from '@/components/features/auth/forms/LoginForm.vue';
 import RegisterForm from '@/components/features/auth/forms/RegisterForm.vue';
+import InstitutionLogo from '@/components/features/institution/InstitutionLogo.vue';
 import { faArrowRight, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { isAxiosError } from 'axios';
@@ -145,15 +146,12 @@ function switchToRegister(): void {
             </template>
             <template #option="{ option }">
                 <div class="flex items-center gap-2">
-                    <img
-                        :alt="option.name"
-                        :src="option.logo.url"
-                        class="h-10 w-10 object-contain" />
+                    <InstitutionLogo :slug="option.slug" class="h-8 w-8 object-contain" />
                     <div class="flex flex-col">
                         <p class="text-sm font-bold">
                             {{ option.slug[locale] }}
                         </p>
-                        <p class="text-sm text-gray-400">
+                        <p class="text-sm text-slate-700">
                             {{ option.name[locale] }}
                         </p>
                     </div>

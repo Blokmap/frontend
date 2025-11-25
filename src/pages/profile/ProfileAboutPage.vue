@@ -11,6 +11,6 @@ const { data: stats } = useReadProfileStats(computed(() => profile.value?.id ?? 
 <template>
     <div class="space-y-6">
         <h1 class="text-3xl font-extrabold">Mijn Profiel</h1>
-        <ProfileCard class="w-full" :profile="profile" :stats="stats" />
+        <ProfileCard class="w-full" :profile="profile" :stats="stats" show-qr />
     </div>
 </template>

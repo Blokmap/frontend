@@ -64,19 +64,18 @@ onUnmounted(() => {
 @reference '@/assets/styles/main.css';
 
 .public-layout {
-    @apply m-2 md:m-6;
+    @apply m-0 h-screen md:m-6;
     @apply flex flex-1 flex-col;
 }
 
 .public-layout__main {
-    @apply w-full flex-1 rounded-b-md;
-    @apply py-4 md:py-6;
-    @apply bg-slate-50;
+    @apply w-full flex-1 py-4 md:py-6;
+    @apply bg-slate-50 md:rounded-b-md;
 }
 
 .public-layout__header {
-    @apply rounded-t-md bg-white;
-    @apply border-b-2 border-slate-200 py-4 md:py-6;
+    @apply py-4 md:py-6;
+    @apply border-b-2 border-slate-200 bg-white md:rounded-t-md;
 }
 
 .public-layout__footer {

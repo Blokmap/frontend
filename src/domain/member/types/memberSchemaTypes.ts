@@ -1,10 +1,9 @@
-// A role defines a set of permissions that can be assigned to members.
 import type { Authority } from '@/domain/authority';
 import type { Institution } from '@/domain/institution';
 import type { Location } from '@/domain/location';
 import type { Profile } from '@/domain/profile';
 
-// This is a opaque type used throughout the member domain.
+// Opaque type used throughout the member domain.
 export type Role = {
     id: number;
     name: string;
@@ -14,6 +13,7 @@ export type Role = {
     updatedAt: Date;
 };
 
+// Recursive permissions for a profile on a location, authority or institution
 export type RecursivePermissions = {
     location: number;
     authority: number;
@@ -64,4 +64,11 @@ export type AuthorityMembership = {
 export type InstitutionMembership = {
     institution: Institution;
     role: Role | null;
+};
+
+// An institution membership with its associated authority memberships
+// A user can have multiple authority memberships within a single institution,
+// for which they don't necessarily have a role at the institution level.
+export type InstitutionAuthorityMemberships = InstitutionMembership & {
+    authorities: AuthorityMembership[];
 };

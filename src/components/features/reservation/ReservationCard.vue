@@ -94,7 +94,7 @@ function onCancel() {
     }
 
     .reservation-card__stack {
-        @apply h-12 w-12 flex-shrink-0 rounded-lg;
+        @apply h-14 w-14 flex-shrink-0 rounded-lg;
     }
 }
 </style>

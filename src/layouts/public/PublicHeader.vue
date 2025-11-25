@@ -83,8 +83,4 @@ onUnmounted(() => {
 .header__actions {
     @apply flex items-center gap-4;
 }
-
-.header__profile-link {
-    @apply hidden md:inline;
-}
 </style>

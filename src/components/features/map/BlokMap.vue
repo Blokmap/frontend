@@ -3,7 +3,7 @@ import Carousel from '@/components/shared/molecules/Carousel.vue';
 import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useGeolocation } from '@vueuse/core';
-import { computed, useTemplateRef, watch } from 'vue';
+import { computed, ref, useTemplateRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { type Location } from '@/domain/location';
@@ -29,7 +29,9 @@ const { locale } = useI18n();
 const { coords } = useGeolocation();
 
 const router = useRouter();
-const mapContainer = useTemplateRef('mapContainer');
+
+// Track whether we have flown to the user's location.
+const hasFlownToUserLocation = ref<boolean>(false);
 
 // Track clusters
 const clusters = computed(() => props.map.getClusters?.() || []);
@@ -90,16 +92,14 @@ watch(
 );
 
 // Fly to user's geolocation when available
-watch(
-    coords,
-    (newCoords) => {
-        if (props.map.isLoaded.value && newCoords) {
-            props.map.flyTo([newCoords.longitude, newCoords.latitude], 15);
-        }
-    },
-    { once: true },
-);
+watch([props.map.isLoaded, coords], async ([isLoaded, coords]) => {
+    if (isLoaded && coords && !hasFlownToUserLocation.value) {
+        props.map.flyTo([coords.longitude, coords.latitude], 15);
+        hasFlownToUserLocation.value = true;
+    }
+});
 
+const mapContainer = useTemplateRef('mapContainer');
 defineExpose({ mapContainer });
 </script>
 

@@ -26,7 +26,7 @@ defineEmits<{
 
 .location-search {
     @apply relative w-full md:min-w-[320px];
-    @apply cursor-pointer rounded-full;
+    @apply cursor-pointer rounded-xl;
     @apply bg-slate-50 px-4 py-2;
     @apply shadow-playful;
     @apply transition-all duration-200 ease-out;
@@ -44,13 +44,11 @@ defineEmits<{
 }
 
 .location-search__icon-wrapper {
-    @apply flex h-7 w-7 items-center justify-center rounded-full;
-    @apply bg-gradient-to-br from-slate-300 to-slate-500;
-    @apply shadow-sm;
+    @apply flex items-center justify-center rounded-full;
 }
 
 .location-search__icon {
-    @apply h-4 w-4 text-white;
+    @apply h-4 w-4 text-slate-600;
 }
 
 .location-search__text {

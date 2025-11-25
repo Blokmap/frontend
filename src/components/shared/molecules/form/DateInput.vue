@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DatePicker from 'primevue/datepicker';
 import InputText from 'primevue/inputtext';
-import { computed, onMounted, onUnmounted, useTemplateRef } from 'vue';
+import { computed, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFloatingPosition } from '@/composables/useFloatingPosition';
 
@@ -41,28 +41,12 @@ function toggleOverlay(): void {
     isVisible.value = !isVisible.value;
 }
 
-function handleClickOutside(event: Event): void {
-    const container = containerRef.value;
-
-    if (container && !container.contains(event.target as Node)) {
-        hideOverlay();
-    }
-}
-
 function handleDateSelect(newDate: any): void {
     if (newDate && newDate instanceof Date) {
         date.value = newDate;
         hideOverlay();
     }
 }
-
-onMounted(() => {
-    document.addEventListener('click', handleClickOutside);
-});
-
-onUnmounted(() => {
-    document.removeEventListener('click', handleClickOutside);
-});
 </script>
 
 <template>

@@ -44,6 +44,7 @@ import {
 } from '@/domain/member';
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
+import type { AuthorityIncludes } from '@/domain/authority';
 import type { LocationFilter } from '@/domain/location';
 import type {
     CompMutation,
@@ -419,13 +420,19 @@ export function useDeleteLocationMember(
  * Composable to read a profile's location memberships.
  */
 export function useReadProfileLocationMemberships(
-    profileId: MaybeRef<string>,
+    profileId: MaybeRef<string | null>,
     options: CompQueryOptions = {},
 ): CompQuery<LocationMembership[]> {
+    const enabled = computed(() => toValue(profileId) !== null);
+
     const query = useQuery({
         ...options,
+        enabled,
         queryKey: ['memberships', 'list', 'locations', 'byProfile', profileId],
-        queryFn: () => readProfileLocationMemberships(toValue(profileId)),
+        queryFn: () => {
+            const profileIdValue = toValue(profileId)!;
+            return readProfileLocationMemberships(profileIdValue);
+        },
     });
 
     return query;
@@ -437,7 +444,7 @@ export function useReadProfileLocationMemberships(
  */
 export function useReadProfileAuthorityMemberships(
     profileId: MaybeRef<string | null>,
-    options: CompQueryOptions = {},
+    options: CompQueryOptions<AuthorityIncludes> = {},
 ): CompQuery<AuthorityMembership[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 
@@ -447,7 +454,7 @@ export function useReadProfileAuthorityMemberships(
         queryKey: ['memberships', 'list', 'byProfileAuthorities', profileId],
         queryFn: () => {
             const profileIdValue = toValue(profileId);
-            return readProfileAuthorityMemberships(profileIdValue!);
+            return readProfileAuthorityMemberships(profileIdValue!, options.includes);
         },
     });
 
@@ -458,13 +465,19 @@ export function useReadProfileAuthorityMemberships(
  * Composable to read a profile's institution memberships.
  */
 export function useReadProfileInstitutionMemberships(
-    profileId: MaybeRef<string>,
+    profileId: MaybeRef<string | null>,
     options: CompQueryOptions = {},
 ): CompQuery<InstitutionMembership[]> {
+    const enabled = computed(() => toValue(profileId) !== null);
+
     const query = useQuery({
         ...options,
+        enabled,
         queryKey: ['memberships', 'list', 'byProfileInstitutions', profileId],
-        queryFn: () => readProfileInstitutionMemberships(toValue(profileId)),
+        queryFn: () => {
+            const profileIdValue = toValue(profileId)!;
+            return readProfileInstitutionMemberships(profileIdValue);
+        },
     });
 
     return query;

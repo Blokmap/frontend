@@ -14,6 +14,8 @@ const { data: profile } = useAuthProfile();
 
 const currentDate = ref(new Date());
 
+const cancellingId = ref<string | null>(null);
+
 const { data: recentLocations } = useReadRecentProfileLocations(
     computed(() => profile.value?.id ?? null),
     computed(() => ({ maxCount: 5 })),
@@ -24,19 +26,17 @@ const { data: reservations, isLoading: loading } = useReadProfileReservations(
     computed(() => ({ inWeekOf: currentDate.value })),
 );
 
-const { mutate: deleteReservation, isPending: isDeleting } = useDeleteReservation();
-const cancellingId = ref<string | null>(null);
+const { mutate: deleteReservation, isPending: isDeleting } = useDeleteReservation({
+    onMutate: (variables) => {
+        cancellingId.value = variables.reservationId;
+    },
+    onSettled: () => {
+        cancellingId.value = null;
+    },
+});
 
 function onCancel(reservation: Reservation) {
-    cancellingId.value = reservation.id;
-    deleteReservation(
-        { reservationId: reservation.id },
-        {
-            onSettled: () => {
-                cancellingId.value = null;
-            },
-        },
-    );
+    deleteReservation({ reservationId: reservation.id });
 }
 </script>
 

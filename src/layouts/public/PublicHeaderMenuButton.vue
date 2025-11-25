@@ -21,6 +21,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useAuthLogout } from '@/composables/data/useAuth';
 import { useReadRecentProfileLocations } from '@/composables/data/useLocations';
+import { DOCS_URL } from '@/config';
 import { getLocationImages, type Image } from '@/domain/image';
 import type { Profile } from '@/domain/profile/types/profileSchemaTypes';
 
@@ -82,10 +83,7 @@ function closeMenu(): void {
             <!-- Profile Header -->
             <RouterLink
                 v-if="profile"
-                :to="{
-                    name: 'dashboard.profiles.detail.overview',
-                    params: { profileId: profile.id },
-                }"
+                :to="{ name: 'profile' }"
                 @click="closeMenu"
                 class="menu-popover__profile">
                 <ProfileAvatar :profile="profile" class="h-12 w-12" />
@@ -101,6 +99,11 @@ function closeMenu(): void {
 
             <!-- Navigation Items (Authenticated) -->
             <nav v-if="profile" class="menu-popover__nav">
+                <RouterLink :to="{ name: 'profile' }" @click="closeMenu" class="menu-popover__item">
+                    <FontAwesomeIcon :icon="faUser" class="w-4" />
+                    <span>Profiel</span>
+                </RouterLink>
+
                 <RouterLink
                     :to="{ name: 'profile', hash: '#reservations' }"
                     @click="closeMenu"
@@ -109,15 +112,10 @@ function closeMenu(): void {
                     <span>Reservaties</span>
                 </RouterLink>
 
-                <RouterLink :to="{ name: 'profile' }" @click="closeMenu" class="menu-popover__item">
-                    <FontAwesomeIcon :icon="faUser" class="w-4" />
-                    <span>Profiel</span>
-                </RouterLink>
-
-                <button class="menu-popover__item">
+                <RouterLink :to="{ name: 'manage' }" class="menu-popover__item">
                     <FontAwesomeIcon :icon="faSliders" class="w-4" />
                     <span>Beheermodus</span>
-                </button>
+                </RouterLink>
             </nav>
 
             <div v-if="profile" class="menu-popover__divider"></div>
@@ -149,10 +147,10 @@ function closeMenu(): void {
                     </template>
                 </LanguageSelector>
 
-                <button class="menu-popover__item">
+                <a :href="DOCS_URL" target="_blank" class="menu-popover__item">
                     <FontAwesomeIcon :icon="faQuestionCircle" class="w-4" />
                     <span>Helpcentrum</span>
-                </button>
+                </a>
             </nav>
 
             <div class="menu-popover__divider"></div>
@@ -217,11 +215,11 @@ function closeMenu(): void {
 
 .menu-popover__item {
     @apply flex w-full items-center gap-3 rounded-lg px-3 py-2;
-    @apply text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50;
+    @apply text-base font-medium text-slate-700 transition-colors hover:bg-slate-50;
 }
 
 .menu-popover__item--danger {
-    @apply text-red-600;
+    @apply text-red-500;
 }
 
 .menu-popover__cta {

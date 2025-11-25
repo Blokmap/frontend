@@ -8,10 +8,8 @@
             v-focustrap>
             <div class="container" @click.stop>
                 <div class="flex w-full items-center gap-2.5">
-                    <div
-                        class="from-primary-400 to-primary-600 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br shadow-sm">
-                        <FontAwesomeIcon :icon="faMagnifyingGlass" class="h-4 w-4 text-white" />
-                    </div>
+                    <FontAwesomeIcon :icon="faMagnifyingGlass" class="h-4 w-4 text-slate-500" />
+
                     <input
                         ref="searchInput"
                         v-model="search"
@@ -37,7 +35,7 @@
                 <!-- Results Section -->
                 <div
                     v-if="hasResults"
-                    class="mt-5 space-y-4 border-t-2 border-gray-100 pt-5"
+                    class="mt-3 space-y-4 border-t-2 border-gray-100 pt-3"
                     aria-label="Zoekresultaten">
                     <!-- Location Results -->
                     <div class="space-y-2" v-if="locations?.data.length">
@@ -60,7 +58,8 @@
                             </div>
                             <FontAwesomeIcon
                                 :icon="faChevronRight"
-                                class="h-4 w-4 flex-shrink-0 translate-x-2 transform text-gray-400 opacity-0 transition-all duration-200" />
+                                class="h-4 w-4 flex-shrink-0 translate-x-2 transform text-gray-400 opacity-0 transition-all duration-200">
+                            </FontAwesomeIcon>
                         </button>
                     </div>
 
@@ -176,7 +175,7 @@ function onGeoClick(geo: GeoJsonProperties) {
 
 .container {
     @apply w-full max-w-2xl overflow-hidden;
-    @apply rounded-3xl bg-white px-6 py-5;
+    @apply rounded-xl bg-white px-4 py-3;
     @apply border-primary-200 border-3;
     @apply shadow-playful;
     @apply transition-all duration-300 ease-out;

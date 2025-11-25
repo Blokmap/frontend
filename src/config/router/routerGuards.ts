@@ -47,13 +47,6 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
 
     // Check for admin access
     if (authSettings?.admin && !profile.isAdmin) {
-        if (to.name === 'dashboard.locations.index') {
-            return {
-                name: 'dashboard.profiles.detail.locations',
-                params: { profileId: profile.id },
-            };
-        }
-
         return { name: 'error.405' };
     }
 

@@ -17,6 +17,7 @@ import type {
     RecursivePermissions,
     UpdateMemberBody,
 } from '../types';
+import type { AuthorityIncludes } from '@/domain/authority';
 import type { Paginated } from '@/utils/pagination';
 
 export * from './memberRoleService';
@@ -255,12 +256,20 @@ export async function readProfileLocationMemberships(
  */
 export async function readProfileAuthorityMemberships(
     profileId: string,
+    includes: AuthorityIncludes[] = [],
 ): Promise<AuthorityMembership[]> {
     const endpoint = endpoints.profiles.authorities.memberships.replace('{id}', profileId);
 
+    const params = {
+        authorityIncludes: includes,
+    };
+
     const transformResponse = transformResponseFactory(parseAuthorityMembershipResponse);
 
-    const { data } = await client.get(endpoint, { transformResponse });
+    const { data } = await client.get(endpoint, {
+        transformResponse,
+        params,
+    });
 
     return data;
 }

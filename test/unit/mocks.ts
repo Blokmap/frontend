@@ -214,7 +214,6 @@ export function createMockInstitution(overrides?: Partial<Institution>): Institu
         id: 1,
         slug: 'test-institution',
         name: createMockTranslation({ en: 'Test Institution', nl: 'Test Institutie' }),
-        logo: createMockImage(),
         email: 'test@institution.com',
         phone: '+1234567890',
         street: 'Institution Street',

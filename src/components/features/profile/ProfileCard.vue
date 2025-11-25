@@ -11,6 +11,7 @@ import type { Profile, ProfileStats } from '@/domain/profile';
 defineProps<{
     profile?: Profile | null;
     stats?: ProfileStats | null;
+    showQr?: boolean;
 }>();
 
 const { locale } = useI18n();
@@ -92,7 +93,7 @@ function onAvatarEditClick() {
             </div>
         </div>
 
-        <div class="profile-card__qr">
+        <div class="profile-card__qr" v-if="showQr">
             <ProfileQrCode v-if="profile" :profile="profile" />
             <Skeleton v-else width="200px" height="200px" />
         </div>
@@ -111,13 +112,12 @@ function onAvatarEditClick() {
 @reference '@/assets/styles/main.css';
 
 .profile-card {
-    @apply grid grid-cols-2 items-center gap-4 p-4 lg:flex lg:flex-row lg:items-center lg:gap-8 lg:p-8;
-    @apply justify-items-center lg:justify-items-stretch;
+    @apply grid grid-cols-2 items-center gap-4 p-4 sm:flex sm:flex-row sm:items-center sm:gap-8 sm:p-8;
+    @apply justify-items-center sm:justify-items-stretch;
     @apply rounded-xl bg-white shadow-md;
 
     .profile-card__info {
-        @apply col-span-1 flex flex-col items-center gap-3;
-        @apply lg:flex-none lg:items-start;
+        @apply col-span-1 flex flex-col items-center justify-center gap-3;
 
         .profile-card__info-avatar {
             @apply h-24 w-24 flex-none rounded-full;
@@ -137,7 +137,7 @@ function onAvatarEditClick() {
 
     .profile-card__stats {
         @apply col-span-1 flex min-w-0 flex-col items-center divide-y-1 divide-slate-200;
-        @apply lg:flex-1;
+        @apply sm:flex-1;
 
         .profile-card__stat {
             @apply w-full px-3 py-3 text-left;
@@ -152,9 +152,9 @@ function onAvatarEditClick() {
     }
 
     .profile-card__qr {
-        @apply col-span-2 mt-4 flex w-full justify-center;
-        @apply lg:col-auto lg:mt-0 lg:ml-auto lg:justify-end;
-        @apply lg:w-48 lg:flex-none;
+        @apply col-span-2 flex w-full justify-center;
+        @apply sm:col-auto sm:ml-auto sm:justify-end;
+        @apply sm:w-48 sm:flex-none;
     }
 }
 </style>

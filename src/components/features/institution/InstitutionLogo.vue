@@ -44,7 +44,6 @@ watchEffect(async () => {
 
 .institution-logo {
     @apply flex items-center justify-center overflow-hidden;
-    @apply h-full w-full;
 
     .placeholder-icon {
         @apply text-slate-400;

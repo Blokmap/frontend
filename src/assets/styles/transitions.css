@@ -149,7 +149,7 @@
 /* Fade Slide Up Transition */
 /* Used for: Page sections that fade in with a subtle upward motion */
 .fade-slide-up-enter-active {
-    @apply transition-all duration-500 ease-out;
+    @apply transition-transform duration-500 ease-out;
 }
 
 .fade-slide-up-enter-from {

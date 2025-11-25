@@ -25,7 +25,8 @@ export function useAuthProfile(
     const query = useQuery<Profile | null, AxiosError>({
         ...options,
         queryKey: ['auth', 'profile'],
-        refetchInterval: 60000,
+        refetchInterval: 60_000,
+        staleTime: 30_000,
         retry: false,
         queryFn: readAuthProfile,
     });

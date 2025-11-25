@@ -130,12 +130,7 @@ function onLoginClick(): void {
 
             <div class="location-page__actions">
                 <template v-if="profile?.isAdmin">
-                    <RouterLink
-                        v-if="location.isReservable"
-                        :to="{
-                            name: 'dashboard.locations.detail.reservations',
-                            params: { locationId },
-                        }">
+                    <RouterLink v-if="location.isReservable" :to="{ name: 'profile' }">
                         <PageHeaderButton
                             severity="contrast"
                             :label="$t('domains.reservations.name', 2)">
@@ -143,8 +138,7 @@ function onLoginClick(): void {
                         </PageHeaderButton>
                     </RouterLink>
 
-                    <RouterLink
-                        :to="{ name: 'dashboard.locations.detail.info', params: { locationId } }">
+                    <RouterLink :to="{ name: 'profile' }">
                         <PageHeaderButton severity="secondary" :label="$t('general.actions.edit')">
                             <FontAwesomeIcon :icon="faEdit" />
                         </PageHeaderButton>
@@ -174,7 +168,8 @@ function onLoginClick(): void {
                     <Gallery
                         :images="location?.images ?? []"
                         :placeholder="placeholder"
-                        :loading="isPending" />
+                        :loading="isPending">
+                    </Gallery>
                 </div>
             </Transition>
 
@@ -209,7 +204,7 @@ function onLoginClick(): void {
                     <div class="location-page__divider"></div>
 
                     <Transition name="stagger-fade" appear>
-                        <div class="location-page__location">
+                        <div class="location-page__location" v-if="location">
                             <h2 class="location-page__section-title">
                                 {{ $t('pages.locations.sections.geolocation.title') }}
                             </h2>
@@ -218,14 +213,12 @@ function onLoginClick(): void {
 
                             <div class="location-page__map">
                                 <LocationMap
-                                    v-if="location"
                                     :center="[location.longitude, location.latitude]"
                                     :zoom="17"
                                     :interactive="false"
                                     :geo-location-control="false"
                                     :loading="isPending">
                                 </LocationMap>
-                                <LocationMap v-else :loading="true"></LocationMap>
                             </div>
                         </div>
                     </Transition>

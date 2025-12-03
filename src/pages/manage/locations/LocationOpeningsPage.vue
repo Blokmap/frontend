@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import LocationOpeningBuilder from '@/components/features/location/builder/builders/LocationOpeningBuilder.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
+import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import { computed, ref, watchEffect } from 'vue';
 import {
@@ -68,7 +69,7 @@ async function onDeleteOpeningTime(openingTimeId: number, sequence?: boolean): P
 </script>
 
 <template>
-    <div class="space-y-6">
+    <LayoutContent>
         <ManageBreadcrumb :items="breadcrumbs" />
 
         <LayoutTitle title="Openingsuren" />
@@ -80,7 +81,7 @@ async function onDeleteOpeningTime(openingTimeId: number, sequence?: boolean): P
             @update="onUpdateOpeningTime"
             @delete="onDeleteOpeningTime">
         </LocationOpeningBuilder>
-    </div>
+    </LayoutContent>
 </template>
 
 <style scoped>

@@ -3,6 +3,7 @@ import AuthorityTable from '@/components/features/authority/AuthorityTable.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
 import EmptyState from '@/components/shared/molecules/EmptyState.vue';
+import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import { faBuilding } from '@fortawesome/free-solid-svg-icons';
 import { computed, ref } from 'vue';
@@ -61,7 +62,7 @@ function onAuthorityClick(authority: Authority) {
 </script>
 
 <template>
-    <div class="space-y-6">
+    <LayoutContent>
         <ManageBreadcrumb :items="breadcrumbs" />
         <LayoutTitle title="Groepen" />
 
@@ -87,7 +88,7 @@ function onAuthorityClick(authority: Authority) {
             :loading="isDataLoading"
             @click:authority="onAuthorityClick">
         </AuthorityTable>
-    </div>
+    </LayoutContent>
 </template>
 
 <style scoped>

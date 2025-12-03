@@ -5,7 +5,15 @@ defineProps<{
 </script>
 
 <template>
-    <h2 class="text-3xl font-extrabold">
+    <h2 class="content__title">
         <slot> {{ title }}</slot>
     </h2>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.content__title {
+    @apply text-3xl leading-none font-extrabold;
+}
+</style>

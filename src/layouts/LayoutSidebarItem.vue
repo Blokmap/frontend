@@ -16,7 +16,7 @@ const props = withDefaults(
 );
 
 defineEmits<{
-    (e: 'click'): [];
+    click: void;
 }>();
 
 const component = computed(() => (props.to ? RouterLink : 'div'));
@@ -43,17 +43,10 @@ const component = computed(() => (props.to ? RouterLink : 'div'));
 @reference '@/assets/styles/main.css';
 
 .item-skeleton {
-    /* Match the height of a regular item: py-3 (0.75rem * 2) + h-12 (3rem) = 4.5rem */
     @apply !h-[72px] w-full rounded-lg;
 
     &.item-skeleton--compact {
-        /* Compact: py-2 (0.5rem * 2) + h-8 (2rem) = 3rem */
-        @apply !h-12;
-    }
-
-    /* Add spacing between skeletons when stacked */
-    & + & {
-        @apply mt-2;
+        @apply !h-[48px];
     }
 }
 

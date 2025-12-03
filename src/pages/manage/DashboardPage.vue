@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import { computed } from 'vue';
 import {
@@ -30,7 +31,7 @@ const isLoading = computed(
 </script>
 
 <template>
-    <div class="space-y-6">
+    <LayoutContent>
         <LayoutTitle title="Dashboard" />
 
         <p class="text-slate-600">
@@ -69,7 +70,7 @@ const isLoading = computed(
         </div>
 
         <div v-else class="text-slate-500">Laden...</div>
-    </div>
+    </LayoutContent>
 </template>
 
 <style scoped>

@@ -6,6 +6,7 @@ import LocationInformationBuilder from '@/components/features/location/builder/b
 import LocationSettingsBuilder from '@/components/features/location/builder/builders/LocationSettingsBuilder.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import SubTabs from '@/components/shared/molecules/SubTabs.vue';
+import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import {
     faCog,
@@ -129,7 +130,7 @@ async function saveChanges(): Promise<void> {
 </script>
 
 <template>
-    <div class="space-y-6">
+    <LayoutContent>
         <ManageBreadcrumb :items="breadcrumbs" />
 
         <LayoutTitle :title="location.name" />
@@ -200,7 +201,7 @@ async function saveChanges(): Promise<void> {
                 </div>
             </Transition>
         </Teleport>
-    </div>
+    </LayoutContent>
 </template>
 
 <style scoped>

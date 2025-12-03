@@ -3,6 +3,7 @@ import Skeleton from 'primevue/skeleton';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
 import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
+import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import {
     faBuilding,
@@ -57,7 +58,7 @@ const address = computed(() => {
 </script>
 
 <template>
-    <div class="space-y-6">
+    <LayoutContent>
         <ManageBreadcrumb :items="breadcrumbs" />
         <LayoutTitle :title="institutionName" />
 
@@ -133,7 +134,7 @@ const address = computed(() => {
                 </div>
             </div>
         </template>
-    </div>
+    </LayoutContent>
 </template>
 
 <style scoped>

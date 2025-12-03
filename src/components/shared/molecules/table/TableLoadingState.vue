@@ -74,9 +74,6 @@ withDefaults(
     @apply divide-y divide-slate-200;
 }
 
-.skeleton__row {
-}
-
 .skeleton__cell {
     @apply px-6 py-4;
 }

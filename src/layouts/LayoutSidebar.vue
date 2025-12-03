@@ -12,7 +12,7 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'click:back'): void;
+    'click:back': [];
 }>();
 </script>
 
@@ -65,7 +65,7 @@ const emit = defineEmits<{
 @reference '@/assets/styles/main.css';
 
 .sidebar {
-    @apply flex flex-col gap-4 pb-4 lg:h-full lg:border-r-2 lg:border-slate-200 lg:pb-0;
+    @apply flex flex-col gap-4 pb-4 lg:h-full lg:border-r-2 lg:border-slate-200 lg:pr-12 lg:pb-0;
 
     .sidebar__banner-wrapper {
         @apply -mx-4 -mt-4 lg:-mx-0 lg:-mt-0;

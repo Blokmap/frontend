@@ -4,6 +4,7 @@ import InputText from 'primevue/inputtext';
 import LocationReservationsTable from '@/components/features/reservation/table/LocationReservationsTable.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import DateInput from '@/components/shared/molecules/form/DateInput.vue';
+import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import { faQrcode, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -83,7 +84,7 @@ function onStatusChange(reservationId: string, state: ReservationState): void {
 </script>
 
 <template>
-    <div class="space-y-8">
+    <LayoutContent>
         <ManageBreadcrumb :items="breadcrumbs" />
         <LayoutTitle title="Reservaties" />
 
@@ -131,7 +132,7 @@ function onStatusChange(reservationId: string, state: ReservationState): void {
             :is-reservation-pending="isReservationPending"
             @change:status="onStatusChange">
         </LocationReservationsTable>
-    </div>
+    </LayoutContent>
 </template>
 
 <style scoped>

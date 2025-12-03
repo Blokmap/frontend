@@ -1,12 +1,8 @@
+import ManageAuthorityLayout from '@/layouts/manage/ManageAuthorityLayout.vue';
+import ManageDashboardLayout from '@/layouts/manage/ManageDashboardLayout.vue';
+import ManageInstitutionLayout from '@/layouts/manage/ManageInstitutionLayout.vue';
 import ManageLayout from '@/layouts/manage/ManageLayout.vue';
-import ManageAuthorityLayout from '@/layouts/manage/layout/ManageAuthorityLayout.vue';
-import ManageDashboardLayout from '@/layouts/manage/layout/ManageDashboardLayout.vue';
-import ManageInstitutionLayout from '@/layouts/manage/layout/ManageInstitutionLayout.vue';
-import ManageLocationLayout from '@/layouts/manage/layout/ManageLocationLayout.vue';
-import ManageAuthoritySidebar from '@/layouts/manage/sidebar/ManageAuthoritySidebar.vue';
-import ManageDashboardSidebar from '@/layouts/manage/sidebar/ManageDashboardSidebar.vue';
-import ManageInstitutionSidebar from '@/layouts/manage/sidebar/ManageInstitutionSidebar.vue';
-import ManageLocationSidebar from '@/layouts/manage/sidebar/ManageLocationSidebar.vue';
+import ManageLocationLayout from '@/layouts/manage/ManageLocationLayout.vue';
 import AuthLayout from '@/layouts/profile/AuthLayout.vue';
 import ProfileLayout from '@/layouts/profile/ProfileLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
@@ -115,14 +111,8 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: ':profileId?',
                         name: 'manage',
-                        components: {
-                            default: ManageDashboardLayout,
-                            sidebar: ManageDashboardSidebar,
-                        },
-                        props: {
-                            default: true,
-                            sidebar: true,
-                        },
+                        component: ManageDashboardLayout,
+                        props: true,
                         redirect: (to) => ({
                             name: 'manage.dashboard',
                             params: to.params,
@@ -144,14 +134,8 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: 'location/:locationId',
                         name: 'manage.location',
-                        components: {
-                            default: ManageLocationLayout,
-                            sidebar: ManageLocationSidebar,
-                        },
-                        props: {
-                            default: true,
-                            sidebar: true,
-                        },
+                        component: ManageLocationLayout,
+                        props: true,
                         meta: {
                             auth: {
                                 location: blank(),
@@ -219,11 +203,8 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: 'authority/:authorityId',
                         name: 'manage.authority',
-                        components: {
-                            default: ManageAuthorityLayout,
-                            sidebar: ManageAuthoritySidebar,
-                        },
-                        props: { default: true, sidebar: true },
+                        component: ManageAuthorityLayout,
+                        props: true,
                         redirect: { name: 'manage.authority.overview' },
                         children: [
                             {
@@ -247,11 +228,8 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: 'institution/:institutionId',
                         name: 'manage.institution',
-                        components: {
-                            default: ManageInstitutionLayout,
-                            sidebar: ManageInstitutionSidebar,
-                        },
-                        props: { default: true, sidebar: true },
+                        component: ManageInstitutionLayout,
+                        props: true,
                         redirect: { name: 'manage.institution.overview' },
                         children: [
                             {

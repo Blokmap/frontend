@@ -4,6 +4,7 @@ import LocationDetailCard from '@/components/features/location/LocationDetailCar
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
 import EmptyState from '@/components/shared/molecules/EmptyState.vue';
+import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
@@ -37,7 +38,7 @@ const isDataLoading = computed(() => props.isLoading || locationsLoading.value);
 </script>
 
 <template>
-    <div class="space-y-6">
+    <LayoutContent>
         <ManageBreadcrumb :items="breadcrumbs" />
         <LayoutTitle title="Locaties" />
 
@@ -73,7 +74,7 @@ const isDataLoading = computed(() => props.isLoading || locationsLoading.value);
                 </LocationDetailCard>
             </template>
         </div>
-    </div>
+    </LayoutContent>
 </template>
 
 <style scoped>

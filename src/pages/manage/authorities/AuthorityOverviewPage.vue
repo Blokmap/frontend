@@ -3,6 +3,7 @@ import Skeleton from 'primevue/skeleton';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
 import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
+import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import { faBuilding, faMapMarkerAlt, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -34,7 +35,7 @@ const logoUrl = computed(() => props.authority?.logo?.url ?? undefined);
 </script>
 
 <template>
-    <div class="space-y-6">
+    <LayoutContent>
         <ManageBreadcrumb :items="breadcrumbs" />
         <LayoutTitle :title="authority?.name ?? 'Groep overzicht'" />
 
@@ -96,7 +97,7 @@ const logoUrl = computed(() => props.authority?.logo?.url ?? undefined);
                 </div>
             </div>
         </template>
-    </div>
+    </LayoutContent>
 </template>
 
 <style scoped>

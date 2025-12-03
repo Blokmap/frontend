@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
+import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import { computed } from 'vue';
 import type { Location } from '@/domain/location';
@@ -20,7 +21,7 @@ const breadcrumbs = computed(() => [
 </script>
 
 <template>
-    <div class="space-y-6">
+    <LayoutContent>
         <ManageBreadcrumb :items="breadcrumbs" />
         <LayoutTitle title="Scanner" />
 
@@ -48,7 +49,7 @@ const breadcrumbs = computed(() => [
 
         <div v-else-if="isLoading" class="text-slate-500">Laden...</div>
         <div v-else-if="error" class="text-red-500">Fout bij laden: {{ error.message }}</div>
-    </div>
+    </LayoutContent>
 </template>
 
 <style scoped>

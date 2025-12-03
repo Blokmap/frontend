@@ -4,6 +4,7 @@ import MembersTable from '@/components/features/member/MembersTable.vue';
 import Breadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
 import EmptyState from '@/components/shared/molecules/EmptyState.vue';
+import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
@@ -48,7 +49,7 @@ function getRoleName(member: Member): string | undefined {
 </script>
 
 <template>
-    <div class="space-y-6">
+    <LayoutContent>
         <Breadcrumb :items="breadcrumbs" />
 
         <LayoutTitle title="Leden" />
@@ -75,7 +76,7 @@ function getRoleName(member: Member): string | undefined {
                 <span v-else class="text-sm text-slate-400">-</span>
             </template>
         </MembersTable>
-    </div>
+    </LayoutContent>
 </template>
 
 <style scoped>

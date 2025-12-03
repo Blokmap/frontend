@@ -1,20 +1,8 @@
-<template>
-    <Badge :severity="severities[location.state]" class="w-[90px]">
-        <div
-            class="flex w-full items-center justify-around gap-1"
-            v-tooltip.top="location.rejectedReason">
-            <FontAwesomeIcon :icon="icons[location.state]" />
-            <span>{{ capitalize(location.state) }}</span>
-        </div>
-    </Badge>
-</template>
-
 <script lang="ts" setup>
 import Badge from 'primevue/badge';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { capitalize } from 'vue';
 import { LocationState, type Location } from '@/domain/location';
 import type { IconDefinition } from '@fortawesome/fontawesome-common-types';
 
@@ -34,3 +22,16 @@ const icons: Record<LocationState, IconDefinition> = {
     [LocationState.Rejected]: faTimes,
 };
 </script>
+
+<template>
+    <Badge
+        :severity="severities[location.state]"
+        v-tooltip.top="$t('domains.locations.state.' + location.state + '.description')">
+        <div
+            class="flex w-full items-center justify-around gap-1"
+            v-tooltip.top="location.rejectedReason">
+            <FontAwesomeIcon :icon="icons[location.state]" />
+            <span>{{ $t('domains.locations.state.' + location.state + '.label') }}</span>
+        </div>
+    </Badge>
+</template>

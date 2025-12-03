@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
-import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import Logo from '@/components/shared/atoms/Logo.vue';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -17,7 +16,7 @@ const { data: profile } = useAuthProfile();
                     <Logo />
                     <div class="ml-auto flex items-center gap-3">
                         <Button text rounded> Beheermodus </Button>
-                        <ProfileAvatar class="h-11 w-11" v-if="profile" :profile="profile" />
+                        <EntityAvatar class="h-11 w-11" v-if="profile" :profile="profile" />
                         <Button text rounded>
                             <template #icon><FontAwesomeIcon :icon="faBars" /></template>
                         </Button>

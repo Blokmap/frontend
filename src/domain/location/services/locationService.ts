@@ -282,17 +282,21 @@ export async function reorderLocationImages(
 }
 
 /**
- * Fetches the locations associated with a specific profile.
+ * Fetches all locations a profile has access to.
  *
  * @param profileId - The ID of the profile whose locations are to be fetched.
  * @returns A promise that resolves to a paginated list of locations.
  */
-export async function readProfileLocations(profileId: string): Promise<Location[]> {
+export async function readProfileLocations(
+    profileId: string,
+    includes: LocationIncludes[] = [],
+): Promise<Paginated<Location>> {
     const endpoint = endpoints.profiles.locations.list.replace('{id}', profileId.toString());
 
-    const transformResponse = transformResponseFactory(parseLocationResponse);
+    const transformResponse = transformPaginatedResponseFactory(parseLocationResponse);
 
-    const { data } = await client.get<Location[]>(endpoint, {
+    const { data } = await client.get(endpoint, {
+        params: { locationIncludes: includes },
         transformResponse,
     });
 

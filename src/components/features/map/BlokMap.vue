@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Carousel from '@/components/shared/molecules/Carousel.vue';
+import SlideCarousel from '@/components/shared/molecules/image/SlideCarousel.vue';
 import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useGeolocation } from '@vueuse/core';
@@ -137,7 +137,7 @@ defineExpose({ mapContainer });
                     <div class="location-popover" @click="navigateToDetail(location.id)">
                         <!-- Carousel for location images -->
                         <div class="location-popover__carousel">
-                            <Carousel
+                            <SlideCarousel
                                 :items="location.images ?? []"
                                 show-navigation-buttons
                                 show-dots>
@@ -147,7 +147,7 @@ defineExpose({ mapContainer });
                                         alt="Location Image"
                                         class="location-popover__image" />
                                 </template>
-                            </Carousel>
+                            </SlideCarousel>
 
                             <!-- Close button overlayed on carousel -->
                             <button

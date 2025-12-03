@@ -28,7 +28,7 @@ export function createMockTranslation(overrides?: Partial<Translation>): Transla
 export function createMockProfile(overrides?: Partial<Profile>): Profile {
     return {
         id: '1',
-        avatarUrl: null,
+        avatar: null,
         username: 'testuser',
         firstName: 'John',
         lastName: 'Doe',
@@ -197,6 +197,7 @@ export function createMockAuthority(overrides?: Partial<Authority>): Authority {
     return {
         id: 1,
         name: 'Test Authority',
+        logo: null,
         description: 'A test authority',
         createdBy: null,
         updatedBy: null,
@@ -212,6 +213,7 @@ export function createMockAuthority(overrides?: Partial<Authority>): Authority {
 export function createMockInstitution(overrides?: Partial<Institution>): Institution {
     return {
         id: 1,
+        logo: null,
         slug: 'test-institution',
         name: createMockTranslation({ en: 'Test Institution', nl: 'Test Institutie' }),
         email: 'test@institution.com',

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import ReservationStateBadge from '@/components/features/reservation/state/ReservationStateBadge.vue';
+import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
@@ -78,7 +78,7 @@ function onStatusChange(reservationId: string, state: ReservationState): void {
                 class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="h-10 w-10 flex-shrink-0">
-                        <ProfileAvatar :profile="data.profile" />
+                        <EntityAvatar :profile="data.profile" />
                     </div>
                     <div>
                         <div class="text-sm font-medium text-slate-900">

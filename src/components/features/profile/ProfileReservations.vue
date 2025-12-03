@@ -5,11 +5,9 @@ import { computed } from 'vue';
 import { type Reservation } from '@/domain/reservation';
 import { datesInRange, endOfWeek, isSameDay, isToday, startOfWeek } from '@/utils/date';
 import { formatDayName } from '@/utils/date/dateFormatUtils';
-import type { Location } from '@/domain/location';
 
 const props = defineProps<{
     reservations: Reservation[] | undefined;
-    recentLocations: Location[] | undefined;
     loading: boolean;
     currentDate: Date;
     cancellingReservationId?: string | null;
@@ -27,7 +25,7 @@ const weekDays = computed(() => {
 
 function getReservationsForDay(day: Date) {
     if (!props.reservations) return [];
-    return props.reservations.filter((r) => isSameDay(new Date(r.day), day));
+    return props.reservations.filter((r) => isSameDay(r.day, day));
 }
 </script>
 
@@ -37,13 +35,13 @@ function getReservationsForDay(day: Date) {
     </div>
 
     <div v-else>
-        <Transition name="fade" mode="out-in">
+        <Transition name="fade">
             <TransitionGroup
-                :key="weekDays[0].toISOString()"
                 name="staggered-cards"
                 tag="div"
                 appear
-                class="reservations-grid">
+                class="reservations-grid"
+                :key="weekDays[0].getDate()">
                 <div
                     v-for="(day, index) in weekDays"
                     class="day-card"
@@ -67,7 +65,6 @@ function getReservationsForDay(day: Date) {
                                 v-for="reservation in getReservationsForDay(day)"
                                 :key="reservation.id"
                                 :reservation="reservation"
-                                :recent-locations="recentLocations"
                                 :is-cancelling="cancellingReservationId === reservation.id"
                                 @click:cancel="(r) => emit('cancel', r)">
                             </ReservationCard>

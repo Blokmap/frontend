@@ -1,10 +1,10 @@
 .p-tabs {
-    @apply flex flex-col gap-8;
+    @apply flex flex-col;
+    @apply w-fit rounded-lg bg-white shadow-md outline-0;
 }
 
 .p-tablist {
-    @apply relative flex rounded-lg;
-    @apply border border-slate-200;
+    @apply relative flex;
 }
 
 .p-tabs-scrollable > .p-tablist {
@@ -12,7 +12,10 @@
 }
 
 .p-tablist-viewport {
-    @apply overflow-x-auto overflow-y-hidden overscroll-x-auto overscroll-y-contain;
+    @apply overflow-x-auto overflow-y-visible;
+    @apply overscroll-x-auto overscroll-y-contain;
+    @apply border-0 outline-0;
+    @apply [scrollbar-behavior:smooth] [scrollbar-width:none];
 }
 
 .p-tablist-viewport::-webkit-scrollbar {
@@ -20,15 +23,13 @@
 }
 
 .p-tablist-tab-list {
-    @apply relative flex rounded-lg border-0 bg-white;
+    @apply relative flex overflow-visible;
+    @apply rounded-xl;
+    @apply border-0 outline-0;
 }
 
 .p-tablist-content {
     @apply flex-grow;
-}
-
-.p-tablist-nav-button {
-    @apply bg-surface-0 dark:bg-surface-900 text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-0 dark:shadow-surface-900/50 focus-visible:outline-primary !absolute top-0 z-20 flex h-full w-10 flex-shrink-0 cursor-pointer items-center justify-center shadow-[0px_0px_10px_50px_rgba(255,255,255,0.6)] transition-colors duration-200 focus-visible:z-10 focus-visible:outline focus-visible:outline-offset-[-1px] dark:shadow-[0px_0px_10px_50px];
 }
 
 .p-tablist-prev-button {
@@ -45,33 +46,36 @@
 }
 
 .p-tab {
-    @apply border-surface-200 text-surface-500 relative -mb-px flex-shrink-0 cursor-pointer border-0 px-[1.125rem] py-4 font-semibold whitespace-nowrap transition-colors duration-200 select-none;
-}
-
-.p-tab.p-disabled {
-    @apply cursor-default;
+    @apply relative z-10 flex flex-shrink-0 cursor-pointer items-center gap-2 select-none;
+    @apply rounded-lg border-0 bg-transparent;
+    @apply px-4 py-2;
+    @apply text-sm font-semibold whitespace-nowrap;
+    @apply text-slate-600;
+    @apply transition-all duration-200;
 }
 
 .p-tab:not(.p-disabled):focus-visible {
-    @apply outline-primary z-10 outline outline-offset-[-1px];
+    @apply outline-primary-500 z-20 outline-2 outline-offset-2;
 }
 
 .p-tab:not(.p-tab-active):not(.p-disabled):hover {
-    @apply text-surface-700 dark:text-surface-0;
+    @apply text-slate-800;
 }
 
 .p-tab-active {
-    @apply border-primary text-primary;
+    @apply text-primary-600;
+}
+
+.p-tab.p-disabled {
+    @apply cursor-not-allowed opacity-50;
 }
 
 .p-tabpanels {
-    @apply text-surface-700 outline-none;
+    @apply outline-none;
 }
 
 .p-tablist-active-bar {
-    @apply bg-primary absolute -bottom-px z-10 block h-[3px] transition-[left] duration-200 ease-[cubic-bezier(0.35,0,0.25,1)];
-}
-
-.p-tablist-viewport {
-    @apply [scrollbar-behavior:smooth] [scrollbar-width:none];
+    @apply absolute top-0 bottom-0 z-1;
+    @apply bg-primary-100 rounded-lg;
+    @apply transition-[left,width] duration-200 ease-out;
 }

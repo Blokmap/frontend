@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
+import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
 import { useI18n } from 'vue-i18n';
 import type { ProfileReport } from '@/domain/report';
 
@@ -22,7 +22,7 @@ const { locale } = useI18n();
                 name: 'dashboard.profiles.detail.overview',
                 params: { profileId: report.profile.id },
             }">
-            <ProfileAvatar :profile="report.profile" class="h-18 w-18" />
+            <EntityAvatar :profile="report.profile" class="h-18 w-18" />
         </RouterLink>
 
         <div class="flex-1 space-y-1">

@@ -11,13 +11,22 @@ const MAX_RETRIES = 3;
  * @returns A boolean indicating whether the query should be retried.
  */
 function retryQuery(failureCount: number, error: any): boolean {
-    if (error?.status === HttpStatusCode.NotFound) return false;
-    if (error?.status === HttpStatusCode.Unauthorized) return false;
-    if (error?.status === HttpStatusCode.Forbidden) return false;
+    if (failureCount > MAX_RETRIES) {
+        return false;
+    }
 
-    if (failureCount > MAX_RETRIES) return false;
+    switch (error?.status) {
+        case HttpStatusCode.NotFound:
+        case HttpStatusCode.Unauthorized:
+        case HttpStatusCode.Forbidden:
+        case HttpStatusCode.BadRequest: {
+            return false;
+        }
 
-    return true;
+        default: {
+            return true;
+        }
+    }
 }
 
 export const vueQueryConfig = {

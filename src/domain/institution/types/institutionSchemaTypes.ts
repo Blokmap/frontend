@@ -1,3 +1,4 @@
+import type { Image } from '@/domain/image';
 import type { Translation, TranslationBody } from '@/domain/translation';
 
 export enum InstitutionCategory {
@@ -8,6 +9,7 @@ export enum InstitutionCategory {
 
 export type Institution = {
     id: number;
+    logo: Image | null;
     slug: string;
     name: Translation;
     email: string | null;

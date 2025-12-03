@@ -64,11 +64,5 @@ export type AuthorityMembership = {
 export type InstitutionMembership = {
     institution: Institution;
     role: Role | null;
-};
-
-// An institution membership with its associated authority memberships
-// A user can have multiple authority memberships within a single institution,
-// for which they don't necessarily have a role at the institution level.
-export type InstitutionAuthorityMemberships = InstitutionMembership & {
-    authorities: AuthorityMembership[];
+    authorities?: AuthorityMembership[];
 };

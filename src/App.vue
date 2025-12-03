@@ -26,9 +26,9 @@ router.afterEach(() => {
 <template>
     <Toast />
     <ProgressBar />
-    <RouterView v-slot="{ Component }">
+    <RouterView v-slot="{ Component, route }">
         <Transition name="fade" mode="out-in">
-            <component :is="Component" />
+            <component :is="Component" :key="route.matched[0]?.path" />
         </Transition>
     </RouterView>
 </template>

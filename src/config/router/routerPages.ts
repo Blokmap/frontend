@@ -1,85 +1,39 @@
 // Locations
-export const LocationsPage = () => import('@/pages/public/locations/LocationsPage.vue');
-export const LocationPage = () => import('@/pages/public/locations/LocationPage.vue');
-export const LocationSubmitPage = () => import('@/pages/public/locations/LocationSubmitPage.vue');
+export const LocationsPage = () => import('@/pages/locations/LocationsPage.vue');
+export const LocationPage = () => import('@/pages/locations/LocationPage.vue');
+export const LocationSubmitPage = () => import('@/pages/locations/LocationSubmitPage.vue');
 
 // Authentication
 export const AuthPage = () => import('@/pages/auth/AuthPage.vue');
 
-// Profile
+// Manage - Dashboard
+export const ManageDashboardPage = () => import('@/pages/manage/DashboardPage.vue');
+export const DashboardLocationsPage = () => import('@/pages/manage/DashboardLocationsPage.vue');
 
-// Manage
-export const ManageLocationsPage = () => import('@/pages/manage/locations/LocationsManagePage.vue');
+// Manage - Location
+export const LocationInfoPage = () => import('@/pages/manage/locations/LocationInfoPage.vue');
+export const LocationOpeningsPage = () =>
+    import('@/pages/manage/locations/LocationOpeningsPage.vue');
+export const LocationReservationsPage = () =>
+    import('@/pages/manage/locations/LocationReservationsPage.vue');
+export const LocationScannerPage = () => import('@/pages/manage/locations/LocationScannerPage.vue');
+export const LocationMembersPage = () => import('@/pages/manage/locations/LocationMembersPage.vue');
 
-// Dashboard
-// export const DashboardPage = () => import('@/pages/dashboard/DashboardPage.vue');
+// Manage - Authority
+export const AuthorityOverviewPage = () =>
+    import('@/pages/manage/authorities/AuthorityOverviewPage.vue');
+export const AuthorityLocationsPage = () =>
+    import('@/pages/manage/authorities/AuthorityLocationsPage.vue');
+export const AuthorityMembersPage = () =>
+    import('@/pages/manage/authorities/AuthorityMembersPage.vue');
 
-// Dashboard Locations
-// export const LocationInfoPage = () => import('@/pages/dashboard/locations/LocationInfoPage.vue');
-// export const LocationReservationsPage = () =>
-//     import('@/pages/dashboard/locations/LocationReservationsPage.vue');
-// export const LocationScanPage = () => import('@/pages/dashboard/locations/LocationScanPage.vue');
-// export const LocationOpeningsPage = () =>
-//     import('@/pages/dashboard/locations/LocationOpeningsPage.vue');
-// export const LocationMembersPage = () =>
-//     import('@/pages/dashboard/locations/LocationMembersPage.vue');
-// export const LocationRolesPage = () => import('@/pages/dashboard/locations/LocationRolesPage.vue');
-// export const LocationIndexPage = () => import('@/pages/dashboard/locations/LocationIndexPage.vue');
-
-// Dashboard Profiles
-// export const ProfileIndexPage = () => import('@/pages/dashboard/profiles/ProfileIndexPage.vue');
-// export const ProfileOverviewPage = () =>
-//     import('@/pages/dashboard/profiles/ProfileOverviewPage.vue');
-// export const ProfileLocationsPage = () =>
-//     import('@/pages/dashboard/profiles/ProfileLocationsPage.vue');
-// export const ProfileAuthoritiesPage = () =>
-//     import('@/pages/dashboard/profiles/ProfileAuthoritiesPage.vue');
-// export const ProfileInstitutionsPage = () =>
-//     import('@/pages/dashboard/profiles/ProfileInstitutionsPage.vue');
-
-// Dashboard Authorities
-// export const AuthorityIndexPage = () =>
-//     import('@/pages/dashboard/authorities/AuthorityIndexPage.vue');
-// export const AuthorityCreatePage = () =>
-//     import('@/pages/dashboard/authorities/AuthorityCreatePage.vue');
-// export const AuthorityOverviewPage = () =>
-//     import('@/pages/dashboard/authorities/AuthorityOverviewPage.vue');
-// export const AuthorityMembersPage = () =>
-//     import('@/pages/dashboard/authorities/AuthorityMembersPage.vue');
-// export const AuthorityLocationsPage = () =>
-//     import('@/pages/dashboard/authorities/AuthorityLocationsPage.vue');
-// export const AuthorityRolesPage = () =>
-//     import('@/pages/dashboard/authorities/AuthorityRolesPage.vue');
-// export const DashboardAuthoritiesPage = () =>
-//     import('@/pages/dashboard/authorities/AuthoritiesPage.vue');
-// export const DashboardAuthorityPage = () =>
-//     import('@/pages/dashboard/authorities/AuthorityPage.vue');
-
-// Dashboard Institutions
-// export const InstitutionIndexPage = () =>
-//     import('@/pages/dashboard/institutions/InstitutionIndexPage.vue');
-// export const InstitutionCreatePage = () =>
-//     import('@/pages/dashboard/institutions/InstitutionCreatePage.vue');
-// export const InstitutionOverviewPage = () =>
-//     import('@/pages/dashboard/institutions/InstitutionOverviewPage.vue');
-// export const InstitutionUsersPage = () =>
-//     import('@/pages/dashboard/institutions/InstitutionUsersPage.vue');
-// export const InstitutionMembersPage = () =>
-//     import('@/pages/dashboard/institutions/InstitutionMembersPage.vue');
-// export const InstitutionAuthoritiesPage = () =>
-//     import('@/pages/dashboard/institutions/InstitutionAuthoritiesPage.vue');
-// export const InstitutionRolesPage = () =>
-//     import('@/pages/dashboard/institutions/InstitutionRolesPage.vue');
-
-// Dashboard Statistics
-// export const DashboardStatisticsPage = () =>
-//     import('@/pages/dashboard/statistics/StatisticsPage.vue');
-
-// Dashboard Reviews
-// export const DashboardReviewsPage = () => import('@/pages/dashboard/reviews/ReviewsPage.vue');
-
-// Dashboard Reports
-// export const ReportsIndexPage = () => import('@/pages/dashboard/reports/ReportsIndexPage.vue');
+// Manage - Institution
+export const InstitutionOverviewPage = () =>
+    import('@/pages/manage/institutions/InstitutionOverviewPage.vue');
+export const InstitutionAuthoritiesPage = () =>
+    import('@/pages/manage/institutions/InstitutionAuthoritiesPage.vue');
+export const InstitutionMembersPage = () =>
+    import('@/pages/manage/institutions/InstitutionMembersPage.vue');
 
 // Error Pages
 export const Error404Page = () => import('@/pages/errors/Error404Page.vue');

@@ -1,25 +1,57 @@
 <script lang="ts" setup>
 import Skeleton from 'primevue/skeleton';
 import CopyButton from '@/components/shared/atoms/CopyButton.vue';
+import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
+import EntityAvatarDialog from '@/components/shared/molecules/avatar/EntityAvatarDialog.vue';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useDeleteProfileAvatar, useUpdateProfileAvatar } from '@/composables/data/useProfile';
 import ProfileQrCode from './ProfileQrCode.vue';
-import ProfileAvatar from './avatar/ProfileAvatar.vue';
-import ProfileAvatarDialog from './avatar/ProfileAvatarDialog.vue';
 import type { Profile, ProfileStats } from '@/domain/profile';
 
-defineProps<{
+const props = defineProps<{
     profile?: Profile | null;
     stats?: ProfileStats | null;
     showQr?: boolean;
+    editable?: boolean;
 }>();
 
 const { locale } = useI18n();
 
-const showProfileAvatarDialog = ref<boolean>(false);
+const { mutateAsync: updateProfileAvatar, isPending: isUpdatingProfileAvatar } =
+    useUpdateProfileAvatar({
+        onSuccess: () => {
+            showEntityAvatarDialog.value = false;
+        },
+    });
+
+const { mutateAsync: deleteProfileAvatar, isPending: isDeletingProfileAvatar } =
+    useDeleteProfileAvatar({
+        onSuccess: () => {
+            showEntityAvatarDialog.value = false;
+        },
+    });
+
+const showEntityAvatarDialog = ref<boolean>(false);
 
 function onAvatarEditClick() {
-    showProfileAvatarDialog.value = true;
+    showEntityAvatarDialog.value = true;
+}
+
+function onUpdateProfileAvatar(file: File) {
+    if (!props.profile) {
+        return;
+    }
+
+    updateProfileAvatar({ profileId: props.profile.id, file });
+}
+
+function onDeleteProfileAvatar() {
+    if (!props.profile) {
+        return;
+    }
+
+    deleteProfileAvatar(props.profile.id);
 }
 </script>
 
@@ -27,11 +59,13 @@ function onAvatarEditClick() {
     <div class="profile-card">
         <div class="profile-card__info">
             <div class="profile-card__info-avatar">
-                <ProfileAvatar
+                <EntityAvatar
+                    class="h-full w-full"
                     v-if="profile"
-                    :profile="profile"
+                    :image="profile.avatar?.url"
                     @click:edit="onAvatarEditClick"
-                    editable />
+                    editable>
+                </EntityAvatar>
                 <Skeleton shape="circle" size="100%" v-else />
             </div>
 
@@ -57,7 +91,7 @@ function onAvatarEditClick() {
                     <p class="stat__label">nieuwe reservaties</p>
                 </template>
                 <template v-else>
-                    <Skeleton width="50px" height="24px" />
+                    <Skeleton width="50px" height="28px" class="mb-1" />
                     <Skeleton width="100px" height="12px" />
                 </template>
             </div>
@@ -68,7 +102,7 @@ function onAvatarEditClick() {
                     <p class="stat__label">uur gereserveerd</p>
                 </template>
                 <template v-else>
-                    <Skeleton width="50px" height="24px" />
+                    <Skeleton width="50px" height="28px" class="mb-1" />
                     <Skeleton width="100px" height="12px" />
                 </template>
             </div>
@@ -87,7 +121,7 @@ function onAvatarEditClick() {
                     <p class="stat__label">account gemaakt</p>
                 </template>
                 <template v-else>
-                    <Skeleton width="50px" height="24px" />
+                    <Skeleton width="50px" height="28px" class="mb-1" />
                     <Skeleton width="100px" height="12px" />
                 </template>
             </div>
@@ -99,11 +133,19 @@ function onAvatarEditClick() {
         </div>
 
         <Teleport to="body">
-            <ProfileAvatarDialog
+            <EntityAvatarDialog
                 v-if="profile"
+                title="Profielfoto"
+                subtitle="Je profielfoto is zichtbaar voor anderen op je reviews en geregistreerde
+                    locaties."
                 :profile="profile"
-                v-model:visible="showProfileAvatarDialog">
-            </ProfileAvatarDialog>
+                :is-updating="isUpdatingProfileAvatar"
+                :is-deleting="isDeletingProfileAvatar"
+                :image="profile.avatar?.url"
+                v-model:visible="showEntityAvatarDialog"
+                @update="onUpdateProfileAvatar"
+                @delete="onDeleteProfileAvatar">
+            </EntityAvatarDialog>
         </Teleport>
     </div>
 </template>

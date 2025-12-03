@@ -45,7 +45,7 @@ import {
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
 import type { AuthorityIncludes } from '@/domain/authority';
-import type { LocationFilter } from '@/domain/location';
+import type { LocationFilter, LocationIncludes } from '@/domain/location';
 import type {
     CompMutation,
     CompMutationOptions,
@@ -421,7 +421,7 @@ export function useDeleteLocationMember(
  */
 export function useReadProfileLocationMemberships(
     profileId: MaybeRef<string | null>,
-    options: CompQueryOptions = {},
+    options: CompQueryOptions<LocationIncludes> = {},
 ): CompQuery<LocationMembership[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 
@@ -431,7 +431,8 @@ export function useReadProfileLocationMemberships(
         queryKey: ['memberships', 'list', 'locations', 'byProfile', profileId],
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
-            return readProfileLocationMemberships(profileIdValue);
+            const includesValue = options.includes;
+            return readProfileLocationMemberships(profileIdValue, includesValue);
         },
     });
 
@@ -451,7 +452,7 @@ export function useReadProfileAuthorityMemberships(
     const query = useQuery({
         ...options,
         enabled,
-        queryKey: ['memberships', 'list', 'byProfileAuthorities', profileId],
+        queryKey: ['memberships', 'list', 'authorities', 'byProfile', profileId],
         queryFn: () => {
             const profileIdValue = toValue(profileId);
             return readProfileAuthorityMemberships(profileIdValue!, options.includes);

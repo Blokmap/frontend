@@ -2,8 +2,8 @@
 import Card from 'primevue/card';
 import Chip from 'primevue/chip';
 import Skeleton from 'primevue/skeleton';
-import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import CopyButton from '@/components/shared/atoms/CopyButton.vue';
+import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
 import { faEnvelope, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import type { Profile } from '@/domain/profile';
@@ -29,11 +29,11 @@ defineEmits<{
                 </template>
                 <template v-else>
                     <div class="avatar-wrapper">
-                        <ProfileAvatar
+                        <EntityAvatar
                             :profile="profile"
                             :editable="editable"
                             @click:edit="$emit('click:edit')">
-                        </ProfileAvatar>
+                        </EntityAvatar>
                     </div>
                 </template>
 

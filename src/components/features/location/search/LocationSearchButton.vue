@@ -27,7 +27,7 @@ defineEmits<{
 .location-search {
     @apply relative w-full md:min-w-[320px];
     @apply cursor-pointer rounded-xl;
-    @apply bg-slate-50 px-4 py-2;
+    @apply bg-white px-4 py-2;
     @apply shadow-playful;
     @apply transition-all duration-200 ease-out;
     @apply border-3 border-slate-200;

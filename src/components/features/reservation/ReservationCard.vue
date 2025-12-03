@@ -3,18 +3,17 @@ import Button from 'primevue/button';
 import ImageStack from '@/components/shared/molecules/ImageStack.vue';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { getLocationImages } from '@/domain/image';
+import { computed } from 'vue';
+import { getLocationImages, type Image } from '@/domain/image';
 import {
     isReservationCancellable,
     isReservationInFuture,
     type Reservation,
 } from '@/domain/reservation';
 import { formatTime } from '@/utils/time';
-import type { Location } from '@/domain/location';
 
 const props = defineProps<{
     reservation: Reservation;
-    recentLocations: Location[] | undefined;
     isCancelling?: boolean;
 }>();
 
@@ -22,10 +21,7 @@ const emit = defineEmits<{
     (e: 'click:cancel', reservation: Reservation): void;
 }>();
 
-function getReservationLocationImages(reservation: Reservation) {
-    const locations = props.recentLocations?.filter((loc) => loc.id === reservation.location?.id);
-    return getLocationImages(locations);
-}
+const images = computed<Image[]>(() => getLocationImages([props.reservation.location]));
 
 function formatReservationTime(reservation: Reservation) {
     return `${formatTime(reservation.startTime)} - ${formatTime(reservation.endTime)}`;
@@ -39,10 +35,7 @@ function onCancel() {
 <template>
     <div class="reservation-card">
         <div class="reservation-card__header">
-            <ImageStack
-                class="reservation-card__stack"
-                :images="getReservationLocationImages(reservation)">
-            </ImageStack>
+            <ImageStack class="reservation-card__stack" :images="images"> </ImageStack>
             <div class="min-w-0 flex-1">
                 <RouterLink
                     v-if="reservation.location"

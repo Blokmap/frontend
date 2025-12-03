@@ -1,9 +1,10 @@
 import mapboxgl from 'mapbox-gl';
-import { type Ref, isRef, onActivated, onMounted, onUnmounted, readonly, ref, watch } from 'vue';
+import { type Ref, isRef, onActivated, onMounted, onUnmounted, readonly, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useClustering } from '@/composables/maps/useClustering';
 import { useMapBindings } from '@/composables/maps/useMapBindings';
 import { DEFAULT_MAP_OPTIONS } from '@/domain/map';
+import { isLngLat } from '@/domain/map/mapHelpers';
 import type {
     ClusterData,
     ClusteringAdapter,
@@ -46,21 +47,30 @@ export function useMapBox<T>(
     const isDragging = ref(false);
 
     // Map property refs - handle MaybeRef options
-    const center = isRef(options.center) ? options.center : ref<LngLat>(options.center || [0, 0]);
-    const zoom = isRef(options.zoom) ? options.zoom : ref<number>(options.zoom || 1);
-    const maxBounds = isRef(options.maxBounds) ? options.maxBounds : ref(options.maxBounds);
+    const center = isRef(options.center)
+        ? options.center
+        : ref<LngLat>(options.center || DEFAULT_MAP_OPTIONS.center);
+
+    const zoom = isRef(options.zoom)
+        ? options.zoom
+        : ref<number>(options.zoom || DEFAULT_MAP_OPTIONS.zoom);
+
+    const maxBounds = isRef(options.maxBounds)
+        ? options.maxBounds
+        : ref(options.maxBounds || DEFAULT_MAP_OPTIONS.maxBounds);
+
     const bounds = ref<LngLatBounds>([
         [-180, -90],
         [180, 90],
     ]);
 
+    // Setup two-way bindings
+    useMapBindings(map, isLoaded, center, zoom, maxBounds);
+
     // Initialize clustering if enabled
     const clustering: ClusteringAdapter<T> | null = options.clustering
         ? useClustering<T>(options)
         : null;
-
-    // Setup two-way bindings
-    useMapBindings(map, isLoaded, center, zoom, maxBounds);
 
     onMounted(() => {
         if (container.value === null) {
@@ -183,43 +193,6 @@ export function useMapBox<T>(
         map.value?.remove();
     });
 
-    watch(maxBounds, (newBounds) => {
-        const bounds = newBounds ?? [
-            [-180, -90],
-            [180, 90],
-        ];
-        map.value?.setMaxBounds(bounds);
-    });
-
-    watch(
-        center,
-        (newCenter) => {
-            if (!map.value || !isLoaded.value) return;
-
-            const currentCenter = map.value.getCenter();
-            const tolerance = 0.000001;
-
-            if (
-                Math.abs(currentCenter.lng - newCenter[0]) > tolerance ||
-                Math.abs(currentCenter.lat - newCenter[1]) > tolerance
-            ) {
-                map.value.setCenter(newCenter);
-            }
-        },
-        { deep: true },
-    );
-
-    watch(zoom, (newZoom) => {
-        if (!map.value || !isLoaded.value) return;
-
-        const currentZoom = map.value.getZoom();
-        const tolerance = 0.01;
-
-        if (Math.abs(currentZoom - newZoom) > tolerance) {
-            map.value.setZoom(newZoom);
-        }
-    });
-
     /**
      * Adds a marker to the map.
      */
@@ -282,6 +255,12 @@ export function useMapBox<T>(
      */
     function flyTo(lngLat: LngLat, zoom: number = 16): Promise<void> {
         return new Promise((resolve, reject) => {
+            if (!isLngLat(lngLat)) {
+                const error = new Error('Invalid LngLat provided for flyTo: ' + lngLat);
+                console.error(error.message);
+                return reject(error);
+            }
+
             if (!map.value) {
                 const error = new Error('Map is not initialized, cannot fly to location');
                 console.error(error.message);

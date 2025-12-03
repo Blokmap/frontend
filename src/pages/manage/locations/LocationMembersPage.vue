@@ -1,146 +1,82 @@
-<script setup lang="ts">
-import Paginator from 'primevue/paginator';
-import MemberActionMenu from '@/components/features/auth/MemberActionMenu.vue';
-import RoleBadge from '@/components/features/auth/roles/RoleBadge.vue';
-import MemberAddDialog from '@/components/features/member/MemberAddDialog.vue';
+<script lang="ts" setup>
+import Badge from 'primevue/badge';
 import MembersTable from '@/components/features/member/MembersTable.vue';
-import DashboardContent from '@/layouts/manage/DashboardContent.vue';
-import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
-import DashboardDetailHeader from '@/layouts/manage/details/DashboardDetailHeader.vue';
-import { faUserPlus, faUserTag } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref } from 'vue';
-import {
-    useReadLocationRoles,
-    useAddLocationMember,
-    useDeleteLocationMember,
-    useReadLocationMembers,
-    useUpdateLocationMember,
-} from '@/composables/data/useMembers';
-import { usePagination } from '@/composables/usePagination';
-import { type Location } from '@/domain/location';
-import type { CreateMemberBody, MemberFilter } from '@/domain/member';
+import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
+import Callout from '@/components/shared/molecules/Callout.vue';
+import EmptyState from '@/components/shared/molecules/EmptyState.vue';
+import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import { computed } from 'vue';
+import { useReadLocationMembers, useReadLocationRoles } from '@/composables/data/useMembers';
+import type { Location } from '@/domain/location';
+import type { Member } from '@/domain/member';
+import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
-    location: Location;
+    authProfile: Profile;
+    location?: Location;
+    isLoading: boolean;
+    error?: Error | null;
 }>();
 
-const filters = ref<MemberFilter>({
-    page: 1,
-    perPage: 25,
-});
+const locationId = computed(() => props.location?.id ?? 0);
+const enabled = computed(() => !!props.location?.id);
 
-const { onPageChange, first } = usePagination(filters);
-
-const { data: members, isLoading } = useReadLocationMembers(
-    computed(() => props.location.id),
-    filters,
+const { data: membersData, isLoading: membersLoading } = useReadLocationMembers(
+    locationId,
+    {},
+    { enabled },
 );
 
-const { data: roles } = useReadLocationRoles(computed(() => props.location.id));
+const { data: roles } = useReadLocationRoles(locationId, { enabled });
 
-const { mutate: addLocationMember, isPending: addMemberIsPending } = useAddLocationMember({
-    onSuccess: () => {
-        showMemberAddDialog.value = false;
-    },
-});
+const members = computed(() => membersData.value?.data ?? []);
 
-const { mutate: updateLocationMember } = useUpdateLocationMember();
-const { mutate: deleteLocationMember } = useDeleteLocationMember();
+const breadcrumbs = computed(() => [
+    { label: 'Mijn locaties', to: { name: 'manage.locations' } },
+    { label: props.location?.name ?? 'Locatie', to: { name: 'manage.location.info' } },
+    { label: 'Leden' },
+]);
 
-const showMemberAddDialog = ref(false);
+const isDataLoading = computed(() => props.isLoading || membersLoading.value);
 
-/**
- * Handle changing a member's role.
- * @param memberId - The ID of the member
- * @param roleID - The new role's ID
- */
-function onSelectRole(memberId: string, roleId: number): void {
-    updateLocationMember({
-        id: props.location.id,
-        memberId,
-        body: { roleId },
-    });
-}
-
-/**
- * Handle removing a member.
- * @param memberId - The ID of the member to remove
- */
-function onDeleteClick(memberId: string): void {
-    deleteLocationMember({
-        id: props.location.id,
-        memberId,
-    });
-}
-
-/**
- * Handle adding a new member.
- *
- * @param body - The body containing the username and role ID
- */
-function onAddMember(body: CreateMemberBody): void {
-    addLocationMember({
-        id: props.location.id,
-        body,
-    });
+function getRoleName(member: Member): string | undefined {
+    if (!roles.value) return undefined;
+    const role = roles.value.find((r) => r.id === member.role?.id);
+    return role?.name;
 }
 </script>
 
 <template>
-    <DashboardContent>
-        <!-- Header -->
-        <DashboardDetailHeader title="Toegangsbeheer" secondary="Beheer leden en hun rollen.">
-            <template #actions>
-                <RouterLink
-                    :to="{
-                        name: 'dashboard.locations.detail.roles',
-                        params: { locationId: location.id },
-                    }">
-                    <PageHeaderButton severity="contrast" label="Rollen Beheren">
-                        <FontAwesomeIcon :icon="faUserTag" />
-                    </PageHeaderButton>
-                </RouterLink>
-                <PageHeaderButton
-                    severity="contrast"
-                    label="Beheerder Toevoegen"
-                    @click="showMemberAddDialog = true">
-                    <FontAwesomeIcon :icon="faUserPlus" />
-                </PageHeaderButton>
-            </template>
-        </DashboardDetailHeader>
+    <div class="space-y-6">
+        <ManageBreadcrumb :items="breadcrumbs" />
+        <LayoutTitle title="Leden" />
 
-        <!-- Members Table -->
-        <MembersTable :members="members?.data" :is-loading="isLoading">
+        <p class="text-slate-600">Beheer wie toegang heeft tot deze locatie en hun rollen.</p>
+
+        <!-- Error State -->
+        <Callout v-if="error" severity="error">
+            Er ging iets mis bij het laden van de leden. Probeer het later opnieuw.
+        </Callout>
+
+        <!-- Empty State -->
+        <EmptyState
+            v-else-if="!isDataLoading && members.length === 0"
+            :icon="faUsers"
+            title="Geen leden"
+            message="Er zijn nog geen leden toegevoegd aan deze locatie.">
+        </EmptyState>
+
+        <!-- Data / Loading State -->
+        <MembersTable v-else :members="members" :is-loading="isDataLoading">
             <template #role="{ member }">
-                <RoleBadge :role="member.role" type="location" />
-            </template>
-            <template #actions="{ member }">
-                <MemberActionMenu
-                    v-if="roles"
-                    :member="member"
-                    :available-roles="roles"
-                    @select:role="onSelectRole"
-                    @click:delete="onDeleteClick">
-                </MemberActionMenu>
+                <Badge v-if="getRoleName(member)" :value="getRoleName(member)" severity="info" />
+                <span v-else class="text-sm text-slate-400">-</span>
             </template>
         </MembersTable>
-
-        <Paginator
-            :first="first(members)"
-            :rows="members?.perPage"
-            :total-records="members?.total"
-            @page="onPageChange">
-        </Paginator>
-
-        <Teleport to="body">
-            <MemberAddDialog
-                v-if="roles"
-                :is-pending="addMemberIsPending"
-                :roles="roles"
-                @click:submit="onAddMember"
-                v-model:is-visible="showMemberAddDialog">
-            </MemberAddDialog>
-        </Teleport>
-    </DashboardContent>
+    </div>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+</style>

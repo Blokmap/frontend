@@ -1,120 +1,81 @@
-<script setup lang="ts">
-import LocationActionMenu from '@/components/features/location/LocationActionMenu.vue';
-import LocationDataItem from '@/components/features/location/LocationDataItem.vue';
+<script lang="ts" setup>
+import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
+import LocationDetailCard from '@/components/features/location/LocationDetailCard.vue';
+import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
+import Callout from '@/components/shared/molecules/Callout.vue';
 import EmptyState from '@/components/shared/molecules/EmptyState.vue';
-import DataList from '@/components/shared/molecules/datalist/DataList.vue';
-import DashboardContent from '@/layouts/manage/DashboardContent.vue';
-import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
-import DashboardDetailHeader from '@/layouts/manage/details/DashboardDetailHeader.vue';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
-import {
-    useDeleteLocation,
-    useUpdateLocationState,
-    useReadAuthorityLocations,
-} from '@/composables/data/useLocations';
+import { useReadAuthorityLocations } from '@/composables/data/useLocations';
 import type { Authority } from '@/domain/authority';
-import type { LocationState } from '@/domain/location';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
-    authority: Authority;
-    profile: Profile;
+    authProfile: Profile;
+    authority?: Authority;
+    isLoading: boolean;
+    error?: Error | null;
 }>();
 
-const { data: locations, isLoading } = useReadAuthorityLocations(
-    computed(() => props.authority.id),
-);
+const authorityId = computed(() => props.authority?.id ?? 0);
+const enabled = computed(() => !!props.authority?.id);
 
-const {
-    mutateAsync: updateLocationState,
-    isPending: isUpdatingLocation,
-    variables: updateVariables,
-} = useUpdateLocationState();
+const { data: locations, isLoading: locationsLoading } = useReadAuthorityLocations(authorityId, {
+    enabled,
+});
 
-const {
-    mutateAsync: deleteLocation,
-    isPending: isDeletingLocation,
-    variables: deleteVariables,
-} = useDeleteLocation();
+const breadcrumbs = computed(() => [
+    {
+        label: props.authority?.name ?? 'Groep',
+        to: { name: 'manage.authority.overview' },
+    },
+    { label: 'Locaties' },
+]);
 
-/**
- * Check if a location is currently being updated.
- * @param locationId
- */
-function isLocationPending(locationId: number): boolean {
-    const pendingUpdate =
-        isUpdatingLocation.value && updateVariables.value?.locationId === locationId;
-    const pendingDelete = isDeletingLocation.value && deleteVariables.value === locationId;
-    return pendingUpdate || pendingDelete;
-}
-/**
- * Handle state selection for a location.
- *
- * @param locationId - ID of the location
- * @param state - New state to set
- * @param reason - Optional reason for the state change
- */
-function onStateSelect(locationId: number, state: LocationState, reason?: string) {
-    updateLocationState({
-        locationId,
-        state,
-        reason,
-    });
-}
-
-/**
- * Handle delete click for a location.
- *
- * @param locationId - ID of the location to delete
- */
-function onDeleteClick(locationId: number) {
-    deleteLocation(locationId);
-}
+const isDataLoading = computed(() => props.isLoading || locationsLoading.value);
 </script>
 
 <template>
-    <DashboardContent>
-        <!-- Header -->
-        <DashboardDetailHeader
-            title="Locaties"
-            secondary="Bekijk alle locaties die aan deze autoriteit zijn gekoppeld.">
-            <template #actions>
-                <RouterLink
-                    :to="{
-                        name: 'locations.submit',
-                        query: { authorityId: authority.id },
-                    }"
-                    class="btn btn-secondary">
-                    <PageHeaderButton severity="contrast" label="Locatie Indienen">
-                        <FontAwesomeIcon :icon="faPlus" />
-                    </PageHeaderButton>
-                </RouterLink>
-            </template>
-        </DashboardDetailHeader>
+    <div class="space-y-6">
+        <ManageBreadcrumb :items="breadcrumbs" />
+        <LayoutTitle title="Locaties" />
 
-        <!-- Locations List -->
-        <DataList :items="locations" :loading="isLoading">
-            <template #item="{ item }">
-                <LocationDataItem :location="item">
-                    <template #actions>
-                        <LocationActionMenu
-                            :location="item"
-                            :is-pending="isLocationPending(item.id)"
-                            :show-state-select="profile.isAdmin"
-                            @select:state="onStateSelect"
-                            @click:delete="onDeleteClick">
-                        </LocationActionMenu>
-                    </template>
-                </LocationDataItem>
+        <p class="text-slate-600">Locaties die onder deze groep vallen.</p>
+
+        <!-- Error State -->
+        <Callout v-if="error" severity="error">
+            Er ging iets mis bij het laden van de locaties. Probeer het later opnieuw.
+        </Callout>
+
+        <!-- Empty State -->
+        <EmptyState
+            v-else-if="!isDataLoading && locations?.length === 0"
+            :icon="faMapMarkerAlt"
+            title="Geen locaties"
+            message="Er zijn nog geen locaties toegevoegd aan deze groep.">
+        </EmptyState>
+
+        <!-- Data / Loading State -->
+        <div v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <template v-if="isDataLoading">
+                <LocationCardSkeleton v-for="i in 6" :key="i" />
             </template>
-            <template #empty>
-                <EmptyState
-                    title="Geen locaties gevonden"
-                    message="Er zijn geen locaties gekoppeld aan deze autoriteit.">
-                </EmptyState>
+            <template v-else>
+                <LocationDetailCard
+                    v-for="location in locations"
+                    :key="location.id"
+                    :location="location"
+                    :to="{
+                        name: 'manage.location',
+                        params: { locationId: location.id },
+                    }">
+                </LocationDetailCard>
             </template>
-        </DataList>
-    </DashboardContent>
+        </div>
+    </div>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+</style>

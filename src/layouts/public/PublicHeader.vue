@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import LocationSearch from '@/components/features/location/search/LocationSearchButton.vue';
-import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import Logo from '@/components/shared/atoms/Logo.vue';
+import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
 import PublicHeaderMenuButton from '@/layouts/public/PublicHeaderMenuButton.vue';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -43,7 +43,7 @@ onUnmounted(() => {
 
             <div class="header__actions">
                 <RouterLink :to="{ name: 'profile' }" class="header__profile-link" v-if="profile">
-                    <ProfileAvatar class="h-11 w-11" :profile="profile" />
+                    <EntityAvatar class="h-11 w-11" :image="profile.avatar?.url" />
                 </RouterLink>
 
                 <RouterLink :to="{ name: 'auth' }" v-else>

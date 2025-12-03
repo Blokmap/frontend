@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import InstitutionActionMenu from '@/components/features/institution/InstitutionActionMenu.vue';
-import InstitutionLogo from '@/components/features/institution/InstitutionLogo.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import { useI18n } from 'vue-i18n';

@@ -1,6 +1,6 @@
 import { dateToString, isDateObject } from './date';
 import { timeToString, isTimeObject } from './time';
-import type { Paginated } from '@/utils/pagination';
+import type { AxiosResponseTransformer } from 'axios';
 
 /**
  * Formats a request object by converting Date objects to strings.
@@ -63,10 +63,15 @@ export function formatFormDataBody(data: Record<string, any>): FormData {
  */
 export function transformPaginatedResponseFactory<T>(
     parser: (item: any) => T,
-): (data: string) => Paginated<T> {
-    return (data: string) => {
+): AxiosResponseTransformer {
+    return (data: string, _headers, status?: number) => {
+        if (status && status >= 300) {
+            return data;
+        }
+
         const parsed = JSON.parse(data);
         const items = parsed.data.map(parser);
+
         return {
             ...parsed,
             data: items,
@@ -80,9 +85,14 @@ export function transformPaginatedResponseFactory<T>(
  * @param parser - A function that takes an item and returns the parsed item.
  * @returns A function that takes a JSON string and returns the parsed item or array of items.
  */
-export function transformResponseFactory<T>(parser: (item: any) => T): (data: string) => T | T[] {
-    return (data: string) => {
+export function transformResponseFactory<T>(parser: (item: any) => T): AxiosResponseTransformer {
+    return (data: string, _headers, status?: number) => {
+        if (status && status >= 300) {
+            return data;
+        }
+
         const parsed = JSON.parse(data);
+
         if (Array.isArray(parsed)) {
             return parsed.map(parser);
         } else {

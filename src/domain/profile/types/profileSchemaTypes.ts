@@ -11,7 +11,7 @@ export enum ProfileState {
 
 export type Profile = {
     id: string;
-    avatarUrl: Image | null;
+    avatar: Image | null;
     username: string;
     firstName: string | null;
     lastName: string | null;

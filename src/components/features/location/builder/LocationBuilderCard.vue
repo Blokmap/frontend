@@ -8,13 +8,13 @@ defineProps<{
 </script>
 
 <template>
-    <div class="rounded-lg border border-slate-200 bg-white p-3 sm:p-4">
-        <div class="space-y-4 sm:space-y-6">
-            <div class="flex items-center gap-3">
-                <div v-if="icon" class="icon hidden sm:flex">
-                    <FontAwesomeIcon :icon="icon" class="text-secondary-600" />
+    <div class="builder-card">
+        <div class="builder-card__body">
+            <div class="builder-card__header">
+                <div v-if="icon" class="builder-card__icon">
+                    <FontAwesomeIcon :icon="icon" />
                 </div>
-                <div class="w-full">
+                <div class="builder-card__title">
                     <slot name="header"></slot>
                 </div>
             </div>
@@ -26,9 +26,24 @@ defineProps<{
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.icon {
-    @apply bg-secondary-50 h-8 w-8 shrink-0 items-center justify-center;
-    @apply rounded-full;
-    @apply sm:h-10 sm:w-10;
+.builder-card {
+    @apply rounded-lg bg-white p-3 shadow-md sm:p-4;
+
+    .builder-card__body {
+        @apply space-y-4 sm:space-y-6;
+    }
+
+    .builder-card__header {
+        @apply flex items-center gap-3;
+    }
+
+    .builder-card__icon {
+        @apply bg-secondary-50 text-secondary-600 hidden h-8 w-8 shrink-0 items-center justify-center;
+        @apply rounded-full sm:flex sm:h-10 sm:w-10;
+    }
+
+    .builder-card__title {
+        @apply w-full;
+    }
 }
 </style>

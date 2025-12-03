@@ -231,22 +231,22 @@ onMounted(() => {
 
 .calendar__header {
     @apply sticky top-0 z-30;
-    @apply grid border-b border-gray-200 bg-gray-50;
+    @apply grid border-b border-slate-200 bg-slate-100;
     @apply min-w-max md:w-full md:min-w-0;
     @apply grid-cols-[55px_repeat(7,minmax(120px,1fr))];
 }
 
 .calendar__header-col {
-    @apply border-r border-gray-200 last:border-r-0;
+    @apply border-r border-slate-200 last:border-r-0;
 }
 
 .calendar__header-col:not(:first-child) {
     @apply cursor-pointer p-3 text-center;
-    @apply transition-colors hover:bg-gray-100;
+    @apply transition-colors hover:bg-slate-200;
 }
 
 .calendar__header-col--today {
-    @apply bg-secondary-50 text-secondary-500;
+    @apply bg-secondary-100 text-secondary-500;
 }
 
 .calendar__today-badge {
@@ -265,11 +265,11 @@ onMounted(() => {
 }
 
 .calendar__body::-webkit-scrollbar-track {
-    @apply bg-gray-100;
+    @apply bg-slate-100;
 }
 
 .calendar__body::-webkit-scrollbar-thumb {
-    @apply rounded bg-gray-300 hover:bg-gray-400;
+    @apply rounded bg-slate-300 hover:bg-slate-400;
 }
 
 .calendar__grid {
@@ -281,13 +281,13 @@ onMounted(() => {
 
 .calendar__time-col {
     @apply sticky left-0 z-40;
-    @apply relative border-r border-gray-200 bg-gray-50;
+    @apply relative border-r border-slate-200 bg-slate-100;
 }
 
 .calendar__time-label {
     @apply absolute right-0 left-0 -translate-y-[50%];
-    @apply pr-2 text-right text-[12px] text-gray-600 md:pr-1;
-    @apply bg-gray-50;
+    @apply pr-2 text-right text-[12px] text-slate-600 md:pr-1;
+    @apply bg-slate-100;
 
     &:first-child {
         @apply translate-y-1;

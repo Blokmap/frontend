@@ -1,45 +1,59 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import LocationReservationsTable from '@/components/features/reservation/table/LocationReservationsTable.vue';
+import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import DateInput from '@/components/shared/molecules/form/DateInput.vue';
-import DashboardContent from '@/layouts/manage/DashboardContent.vue';
+import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import { faQrcode, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
+import { useReadLocationReservations } from '@/composables/data/useLocations';
 import {
-    useReadLocationReservations,
     useReservationState,
+    type ReservationStateParams,
 } from '@/composables/data/useReservations';
-import { useToast } from '@/composables/store/useToast';
 import { useRouteDate } from '@/composables/useRouteDate';
+import type { Location } from '@/domain/location';
+import type { Profile } from '@/domain/profile';
 import type { Reservation, ReservationState } from '@/domain/reservation';
 
 const props = defineProps<{
-    locationId: string;
+    authProfile: Profile;
+    location: Location;
 }>();
 
-const toast = useToast();
 const selectedDay = useRouteDate();
 
-// Fetch reservations for the selected date
+const { mutateAsync: changeReservationState } = useReservationState({
+    onMutate: (variables: ReservationStateParams) => {
+        pendingStatusChanges.value.add(variables.reservationId);
+    },
+    onSuccess: (updatedReservation) => {
+        const reservation = reservations.value?.find((r) => r.id === updatedReservation.id);
+
+        if (reservation) {
+            Object.assign(reservation, updatedReservation);
+        }
+    },
+    onSettled: (variables: ReservationStateParams) => {
+        pendingStatusChanges.value.delete(variables.reservationId);
+    },
+});
+
 const { data: reservations, isLoading } = useReadLocationReservations(
-    computed(() => +props.locationId),
+    computed(() => +props.location.id),
     computed(() => ({ day: selectedDay.value })),
 );
 
-// Mutation for changing reservation state
-const { mutateAsync: changeReservationState } = useReservationState();
-
-const searchQuery = ref<string>('');
+const reservationSearchQuery = ref<string>('');
 const pendingStatusChanges = ref<Set<string>>(new Set());
 
-// Filter reservations based on search query
 const filteredReservations = computed(() => {
     if (!reservations.value) return [];
-    if (!searchQuery.value.trim()) return reservations.value;
+    if (!reservationSearchQuery.value.trim()) return reservations.value;
 
-    const query = searchQuery.value.toLowerCase();
+    const query = reservationSearchQuery.value.toLowerCase();
 
     return reservations.value.filter((reservation: Reservation) => {
         const profile = reservation.createdBy;
@@ -53,59 +67,26 @@ const filteredReservations = computed(() => {
     });
 });
 
-/**
- * Check if a reservation's state is being changed
- *
- * @param reservationId - ID of the reservation
- */
+const breadcrumbs = computed(() => [
+    { label: 'Mijn locaties', to: { name: 'manage.locations' } },
+    { label: props.location?.name ?? 'Locatie', to: { name: 'manage.location.info' } },
+    { label: 'Reservaties' },
+]);
+
 function isReservationPending(reservationId: string): boolean {
     return pendingStatusChanges.value.has(reservationId);
 }
 
-/**
- * Handle changing reservation status
- *
- * @param reservationId - ID of the reservation
- * @param state - New state to set
- */
-async function onStatusChange(reservationId: string, state: ReservationState): Promise<void> {
-    try {
-        pendingStatusChanges.value.add(reservationId);
-
-        const update = await changeReservationState({
-            reservationId,
-            state,
-        });
-
-        if (reservations.value) {
-            const reservation = reservations.value.find((r) => r.id === reservationId);
-
-            if (reservation) {
-                Object.assign(reservation, update);
-            }
-        }
-
-        toast.add({
-            severity: 'success',
-            summary: 'Status gewijzigd',
-            detail: 'De reservatiesstatus is succesvol gewijzigd.',
-        });
-    } catch (error: any) {
-        const message = error.message || 'Er is iets misgegaan bij het wijzigen van de status.';
-
-        toast.add({
-            severity: 'error',
-            summary: 'Fout bij wijzigen van reservatiestatus',
-            detail: message,
-        });
-    } finally {
-        pendingStatusChanges.value.delete(reservationId);
-    }
+function onStatusChange(reservationId: string, state: ReservationState): void {
+    changeReservationState({ reservationId, state });
 }
 </script>
 
 <template>
-    <DashboardContent>
+    <div class="space-y-8">
+        <ManageBreadcrumb :items="breadcrumbs" />
+        <LayoutTitle title="Reservaties" />
+
         <!-- Filters -->
         <div class="flex flex-wrap items-end gap-3 md:gap-4">
             <!-- Date Selector -->
@@ -119,7 +100,7 @@ async function onStatusChange(reservationId: string, state: ReservationState): P
                 <label class="mb-2 block text-sm font-medium text-slate-700">Zoeken</label>
                 <div class="relative">
                     <InputText
-                        v-model="searchQuery"
+                        v-model="reservationSearchQuery"
                         placeholder="Zoek op naam, gebruikersnaam of e-mail..."
                         class="w-full pl-10">
                     </InputText>
@@ -132,8 +113,8 @@ async function onStatusChange(reservationId: string, state: ReservationState): P
             <!-- Toggle Scanner -->
             <RouterLink
                 :to="{
-                    name: 'dashboard.locations.detail.scanner',
-                    params: { locationId: props.locationId },
+                    name: 'manage.location.scanner',
+                    params: { locationId: props.location.id },
                 }">
                 <Button>
                     <FontAwesomeIcon :icon="faQrcode" />
@@ -150,5 +131,9 @@ async function onStatusChange(reservationId: string, state: ReservationState): P
             :is-reservation-pending="isReservationPending"
             @change:status="onStatusChange">
         </LocationReservationsTable>
-    </DashboardContent>
+    </div>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+</style>

@@ -1,107 +1,95 @@
-<script setup lang="ts">
-import AuthorityActionMenu from '@/components/features/authority/AuthorityActionMenu.vue';
+<script lang="ts" setup>
 import AuthorityTable from '@/components/features/authority/AuthorityTable.vue';
-import DashboardContent from '@/layouts/manage/DashboardContent.vue';
-import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
-import DashboardDetailHeader from '@/layouts/manage/details/DashboardDetailHeader.vue';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { Paginator } from 'primevue';
+import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
+import Callout from '@/components/shared/molecules/Callout.vue';
+import EmptyState from '@/components/shared/molecules/EmptyState.vue';
+import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import { faBuilding } from '@fortawesome/free-solid-svg-icons';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import {
-    useDeleteAuthority,
-    useReadInstitutionAuthorities,
-} from '@/composables/data/useAuthorities';
-import { usePagination } from '@/composables/usePagination';
-import { type Authority, type AuthorityFilter } from '@/domain/authority';
-import { type Institution } from '@/domain/institution';
+import { useReadInstitutionAuthorities } from '@/composables/data/useAuthorities';
+import type { Authority } from '@/domain/authority';
+import type { Institution } from '@/domain/institution';
+import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
-    institution: Institution;
+    authProfile: Profile;
+    institution?: Institution;
+    isLoading: boolean;
+    error?: Error | null;
 }>();
 
+const { locale } = useI18n();
 const router = useRouter();
 
-const {
-    mutateAsync: deleteAuthority,
-    isPending: isPendingDelete,
-    variables,
-} = useDeleteAuthority();
+const institutionId = computed(() => props.institution?.id ?? 0);
+const enabled = computed(() => !!props.institution?.id);
 
-const filters = ref<AuthorityFilter>({
-    page: 1,
-    perPage: 25,
-});
+const filters = ref({});
 
-const { first, onPageChange } = usePagination(filters);
-
-const { data: authorities, isLoading } = useReadInstitutionAuthorities(
-    computed(() => props.institution.id),
+const { data: authoritiesData, isLoading: authoritiesLoading } = useReadInstitutionAuthorities(
+    institutionId,
     filters,
+    { enabled },
 );
 
-/**
- * Check if a specific authority is pending deletion.
- * @param authority - The authority to check.
- */
-function isAuthorityPending(authority: { id: number }): boolean {
-    return variables.value === authority.id && isPendingDelete.value;
-}
+const authorities = computed(() => authoritiesData.value?.data ?? []);
 
-/**
- * Handle clicking on an authority to view its details.
- * @param authority - The authority that was clicked.
- */
+const institutionName = computed(() => {
+    const name = props.institution?.name;
+    if (!name) return 'Instelling';
+    return name[locale.value] ?? name.nl ?? 'Instelling';
+});
+
+const breadcrumbs = computed(() => [
+    {
+        label: institutionName.value,
+        to: { name: 'manage.institution.overview' },
+    },
+    { label: 'Groepen' },
+]);
+
+const isDataLoading = computed(() => props.isLoading || authoritiesLoading.value);
+
 function onAuthorityClick(authority: Authority) {
     router.push({
-        name: 'dashboard.authorities.detail.overview',
+        name: 'manage.authority',
         params: { authorityId: authority.id },
     });
-}
-
-/**
- * Handle deleting an authority.
- * @param authorityId - The ID of the authority to delete.
- */
-function onAuthorityDeleteClick(authorityId: number): void {
-    deleteAuthority(authorityId);
 }
 </script>
 
 <template>
-    <DashboardContent>
-        <!-- Header -->
-        <DashboardDetailHeader
-            title="Autoriteiten"
-            secondary="Beheer autoriteiten gekoppeld aan deze institutie.">
-            <template #actions>
-                <RouterLink :to="{ name: 'dashboard.authorities.create' }">
-                    <PageHeaderButton label="Autoriteit Aanmaken">
-                        <FontAwesomeIcon :icon="faPlus" class="mr-2" />
-                    </PageHeaderButton>
-                </RouterLink>
-            </template>
-        </DashboardDetailHeader>
+    <div class="space-y-6">
+        <ManageBreadcrumb :items="breadcrumbs" />
+        <LayoutTitle title="Groepen" />
 
-        <!-- Authorities Table -->
+        <p class="text-slate-600">Groepen (authorities) die onder deze instelling vallen.</p>
+
+        <!-- Error State -->
+        <Callout v-if="error" severity="error">
+            Er ging iets mis bij het laden van de groepen. Probeer het later opnieuw.
+        </Callout>
+
+        <!-- Empty State -->
+        <EmptyState
+            v-else-if="!isDataLoading && authorities.length === 0"
+            :icon="faBuilding"
+            title="Geen groepen"
+            message="Er zijn nog geen groepen toegevoegd aan deze instelling.">
+        </EmptyState>
+
+        <!-- Data / Loading State -->
         <AuthorityTable
-            :authorities="authorities?.data"
-            :loading="isLoading"
+            v-else
+            :authorities="authorities"
+            :loading="isDataLoading"
             @click:authority="onAuthorityClick">
-            <template #actions="{ authority }">
-                <AuthorityActionMenu
-                    :authority="authority"
-                    :is-pending="isAuthorityPending(authority)"
-                    @click:delete="onAuthorityDeleteClick" />
-            </template>
         </AuthorityTable>
-
-        <Paginator
-            :first="first(authorities)"
-            :rows="authorities?.perPage"
-            :total-records="authorities?.total"
-            @page="onPageChange">
-        </Paginator>
-    </DashboardContent>
+    </div>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+</style>

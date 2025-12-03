@@ -297,99 +297,104 @@ function onDragEnd(): void {
                 Sleep afbeeldingen om de volgorde te wijzigen. Klik op de ster om een
                 hoofdafbeelding in te stellen.
             </p>
+
+            <!-- Add Image Dialog -->
+            <Teleport to="body">
+                <Dialog
+                    v-model:visible="showAddDialog"
+                    header="Afbeelding toevoegen"
+                    :style="{ width: '400px' }"
+                    :draggable="false"
+                    :resizable="false"
+                    modal>
+                    <div class="space-y-4">
+                        <!-- Upload Option -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="icon-container icon-container--primary">
+                                    <FontAwesomeIcon :icon="faUpload" />
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Bestanden uploaden</h4>
+                                    <p class="text-sm text-gray-500">
+                                        Kies een of meerdere bestanden.
+                                    </p>
+                                </div>
+                            </div>
+                            <FileUpload
+                                mode="basic"
+                                :accept="SUPPORTED_IMAGE_FORMATS.join(',')"
+                                :multiple="true"
+                                :auto="true"
+                                choose-label="Selecteer bestanden"
+                                class="w-full"
+                                @select="handleFileUpload">
+                                <template #chooseicon>
+                                    <FontAwesomeIcon :icon="faUpload" />
+                                </template>
+                            </FileUpload>
+                            <div class="text-xs text-gray-500">
+                                {{ SUPPORTED_IMAGE_FORMAT_NAES.join(', ') }} • Max.
+                                {{ MAX_IMAGE_SIZE }} per bestand • Tot
+                                {{ LOCATION_SETTINGS.MAX_IMAGES - images.length }} bestanden
+                            </div>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="relative flex items-center justify-center">
+                            <div class="absolute inset-x-0 top-1/2 h-px bg-gray-200"></div>
+                            <span class="relative bg-white px-2 text-sm text-gray-500">of</span>
+                        </div>
+
+                        <!-- URL Option -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="icon-container icon-container--secondary">
+                                    <FontAwesomeIcon :icon="faLink" />
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">URL opgeven</h4>
+                                    <p class="text-sm text-gray-500">
+                                        Directe link naar een afbeelding
+                                    </p>
+                                </div>
+                            </div>
+                            <InputText
+                                v-model="urlInput"
+                                class="w-full"
+                                placeholder="https://example.com/image.jpg"
+                                @keyup.enter="addImageFromUrl">
+                            </InputText>
+                        </div>
+                    </div>
+
+                    <template #footer>
+                        <div class="flex justify-end gap-3">
+                            <button
+                                class="dialog-button dialog-button--secondary"
+                                @click="showAddDialog = false">
+                                Annuleren
+                            </button>
+                            <button
+                                class="dialog-button dialog-button--primary"
+                                :disabled="!urlInput"
+                                @click="addImageFromUrl">
+                                <FontAwesomeIcon :icon="faPlus" class="mr-2" />
+                                Toevoegen
+                            </button>
+                        </div>
+                    </template>
+                </Dialog>
+            </Teleport>
         </template>
     </LocationBuilderCard>
-
-    <!-- Add Image Dialog -->
-    <Dialog
-        v-model:visible="showAddDialog"
-        header="Afbeelding toevoegen"
-        :style="{ width: '400px' }"
-        modal
-        :draggable="false"
-        :resizable="false">
-        <div class="space-y-4">
-            <!-- Upload Option -->
-            <div class="space-y-3">
-                <div class="flex items-center gap-3">
-                    <div class="icon-container icon-container--primary">
-                        <FontAwesomeIcon :icon="faUpload" />
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-gray-900">Bestanden uploaden</h4>
-                        <p class="text-sm text-gray-500">
-                            Kies een of meerdere bestanden van uw computer
-                        </p>
-                    </div>
-                </div>
-                <FileUpload
-                    mode="basic"
-                    :accept="SUPPORTED_IMAGE_FORMATS.join(',')"
-                    :multiple="true"
-                    :auto="true"
-                    choose-label="Selecteer bestanden"
-                    class="w-full"
-                    @select="handleFileUpload">
-                    <template #chooseicon>
-                        <FontAwesomeIcon :icon="faUpload" />
-                    </template>
-                </FileUpload>
-                <div class="text-xs text-gray-500">
-                    {{ SUPPORTED_IMAGE_FORMAT_NAES.join(', ') }} • Max. {{ MAX_IMAGE_SIZE }} per
-                    bestand • Tot {{ LOCATION_SETTINGS.MAX_IMAGES - images.length }} bestanden
-                </div>
-            </div>
-
-            <!-- Divider -->
-            <div class="relative flex items-center justify-center">
-                <div class="absolute inset-x-0 top-1/2 h-px bg-gray-200" />
-                <span class="relative bg-white px-2 text-sm text-gray-500">of</span>
-            </div>
-
-            <!-- URL Option -->
-            <div class="space-y-3">
-                <div class="flex items-center gap-3">
-                    <div class="icon-container icon-container--secondary">
-                        <FontAwesomeIcon :icon="faLink" />
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-gray-900">URL opgeven</h4>
-                        <p class="text-sm text-gray-500">Directe link naar een afbeelding</p>
-                    </div>
-                </div>
-                <InputText
-                    v-model="urlInput"
-                    class="w-full"
-                    placeholder="https://example.com/image.jpg"
-                    @keyup.enter="addImageFromUrl">
-                </InputText>
-            </div>
-        </div>
-
-        <template #footer>
-            <div class="flex justify-end gap-3">
-                <button
-                    class="dialog-button dialog-button--secondary"
-                    @click="showAddDialog = false">
-                    Annuleren
-                </button>
-                <button
-                    class="dialog-button dialog-button--primary"
-                    :disabled="!urlInput"
-                    @click="addImageFromUrl">
-                    <FontAwesomeIcon :icon="faPlus" class="mr-2" />
-                    Toevoegen
-                </button>
-            </div>
-        </template>
-    </Dialog>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
 .icon-container {
-    @apply flex h-10 w-10 items-center justify-center rounded-full;
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg;
 
     &.icon-container--secondary {
         @apply bg-secondary-100;

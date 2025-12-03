@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
-import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
+import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
 import { faArrowRight, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
@@ -16,7 +16,7 @@ const { locale } = useI18n();
 <template>
     <div class="rounded-2xl bg-white p-6 shadow-sm">
         <div class="flex items-start gap-4">
-            <ProfileAvatar class="h-16 w-16" :profile="profile" />
+            <EntityAvatar class="h-16 w-16" :profile="profile" />
             <div class="flex-1 space-y-3">
                 <h3 class="text-xl font-semibold text-gray-900">
                     Ingediend door {{ profile.firstName }}

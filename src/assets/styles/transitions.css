@@ -16,6 +16,20 @@
     opacity: 1;
 }
 
+/* Roll Down Transition */
+/* Used for: Menus, tooltips that roll down into view */
+.roll-down-enter-active {
+    @apply transition-all duration-300 ease-out;
+}
+
+.roll-down-enter-from {
+    @apply h-0 opacity-0;
+}
+
+.roll-down-enter-to {
+    @apply h-full opacity-100;
+}
+
 /* Slide Down Transition */
 /* Used for: Dropdowns, popovers, overlays that slide down from above */
 .slide-down-enter-active {
@@ -75,7 +89,7 @@
 /* Used for: Simple fade in/out effects */
 .fade-enter-active,
 .fade-leave-active {
-    @apply transition-opacity duration-100 ease-out;
+    @apply transition-opacity duration-200 ease-out;
 }
 
 .fade-enter-from,
@@ -121,16 +135,22 @@
 }
 
 /* Slide In Left Transition */
-.slide-in-left-enter-active {
-    @apply transition-all duration-500 ease-out;
+.slide-in-left-enter-active,
+.slide-in-left-leave-active {
+    @apply transition-all duration-300 ease-out;
 }
 
 .slide-in-left-enter-from {
     @apply -translate-x-4 opacity-0;
 }
 
-.slide-in-left-enter-to {
+.slide-in-left-enter-to,
+.slide-in-left-leave-from {
     @apply translate-x-0 opacity-100;
+}
+
+.slide-in-left-leave-to {
+    @apply -translate-x-4 opacity-0;
 }
 
 /* Staggered Cards Transition */
@@ -141,6 +161,14 @@
         transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+.staggered-cards-enter-active {
+    transition-delay: calc(var(--i) * 0.1s);
+}
+
+.staggered-cards-leave-active {
+    transition-delay: calc(var(--i) * 0.02s);
+}
+
 .staggered-cards-enter-from {
     opacity: 0;
     transform: translateY(40px) scale(0.9);
@@ -148,16 +176,22 @@
 
 /* Fade Slide Up Transition */
 /* Used for: Page sections that fade in with a subtle upward motion */
-.fade-slide-up-enter-active {
-    @apply transition-transform duration-500 ease-out;
+.fade-slide-up-enter-active,
+.fade-slide-up-leave-active {
+    @apply transition-all duration-300 ease-out;
 }
 
 .fade-slide-up-enter-from {
     @apply translate-y-4 opacity-0;
 }
 
-.fade-slide-up-enter-to {
+.fade-slide-up-enter-to,
+.fade-slide-up-leave-from {
     @apply translate-y-0 opacity-100;
+}
+
+.fade-slide-up-leave-to {
+    @apply translate-y-4 opacity-0;
 }
 
 /* Staggered Fade In Transition */

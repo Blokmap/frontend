@@ -1,6 +1,4 @@
 import axios, { HttpStatusCode, isAxiosError } from 'axios';
-import { useRouter } from 'vue-router';
-import { useAuthLogout } from '@/composables/data/useAuth';
 import { useToast } from '@/composables/store/useToast';
 import { MAPBOX_API_KEY, MAPBOX_URL } from '@/config';
 
@@ -27,40 +25,20 @@ export const client = axios.create({
  * This includes handling unauthorized responses and mocking certain endpoints.
  */
 export function setupAxiosInterceptors(): void {
-    const router = useRouter();
     const toast = useToast();
-    const logout = useAuthLogout();
 
     // Response interceptor to handle errors
     client.interceptors.response.use(
         async (response) => {
-            //await getRandomDelay(1000, 2000);
+            if (import.meta.env.DEV) {
+                await getRandomDelay(250, 750);
+            }
+
             return response;
         },
         async (error) => {
             if (!isAxiosError(error)) {
                 throw error;
-            }
-
-            if (error.status === HttpStatusCode.Forbidden) {
-                if (error.request.method === 'GET') {
-                    await logout.mutateAsync();
-                    router.push({ name: 'auth' });
-                }
-
-                if (error.request.method !== 'GET') {
-                    toast.add({
-                        severity: 'error',
-                        summary: 'Toegang geweigerd',
-                        detail: 'Je hebt geen toegang tot deze actie of pagina.',
-                    });
-                } else {
-                    toast.add({
-                        severity: 'error',
-                        summary: 'Toegang geweigerd',
-                        detail: 'Je hebt geen toegang tot deze data.',
-                    });
-                }
             }
 
             if (error.status === HttpStatusCode.PayloadTooLarge) {
@@ -69,16 +47,6 @@ export function setupAxiosInterceptors(): void {
                     summary: 'Bestand te groot',
                     detail: 'Het geüploade bestand is te groot. Probeer een kleiner bestand te uploaden.',
                 });
-            }
-
-            const isNotFound =
-                error.status === HttpStatusCode.NotFound ||
-                error.status === HttpStatusCode.BadRequest;
-
-            console.log('isNotFound', Object.keys(error), error.status);
-
-            if (isNotFound) {
-                router.push({ name: 'error.404' });
             }
 
             throw error;

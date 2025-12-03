@@ -1,141 +1,83 @@
-<script setup lang="ts">
-import Paginator from 'primevue/paginator';
-import MemberActionMenu from '@/components/features/auth/MemberActionMenu.vue';
-import RoleBadge from '@/components/features/auth/roles/RoleBadge.vue';
-import MemberAddDialog from '@/components/features/member/MemberAddDialog.vue';
+<script lang="ts" setup>
+import Badge from 'primevue/badge';
 import MembersTable from '@/components/features/member/MembersTable.vue';
-import DashboardContent from '@/layouts/manage/DashboardContent.vue';
-import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
-import DashboardDetailHeader from '@/layouts/manage/details/DashboardDetailHeader.vue';
-import { faUserPlus, faUserTag } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref } from 'vue';
-import {
-    useReadAuthorityRoles,
-    useAddAuthorityMember,
-    useDeleteAuthorityMember,
-    useReadAuthorityMembers,
-    useUpdateAuthorityMember,
-} from '@/composables/data/useMembers';
-import { usePagination } from '@/composables/usePagination';
+import Breadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
+import Callout from '@/components/shared/molecules/Callout.vue';
+import EmptyState from '@/components/shared/molecules/EmptyState.vue';
+import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import { computed } from 'vue';
+import { useReadAuthorityMembers, useReadAuthorityRoles } from '@/composables/data/useMembers';
 import type { Authority } from '@/domain/authority';
-import type { CreateMemberBody } from '@/domain/member';
+import type { Member } from '@/domain/member';
+import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
-    authority: Authority;
+    authProfile: Profile;
+    authority?: Authority;
+    isLoading: boolean;
+    error?: Error | null;
 }>();
 
-const pagination = ref({
-    page: 1,
-    perPage: 25,
+const authorityId = computed(() => props.authority?.id ?? 0);
+const enabled = computed(() => !!props.authority?.id);
+
+const { data: membersData, isLoading: membersLoading } = useReadAuthorityMembers(authorityId, {
+    enabled,
 });
 
-const { onPageChange, first } = usePagination(pagination);
-const { data: members, isLoading } = useReadAuthorityMembers(computed(() => props.authority.id));
+const { data: roles } = useReadAuthorityRoles(authorityId, { enabled });
 
-const { data: roles } = useReadAuthorityRoles(computed(() => props.authority.id));
+const members = computed(() => membersData.value?.data ?? []);
 
-const { mutate: addAuthorityMember, isPending: addMemberIsPending } = useAddAuthorityMember({
-    onSuccess: () => {
-        showMemberAddDialog.value = false;
+const breadcrumbs = computed(() => [
+    {
+        label: props.authority?.name ?? 'Groep',
+        to: { name: 'manage.authority.overview' },
     },
-});
-const { mutate: updateAuthorityMember } = useUpdateAuthorityMember();
-const { mutate: deleteAuthorityMember } = useDeleteAuthorityMember();
+    { label: 'Leden' },
+]);
 
-const showMemberAddDialog = ref(false);
+const isDataLoading = computed(() => props.isLoading || membersLoading.value);
 
-/**
- * Handle changing a member's role.
- * @param memberId - The ID of the member
- * @param roleID - The new role's ID
- */
-function onSelectRole(memberId: string, roleId: number): void {
-    updateAuthorityMember({
-        id: props.authority.id,
-        memberId,
-        body: { roleId },
-    });
-}
-
-/**
- * Handle removing a member.
- * @param memberId - The ID of the member to remove
- */
-function onDeleteClick(memberId: string): void {
-    deleteAuthorityMember({
-        id: props.authority.id,
-        memberId,
-    });
-}
-
-/**
- * Handle adding a new member.
- *
- * @param body - The body containing the username and role ID
- */
-function onAddMember(body: CreateMemberBody): void {
-    addAuthorityMember({
-        id: props.authority.id,
-        body,
-    });
+function getRoleName(member: Member): string | undefined {
+    if (!roles.value) return undefined;
+    const role = roles.value.find((r) => r.id === member.role?.id);
+    return role?.name;
 }
 </script>
 
 <template>
-    <DashboardContent>
-        <!-- Header -->
-        <DashboardDetailHeader title="Leden" secondary="Beheer leden en hun rollen.">
-            <template #actions>
-                <RouterLink
-                    :to="{
-                        name: 'dashboard.authorities.detail.roles',
-                        params: { authorityId: authority.id },
-                    }">
-                    <PageHeaderButton severity="contrast" label="Rollen Beheren">
-                        <FontAwesomeIcon :icon="faUserTag" />
-                    </PageHeaderButton>
-                </RouterLink>
-                <PageHeaderButton
-                    severity="contrast"
-                    label="Beheerder Toevoegen"
-                    @click="showMemberAddDialog = true">
-                    <FontAwesomeIcon :icon="faUserPlus" />
-                </PageHeaderButton>
-            </template>
-        </DashboardDetailHeader>
+    <div class="space-y-6">
+        <Breadcrumb :items="breadcrumbs" />
 
-        <!-- Members Table -->
-        <MembersTable :members="members?.data" :is-loading="isLoading">
+        <LayoutTitle title="Leden" />
+
+        <p class="text-slate-600">Beheer leden en hun rollen binnen deze groep.</p>
+
+        <!-- Error State -->
+        <Callout v-if="error" severity="error">
+            Er ging iets mis bij het laden van de leden. Probeer het later opnieuw.
+        </Callout>
+
+        <!-- Empty State -->
+        <EmptyState
+            v-else-if="!isDataLoading && members.length === 0"
+            :icon="faUsers"
+            title="Geen leden"
+            message="Er zijn nog geen leden toegevoegd aan deze groep.">
+        </EmptyState>
+
+        <!-- Data / Loading State -->
+        <MembersTable v-else :members="members" :is-loading="isDataLoading">
             <template #role="{ member }">
-                <RoleBadge :role="member.role" type="authority" />
-            </template>
-            <template #actions="{ member }">
-                <MemberActionMenu
-                    v-if="roles"
-                    :member="member"
-                    :available-roles="roles"
-                    @select:role="onSelectRole"
-                    @click:delete="onDeleteClick">
-                </MemberActionMenu>
+                <Badge v-if="getRoleName(member)" :value="getRoleName(member)" severity="info" />
+                <span v-else class="text-sm text-slate-400">-</span>
             </template>
         </MembersTable>
-
-        <Paginator
-            :first="first(members)"
-            :rows="members?.perPage"
-            :total-records="members?.total"
-            @page="onPageChange">
-        </Paginator>
-
-        <Teleport to="body">
-            <MemberAddDialog
-                v-if="roles"
-                :is-pending="addMemberIsPending"
-                :roles="roles"
-                @click:submit="onAddMember"
-                v-model:is-visible="showMemberAddDialog">
-            </MemberAddDialog>
-        </Teleport>
-    </DashboardContent>
+    </div>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+</style>

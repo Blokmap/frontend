@@ -1,11 +1,19 @@
 <script lang="ts" setup>
+import Skeleton from 'primevue/skeleton';
 import { computed } from 'vue';
 import { RouterLink, type RouteLocationRaw } from 'vue-router';
 
-const props = defineProps<{
-    to?: RouteLocationRaw;
-    active?: boolean;
-}>();
+const props = withDefaults(
+    defineProps<{
+        to?: RouteLocationRaw;
+        active?: boolean;
+        compact?: boolean;
+        loading?: boolean;
+    }>(),
+    {
+        compact: true,
+    },
+);
 
 defineEmits<{
     (e: 'click'): [];
@@ -15,7 +23,13 @@ const component = computed(() => (props.to ? RouterLink : 'div'));
 </script>
 
 <template>
-    <component class="item" :class="{ 'item--active': active }" :is="component" :to="to">
+    <Skeleton v-if="loading" class="item-skeleton" :class="{ 'item-skeleton--compact': compact }" />
+    <component
+        v-else
+        class="item"
+        :class="{ 'item--active': active, 'item--compact': compact }"
+        :is="component"
+        :to="to">
         <div class="item__img">
             <slot name="img"></slot>
         </div>
@@ -28,6 +42,21 @@ const component = computed(() => (props.to ? RouterLink : 'div'));
 <style scoped>
 @reference '@/assets/styles/main.css';
 
+.item-skeleton {
+    /* Match the height of a regular item: py-3 (0.75rem * 2) + h-12 (3rem) = 4.5rem */
+    @apply !h-[72px] w-full rounded-lg;
+
+    &.item-skeleton--compact {
+        /* Compact: py-2 (0.5rem * 2) + h-8 (2rem) = 3rem */
+        @apply !h-12;
+    }
+
+    /* Add spacing between skeletons when stacked */
+    & + & {
+        @apply mt-2;
+    }
+}
+
 .item {
     @apply flex items-center gap-3 px-4 py-3;
     @apply cursor-pointer rounded-lg transition-all hover:bg-slate-100;
@@ -36,14 +65,26 @@ const component = computed(() => (props.to ? RouterLink : 'div'));
         @apply bg-slate-100 dark:bg-gray-700;
     }
 
+    &.item--compact {
+        @apply gap-2 px-3 py-2;
+
+        .item__img {
+            @apply !h-8 !w-8 text-base;
+        }
+
+        .item__text {
+            @apply text-sm;
+        }
+    }
+
     .item__img {
         @apply flex h-12 w-12 shrink-0 items-center justify-center text-xl;
-        @apply shadow-playful rounded-full bg-slate-100 object-fill text-slate-700;
+        @apply shadow-playful overflow-hidden rounded-full bg-slate-100 object-fill text-slate-700;
         --shadow-color: var(--color-slate-300);
     }
 
     .item__text {
-        @apply w-full font-bold;
+        @apply w-full truncate font-bold;
     }
 }
 </style>

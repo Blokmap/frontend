@@ -3,16 +3,14 @@ import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Select from 'primevue/select';
+import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
 import InputHint from '@/components/shared/molecules/form/InputHint.vue';
 import InputLabel from '@/components/shared/molecules/form/InputLabel.vue';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';
 import { computed, ref } from 'vue';
-
 import { useFindProfiles } from '@/composables/data/useProfile';
-
-import ProfileAvatar from '../profile/avatar/ProfileAvatar.vue';
 import type { CreateMemberBody, Role } from '@/domain/member';
 import type { FoundProfile } from '@/domain/profile';
 
@@ -95,8 +93,8 @@ function onSubmitForm(): void {
                                 required>
                                 <template #option="{ option }">
                                     <div class="flex items-center gap-2">
-                                        <ProfileAvatar class="h-10" :image="option.avatarUrl?.url">
-                                        </ProfileAvatar>
+                                        <EntityAvatar class="h-10" :profile="option">
+                                        </EntityAvatar>
                                         <div class="flex flex-col">
                                             <span class="text-sm font-medium">
                                                 {{ option.username }}

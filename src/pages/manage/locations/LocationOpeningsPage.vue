@@ -1,35 +1,43 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import LocationOpeningBuilder from '@/components/features/location/builder/builders/LocationOpeningBuilder.vue';
-import DashboardContent from '@/layouts/manage/DashboardContent.vue';
-import { ref, watchEffect } from 'vue';
+import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
+import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import { computed, ref, watchEffect } from 'vue';
 import {
     useCreateOpeningTimes,
     useDeleteOpeningTime,
     useUpdateOpeningTime,
 } from '@/composables/data/useOpeningTimes';
-import { openingToBody } from '@/domain/openings';
+import { type OpeningTimeBody, openingToBody } from '@/domain/openings';
 import type { Location } from '@/domain/location';
-import type { OpeningTimeBody } from '@/domain/openings';
+import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
+    authProfile: Profile;
     location: Location;
 }>();
 
-const { mutateAsync: createOpeningTimes } = useCreateOpeningTimes({});
-const { mutateAsync: updateOpeningTime } = useUpdateOpeningTime({});
-const { mutateAsync: deleteOpeningTime } = useDeleteOpeningTime({});
+const { mutateAsync: createOpeningTimes } = useCreateOpeningTimes();
+const { mutateAsync: updateOpeningTime } = useUpdateOpeningTime();
+const { mutateAsync: deleteOpeningTime } = useDeleteOpeningTime();
 
 const openingsForm = ref<OpeningTimeBody[]>([]);
 
+const breadcrumbs = computed(() => [
+    { label: 'Mijn locaties', to: { name: 'manage.locations' } },
+    { label: props.location?.name ?? 'Locatie', to: { name: 'manage.location.info' } },
+    { label: 'Openingsuren' },
+]);
+
 watchEffect(() => {
-    if (!props.location) return;
+    if (!props.location) {
+        return;
+    }
+
     const mappedOpenings = (props.location.openingTimes || []).map(openingToBody);
     openingsForm.value = mappedOpenings;
 });
 
-/**
- * Handles creation of a new opening time
- */
 async function onCreateOpeningTime(openingTime: OpeningTimeBody): Promise<void> {
     await createOpeningTimes({
         locationId: props.location.id,
@@ -37,9 +45,6 @@ async function onCreateOpeningTime(openingTime: OpeningTimeBody): Promise<void> 
     });
 }
 
-/**
- * Handles updating an existing opening time
- */
 async function onUpdateOpeningTime(
     openingTimeId: number,
     openingTime: OpeningTimeBody,
@@ -53,9 +58,6 @@ async function onUpdateOpeningTime(
     });
 }
 
-/**
- * Handles deletion of an opening time
- */
 async function onDeleteOpeningTime(openingTimeId: number, sequence?: boolean): Promise<void> {
     await deleteOpeningTime({
         locationId: props.location.id,
@@ -66,7 +68,11 @@ async function onDeleteOpeningTime(openingTimeId: number, sequence?: boolean): P
 </script>
 
 <template>
-    <DashboardContent>
+    <div class="space-y-6">
+        <ManageBreadcrumb :items="breadcrumbs" />
+
+        <LayoutTitle title="Openingsuren" />
+
         <LocationOpeningBuilder
             :location="location"
             :opening-times="openingsForm"
@@ -74,5 +80,9 @@ async function onDeleteOpeningTime(openingTimeId: number, sequence?: boolean): P
             @update="onUpdateOpeningTime"
             @delete="onDeleteOpeningTime">
         </LocationOpeningBuilder>
-    </DashboardContent>
+    </div>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+</style>

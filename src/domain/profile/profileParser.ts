@@ -15,7 +15,7 @@ export function parseProfileResponse(data: any): Profile {
 
     const result: Profile = {
         ...data,
-        avatarUrl: parseImageResponse(data.avatarUrl),
+        avatar: parseImageResponse(data.avatarUrl),
         createdAt: stringToDate(data.createdAt),
         updatedAt: stringToDate(data.updatedAt),
     };
@@ -42,6 +42,6 @@ export function parseFoundProfileResponse(data: any): FoundProfile {
 
     return {
         ...data,
-        avatarUrl: parseImageResponse(data.avatarUrl),
+        avatarUrl: parseImageResponse(data.avatar),
     };
 }

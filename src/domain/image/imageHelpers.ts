@@ -13,14 +13,14 @@ export function getLocationImages(locations?: Location[]): Image[] {
         (loc.images ?? []).map((img) => ({ img, locIdx })),
     );
 
-    allImages.sort((a, b) => {
+    const sortedImages = allImages.sort((a, b) => {
         if (a.img.index !== b.img.index) {
             return a.img.index - b.img.index;
         }
         return a.locIdx - b.locIdx;
     });
 
-    const images = allImages.map((x) => x.img).slice(0, 3);
+    const images = sortedImages.map((x) => x.img).slice(0, 3);
 
     const PLACEHOLDERS: string[] = [placeholder1, placeholder2, placeholder3];
 
@@ -63,4 +63,14 @@ export function getImageBodyPreviewUrl(image: ImageBody): string {
     if (image.imageUrl) return image.imageUrl;
     if (image.file) return URL.createObjectURL(image.file);
     return '';
+}
+
+/**
+ * Sorts an array of images by their index property in ascending order.
+ *
+ * @param images Array of Image objects to sort
+ * @returns New array of Image objects sorted by index
+ */
+export function sortImagesByIndex<T extends { index: number }>(images: T[]): T[] {
+    return [...images].sort((a, b) => a.index - b.index);
 }

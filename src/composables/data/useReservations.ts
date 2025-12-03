@@ -260,7 +260,7 @@ export function useConfirmReservation(
     return mutation;
 }
 
-type ReservationStateParams = {
+export type ReservationStateParams = {
     reservationId: string;
     state: ReservationState;
 };

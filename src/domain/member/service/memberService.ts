@@ -18,6 +18,7 @@ import type {
     UpdateMemberBody,
 } from '../types';
 import type { AuthorityIncludes } from '@/domain/authority';
+import type { LocationIncludes } from '@/domain/location';
 import type { Paginated } from '@/utils/pagination';
 
 export * from './memberRoleService';
@@ -239,12 +240,16 @@ export async function removeInstitutionMember(
  */
 export async function readProfileLocationMemberships(
     profileId: string,
+    includes: LocationIncludes[] = [],
 ): Promise<LocationMembership[]> {
     const endpoint = endpoints.profiles.locations.memberships.replace('{id}', profileId);
 
     const transformResponse = transformResponseFactory(parseLocationMembershipResponse);
 
-    const { data } = await client.get(endpoint, { transformResponse });
+    const { data } = await client.get(endpoint, {
+        transformResponse,
+        params: { locationIncludes: includes },
+    });
 
     return data;
 }

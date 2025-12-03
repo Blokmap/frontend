@@ -1,8 +1,6 @@
 import { checkPermissions } from './memberPermissionHelpers';
 import type { Predicate } from '../types';
 
-// Functions for building permission predicates
-
 /**
  * Creates a predicate that returns true if ANY of the given permissions are present.
  * Also returns true if the user has administrator privileges.
@@ -10,9 +8,6 @@ import type { Predicate } from '../types';
  * @param permissions - Permission bitmasks to check
  * @returns Predicate function
  *
- * @example
- * // User needs ManageImages OR ManageMembers
- * any(LocationPermission.ManageImages, LocationPermission.ManageMembers)
  */
 export function any(...permissions: number[]): Predicate {
     return (perms: number) => permissions.some((permission) => checkPermissions(perms, permission));
@@ -24,10 +19,6 @@ export function any(...permissions: number[]): Predicate {
  *
  * @param permissions - Permission bitmasks to check
  * @returns Predicate function
- *
- * @example
- * // User needs BOTH ManageImages AND ManageMembers
- * all(LocationPermission.ManageImages, LocationPermission.ManageMembers)
  */
 export function all(...permissions: number[]): Predicate {
     return (perms: number) =>
@@ -40,9 +31,6 @@ export function all(...permissions: number[]): Predicate {
  * @param predicate - Predicate to invert
  * @returns Inverted predicate function
  *
- * @example
- * // User must NOT have ManageMembers
- * not(has(LocationPermission.ManageMembers))
  */
 export function not(predicate: Predicate): Predicate {
     return (perms: number) => !predicate(perms);
@@ -53,10 +41,6 @@ export function not(predicate: Predicate): Predicate {
  * Useful for routes that only require membership without specific permissions.
  *
  * @returns Predicate that always returns true
- *
- * @example
- * // User just needs to be a member, no specific permissions required
- * blank()
  */
 export function blank(): Predicate {
     return (_perms: number) => true;
@@ -68,10 +52,6 @@ export function blank(): Predicate {
  *
  * @param permission - Permission bitmask to check
  * @returns Predicate function
- *
- * @example
- * // User needs ManageImages permission
- * has(LocationPermission.ManageImages)
  */
 export function has(permission: number): Predicate {
     return (perms: number) => checkPermissions(perms, permission);

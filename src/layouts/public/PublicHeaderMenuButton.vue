@@ -2,9 +2,9 @@
 import Button from 'primevue/button';
 import Popover from 'primevue/popover';
 import Skeleton from 'primevue/skeleton';
-import ProfileAvatar from '@/components/features/profile/avatar/ProfileAvatar.vue';
 import ImageStack from '@/components/shared/molecules/ImageStack.vue';
 import LanguageSelector from '@/components/shared/molecules/LanguageSelector.vue';
+import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
 import {
     faBars,
     faCalendarAlt,
@@ -86,7 +86,7 @@ function closeMenu(): void {
                 :to="{ name: 'profile' }"
                 @click="closeMenu"
                 class="menu-popover__profile">
-                <ProfileAvatar :profile="profile" class="h-12 w-12" />
+                <EntityAvatar :image="profile.avatar?.url" class="h-12 w-12" />
                 <div class="menu-popover__profile-info">
                     <div class="menu-popover__profile-name">
                         {{ profile.firstName }}
@@ -155,7 +155,7 @@ function closeMenu(): void {
 
             <div class="menu-popover__divider"></div>
 
-            <!-- Logout (Authenticated) -->
+            <!-- Logout -->
             <nav v-if="profile" class="menu-popover__nav">
                 <button @click="handleLogout" class="menu-popover__item menu-popover__item--danger">
                     <FontAwesomeIcon :icon="faSignOut" class="w-4" />
@@ -163,7 +163,7 @@ function closeMenu(): void {
                 </button>
             </nav>
 
-            <!-- Login (Guest) -->
+            <!-- Login  -->
             <nav v-else class="menu-popover__nav">
                 <RouterLink :to="{ name: 'auth' }" @click="closeMenu" class="menu-popover__item">
                     <FontAwesomeIcon :icon="faRightToBracket" class="w-4" />
@@ -219,7 +219,7 @@ function closeMenu(): void {
 }
 
 .menu-popover__item--danger {
-    @apply text-red-500;
+    @apply text-red-700;
 }
 
 .menu-popover__cta {

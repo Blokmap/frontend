@@ -25,9 +25,18 @@
             "name": "Locatie | Locaties",
             "spot": "Plek | Plekken",
             "state": {
-                "Approved": "Goedgekeurd",
-                "Pending": "In afwachting",
-                "Rejected": "Afgewezen"
+                "Approved": {
+                    "label": "Goedgekeurd",
+                    "description": "Deze locatie is goedgekeurd en zichtbaar voor het publiek."
+                },
+                "Pending": {
+                    "label": "In afwachting",
+                    "description": "Deze locatie is in afwachting van goedkeuring door een beheerder."
+                },
+                "Rejected": {
+                    "label": "Afgewezen",
+                    "description": "Deze locatie werd afgewezen en niet zichtbaar voor het publiek."
+                }
             },
             "success": {
                 "statusUpdated": "Status Bijgewerkt",

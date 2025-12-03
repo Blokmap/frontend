@@ -7,7 +7,7 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import LoginForm from '@/components/features/auth/forms/LoginForm.vue';
 import RegisterForm from '@/components/features/auth/forms/RegisterForm.vue';
-import InstitutionLogo from '@/components/features/institution/InstitutionLogo.vue';
+import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
 import { faArrowRight, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { isAxiosError } from 'axios';
@@ -82,8 +82,8 @@ const {
     },
 });
 
-const institutionFilter = ref('');
-const isDialogVisible = computed(() => !!route.params.action);
+const institutionFilter = ref<string>('');
+const isDialogVisible = computed<boolean>(() => !!route.params.action);
 
 const filteredInstitutions = computed(() => {
     if (!institutions.value) {
@@ -98,7 +98,7 @@ const filteredInstitutions = computed(() => {
     });
 });
 
-function handleSelectInstitution(institution: { value: string }): void {
+function onSelectInstitution(institution: { value: string }): void {
     if (!institution.value) {
         return;
     }
@@ -136,7 +136,7 @@ function switchToRegister(): void {
             pt:list-container:class="p-0"
             :options="filteredInstitutions"
             :loading="isLoadingInstitutions"
-            @change="handleSelectInstitution">
+            @change="onSelectInstitution">
             <template #header>
                 <InputText
                     v-model="institutionFilter"
@@ -146,7 +146,7 @@ function switchToRegister(): void {
             </template>
             <template #option="{ option }">
                 <div class="flex items-center gap-2">
-                    <InstitutionLogo :slug="option.slug" class="h-8 w-8 object-contain" />
+                    <EntityAvatar :image="option.logo?.url" class="h-8 w-8" />
                     <div class="flex flex-col">
                         <p class="text-sm font-bold">
                             {{ option.slug[locale] }}
@@ -231,3 +231,7 @@ function switchToRegister(): void {
         </template>
     </Dialog>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+</style>

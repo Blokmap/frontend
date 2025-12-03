@@ -23,6 +23,7 @@ import {
     readAuthorityLocations,
     readRecentProfileLocations,
     type RecentLocationFilter,
+    readProfileLocations,
 } from '@/domain/location';
 import {
     readLocationReservations,
@@ -563,6 +564,26 @@ export function useDeleteLocation(options: CompMutationOptions = {}): CompMutati
     });
 
     return mutation;
+}
+
+export function useReadProfileLocations(
+    profileId: MaybeRef<string | null>,
+    options: CompQueryOptions<LocationIncludes> = {},
+): CompQuery<Paginated<Location>> {
+    const enabled = computed(() => toValue(profileId) !== null);
+
+    const query = useQuery<Paginated<Location>, AxiosError>({
+        ...options,
+        enabled,
+        queryKey: ['locations', 'list', 'byProfile', profileId],
+        queryFn: () => {
+            const profileIdValue = toValue(profileId)!;
+            const includes = options.includes;
+            return readProfileLocations(profileIdValue, includes);
+        },
+    });
+
+    return query;
 }
 
 export function useReadRecentProfileLocations(

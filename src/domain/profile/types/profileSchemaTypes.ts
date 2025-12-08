@@ -26,7 +26,7 @@ export type Profile = {
 export type FoundProfile = {
     id: string;
     username: string;
-    avatarUrl: Image | null;
+    avatar: Image | null;
     firstName: string | null;
     lastName: string | null;
 };

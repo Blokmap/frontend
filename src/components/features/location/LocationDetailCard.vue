@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import Badge from 'primevue/badge';
 import LocationStateBadge from '@/components/features/location/details/LocationStateBadge.vue';
 import SlideCarousel from '@/components/shared/molecules/image/SlideCarousel.vue';
 import { computed } from 'vue';
@@ -51,7 +52,23 @@ function navigate() {
             </LocationStateBadge>
         </div>
         <div class="location-detail__content" @click="navigate">
-            <h2 class="location-detail__name">{{ location.name }}</h2>
+            <div class="location-detail__header">
+                <h2 class="location-detail__name">
+                    {{ location.name }}
+                </h2>
+                <RouterLink
+                    class="flex"
+                    v-if="location.authority"
+                    :to="{
+                        name: 'manage.authority.overview',
+                        params: { authorityId: location.authority.id },
+                    }"
+                    @click.stop>
+                    <Badge size="small" severity="contrast">
+                        {{ location.authority.name }}
+                    </Badge>
+                </RouterLink>
+            </div>
             <p class="location-detail__address">
                 {{ formatLocationAddress(location) }}
             </p>
@@ -82,8 +99,12 @@ function navigate() {
         }
     }
 
+    .location-detail__header {
+        @apply flex items-center justify-between gap-2;
+    }
+
     .location-detail__badge {
-        @apply absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 shadow-lg;
+        @apply absolute top-3 right-3 z-10 text-xs shadow-lg;
     }
 
     .location-detail__content {

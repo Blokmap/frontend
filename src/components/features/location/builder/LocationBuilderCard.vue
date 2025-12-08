@@ -38,8 +38,8 @@ defineProps<{
     }
 
     .builder-card__icon {
-        @apply bg-secondary-50 text-secondary-600 hidden h-8 w-8 shrink-0 items-center justify-center;
-        @apply rounded-full sm:flex sm:h-10 sm:w-10;
+        @apply bg-secondary-50 text-secondary-600 hidden h-12 w-12 shrink-0 items-center justify-center sm:flex;
+        @apply rounded-full;
     }
 
     .builder-card__title {

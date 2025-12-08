@@ -1,5 +1,5 @@
 .p-message {
-    @apply rounded-lg text-sm outline-0;
+    @apply rounded-lg border-0 text-sm outline-0;
 }
 
 .p-message-content {
@@ -15,7 +15,7 @@
 }
 
 .p-message-info {
-    @apply bg-glacier-50 text-glacier-600 border-glacier-200 shadow-playful-no-transform;
+    @apply bg-glacier-50 text-glacier-600 outline-glacier-200 shadow-playful-no-transform;
     --shadow-color: theme(colors.glacier.200);
 }
 

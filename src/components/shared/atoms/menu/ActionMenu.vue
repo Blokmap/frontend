@@ -1,53 +1,76 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
-import Popover from 'primevue/popover';
 import { faEllipsisH, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useTemplateRef } from 'vue';
+import { ref } from 'vue';
+import { useFloatingPosition } from '@/composables/useFloatingPosition';
 
-defineProps<{
+const props = defineProps<{
     isPending?: boolean;
+    disabled?: boolean;
+    disabledTooltip?: string;
 }>();
 
-const actionMenuRef = useTemplateRef('menu');
+const triggerRef = ref<HTMLElement | null>(null);
+const overlayRef = ref<HTMLElement | null>(null);
+const isVisible = ref<boolean>(false);
 
-function onToggleActionMenu(event: Event): void {
-    actionMenuRef.value?.toggle(event);
-    event.stopPropagation();
+const { positionStyles } = useFloatingPosition(triggerRef, overlayRef, isVisible);
+
+function onToggleActionMenu(): void {
+    if (props.disabled) {
+        return;
+    }
+
+    isVisible.value = !isVisible.value;
 }
 
 function hideMenu(): void {
-    actionMenuRef.value?.hide();
+    isVisible.value = false;
 }
 </script>
 
 <template>
     <div>
-        <slot name="trigger" :toggle="onToggleActionMenu" ref="toggle">
-            <Button severity="contrast" aria-haspopup="true" @click="onToggleActionMenu" text>
-                <template #icon>
-                    <FontAwesomeIcon :icon="faEllipsisH" v-if="!isPending" />
-                    <FontAwesomeIcon :icon="faSpinner" spin v-else />
-                </template>
-            </Button>
-        </slot>
+        <div ref="triggerRef">
+            <slot name="trigger" :toggle="onToggleActionMenu">
+                <Button
+                    severity="contrast"
+                    aria-haspopup="true"
+                    v-tooltip.top="disabled ? disabledTooltip : ''"
+                    :disabled="disabled"
+                    @click.stop="onToggleActionMenu"
+                    text>
+                    <template #icon>
+                        <FontAwesomeIcon :icon="faEllipsisH" v-if="!isPending" />
+                        <FontAwesomeIcon :icon="faSpinner" spin v-else />
+                    </template>
+                </Button>
+            </slot>
+        </div>
 
-        <Popover ref="menu">
-            <div class="p-2">
-                <p class="mb-3 text-sm font-medium text-slate-500">Acties</p>
-                <div class="space-y-3">
-                    <!-- Main content slot -->
-                    <slot name="content" :hide-menu="hideMenu">
-                        <!-- Default content slot -->
-                        <slot :hide-menu="hideMenu"></slot>
-                    </slot>
+        <Teleport to="body">
+            <Transition name="slide-down">
+                <div
+                    v-if="isVisible"
+                    ref="overlayRef"
+                    :style="positionStyles"
+                    class="rounded-lg bg-white p-2 shadow-lg">
+                    <p class="mb-3 text-sm font-medium text-slate-500">Acties</p>
+                    <div class="space-y-3">
+                        <!-- Main content slot -->
+                        <slot name="content" :hide-menu="hideMenu">
+                            <!-- Default content slot -->
+                            <slot :hide-menu="hideMenu"></slot>
+                        </slot>
 
-                    <!-- Navigation section (always rendered independently) -->
-                    <div v-if="$slots.navigation" class="space-y-2">
-                        <slot name="navigation" :hide-menu="hideMenu"></slot>
+                        <!-- Navigation section (always rendered independently) -->
+                        <div v-if="$slots.navigation" class="space-y-2">
+                            <slot name="navigation" :hide-menu="hideMenu"></slot>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </Popover>
+            </Transition>
+        </Teleport>
     </div>
 </template>

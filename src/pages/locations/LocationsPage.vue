@@ -94,7 +94,7 @@ function onNearestClick(): void {
             </div>
 
             <div class="space-y-4" v-else>
-                <h2 class="flex items-center justify-between text-2xl font-bold">
+                <h2 class="flex items-center justify-between text-xl font-extrabold">
                     <span>
                         <template v-if="locations?.data?.length">
                             <span v-if="locations.truncated">

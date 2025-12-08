@@ -113,7 +113,7 @@ export function useReadLocation(
         queryKey: ['locations', 'read', id],
         queryFn: () => {
             const locationId = toValue(id);
-            const includes = options.includes ?? [];
+            const includes = options.includes;
             return readLocation(locationId, includes);
         },
     });
@@ -568,6 +568,7 @@ export function useDeleteLocation(options: CompMutationOptions = {}): CompMutati
 
 export function useReadProfileLocations(
     profileId: MaybeRef<string | null>,
+    filters: MaybeRef<LocationFilter> = {},
     options: CompQueryOptions<LocationIncludes> = {},
 ): CompQuery<Paginated<Location>> {
     const enabled = computed(() => toValue(profileId) !== null);
@@ -575,11 +576,12 @@ export function useReadProfileLocations(
     const query = useQuery<Paginated<Location>, AxiosError>({
         ...options,
         enabled,
-        queryKey: ['locations', 'list', 'byProfile', profileId],
+        queryKey: ['locations', 'list', 'byProfile', profileId, filters],
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
+            const filtersValue = toValue(filters);
             const includes = options.includes;
-            return readProfileLocations(profileIdValue, includes);
+            return readProfileLocations(profileIdValue, filtersValue, includes);
         },
     });
 

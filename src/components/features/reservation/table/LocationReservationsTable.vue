@@ -72,7 +72,7 @@ function onStatusChange(reservationId: string, state: ReservationState): void {
         <template #group="{ data, items }">
             <RouterLink
                 :to="{
-                    name: 'dashboard.profiles.detail.overview',
+                    name: 'manage',
                     params: { profileId: data.profile.id },
                 }"
                 class="flex items-center justify-between">

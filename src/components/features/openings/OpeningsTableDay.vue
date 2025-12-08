@@ -41,46 +41,40 @@ const { locale } = useI18n();
 @reference '@/assets/styles/main.css';
 
 .openings-day {
-    @apply flex items-center justify-between border-b-2 border-slate-200 py-2.5 transition-colors last:border-b-0;
-}
+    @apply flex items-center justify-between px-4 py-2.5;
+    @apply border-b-2 border-slate-200 transition-colors last:border-b-0;
 
-.openings-day:hover {
-    @apply bg-slate-50;
-}
+    &:hover {
+        @apply bg-slate-50;
+    }
 
-.openings-day--today {
-    @apply bg-primary-50/50;
-}
+    &.openings-day--today {
+        @apply bg-secondary-50 rounded-lg border-b-0;
 
-.openings-day--today:hover {
-    @apply bg-primary-50;
-}
+        &:hover {
+            @apply bg-secondary-200;
+        }
 
-.openings-day__label {
-    @apply text-sm font-semibold text-slate-700;
-}
+        .openings-day__label,
+        .openings-day__time {
+            @apply text-secondary-800;
+        }
 
-.openings-day--today .openings-day__label {
-    @apply text-primary-700;
-}
+        .openings-day__closed {
+            @apply text-secondary-800 text-sm italic;
+        }
+    }
 
-.openings-day__times {
-    @apply text-right;
-}
+    .openings-day__label {
+        @apply text-sm font-semibold text-slate-700;
+    }
 
-.openings-day__time {
-    @apply font-mono text-sm font-medium text-slate-700;
-}
+    .openings-day__time {
+        @apply font-mono text-sm font-medium text-slate-700;
+    }
 
-.openings-day--today .openings-day__time {
-    @apply text-primary-800;
-}
-
-.openings-day__closed {
-    @apply text-sm text-slate-400 italic;
-}
-
-.openings-day--today .openings-day__closed {
-    @apply text-primary-400;
+    .openings-day__closed {
+        @apply text-sm text-slate-500 italic;
+    }
 }
 </style>

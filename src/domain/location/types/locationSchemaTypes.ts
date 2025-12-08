@@ -1,5 +1,6 @@
 import type { Authority } from '@/domain/authority';
 import type { Image } from '@/domain/image';
+import type { Institution } from '@/domain/institution';
 import type { OpeningTime } from '@/domain/openings';
 import type { Profile } from '@/domain/profile';
 import type { TranslationBody, Translation } from '@/domain/translation';
@@ -34,7 +35,7 @@ export type Location = {
     name: string;
     state: LocationState;
     excerpt: Translation;
-    description: Translation;
+    description?: Translation;
     seatCount: number;
     minReservationLength: number | null;
     maxReservationLength: number | null;
@@ -59,7 +60,8 @@ export type Location = {
     updatedBy?: Profile | null;
     rejectedBy?: Profile | null;
     images?: Image[];
-    authority?: Authority;
+    authority?: Authority | null;
+    institution?: Institution | null;
 };
 
 export type LocationBody = {

@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import { faTag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useTemplateRef } from 'vue';
-import { type PermissionType, type Role } from '@/domain/member';
+import { ref, useTemplateRef } from 'vue';
+import { useFloatingPosition } from '@/composables/useFloatingPosition';
+import { type Role } from '@/domain/member';
 import { getContrastColor } from '@/utils/colorUtils';
 import RolePermissionsPopover from './RolePermissionsPopover.vue';
+import type { PermissionType } from '@/domain/auth';
 
 const {
     clickable = true,
@@ -16,7 +18,11 @@ const {
     type: PermissionType;
 }>();
 
-const popover = useTemplateRef('popover');
+const triggerRef = useTemplateRef<HTMLElement>('trigger');
+const popoverRef = useTemplateRef<HTMLElement>('popover');
+const isPopoverVisible = ref(false);
+
+const { positionStyles } = useFloatingPosition(triggerRef, popoverRef, isPopoverVisible);
 
 /**
  * Calculate the high contrast text color for the badge.
@@ -27,33 +33,50 @@ function getTextColor(): string {
 
 /**
  * Handle click on role label
- *
- * @param event - The click event for toggling the popover
  */
-function onClickLabel(event: Event): void {
-    if (clickable && role) popover.value?.toggle(event);
+function onClickLabel(): void {
+    if (clickable && role) {
+        isPopoverVisible.value = !isPopoverVisible.value;
+    }
 }
 </script>
 
 <template>
     <div
-        class="role-label"
-        :class="{ clickable }"
+        ref="trigger"
+        class="role-badge"
+        :class="{ 'role-badge--clickable': clickable }"
         :style="{ backgroundColor: role?.colour ?? 'whitesmoke', color: getTextColor() }"
         @click.stop="onClickLabel">
-        <FontAwesomeIcon class="mr-1" :icon="faTag" />
-        <span class="font-semibold">{{ role?.name ?? 'Geen Rol' }}</span>
+        <FontAwesomeIcon class="role-badge__icon" :icon="faTag" />
+        <span class="role-badge__label">{{ role?.name ?? 'Geen Rol' }}</span>
     </div>
 
-    <RolePermissionsPopover v-if="role" ref="popover" :role="role" :type="type" />
+    <Teleport to="body">
+        <div v-if="role && isPopoverVisible" ref="popover" :style="positionStyles">
+            <RolePermissionsPopover :role="role" :type="type" />
+        </div>
+    </Teleport>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.role-label {
+.role-badge {
     @apply inline-flex items-center justify-center;
     @apply rounded-full px-3 py-1 text-sm;
     @apply transition-colors;
+
+    &.role-badge--clickable {
+        @apply cursor-pointer;
+    }
+
+    .role-badge__icon {
+        @apply mr-1;
+    }
+
+    .role-badge__label {
+        @apply font-semibold;
+    }
 }
 </style>

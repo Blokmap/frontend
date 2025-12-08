@@ -67,15 +67,12 @@ function handleClick() {
     @apply relative flex items-center justify-center rounded-full;
     @apply font-bold text-white shadow-xl;
     @apply transition-all duration-200 hover:scale-110;
-    @apply border-4 border-white;
-}
+    @apply border-3 border-white;
 
-.cluster::before {
-    content: '';
-    @apply absolute inset-0 rounded-full;
-    @apply from-primary-400 to-primary-600 bg-gradient-to-br;
-    @apply opacity-90;
-    z-index: -1;
+    &::before {
+        @apply absolute inset-0 rounded-full;
+        @apply bg-secondary -z-1 opacity-90 content-[''];
+    }
 }
 
 .cluster:hover::before {

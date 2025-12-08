@@ -22,9 +22,11 @@ import type { Paginated } from '@/utils/pagination';
 
 export type LocationIncludes =
     | 'authority'
+    | 'institution'
     | 'createdBy'
     | 'approvedBy'
     | 'rejectedBy'
+    | 'description'
     | 'updatedBy';
 
 /**
@@ -54,7 +56,7 @@ export async function searchLocations(
  * List locations with filters and includes.
  *
  * @param {LocationFilter} [filters] - The filters to apply when listing locations.
- * @param {LocationIncludes[]} includes - The related data to include in the response.
+ * @param {LocationIncludes[]} locationIncludes - The related data to include in the response.
  * @returns {Promise<Paginated<Location>>} A promise that resolves to a paginated list of locations.
  */
 export async function readLocations(
@@ -105,7 +107,7 @@ export async function readLocation(
 ): Promise<Location> {
     const endpoint = endpoints.locations.read.replace('{id}', id.toString());
 
-    const params = { includes };
+    const params = { locationIncludes: includes };
 
     const transformResponse = transformResponseFactory(parseLocationResponse);
 
@@ -289,6 +291,7 @@ export async function reorderLocationImages(
  */
 export async function readProfileLocations(
     profileId: string,
+    filters: Partial<LocationFilter> = {},
     includes: LocationIncludes[] = [],
 ): Promise<Paginated<Location>> {
     const endpoint = endpoints.profiles.locations.list.replace('{id}', profileId.toString());
@@ -296,7 +299,7 @@ export async function readProfileLocations(
     const transformResponse = transformPaginatedResponseFactory(parseLocationResponse);
 
     const { data } = await client.get(endpoint, {
-        params: { locationIncludes: includes },
+        params: { ...filters, locationIncludes: includes },
         transformResponse,
     });
 

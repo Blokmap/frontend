@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
+import Paginator from 'primevue/paginator';
 import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
 import LocationDetailCard from '@/components/features/location/LocationDetailCard.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
@@ -9,8 +10,10 @@ import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import { faMapMarkerAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed } from 'vue';
-import { useReadProfileLocationMemberships } from '@/composables/data/useMembers';
+import { computed, ref } from 'vue';
+import { useReadProfileLocations } from '@/composables/data/useLocations';
+import { usePagination } from '@/composables/usePagination';
+import { type LocationFilter } from '@/domain/location';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -19,9 +22,23 @@ const props = defineProps<{
     isOtherProfile: boolean;
 }>();
 
-const profileId = computed(() => props.profileId ?? props.profile.id);
+const profileId = computed<string>(() => props.profileId ?? props.profile.id);
 
-const { data: memberships, isLoading, error } = useReadProfileLocationMemberships(profileId);
+const filters = ref<LocationFilter>({
+    page: 1,
+    perPage: 20,
+    query: '',
+});
+
+const { first, onPageChange } = usePagination(filters);
+
+const {
+    data: locations,
+    isLoading,
+    error,
+} = useReadProfileLocations(profileId, filters, {
+    includes: ['authority'],
+});
 </script>
 
 <template>
@@ -39,7 +56,7 @@ const { data: memberships, isLoading, error } = useReadProfileLocationMembership
 
         <!-- Empty State -->
         <EmptyState
-            v-else-if="!isLoading && memberships?.length === 0"
+            v-else-if="!isLoading && locations?.data.length === 0"
             :icon="faMapMarkerAlt"
             title="Geen locaties"
             message="Je bent nog geen lid van een locatie.">
@@ -61,7 +78,7 @@ const { data: memberships, isLoading, error } = useReadProfileLocationMembership
         <!-- Data State -->
         <TransitionGroup v-else name="staggered-cards" tag="div" class="locations-grid" appear>
             <div
-                v-for="({ location }, index) in memberships"
+                v-for="(location, index) in locations?.data"
                 :key="location.id"
                 :style="{ '--i': index }"
                 class="location-card-wrapper">
@@ -74,6 +91,13 @@ const { data: memberships, isLoading, error } = useReadProfileLocationMembership
                 </LocationDetailCard>
             </div>
         </TransitionGroup>
+
+        <Paginator
+            :first="first(locations)"
+            :rows="locations?.perPage"
+            :total-records="locations?.total"
+            @page="onPageChange">
+        </Paginator>
     </LayoutContent>
 </template>
 
@@ -81,18 +105,10 @@ const { data: memberships, isLoading, error } = useReadProfileLocationMembership
 @reference '@/assets/styles/main.css';
 
 .locations-grid {
-    @apply grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3;
-}
+    @apply grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4;
 
-.location-card-wrapper {
-    @apply h-full;
-}
-
-.staggered-cards-enter-active {
-    transition-delay: calc(var(--i) * 0.05s);
-}
-
-.staggered-cards-leave-active {
-    transition-delay: calc(var(--i) * 0.02s);
+    .location-card-wrapper {
+        @apply h-full;
+    }
 }
 </style>

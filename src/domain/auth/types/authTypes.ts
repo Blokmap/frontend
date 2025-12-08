@@ -1,4 +1,4 @@
-import type { Predicate } from '../member';
+import type { Predicate } from './predicateTypes';
 
 export type Idp = {
     id: string;

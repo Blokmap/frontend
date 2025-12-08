@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T = any">
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { PIXELS_PER_HOUR } from '@/domain/openings';
+import { PIXELS_PER_HOUR } from '@/domain/calendar';
 import {
     addToDate,
     datesInRange,
@@ -177,11 +177,11 @@ onMounted(() => {
                 <!-- Time column -->
                 <div class="calendar__time-col">
                     <div
-                        v-for="hour in 24"
+                        v-for="hour in 23"
                         :key="hour"
                         class="calendar__time-label"
-                        :style="{ top: `${(hour - 1) * PIXELS_PER_HOUR}px` }">
-                        {{ (hour - 1).toString().padStart(2, '0') }}:00
+                        :style="{ top: `${hour * PIXELS_PER_HOUR}px` }">
+                        {{ hour.toString().padStart(2, '0') }}:00
                     </div>
                 </div>
 
@@ -199,7 +199,7 @@ onMounted(() => {
                         @click="onCellClick(day, hour - 1)"></div>
 
                     <!-- Custom time slots positioned absolutely within the day -->
-                    <template v-for="slot in getDayTimeSlots(day)" :key="slot.id">
+                    <template v-for="slot in getDayTimeSlots(day)" :key="slot.metadata?.toString()">
                         <div class="calendar__slot" :style="getSlotPosition(slot)">
                             <slot :slot="slot" name="time-slot"></slot>
                         </div>
@@ -225,28 +225,28 @@ onMounted(() => {
 
 .calendar {
     @apply flex max-h-[75vh] min-h-[500px] w-full flex-col;
-    @apply rounded-lg border border-slate-200 bg-white;
+    @apply rounded-lg bg-white shadow-md;
     @apply overflow-hidden;
 }
 
 .calendar__header {
     @apply sticky top-0 z-30;
-    @apply grid border-b border-slate-200 bg-slate-100;
+    @apply grid bg-white;
     @apply min-w-max md:w-full md:min-w-0;
     @apply grid-cols-[55px_repeat(7,minmax(120px,1fr))];
 }
 
 .calendar__header-col {
-    @apply border-r border-slate-200 last:border-r-0;
+    @apply border-r border-b border-slate-100 last:border-r-0 first-of-type:border-b-0;
 }
 
 .calendar__header-col:not(:first-child) {
     @apply cursor-pointer p-3 text-center;
-    @apply transition-colors hover:bg-slate-200;
+    @apply transition-colors hover:bg-slate-100;
 }
 
 .calendar__header-col--today {
-    @apply bg-secondary-100 text-secondary-500;
+    @apply bg-secondary-50 hover:!bg-secondary-100 text-secondary-500;
 }
 
 .calendar__today-badge {
@@ -281,46 +281,33 @@ onMounted(() => {
 
 .calendar__time-col {
     @apply sticky left-0 z-40;
-    @apply relative border-r border-slate-200 bg-slate-100;
+    @apply relative border-r border-slate-100;
 }
 
 .calendar__time-label {
     @apply absolute right-0 left-0 -translate-y-[50%];
     @apply pr-2 text-right text-[12px] text-slate-600 md:pr-1;
-    @apply bg-slate-100;
-
-    &:first-child {
-        @apply translate-y-1;
-    }
 }
 
 .calendar__day-col {
     @apply relative;
-    @apply border-r border-gray-200 last:border-r-0;
+    @apply border-r border-slate-100 last:border-r-0;
 
     &::before {
         @apply pointer-events-none absolute inset-0;
         @apply content-[''];
-
-        background-image: repeating-linear-gradient(
-            to bottom,
-            transparent,
-            transparent calc(50px - 1px),
-            rgb(243 244 246) calc(50px - 1px),
-            rgb(243 244 246) 50px
-        );
     }
 }
 
 .calendar__cell {
     @apply relative cursor-pointer;
-    @apply border-b border-gray-100;
-    @apply hover:bg-primary-50 transition-colors;
+    @apply border-b border-slate-100;
+    @apply transition-colors;
 }
 
 .calendar__cell--disabled {
-    @apply cursor-not-allowed bg-gray-200 opacity-40;
-    @apply hover:bg-gray-200;
+    @apply cursor-not-allowed bg-slate-100 opacity-40;
+    @apply hover:bg-slate-100;
 }
 
 .calendar__slot {

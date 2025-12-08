@@ -1,5 +1,5 @@
-import { checkPermissions } from './memberPermissionHelpers';
-import type { Predicate } from '../types';
+import { checkPermissions } from './permissionHelpers';
+import type { Predicate } from '../types/predicateTypes';
 
 /**
  * Creates a predicate that returns true if ANY of the given permissions are present.

@@ -71,7 +71,7 @@ watchEffect(() => {
         </LocationBuilderCard>
         <LocationBuilderCard :icon="faClock">
             <template #header>
-                <h3 class="text-xl font-semibold text-gray-900">Reservaties</h3>
+                <h3 class="text-xl font-semibold text-gray-900">Bezetting</h3>
                 <p class="text-sm text-gray-600">
                     Bepaal hoe mensen reservaties kunnen maken voor deze locatie
                 </p>

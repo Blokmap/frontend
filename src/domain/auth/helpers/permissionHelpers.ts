@@ -1,5 +1,5 @@
-import { ADMINISTRATOR_PERMISSION, PERMISSIONS } from '../memberConstants';
-import type { PermissionType } from '../types';
+import { ADMINISTRATOR_PERMISSION, PERMISSIONS } from '../constants/permissionConstants';
+import type { PermissionType } from '../types/permissionTypes';
 
 /**
  * Check if the actual permissions include the expected permissions.

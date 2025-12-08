@@ -7,6 +7,8 @@ import ReservationBuilderCalendar from '@/components/features/reservation/builde
 import ReservationBuilderLegend from '@/components/features/reservation/builder/ReservationBuilderLegend.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import TimeInput from '@/components/shared/molecules/form/TimeInput.vue';
+import { faCheck, faX } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
@@ -334,16 +336,17 @@ watch(visible, (newVisible) => {
                         <Button
                             severity="contrast"
                             text
-                            size="small"
                             :disabled="isSaving"
                             @click="cancelPendingChanges">
-                            Annuleren
+                            <FontAwesomeIcon :icon="faX" />
+                            <span>Annuleren</span>
                         </Button>
-                        <Button size="small" :loading="isSaving" @click="savePendingChanges">
-                            Opslaan
+                        <Button :loading="isSaving" @click="savePendingChanges">
+                            <FontAwesomeIcon :icon="faCheck" />
+                            <span>Bevestigen</span>
                         </Button>
                     </template>
-                    <Button v-else severity="contrast" text size="small" @click="visible = false">
+                    <Button v-else severity="contrast" text @click="visible = false">
                         Sluiten
                     </Button>
                 </div>

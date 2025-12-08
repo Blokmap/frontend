@@ -42,6 +42,6 @@ export function parseFoundProfileResponse(data: any): FoundProfile {
 
     return {
         ...data,
-        avatarUrl: parseImageResponse(data.avatar),
+        avatar: parseImageResponse(data.avatarUrl),
     };
 }

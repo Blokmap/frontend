@@ -42,7 +42,7 @@ const { profileId, data: profile } = useAuthProfile();
 
 const { data: location, isPending } = useReadLocation(
     computed(() => +locationId),
-    { includes: ['createdBy'] },
+    { includes: ['createdBy', 'description'] },
 );
 
 const {
@@ -185,7 +185,10 @@ function onLoginClick(): void {
                             </h2>
                             <Skeleton v-else height="28px" width="400px" class="mb-5" />
 
-                            <EditorOuput :data="location?.description[locale]" :loading="isPending">
+                            <EditorOuput
+                                v-if="location?.description"
+                                :data="location.description[locale]"
+                                :loading="isPending">
                             </EditorOuput>
                         </div>
                     </Transition>

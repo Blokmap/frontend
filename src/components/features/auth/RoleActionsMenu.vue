@@ -4,7 +4,7 @@ import ActionMenuButton from '@/components/shared/atoms/menu/ActionMenuButton.vu
 import ConfirmDialog from '@/components/shared/molecules/ConfirmDialog.vue';
 import { faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ref, watch } from 'vue';
-import type { Role } from '@/domain/member';
+import { DEFAULT_ROLE_NAME, type Role } from '@/domain/member';
 
 const props = defineProps<{
     role: Role;
@@ -56,7 +56,10 @@ watch(
 </script>
 
 <template>
-    <ActionMenu :is-pending="isPending">
+    <ActionMenu
+        :is-pending="isPending"
+        :disabled="role.name === DEFAULT_ROLE_NAME"
+        disabled-tooltip="Deze rol kan niet worden aangepast.">
         <template #trigger="{ toggle }">
             <slot name="trigger" :toggle="toggle">
                 <!-- Default trigger is provided by ActionMenu -->

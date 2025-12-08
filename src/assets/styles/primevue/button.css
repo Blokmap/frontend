@@ -2,14 +2,13 @@
 
 .p-button {
     @apply relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden select-none;
-    @apply bg-primary-100 text-primary-700;
-    @apply border-0;
+    @apply bg-primary text-primary-contrast;
     @apply rounded-xl px-4 py-2 font-medium;
     @apply transition-all duration-200;
     @apply disabled:cursor-default;
 
     @apply shadow-playful;
-    --shadow-color: var(--color-primary-300);
+    --shadow-color: var(--color-primary-400);
 }
 
 .p-button:active {
@@ -102,9 +101,9 @@
 }
 
 .p-button-secondary {
-    @apply bg-secondary-100 text-secondary-700;
+    @apply bg-secondary text-white;
     @apply border-0;
-    --shadow-color: var(--color-secondary-300);
+    --shadow-color: var(--color-secondary-600);
 }
 
 .p-button-success {

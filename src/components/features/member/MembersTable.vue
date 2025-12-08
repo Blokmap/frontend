@@ -21,7 +21,7 @@ const router = useRouter();
  */
 function onRowClick(member: Member): void {
     router.push({
-        name: 'dashboard.profiles.detail.overview',
+        name: 'manage',
         params: { profileId: member.profile.id },
     });
 }

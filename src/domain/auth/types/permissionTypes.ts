@@ -6,6 +6,13 @@ export type ProfilePermissions = {
     institution: InstitutionPermission;
 };
 
+// Recursive permissions for a profile on a location, authority or institution
+export type RecursivePermissions = {
+    location: number;
+    authority: number;
+    institution: number;
+};
+
 export enum LocationPermission {
     // Admin privileges, member can do everything
     Administrator = 1 << 0,

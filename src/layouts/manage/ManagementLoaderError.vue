@@ -2,10 +2,10 @@
 import { AxiosError } from 'axios';
 
 defineProps<{
-    error?: AxiosError | null;
+    errors?: (AxiosError | null)[];
 }>();
 </script>
 
 <template>
-    {{ error }}
+    {{ errors }}
 </template>

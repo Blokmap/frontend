@@ -58,7 +58,7 @@ input.p-select-label {
 }
 
 .p-select-overlay {
-    @apply bg-surface-0 text-surface-700 absolute top-0 left-0 mt-2 rounded-md border border-slate-200;
+    @apply bg-surface-0 text-surface-700 absolute top-0 left-0 mt-2 rounded-md shadow-md;
 }
 
 .p-select-header {

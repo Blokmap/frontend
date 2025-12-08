@@ -13,6 +13,7 @@ const props = withDefaults(
         isPending?: boolean;
         showRoleSelect?: boolean;
         showDelete?: boolean;
+        disabled?: boolean;
     }>(),
     {
         showRoleSelect: true,
@@ -50,7 +51,7 @@ function onDeleteClick(): void {
 </script>
 
 <template>
-    <ActionMenu :is-pending="isPending">
+    <ActionMenu :is-pending="isPending" :disabled="disabled">
         <template #trigger="{ toggle }">
             <slot name="trigger" :toggle="toggle"></slot>
         </template>

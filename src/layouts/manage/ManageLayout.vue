@@ -6,14 +6,12 @@ const { data: authProfile } = useAuthProfile();
 
 <template>
     <RouterView v-slot="{ Component, route }">
-        <Transition name="slide-in-left" mode="out-in" appear>
-            <component
-                v-if="authProfile"
-                :is="Component"
-                :key="route.matched[1]?.path"
-                :auth-profile="authProfile">
-            </component>
-        </Transition>
+        <component
+            v-if="authProfile"
+            :is="Component"
+            :key="route.matched[1]?.path"
+            :auth-profile="authProfile">
+        </component>
     </RouterView>
 </template>
 

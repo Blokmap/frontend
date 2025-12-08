@@ -2,7 +2,8 @@
 import Dialog from 'primevue/dialog';
 import RoleForm from '@/components/features/auth/forms/RoleForm.vue';
 import { computed } from 'vue';
-import type { CreateRoleBody, PermissionType, Role } from '@/domain/member';
+import type { PermissionType } from '@/domain/auth';
+import type { CreateRoleBody, Role } from '@/domain/member';
 
 const props = withDefaults(
     defineProps<{

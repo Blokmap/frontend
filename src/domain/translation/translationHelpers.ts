@@ -6,6 +6,10 @@ import type { Translation, TranslationBody } from './translationTypes';
  * @param translation - The translation object to convert.
  * @returns
  */
-export function translationToBody(translation: Translation): TranslationBody {
+export function translationToBody(translation?: Translation): TranslationBody {
+    if (!translation) {
+        return {};
+    }
+
     return { ...translation };
 }

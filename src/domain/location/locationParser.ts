@@ -4,6 +4,7 @@ import { parseOpeningTimeResponse } from '@/domain/openings';
 import { parseProfileResponse } from '@/domain/profile';
 import { parseTranslationResponse } from '@/domain/translation';
 import { stringToDate } from '@/utils/date';
+import { parseInstitutionResponse } from '../institution';
 import type { Location } from './types';
 
 /**
@@ -49,6 +50,10 @@ export function parseLocationResponse(data: any): Location {
 
     if (data.authority) {
         result.authority = parseAuthorityResponse(data.authority);
+    }
+
+    if (data.institution) {
+        result.institution = parseInstitutionResponse(data.institution);
     }
 
     return result;

@@ -1,5 +1,7 @@
 import { nextTick, onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 
+const FLOATING_OPEN_EVENT = 'floating-position:open';
+
 /**
  * Composable to manage the floating position of an overlay element relative to a trigger element.
  * The overlay will position itself above or below the trigger based on available space in the viewport.
@@ -17,6 +19,7 @@ export function useFloatingPosition(
     enforceMaxWidth: boolean = false,
 ) {
     const positionStyles = ref<Record<string, string>>({});
+    const instanceId = Symbol('floatingPosition');
 
     function updatePosition() {
         if (!triggerRef.value || !overlayRef.value) {
@@ -45,7 +48,7 @@ export function useFloatingPosition(
             position: 'absolute',
             left: `${left}px`,
             top: `${top}px`,
-            zIndex: '9999',
+            zIndex: '200',
             ...(enforceMaxWidth ? { maxWidth: `${triggerRect.width}px` } : {}),
         };
     }
@@ -54,28 +57,40 @@ export function useFloatingPosition(
         const triggerEl = triggerRef.value;
         const containerEl = overlayRef.value;
 
-        if (
-            containerEl &&
-            !containerEl.contains(event.target as Node) &&
-            triggerEl &&
-            !triggerEl.contains(event.target as Node)
-        ) {
+        const containerContains = containerEl?.contains(event.target as Node);
+        const triggerContains = triggerEl?.contains(event.target as Node);
+
+        if (!containerContains && !triggerContains) {
+            isVisible.value = false;
+        }
+    }
+
+    function onFloatingOpen(event: Event) {
+        const customEvent = event as CustomEvent<symbol>;
+        if (customEvent.detail !== instanceId && isVisible.value) {
             isVisible.value = false;
         }
     }
 
     watch(isVisible, async (visible) => {
         if (visible) {
+            // Notify other instances to close
+            const event = new CustomEvent(FLOATING_OPEN_EVENT, { detail: instanceId });
+            document.dispatchEvent?.(event);
+
+            // Wait for DOM updates before calculating position
             await nextTick();
             updatePosition();
         }
     });
 
     onMounted(() => {
+        document.addEventListener(FLOATING_OPEN_EVENT, onFloatingOpen);
         document.addEventListener('click', onOutsideClick);
     });
 
     onUnmounted(() => {
+        document.removeEventListener(FLOATING_OPEN_EVENT, onFloatingOpen);
         document.removeEventListener('click', onOutsideClick);
     });
 

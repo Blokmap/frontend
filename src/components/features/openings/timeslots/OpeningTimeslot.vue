@@ -27,11 +27,9 @@ defineEmits<{
 @reference '@/assets/styles/main.css';
 
 .opening-time-card {
-    @apply relative h-full bg-slate-100;
-    @apply flex items-center justify-center p-2;
-    @apply cursor-pointer;
-    @apply hover:bg-slate-200;
-    @apply pointer-events-auto overflow-hidden;
+    @apply relative flex items-center justify-center p-2;
+    @apply h-full rounded-xl bg-slate-100 transition-colors hover:bg-slate-200;
+    @apply pointer-events-auto cursor-pointer overflow-hidden;
 
     .time-display {
         @apply relative;

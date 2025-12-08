@@ -24,7 +24,7 @@
 }
 
 .p-badge-info {
-    @apply bg-secondary-100 text-secondary-700;
+    @apply bg-glacier-50 text-glacier-700;
 }
 
 .p-badge-warn {

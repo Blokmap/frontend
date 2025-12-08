@@ -202,7 +202,7 @@ provide('registerColumn', (column: string) => {
 }
 
 .table__row {
-    @apply cursor-pointer transition-colors hover:bg-slate-50;
+    @apply cursor-pointer transition-colors;
 }
 
 .table__cell {

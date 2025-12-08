@@ -1,80 +1,159 @@
 <script lang="ts" setup>
-import Badge from 'primevue/badge';
+import Paginator from 'primevue/paginator';
+import MemberActionMenu from '@/components/features/auth/MemberActionMenu.vue';
+import RoleBadge from '@/components/features/auth/roles/RoleBadge.vue';
+import MemberAddDialog from '@/components/features/member/MemberAddDialog.vue';
 import MembersTable from '@/components/features/member/MembersTable.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
-import Callout from '@/components/shared/molecules/Callout.vue';
-import EmptyState from '@/components/shared/molecules/EmptyState.vue';
 import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
-import { computed } from 'vue';
-import { useReadLocationMembers, useReadLocationRoles } from '@/composables/data/useMembers';
+import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
+import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { computed, ref } from 'vue';
+import {
+    useAddLocationMember,
+    useDeleteLocationMember,
+    useReadLocationMembers,
+    useReadLocationRoles,
+    useUpdateLocationMember,
+} from '@/composables/data/useMembers';
+import { usePagination } from '@/composables/usePagination';
 import type { Location } from '@/domain/location';
-import type { Member } from '@/domain/member';
+import type { CreateMemberBody, MemberFilter } from '@/domain/member';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
     authProfile: Profile;
-    location?: Location;
-    isLoading: boolean;
-    error?: Error | null;
+    location: Location;
 }>();
 
-const locationId = computed(() => props.location?.id ?? 0);
-const enabled = computed(() => !!props.location?.id);
+const locationId = computed<number>(() => props.location.id);
+// const profileId = computed<string>(() => props.authProfile.id);
 
-const { data: membersData, isLoading: membersLoading } = useReadLocationMembers(
-    locationId,
-    {},
-    { enabled },
-);
+const showMemberAddDialog = ref<boolean>(false);
 
-const { data: roles } = useReadLocationRoles(locationId, { enabled });
+const filters = ref<MemberFilter>({
+    page: 1,
+    perPage: 25,
+});
 
-const members = computed(() => membersData.value?.data ?? []);
+const { onPageChange, first } = usePagination(filters);
+
+const {
+    data: members,
+    isLoading: membersLoading,
+    error: membersError,
+} = useReadLocationMembers(locationId, filters);
+
+const {
+    data: roles,
+    isLoading: rolesLoading,
+    error: rolesError,
+} = useReadLocationRoles(locationId, {
+    enabled: showMemberAddDialog,
+});
+
+const { mutate: addLocationMember, isPending: addMemberIsPending } = useAddLocationMember({
+    onSuccess: () => {
+        showMemberAddDialog.value = false;
+    },
+});
+
+const { mutate: updateLocationMember } = useUpdateLocationMember();
+const { mutate: deleteLocationMember } = useDeleteLocationMember();
+
+const isLoading = computed(() => membersLoading.value || rolesLoading.value);
+const isError = computed(() => !!membersError.value || !!rolesError.value);
 
 const breadcrumbs = computed(() => [
     { label: 'Mijn locaties', to: { name: 'manage.locations' } },
     { label: props.location?.name ?? 'Locatie', to: { name: 'manage.location.info' } },
-    { label: 'Leden' },
+    { label: 'Beheerders' },
 ]);
 
-const isDataLoading = computed(() => props.isLoading || membersLoading.value);
+function onSelectRole(memberId: string, roleId: number): void {
+    const member = members.value?.data.find((m) => m.profile.id === memberId);
 
-function getRoleName(member: Member): string | undefined {
-    if (!roles.value) return undefined;
-    const role = roles.value.find((r) => r.id === member.role?.id);
-    return role?.name;
+    if (!member || member?.role?.id === roleId) {
+        return;
+    }
+
+    updateLocationMember({
+        id: props.location.id,
+        memberId,
+        body: { roleId },
+    });
+}
+
+function onDeleteClick(memberId: string): void {
+    deleteLocationMember({
+        id: props.location.id,
+        memberId,
+    });
+}
+
+function onAddMember(body: CreateMemberBody): void {
+    addLocationMember({
+        id: props.location.id,
+        body,
+    });
 }
 </script>
 
 <template>
     <LayoutContent>
         <ManageBreadcrumb :items="breadcrumbs" />
-        <LayoutTitle title="Leden" />
+
+        <LayoutTitle title="Locatiebeheerders">
+            <template #actions>
+                <PageHeaderButton
+                    severity="primary"
+                    label="Lid toevoegen"
+                    @click="showMemberAddDialog = true">
+                    <FontAwesomeIcon :icon="faUserPlus" />
+                </PageHeaderButton>
+            </template>
+        </LayoutTitle>
 
         <p class="text-slate-600">Beheer wie toegang heeft tot deze locatie en hun rollen.</p>
 
         <!-- Error State -->
-        <Callout v-if="error" severity="error">
-            Er ging iets mis bij het laden van de leden. Probeer het later opnieuw.
-        </Callout>
-
-        <!-- Empty State -->
-        <EmptyState
-            v-else-if="!isDataLoading && members.length === 0"
-            :icon="faUsers"
-            title="Geen leden"
-            message="Er zijn nog geen leden toegevoegd aan deze locatie.">
-        </EmptyState>
+        <ManagementLoaderError v-if="isError" :errors="[membersError]" />
 
         <!-- Data / Loading State -->
-        <MembersTable v-else :members="members" :is-loading="isDataLoading">
+        <MembersTable :members="members?.data" :is-loading="isLoading">
             <template #role="{ member }">
-                <Badge v-if="getRoleName(member)" :value="getRoleName(member)" severity="info" />
-                <span v-else class="text-sm text-slate-400">-</span>
+                <RoleBadge :role="member.role" type="location" />
+            </template>
+            <template #actions="{ member }">
+                <MemberActionMenu
+                    v-if="roles"
+                    :member="member"
+                    :available-roles="roles"
+                    @select:role="onSelectRole"
+                    @click:delete="onDeleteClick">
+                </MemberActionMenu>
             </template>
         </MembersTable>
+
+        <Paginator
+            :first="first(members)"
+            :rows="members?.perPage"
+            :total-records="members?.total"
+            @page="onPageChange">
+        </Paginator>
+
+        <Teleport to="body">
+            <MemberAddDialog
+                v-if="roles"
+                :is-pending="addMemberIsPending"
+                :roles="roles"
+                @click:submit="onAddMember"
+                v-model:is-visible="showMemberAddDialog">
+            </MemberAddDialog>
+        </Teleport>
     </LayoutContent>
 </template>
 

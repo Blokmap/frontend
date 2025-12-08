@@ -4,7 +4,7 @@ import {
     LocationPermission,
     AuthorityPermission,
     InstitutionPermission,
-} from '@/domain/member';
+} from '@/domain/auth';
 
 describe('Permission Helpers', () => {
     describe('checkPermissions', () => {

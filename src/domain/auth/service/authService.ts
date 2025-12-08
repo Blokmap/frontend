@@ -2,7 +2,7 @@ import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
 import { type Profile, parseProfileResponse } from '@/domain/profile';
 import { transformResponseFactory } from '@/utils/serviceUtils';
-import type { RegisterBody, LoginBody } from '.';
+import type { RegisterBody, LoginBody } from '../types';
 
 /**
  * Fetches the authenticated user's profile.

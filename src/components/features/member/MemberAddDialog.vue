@@ -42,9 +42,11 @@ const filters = ref({
 
 const { data: profiles, isFetching: isLoadingProfiles } = useFindProfiles(filters);
 
-const profileOptions = computed(() => profiles.value?.data || []);
+const profileOptions = computed<FoundProfile[]>(() => {
+    return profiles.value?.data || [];
+});
 
-const roleOptions = computed(() => {
+const roleOptions = computed<{ label: string; value: number }[]>(() => {
     return props.roles.map((role: Role) => ({
         label: role.name,
         value: role.id,
@@ -60,6 +62,7 @@ function onSubmitForm(): void {
     if (selectedProfile.value) {
         form.value.username = selectedProfile.value.username;
     }
+
     emit('click:submit', form.value);
 }
 </script>
@@ -92,8 +95,8 @@ function onSubmitForm(): void {
                                 force-selection
                                 required>
                                 <template #option="{ option }">
-                                    <div class="flex items-center gap-2">
-                                        <EntityAvatar class="h-10" :profile="option">
+                                    <div class="flex items-center gap-3">
+                                        <EntityAvatar class="h-10 w-10" :image="option.avatar?.url">
                                         </EntityAvatar>
                                         <div class="flex flex-col">
                                             <span class="text-sm font-medium">

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import ReservationScanner from '@/components/features/reservation/ReservationScanner.vue';
 import LocationReservationsTable from '@/components/features/reservation/table/LocationReservationsTable.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import DateInput from '@/components/shared/molecules/form/DateInput.vue';
@@ -9,6 +10,7 @@ import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import { faQrcode, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useReadLocationReservations } from '@/composables/data/useLocations';
 import {
     useReservationState,
@@ -24,7 +26,20 @@ const props = defineProps<{
     location: Location;
 }>();
 
+const route = useRoute();
+const router = useRouter();
 const selectedDay = useRouteDate();
+
+const showScanner = computed<boolean>({
+    get: () => route.hash === '#scan',
+    set: (value: boolean) => {
+        if (value) {
+            router.replace({ hash: '#scan' });
+        } else {
+            router.replace({ hash: '' });
+        }
+    },
+});
 
 const { mutateAsync: changeReservationState } = useReservationState({
     onMutate: (variables: ReservationStateParams) => {
@@ -58,7 +73,10 @@ const filteredReservations = computed(() => {
 
     return reservations.value.filter((reservation: Reservation) => {
         const profile = reservation.createdBy;
-        if (!profile) return false;
+
+        if (!profile) {
+            return false;
+        }
 
         const fullName = `${profile.firstName} ${profile.lastName}`.toLowerCase();
         const username = profile.username?.toLowerCase() || '';
@@ -114,8 +132,9 @@ function onStatusChange(reservationId: string, state: ReservationState): void {
             <!-- Toggle Scanner -->
             <RouterLink
                 :to="{
-                    name: 'manage.location.scanner',
+                    name: 'manage.location.reservations',
                     params: { locationId: props.location.id },
+                    hash: '#scan',
                 }">
                 <Button>
                     <FontAwesomeIcon :icon="faQrcode" />
@@ -124,6 +143,9 @@ function onStatusChange(reservationId: string, state: ReservationState): void {
                 </Button>
             </RouterLink>
         </div>
+
+        <!-- Reservation Scanner -->
+        <ReservationScanner v-model:visible="showScanner" :location="location" />
 
         <!-- Reservations Table -->
         <LocationReservationsTable

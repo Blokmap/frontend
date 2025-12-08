@@ -93,7 +93,6 @@ export async function authRouterGuard(to: RouteLocationNormalized): Promise<Navi
                         return { name: 'error.405' };
                     }
                 } catch {
-                    // If member is not found (404), deny access
                     return { name: 'error.405' };
                 }
             }

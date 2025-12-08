@@ -8,7 +8,8 @@ import InputLabel from '@/components/shared/molecules/form/InputLabel.vue';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
-import { PERMISSIONS, type CreateRoleBody, type PermissionType, type Role } from '@/domain/member';
+import { PERMISSIONS, type PermissionType } from '@/domain/auth';
+import { type CreateRoleBody, type Role } from '@/domain/member';
 
 const props = withDefaults(
     defineProps<{

@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import ImageStack from '@/components/shared/molecules/ImageStack.vue';
 import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
+import LayoutContainer from '@/layouts/LayoutContainer.vue';
+import LayoutSidebar from '@/layouts/sidebar/LayoutSidebar.vue';
+import LayoutSidebarItem from '@/layouts/sidebar/LayoutSidebarItem.vue';
 import ProfileAboutPage from '@/pages/profile/ProfileAboutPage.vue';
 import ProfileReservationsPage from '@/pages/profile/ProfileReservationsPage.vue';
 import { faSlidersH } from '@fortawesome/free-solid-svg-icons';
@@ -12,8 +15,6 @@ import { useReadRecentProfileLocations } from '@/composables/data/useLocations';
 import { useScrollSpy } from '@/composables/useScrollSpy';
 import { getLocationImages } from '@/domain/image/imageHelpers';
 import { type RecentLocationFilter } from '@/domain/location';
-import LayoutSidebar from '../LayoutSidebar.vue';
-import LayoutSidebarItem from '../LayoutSidebarItem.vue';
 import type { Image } from '@/domain/image';
 
 const route = useRoute();
@@ -46,49 +47,49 @@ const recentLocationImages = computed<Image[] | undefined>(() =>
 </script>
 
 <template>
-    <div class="container">
-        <Transition name="slide-in-left" appear>
-            <Transition name="slide-down">
-                <LayoutSidebar class="container__sidebar" title="Profiel">
-                    <template v-if="profile" #default>
-                        <div class="sidebar-nav-group">
-                            <LayoutSidebarItem
-                                :to="{ name: 'profile', hash: '#about' }"
-                                :active="route.name === 'profile' && activeHash === '#about'"
-                                :compact="false">
-                                <template #img>
-                                    <EntityAvatar
-                                        class="h-full w-full"
-                                        :image="profile.avatar?.url" />
-                                </template>
-                                <template #text>
-                                    <span>Mijn Profiel</span>
-                                </template>
-                            </LayoutSidebarItem>
-                            <LayoutSidebarItem
-                                :to="{ name: 'profile', hash: '#reservations' }"
-                                :active="route.name === 'profile' && activeHash === '#reservations'"
-                                :compact="false">
-                                <template #img>
-                                    <ImageStack :images="recentLocationImages"> </ImageStack>
-                                </template>
-                                <template #text>
-                                    <span>Mijn Reservaties</span>
-                                </template>
-                            </LayoutSidebarItem>
-                            <LayoutSidebarItem :to="{ name: 'manage' }" :compact="false">
-                                <template #img>
-                                    <FontAwesomeIcon :icon="faSlidersH" />
-                                </template>
-                                <template #text>Mijn beheer</template>
-                            </LayoutSidebarItem>
-                        </div>
-                    </template>
-                </LayoutSidebar>
-            </Transition>
-        </Transition>
-        <Transition name="fade-slide-up" appear>
-            <main class="container__main" v-if="profile">
+    <LayoutContainer
+        sidebar-transition="slide-in-left"
+        main-transition="fade-slide-up"
+        main-class="space-y-12">
+        <template #sidebar>
+            <LayoutSidebar title="Profiel">
+                <template v-if="profile" #default>
+                    <div class="sidebar-nav-group">
+                        <LayoutSidebarItem
+                            :to="{ name: 'profile', hash: '#about' }"
+                            :active="route.name === 'profile' && activeHash === '#about'"
+                            :compact="false">
+                            <template #img>
+                                <EntityAvatar class="h-full w-full" :image="profile.avatar?.url" />
+                            </template>
+                            <template #text>
+                                <span>Mijn Profiel</span>
+                            </template>
+                        </LayoutSidebarItem>
+                        <LayoutSidebarItem
+                            :to="{ name: 'profile', hash: '#reservations' }"
+                            :active="route.name === 'profile' && activeHash === '#reservations'"
+                            :compact="false">
+                            <template #img>
+                                <ImageStack :images="recentLocationImages"> </ImageStack>
+                            </template>
+                            <template #text>
+                                <span>Mijn Reservaties</span>
+                            </template>
+                        </LayoutSidebarItem>
+                        <LayoutSidebarItem :to="{ name: 'manage' }" :compact="false">
+                            <template #img>
+                                <FontAwesomeIcon :icon="faSlidersH" />
+                            </template>
+                            <template #text>Mijn beheer</template>
+                        </LayoutSidebarItem>
+                    </div>
+                </template>
+            </LayoutSidebar>
+        </template>
+
+        <template #main>
+            <template v-if="profile">
                 <template v-if="route.name === 'profile'">
                     <section class="pt-6" id="about" ref="about">
                         <ProfileAboutPage :profile="profile" />
@@ -100,23 +101,7 @@ const recentLocationImages = computed<Image[] | undefined>(() =>
                 <template v-else>
                     <RouterView :profile="profile" is-own-profile />
                 </template>
-            </main>
-        </Transition>
-    </div>
+            </template>
+        </template>
+    </LayoutContainer>
 </template>
-
-<style scoped>
-@reference '@/assets/styles/main.css';
-
-.container {
-    @apply mx-auto grid w-full flex-1 grid-cols-1 lg:my-4 lg:max-w-[1420px] lg:grid-cols-4 lg:px-0;
-}
-
-.container__sidebar {
-    @apply col-span-1 lg:pr-12;
-}
-
-.container__main {
-    @apply col-span-3 space-y-12 lg:pl-12;
-}
-</style>

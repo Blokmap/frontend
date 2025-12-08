@@ -13,12 +13,8 @@ export type Role = {
     updatedAt: Date;
 };
 
-// Recursive permissions for a profile on a location, authority or institution
-export type RecursivePermissions = {
-    location: number;
-    authority: number;
-    institution: number;
-};
+// Re-export RecursivePermissions from auth domain
+export type { RecursivePermissions } from '@/domain/auth';
 
 export type CreateRoleBody = {
     name: string;
@@ -59,6 +55,7 @@ export type LocationMembership = {
 export type AuthorityMembership = {
     authority: Authority;
     role: Role | null;
+    locations?: LocationMembership[];
 };
 
 export type InstitutionMembership = {

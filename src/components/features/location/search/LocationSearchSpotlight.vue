@@ -176,11 +176,8 @@ function onGeoClick(geo: GeoJsonProperties) {
 .container {
     @apply w-full max-w-2xl overflow-hidden;
     @apply rounded-xl bg-white px-4 py-3;
-    @apply border-primary-200 border-3;
-    @apply shadow-playful;
+    @apply border-primary-500 border-0;
     @apply transition-all duration-300 ease-out;
-    --shadow-color: var(--p-primary-200);
-    --shadow-size: 0.35rem;
 }
 
 .filter-button {

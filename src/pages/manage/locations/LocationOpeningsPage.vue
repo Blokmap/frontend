@@ -30,13 +30,13 @@ const breadcrumbs = computed(() => [
     { label: 'Openingsuren' },
 ]);
 
+// Initialize form when location prop changes
 watchEffect(() => {
-    if (!props.location) {
+    if (!props.location || !props.location.openingTimes) {
         return;
     }
 
-    const mappedOpenings = (props.location.openingTimes || []).map(openingToBody);
-    openingsForm.value = mappedOpenings;
+    openingsForm.value = props.location.openingTimes.map(openingToBody);
 });
 
 async function onCreateOpeningTime(openingTime: OpeningTimeBody): Promise<void> {

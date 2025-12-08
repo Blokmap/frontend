@@ -93,7 +93,7 @@ function goTo(index: number) {
 }
 
 .carousel--disabled .carousel__content {
-    @apply brightness-50;
+    @apply brightness-75;
 }
 
 .carousel__content {

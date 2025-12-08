@@ -1,12 +1,24 @@
 <script lang="ts" setup>
-import LayoutSidebar from '@/layouts/LayoutSidebar.vue';
-import LayoutSidebarItem from '@/layouts/LayoutSidebarItem.vue';
-import { faCalendarDays, faClock, faInfoCircle, faUsers } from '@fortawesome/free-solid-svg-icons';
+import InstitutionBreadcrumb from '@/components/features/institution/InstitutionBreadcrumb.vue';
+import LayoutContainer from '@/layouts/LayoutContainer.vue';
+import LayoutSidebar from '@/layouts/sidebar/LayoutSidebar.vue';
+import LayoutSidebarItem from '@/layouts/sidebar/LayoutSidebarItem.vue';
+import {
+    faCalendarDays,
+    faClock,
+    faCog,
+    faImages,
+    faInfoCircle,
+    faQrcode,
+    faUsers,
+    faUserTag,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useReadLocation } from '@/composables/data/useLocations';
-import { getLocationImageUrl, getLocationPlaceholderImage } from '@/domain/location';
+import { getLocationImageUrl } from '@/domain/location';
+import LayoutSidebarSection from '../sidebar/LayoutSidebarSection.vue';
 import ManagementLoader from './ManagementLoader.vue';
 import ManagementLoaderError from './ManagementLoaderError.vue';
 import type { Profile } from '@/domain/profile';
@@ -17,42 +29,41 @@ const props = defineProps<{
 }>();
 
 const route = useRoute();
-const router = useRouter();
 
-const locationIdNum = computed(() => +props.locationId);
-const enabled = computed(() => !Number.isNaN(locationIdNum.value) && locationIdNum.value > 0);
-
-const { data: location, isLoading, error } = useReadLocation(locationIdNum, { enabled });
-
-const locationImage = computed(() => {
-    if (!location.value) return undefined;
-
-    if (location.value.images?.length) {
-        return getLocationImageUrl(location.value);
-    }
-
-    return getLocationPlaceholderImage(location.value);
+const locationId = computed<number>(() => {
+    return +props.locationId;
 });
 
-function goBack() {
-    router.push({ name: 'manage.locations' });
-}
+const {
+    data: location,
+    isLoading,
+    error,
+} = useReadLocation(locationId, {
+    includes: ['authority', 'description', 'institution'],
+});
+
+const locationImageUrl = computed<string>(() => {
+    return getLocationImageUrl(location.value);
+});
 </script>
 
 <template>
-    <div class="container">
-        <Transition name="slide-in-left" appear>
-            <div class="container__sidebar">
-                <LayoutSidebar
-                    :title="location?.name ?? 'Locatie'"
-                    :subtitle="location?.authority?.name"
-                    :loading="isLoading"
-                    show-back-button
-                    @click:back="goBack">
-                    <template #banner-image>
-                        <img v-if="locationImage" :src="locationImage" :alt="location?.name" />
-                    </template>
+    <LayoutContainer sidebar-transition="slide-in-left" main-transition="fade-slide-up">
+        <template #sidebar>
+            <LayoutSidebar
+                :title="location?.name ?? 'Locatie'"
+                :logo="locationImageUrl"
+                :loading="isLoading">
+                <template #header>
+                    <InstitutionBreadcrumb
+                        v-if="location"
+                        :institution="location?.institution"
+                        :authority="location?.authority"
+                        editable>
+                    </InstitutionBreadcrumb>
+                </template>
 
+                <LayoutSidebarSection title="Instellingen">
                     <LayoutSidebarItem
                         :loading="isLoading"
                         :to="{ name: 'manage.location.info', params: { locationId } }"
@@ -61,6 +72,16 @@ function goBack() {
                             <FontAwesomeIcon :icon="faInfoCircle" />
                         </template>
                         <template #text>Informatie</template>
+                    </LayoutSidebarItem>
+
+                    <LayoutSidebarItem
+                        :loading="isLoading"
+                        :to="{ name: 'manage.location.images', params: { locationId } }"
+                        :active="route.name === 'manage.location.images'">
+                        <template #img>
+                            <FontAwesomeIcon :icon="faImages" />
+                        </template>
+                        <template #text>Afbeeldingen</template>
                     </LayoutSidebarItem>
 
                     <LayoutSidebarItem
@@ -74,6 +95,18 @@ function goBack() {
                     </LayoutSidebarItem>
 
                     <LayoutSidebarItem
+                        :loading="isLoading"
+                        :to="{ name: 'manage.location.settings', params: { locationId } }"
+                        :active="route.name === 'manage.location.settings'">
+                        <template #img>
+                            <FontAwesomeIcon :icon="faCog" />
+                        </template>
+                        <template #text>Instellingen</template>
+                    </LayoutSidebarItem>
+                </LayoutSidebarSection>
+
+                <LayoutSidebarSection title="Reservaties">
+                    <LayoutSidebarItem
                         v-if="isLoading || location?.isReservable"
                         :loading="isLoading"
                         :to="{ name: 'manage.location.reservations', params: { locationId } }"
@@ -85,6 +118,19 @@ function goBack() {
                     </LayoutSidebarItem>
 
                     <LayoutSidebarItem
+                        v-if="isLoading || location?.isReservable"
+                        :loading="isLoading"
+                        :to="{ name: 'manage.location.scan', params: { locationId } }"
+                        :active="route.name === 'manage.location.scan'">
+                        <template #img>
+                            <FontAwesomeIcon :icon="faQrcode" />
+                        </template>
+                        <template #text>Scanner</template>
+                    </LayoutSidebarItem>
+                </LayoutSidebarSection>
+
+                <LayoutSidebarSection title="Toegangscontrole">
+                    <LayoutSidebarItem
                         :loading="isLoading"
                         :to="{ name: 'manage.location.members', params: { locationId } }"
                         :active="route.name === 'manage.location.members'">
@@ -93,41 +139,34 @@ function goBack() {
                         </template>
                         <template #text>Leden</template>
                     </LayoutSidebarItem>
-                </LayoutSidebar>
-            </div>
-        </Transition>
+                    <LayoutSidebarItem
+                        :loading="isLoading"
+                        :to="{ name: 'manage.location.roles', params: { locationId } }"
+                        :active="route.name === 'manage.location.roles'">
+                        <template #img>
+                            <FontAwesomeIcon :icon="faUserTag" />
+                        </template>
+                        <template #text>Rollen</template>
+                    </LayoutSidebarItem>
+                </LayoutSidebarSection>
+            </LayoutSidebar>
+        </template>
 
-        <Transition name="fade-slide-up" appear>
-            <main class="container__main">
-                <ManagementLoader v-if="isLoading" />
-                <RouterView
-                    v-else-if="location"
-                    v-slot="{ Component, route }"
-                    :location="location"
-                    :auth-profile="authProfile"
-                    :error="error">
-                    <Transition name="fade-slide-up" mode="out-in">
-                        <component :is="Component" :key="route.path" />
-                    </Transition>
-                </RouterView>
-                <ManagementLoaderError v-else :error="error" />
-            </main>
-        </Transition>
-    </div>
+        <template #main>
+            <ManagementLoader v-if="isLoading" />
+
+            <RouterView
+                v-else-if="location"
+                v-slot="{ Component, route }"
+                :location="location"
+                :auth-profile="authProfile"
+                :error="error">
+                <Transition name="fade-slide-up" mode="out-in">
+                    <component :is="Component" :key="route.path" />
+                </Transition>
+            </RouterView>
+
+            <ManagementLoaderError v-else :error="error" />
+        </template>
+    </LayoutContainer>
 </template>
-
-<style scoped>
-@reference '@/assets/styles/main.css';
-
-.container {
-    @apply mx-auto grid w-full flex-1 grid-cols-1 lg:my-4 lg:max-w-[1420px] lg:grid-cols-4 lg:px-0;
-}
-
-.container__sidebar {
-    @apply col-span-1;
-}
-
-.container__main {
-    @apply col-span-3 lg:pl-12;
-}
-</style>

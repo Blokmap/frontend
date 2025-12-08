@@ -24,16 +24,24 @@ import {
     ManageDashboardPage,
     DashboardLocationsPage,
     LocationInfoPage,
+    LocationImagesPage,
+    LocationSettingsPage,
     LocationOpeningsPage,
     LocationReservationsPage,
-    LocationScannerPage,
     LocationMembersPage,
+    LocationRolesPage,
     AuthorityOverviewPage,
+    AuthorityInfoPage,
+    AuthoritySettingsPage,
     AuthorityLocationsPage,
     AuthorityMembersPage,
+    AuthorityRolesPage,
     InstitutionOverviewPage,
+    InstitutionInfoPage,
+    InstitutionSettingsPage,
     InstitutionAuthoritiesPage,
     InstitutionMembersPage,
+    InstitutionRolesPage,
 } from './routerPages';
 
 const routes: RouteRecordRaw[] = [
@@ -147,35 +155,16 @@ const routes: RouteRecordRaw[] = [
                                 path: 'info',
                                 name: 'manage.location.info',
                                 component: LocationInfoPage,
-                                children: [
-                                    {
-                                        path: 'info',
-                                        name: 'manage.location.info.info',
-                                        redirect: (to) => ({
-                                            name: 'manage.location.info',
-                                            params: to.params,
-                                            hash: '#info',
-                                        }),
-                                    },
-                                    {
-                                        path: 'images',
-                                        name: 'manage.location.info.images',
-                                        redirect: (to) => ({
-                                            name: 'manage.location.info',
-                                            params: to.params,
-                                            hash: '#images',
-                                        }),
-                                    },
-                                    {
-                                        path: 'settings',
-                                        name: 'manage.location.info.settings',
-                                        redirect: (to) => ({
-                                            name: 'manage.location.info',
-                                            params: to.params,
-                                            hash: '#settings',
-                                        }),
-                                    },
-                                ],
+                            },
+                            {
+                                path: 'images',
+                                name: 'manage.location.images',
+                                component: LocationImagesPage,
+                            },
+                            {
+                                path: 'settings',
+                                name: 'manage.location.settings',
+                                component: LocationSettingsPage,
                             },
                             {
                                 path: 'openings',
@@ -188,14 +177,23 @@ const routes: RouteRecordRaw[] = [
                                 component: LocationReservationsPage,
                             },
                             {
-                                path: 'scanner',
-                                name: 'manage.location.scanner',
-                                component: LocationScannerPage,
+                                path: 'scan',
+                                name: 'manage.location.scan',
+                                redirect: (to) => ({
+                                    name: 'manage.location.reservations',
+                                    params: to.params,
+                                    hash: '#scan',
+                                }),
                             },
                             {
                                 path: 'members',
                                 name: 'manage.location.members',
                                 component: LocationMembersPage,
+                            },
+                            {
+                                path: 'roles',
+                                name: 'manage.location.roles',
+                                component: LocationRolesPage,
                             },
                         ],
                     },
@@ -205,12 +203,22 @@ const routes: RouteRecordRaw[] = [
                         name: 'manage.authority',
                         component: ManageAuthorityLayout,
                         props: true,
-                        redirect: { name: 'manage.authority.overview' },
+                        redirect: { name: 'manage.authority.info' },
                         children: [
                             {
                                 path: 'overview',
                                 name: 'manage.authority.overview',
                                 component: AuthorityOverviewPage,
+                            },
+                            {
+                                path: 'info',
+                                name: 'manage.authority.info',
+                                component: AuthorityInfoPage,
+                            },
+                            {
+                                path: 'settings',
+                                name: 'manage.authority.settings',
+                                component: AuthoritySettingsPage,
                             },
                             {
                                 path: 'locations',
@@ -222,6 +230,11 @@ const routes: RouteRecordRaw[] = [
                                 name: 'manage.authority.members',
                                 component: AuthorityMembersPage,
                             },
+                            {
+                                path: 'roles',
+                                name: 'manage.authority.roles',
+                                component: AuthorityRolesPage,
+                            },
                         ],
                     },
                     // Institution management
@@ -230,12 +243,22 @@ const routes: RouteRecordRaw[] = [
                         name: 'manage.institution',
                         component: ManageInstitutionLayout,
                         props: true,
-                        redirect: { name: 'manage.institution.overview' },
+                        redirect: { name: 'manage.institution.info' },
                         children: [
                             {
                                 path: 'overview',
                                 name: 'manage.institution.overview',
                                 component: InstitutionOverviewPage,
+                            },
+                            {
+                                path: 'info',
+                                name: 'manage.institution.info',
+                                component: InstitutionInfoPage,
+                            },
+                            {
+                                path: 'settings',
+                                name: 'manage.institution.settings',
+                                component: InstitutionSettingsPage,
                             },
                             {
                                 path: 'authorities',
@@ -246,6 +269,11 @@ const routes: RouteRecordRaw[] = [
                                 path: 'members',
                                 name: 'manage.institution.members',
                                 component: InstitutionMembersPage,
+                            },
+                            {
+                                path: 'roles',
+                                name: 'manage.institution.roles',
+                                component: InstitutionRolesPage,
                             },
                         ],
                     },

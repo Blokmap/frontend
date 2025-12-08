@@ -14,7 +14,6 @@ import type {
     LocationMembership,
     Member,
     MemberFilter,
-    RecursivePermissions,
     UpdateMemberBody,
 } from '../types';
 import type { AuthorityIncludes } from '@/domain/authority';
@@ -22,7 +21,13 @@ import type { LocationIncludes } from '@/domain/location';
 import type { Paginated } from '@/utils/pagination';
 
 export * from './memberRoleService';
-export * from './memberPermissionService';
+
+// Re-export permission service functions from auth domain
+export {
+    readLocationMemberPermissions,
+    readAuthorityMemberPermissions,
+    readInstitutionMemberPermissions,
+} from '@/domain/auth';
 
 /**
  * Fetches the members for a specific location.
@@ -292,63 +297,6 @@ export async function readProfileInstitutionMemberships(
     const transformResponse = transformResponseFactory(parseInstitutionMembershipResponse);
 
     const { data } = await client.get(endpoint, { transformResponse });
-
-    return data;
-}
-
-/**
- * Fetches the recursive permissions for a member in a specific location.
- *
- * @param locationId - The ID of the location
- * @param profileId - The ID of the profile
- */
-export async function readLocationMemberPermissions(
-    locationId: number,
-    profileId: string,
-): Promise<RecursivePermissions> {
-    const endpoint = endpoints.locations.members.roles
-        .replace('{id}', locationId.toString())
-        .replace('{profileId}', profileId.toString());
-
-    const { data } = await client.get(endpoint);
-
-    return data;
-}
-
-/**
- * Fetches the recursive permissions for a member in a specific authority.
- *
- * @param authorityId - The ID of the authority
- * @param profileId - The ID of the profile
- */
-export async function readAuthorityMemberPermissions(
-    authorityId: number,
-    profileId: string,
-): Promise<RecursivePermissions> {
-    const endpoint = endpoints.authorities.members.roles
-        .replace('{id}', authorityId.toString())
-        .replace('{profileId}', profileId.toString());
-
-    const { data } = await client.get(endpoint);
-
-    return data;
-}
-
-/**
- * Fetches the recursive permissions for a member in a specific institution.
- *
- * @param institutionId - The ID of the institution
- * @param profileId - The ID of the profile
- */
-export async function readInstitutionMemberPermissions(
-    institutionId: number,
-    profileId: string,
-): Promise<RecursivePermissions> {
-    const endpoint = endpoints.institutions.members.roles
-        .replace('{id}', institutionId.toString())
-        .replace('{profileId}', profileId.toString());
-
-    const { data } = await client.get(endpoint);
 
     return data;
 }

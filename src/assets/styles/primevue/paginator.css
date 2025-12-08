@@ -1,5 +1,5 @@
 .p-paginator {
-    @apply text-surface-700 dark:text-surface-0 flex flex-wrap items-center justify-center gap-1 rounded-md bg-transparent px-4 py-2;
+    @apply text-surface-700 flex flex-wrap items-center justify-center gap-1 rounded-md bg-transparent px-4 py-2;
 }
 
 .p-paginator-content {
@@ -31,7 +31,7 @@
 }
 
 .p-paginator-page.p-paginator-page-selected {
-    @apply bg-highlight;
+    @apply bg-primary-50 text-primary;
 }
 
 .p-paginator-current {

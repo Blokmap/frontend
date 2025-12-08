@@ -5,15 +5,28 @@ defineProps<{
 </script>
 
 <template>
-    <h2 class="content__title">
-        <slot> {{ title }}</slot>
-    </h2>
+    <div class="wrapper">
+        <h2 class="wrapper__title">
+            <slot> {{ title }}</slot>
+        </h2>
+        <div class="wrapper__actions" v-if="$slots.actions">
+            <slot name="actions"></slot>
+        </div>
+    </div>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.content__title {
-    @apply text-3xl leading-none font-extrabold;
+.wrapper {
+    @apply flex items-center justify-between gap-3;
+
+    .wrapper__title {
+        @apply text-3xl leading-none font-extrabold;
+    }
+
+    .wrapper__actions {
+        @apply flex items-center gap-2;
+    }
 }
 </style>

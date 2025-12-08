@@ -904,3 +904,6 @@ export function useReadInstitutionMemberPermissions(
 
     return query;
 }
+
+// Alias for consistency with naming convention
+export const useDeleteInstitutionMember = useDeleteMemberFromInstitution;

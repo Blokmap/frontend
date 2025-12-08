@@ -1,5 +1,5 @@
 import google from '@/assets/img/logos/idps/google.svg';
-import type { Idp } from '@/domain/auth';
+import type { Idp } from '../types/authTypes';
 
 export const AUTH_IDPS: Idp[] = [
     {

@@ -2,17 +2,11 @@
 import gsap from 'gsap';
 import { computed, onMounted, ref } from 'vue';
 
-const { variant = 'light' } = defineProps<{ variant?: 'light' | 'dark' }>();
-
 const logoRef = ref<HTMLElement | null>(null);
 const textRef = ref<HTMLElement | null>(null);
 
 const variantClasses = computed(() => {
-    if (variant === 'dark') {
-        return 'bg-slate-900 text-slate-200';
-    }
-
-    return 'bg-primary-100 text-primary-500 shadow-playful';
+    return 'bg-primary text-primary-contrast shadow-playful';
 });
 
 onMounted(async () => {
@@ -71,7 +65,7 @@ function handleHoverOut() {
     @apply text-2xl md:text-3xl;
     @apply transition-shadow duration-200;
 
-    --shadow-color: var(--color-primary-300);
+    --shadow-color: var(--color-primary-400);
 
     .letters {
         @apply translate-y-1;

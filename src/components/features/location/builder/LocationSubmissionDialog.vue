@@ -187,7 +187,7 @@ watchEffect(async () => {
             <RouterLink
                 v-if="isFinished"
                 :to="{
-                    name: 'manage.locations.openings',
+                    name: 'manage.location.openings',
                     params: { locationId },
                 }">
                 <Button> Openingstijden toevoegen <FontAwesomeIcon :icon="faArrowRight" /> </Button>

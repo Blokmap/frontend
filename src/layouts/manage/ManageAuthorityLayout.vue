@@ -1,11 +1,19 @@
 <script lang="ts" setup>
-import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
-import LayoutSidebar from '@/layouts/LayoutSidebar.vue';
-import LayoutSidebarItem from '@/layouts/LayoutSidebarItem.vue';
-import { faInfoCircle, faMapLocationDot, faUsers } from '@fortawesome/free-solid-svg-icons';
+import InstitutionBreadcrumb from '@/components/features/institution/InstitutionBreadcrumb.vue';
+import LayoutContainer from '@/layouts/LayoutContainer.vue';
+import LayoutSidebar from '@/layouts/sidebar/LayoutSidebar.vue';
+import LayoutSidebarItem from '@/layouts/sidebar/LayoutSidebarItem.vue';
+import LayoutSidebarSection from '@/layouts/sidebar/LayoutSidebarSection.vue';
+import {
+    faCog,
+    faInfoCircle,
+    faMapLocationDot,
+    faUsers,
+    faUserTag,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useReadAuthority } from '@/composables/data/useAuthorities';
 import ManagementLoader from './ManagementLoader.vue';
 import ManagementLoaderError from './ManagementLoaderError.vue';
@@ -17,7 +25,6 @@ const props = defineProps<{
 }>();
 
 const route = useRoute();
-const router = useRouter();
 
 const authorityIdNum = computed(() => +props.authorityId);
 const enabled = computed(() => !Number.isNaN(authorityIdNum.value) && authorityIdNum.value > 0);
@@ -31,34 +38,44 @@ const {
     includes: ['institution'],
 });
 
-function goBack() {
-    router.push({ name: 'manage' });
-}
+const logoUrl = computed(() => authority.value?.logo?.url);
 </script>
 
 <template>
-    <div class="container">
-        <Transition name="slide-in-left" appear>
-            <div class="container__sidebar">
-                <LayoutSidebar
-                    :title="authority?.name ?? 'Groep'"
-                    :loading="isLoading"
-                    show-back-button
-                    @click:back="goBack">
+    <LayoutContainer sidebar-transition="slide-in-left" main-transition="fade-slide-up">
+        <template #sidebar>
+            <LayoutSidebar :title="authority?.name ?? 'Groep'" :logo="logoUrl" :loading="isLoading">
+                <template #header>
+                    <InstitutionBreadcrumb
+                        v-if="authority"
+                        :institution="authority?.institution"
+                        editable>
+                    </InstitutionBreadcrumb>
+                </template>
+
+                <LayoutSidebarSection title="Instellingen">
                     <LayoutSidebarItem
                         :loading="isLoading"
-                        :to="{ name: 'manage.authority.overview', params: { authorityId } }"
-                        :active="route.name === 'manage.authority.overview'">
+                        :to="{ name: 'manage.authority.info', params: { authorityId } }"
+                        :active="route.name === 'manage.authority.info'">
                         <template #img>
-                            <EntityAvatar
-                                :image="authority?.logo?.url"
-                                :icon="faInfoCircle"
-                                class="sidebar__avatar">
-                            </EntityAvatar>
+                            <FontAwesomeIcon :icon="faInfoCircle" />
                         </template>
-                        <template #text>Overzicht</template>
+                        <template #text>Informatie</template>
                     </LayoutSidebarItem>
 
+                    <LayoutSidebarItem
+                        :loading="isLoading"
+                        :to="{ name: 'manage.authority.settings', params: { authorityId } }"
+                        :active="route.name === 'manage.authority.settings'">
+                        <template #img>
+                            <FontAwesomeIcon :icon="faCog" />
+                        </template>
+                        <template #text>Instellingen</template>
+                    </LayoutSidebarItem>
+                </LayoutSidebarSection>
+
+                <LayoutSidebarSection title="Relaties">
                     <LayoutSidebarItem
                         :loading="isLoading"
                         :to="{ name: 'manage.authority.locations', params: { authorityId } }"
@@ -68,7 +85,9 @@ function goBack() {
                         </template>
                         <template #text>Locaties</template>
                     </LayoutSidebarItem>
+                </LayoutSidebarSection>
 
+                <LayoutSidebarSection title="Toegangscontrole">
                     <LayoutSidebarItem
                         :loading="isLoading"
                         :to="{ name: 'manage.authority.members', params: { authorityId } }"
@@ -78,43 +97,39 @@ function goBack() {
                         </template>
                         <template #text>Leden</template>
                     </LayoutSidebarItem>
-                </LayoutSidebar>
-            </div>
-        </Transition>
 
-        <Transition name="fade-slide-up" appear>
-            <main class="container__main">
-                <ManagementLoader v-if="isLoading" />
-                <RouterView
-                    v-else-if="authority"
-                    v-slot="{ Component, route }"
-                    :authority="authority"
-                    :auth-profile="authProfile"
-                    :error="error">
-                    <Transition name="fade-slide-up" mode="out-in">
-                        <component :is="Component" :key="route.path" />
-                    </Transition>
-                </RouterView>
-                <ManagementLoaderError v-else :error="error" />
-            </main>
-        </Transition>
-    </div>
+                    <LayoutSidebarItem
+                        :loading="isLoading"
+                        :to="{ name: 'manage.authority.roles', params: { authorityId } }"
+                        :active="route.name === 'manage.authority.roles'">
+                        <template #img>
+                            <FontAwesomeIcon :icon="faUserTag" />
+                        </template>
+                        <template #text>Rollen</template>
+                    </LayoutSidebarItem>
+                </LayoutSidebarSection>
+            </LayoutSidebar>
+        </template>
+
+        <template #main>
+            <ManagementLoader v-if="isLoading" />
+            <RouterView
+                v-else-if="authority"
+                v-slot="{ Component, route }"
+                :authority="authority"
+                :auth-profile="authProfile"
+                :error="error">
+                <Transition name="fade-slide-up" mode="out-in">
+                    <component :is="Component" :key="route.path" />
+                </Transition>
+            </RouterView>
+            <ManagementLoaderError v-else :error="error" />
+        </template>
+    </LayoutContainer>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
-
-.container {
-    @apply mx-auto grid w-full flex-1 grid-cols-1 lg:my-4 lg:max-w-[1420px] lg:grid-cols-4 lg:px-0;
-}
-
-.container__sidebar {
-    @apply col-span-1;
-}
-
-.container__main {
-    @apply col-span-3 lg:pl-12;
-}
 
 .sidebar__avatar {
     @apply h-8 w-8 shrink-0 lg:h-10 lg:w-10;

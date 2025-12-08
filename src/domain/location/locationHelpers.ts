@@ -11,7 +11,7 @@ import type { Location, LocationAddress, LocationFeatures, LocationBody } from '
  * @param location - The location object (not used in this function, but included for consistency).
  * @returns A random placeholder image URL.
  */
-export function getLocationPlaceholderImage(_location: Location): string {
+export function getLocationPlaceholderImage(_location?: Location): string {
     return placeholder;
 }
 
@@ -21,8 +21,8 @@ export function getLocationPlaceholderImage(_location: Location): string {
  * @param location - The location object containing images.
  * @returns The primary image URL or a placeholder image URL.
  */
-export function getLocationImageUrl(location: Location): string {
-    const primaryImage = location.images?.find((img) => img.index === 0);
+export function getLocationImageUrl(location?: Location): string {
+    const primaryImage = location?.images?.find((img) => img.index === 0);
 
     if (!primaryImage) {
         return getLocationPlaceholderImage(location);

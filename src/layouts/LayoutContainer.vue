@@ -42,7 +42,8 @@ const closeSidebar = () => {
         <Transition v-if="sidebarTransition !== 'none'" :name="sidebarTransition" appear>
             <aside
                 class="layout-container__sidebar"
-                :class="{ 'layout-container__sidebar--open': isSidebarOpen }">
+                :class="{ 'layout-container__sidebar--open': isSidebarOpen }"
+                @click="closeSidebar">
                 <slot name="sidebar"></slot>
             </aside>
         </Transition>
@@ -50,7 +51,8 @@ const closeSidebar = () => {
         <aside
             v-else
             class="layout-container__sidebar"
-            :class="{ 'layout-container__sidebar--open': isSidebarOpen }">
+            :class="{ 'layout-container__sidebar--open': isSidebarOpen }"
+            @click="closeSidebar">
             <slot name="sidebar"></slot>
         </aside>
 
@@ -71,7 +73,7 @@ const closeSidebar = () => {
 
 .layout-container {
     @apply relative mx-auto grid w-full flex-1 grid-cols-1;
-    @apply lg:my-4 lg:max-w-[1420px] lg:grid-cols-4 lg:px-0;
+    @apply my-4 lg:max-w-[1420px] lg:grid-cols-4 lg:px-0;
 }
 
 .mobile-menu-toggle {
@@ -82,11 +84,11 @@ const closeSidebar = () => {
 }
 
 .sidebar-backdrop {
-    @apply fixed inset-0 z-30 bg-black/50;
+    @apply fixed inset-0 z-90 bg-black/50;
 }
 
 .layout-container__sidebar {
-    @apply fixed inset-y-0 left-0 z-40 w-80 -translate-x-full bg-white px-6 py-20 shadow-2xl;
+    @apply fixed inset-y-0 left-0 z-100 w-80 -translate-x-full bg-white px-6 py-20 shadow-2xl;
     @apply transition-transform duration-300;
     @apply overflow-y-auto;
     @apply lg:relative lg:col-span-1 lg:w-auto lg:translate-x-0 lg:overflow-y-visible lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none;

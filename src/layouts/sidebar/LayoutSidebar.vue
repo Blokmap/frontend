@@ -57,7 +57,7 @@ const emit = defineEmits<{
             @apply flex items-center gap-3;
 
             .sidebar__logo {
-                @apply h-10 w-10 rounded-full;
+                @apply h-10 w-10 shrink-0 rounded-full;
             }
 
             .sidebar__title {

@@ -74,7 +74,7 @@ const { locale } = useI18n();
     }
 
     .hierarchy__institution {
-        @apply truncate font-bold text-slate-900;
+        @apply text-primary-600 truncate font-bold;
     }
 
     .hierarchy__authority {

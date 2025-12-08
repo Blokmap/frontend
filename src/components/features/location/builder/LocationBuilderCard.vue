@@ -27,7 +27,7 @@ defineProps<{
 @reference '@/assets/styles/main.css';
 
 .builder-card {
-    @apply rounded-lg bg-white p-3 shadow-md sm:p-4;
+    @apply rounded-lg bg-white p-4 shadow-md;
 
     .builder-card__body {
         @apply space-y-4 sm:space-y-6;
@@ -43,7 +43,7 @@ defineProps<{
     }
 
     .builder-card__title {
-        @apply w-full;
+        @apply w-full space-y-2;
     }
 }
 </style>

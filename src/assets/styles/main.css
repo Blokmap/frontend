@@ -57,17 +57,17 @@
     --color-glacier-800: oklch(25.996% 0.07965 268.39);
     --color-glacier-900: oklch(19.004% 0.05983 273.58);
 
-    --color-deep-space-50: oklch(0.93 0.034 252.25);
-    --color-deep-space-100: oklch(0.86 0.072 248.05);
-    --color-deep-space-200: oklch(0.71 0.158 238.33);
-    --color-deep-space-300: oklch(0.573 0.128 238.62);
-    --color-deep-space-400: oklch(0.437 0.098 238.38);
-    --color-deep-space-500: oklch(0.294 0.066 238.46);
-    --color-deep-space-600: oklch(0.267 0.059 238.25);
-    --color-deep-space-700: oklch(0.231 0.051 237.66);
-    --color-deep-space-800: oklch(0.195 0.045 240.3);
-    --color-deep-space-900: oklch(0.164 0.037 238.24);
-    --color-deep-space-950: oklch(0.128 0.029 239.37);
+    --color-deep-space-50: oklch(0.947 0.026 253.56);
+    --color-deep-space-100: oklch(0.887 0.058 248.47);
+    --color-deep-space-200: oklch(0.771 0.128 241.81);
+    --color-deep-space-300: oklch(0.667 0.148 238.18);
+    --color-deep-space-400: oklch(0.557 0.124 238.16);
+    --color-deep-space-500: oklch(0.444 0.099 238.51);
+    --color-deep-space-600: oklch(0.335 0.074 238.07);
+    --color-deep-space-700: oklch(0.282 0.062 237.56);
+    --color-deep-space-800: oklch(0.239 0.053 237.97);
+    --color-deep-space-900: oklch(0.186 0.041 238.24);
+    --color-deep-space-950: oklch(0.147 0.034 239.72);
 
     --color-flag-red-50: oklch(0.959 0.017 17.56);
     --color-flag-red-100: oklch(0.909 0.04 17.96);

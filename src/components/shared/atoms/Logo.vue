@@ -65,7 +65,7 @@ function handleHoverOut() {
     @apply text-2xl md:text-3xl;
     @apply transition-shadow duration-200;
 
-    --shadow-color: var(--color-primary-400);
+    --shadow-color: var(--color-primary-600);
 
     .letters {
         @apply translate-y-1;

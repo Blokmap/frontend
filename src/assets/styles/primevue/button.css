@@ -8,7 +8,7 @@
     @apply disabled:cursor-default;
 
     @apply shadow-playful;
-    --shadow-color: var(--color-primary-400);
+    --shadow-color: var(--color-primary-600);
 }
 
 .p-button:active {

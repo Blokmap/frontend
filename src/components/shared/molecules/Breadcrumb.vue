@@ -52,26 +52,34 @@ const homeRoute = computed<RouteLocationRaw>(() => {
 @reference '@/assets/styles/main.css';
 
 .breadcrumb__list {
-    @apply flex flex-wrap items-center gap-2 text-sm;
+    @apply flex items-center gap-2 text-sm;
+    @apply overflow-hidden;
 }
 
 .breadcrumb__item {
-    @apply flex items-center gap-2;
+    @apply flex shrink-0 items-center gap-2;
+    @apply min-w-0;
+}
+
+.breadcrumb__item:last-child {
+    @apply min-w-0 flex-1;
 }
 
 .breadcrumb__link {
     @apply text-slate-500 transition-colors hover:text-slate-900;
+    @apply truncate;
 }
 
 .breadcrumb__icon {
-    @apply text-slate-400;
+    @apply shrink-0 text-slate-400;
 }
 
 .breadcrumb__separator {
-    @apply text-xs text-slate-300;
+    @apply shrink-0 text-xs text-slate-300;
 }
 
 .breadcrumb__current {
     @apply font-medium text-slate-900;
+    @apply truncate;
 }
 </style>

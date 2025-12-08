@@ -14,27 +14,29 @@ import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
     authProfile: Profile;
-    authority?: Authority;
-    isLoading: boolean;
-    error?: Error | null;
+    authority: Authority;
 }>();
 
 const authorityId = computed(() => props.authority?.id ?? 0);
 const enabled = computed(() => !!props.authority?.id);
 
-const { data: locations, isLoading: locationsLoading } = useReadAuthorityLocations(authorityId, {
+const {
+    data: locations,
+    isLoading: locationsLoading,
+    error,
+} = useReadAuthorityLocations(authorityId, {
     enabled,
 });
 
 const breadcrumbs = computed(() => [
     {
         label: props.authority?.name ?? 'Groep',
-        to: { name: 'manage.authority.overview' },
+        to: { name: 'manage.authority.info' },
     },
     { label: 'Locaties' },
 ]);
 
-const isDataLoading = computed(() => props.isLoading || locationsLoading.value);
+const isDataLoading = computed(() => locationsLoading.value);
 </script>
 
 <template>

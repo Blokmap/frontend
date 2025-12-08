@@ -33,8 +33,8 @@ onMounted(() => {
 });
 
 const severityClasses: Record<string, string> = {
-    success: 'text-primary-500 bg-primary-100',
-    info: 'text-secondary-500 bg-secondary-100',
+    success: 'text-timber-green-500 bg-timber-green-100',
+    info: 'text-glacier-500 bg-glacier-100',
     warn: 'text-orange-500 bg-orange-100 dark:bg-orange-700 dark:text-orange-200',
     error: 'text-red-500 bg-red-100 dark:bg-red-800 dark:text-red-200',
 };

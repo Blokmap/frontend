@@ -88,7 +88,7 @@ function getReservationsForDay(day: Date) {
     @apply flex flex-col rounded-xl bg-white shadow-sm transition-all;
 
     &.day-card--today {
-        @apply ring-primary-300 ring-2 ring-offset-2;
+        @apply ring-secondary-400 ring-2 ring-offset-2;
     }
 
     .day-card__header {
@@ -99,7 +99,7 @@ function getReservationsForDay(day: Date) {
         @apply text-lg font-bold text-slate-700 capitalize;
 
         &.day-card__title--today {
-            @apply text-primary-500;
+            @apply text-secondary-600;
         }
     }
 

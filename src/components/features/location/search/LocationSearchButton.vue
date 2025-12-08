@@ -42,17 +42,11 @@ const recentLocationImages = computed<Image[] | undefined>(() =>
 @reference '@/assets/styles/main.css';
 
 .location-search {
-    @apply relative w-full md:min-w-[320px];
-    @apply cursor-pointer rounded-full;
-    @apply bg-white py-1 pr-2 pl-4;
-    @apply shadow-md hover:shadow-lg;
-    @apply transition-all duration-200 ease-out;
-    @apply border-2 border-slate-200;
+    @apply relative w-full py-1 pr-2 pl-4 md:min-w-[320px];
     @apply flex items-center gap-3;
-
-    &:hover {
-        @apply border-slate-300;
-    }
+    @apply cursor-pointer rounded-full bg-white;
+    @apply shadow-lg hover:shadow-xl;
+    @apply transition-all duration-200 ease-out;
 }
 
 .location-search__content {
@@ -61,11 +55,11 @@ const recentLocationImages = computed<Image[] | undefined>(() =>
 
 .location-search__icon-wrapper {
     @apply flex items-center justify-center rounded-full;
-    @apply bg-primary-500 h-7 w-7 flex-shrink-0;
+    @apply bg-secondary h-7 w-7 flex-shrink-0;
     @apply transition-colors duration-150;
 
     .location-search:hover & {
-        @apply bg-primary-600;
+        @apply bg-secondary-600;
     }
 }
 

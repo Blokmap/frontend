@@ -60,7 +60,7 @@ function navigate() {
                     class="flex"
                     v-if="location.authority"
                     :to="{
-                        name: 'manage.authority.overview',
+                        name: 'manage.authority.info',
                         params: { authorityId: location.authority.id },
                     }"
                     @click.stop>

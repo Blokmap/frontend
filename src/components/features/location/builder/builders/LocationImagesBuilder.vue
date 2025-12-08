@@ -397,7 +397,7 @@ function onDragEnd(): void {
     @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg;
 
     &.icon-container--secondary {
-        @apply bg-secondary-100;
+        @apply bg-secondary-100 text-secondary-600;
     }
 
     &.icon-container--primary {

@@ -7,6 +7,7 @@ import { computed, ref, useTemplateRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { type Location } from '@/domain/location';
+import { isLngLat } from '@/domain/map/mapHelpers';
 import Cluster from './Cluster.vue';
 import Marker from './Marker.vue';
 import type { LngLat, MapAdapter } from '@/domain/map';
@@ -93,7 +94,7 @@ watch(
 
 // Fly to user's geolocation when available
 watch([props.map.isLoaded, coords], async ([isLoaded, coords]) => {
-    if (isLoaded && coords && !hasFlownToUserLocation.value) {
+    if (isLoaded && isLngLat(coords) && !hasFlownToUserLocation.value) {
         props.map.flyTo([coords.longitude, coords.latitude], 15);
         hasFlownToUserLocation.value = true;
     }

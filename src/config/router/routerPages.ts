@@ -23,8 +23,6 @@ export const LocationMembersPage = () => import('@/pages/manage/locations/Locati
 export const LocationRolesPage = () => import('@/pages/manage/locations/LocationRolesPage.vue');
 
 // Manage - Authority
-export const AuthorityOverviewPage = () =>
-    import('@/pages/manage/authorities/AuthorityOverviewPage.vue');
 export const AuthorityInfoPage = () => import('@/pages/manage/authorities/AuthorityInfoPage.vue');
 export const AuthoritySettingsPage = () =>
     import('@/pages/manage/authorities/AuthoritySettingsPage.vue');
@@ -35,8 +33,6 @@ export const AuthorityMembersPage = () =>
 export const AuthorityRolesPage = () => import('@/pages/manage/authorities/AuthorityRolesPage.vue');
 
 // Manage - Institution
-export const InstitutionOverviewPage = () =>
-    import('@/pages/manage/institutions/InstitutionOverviewPage.vue');
 export const InstitutionInfoPage = () =>
     import('@/pages/manage/institutions/InstitutionInfoPage.vue');
 export const InstitutionSettingsPage = () =>

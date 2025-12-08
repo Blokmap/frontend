@@ -46,7 +46,7 @@ const institutionName = computed(() => {
 const breadcrumbs = computed(() => [
     {
         label: institutionName.value,
-        to: { name: 'manage.institution.overview' },
+        to: { name: 'manage.institution.info' },
     },
     { label: 'Groepen' },
 ]);

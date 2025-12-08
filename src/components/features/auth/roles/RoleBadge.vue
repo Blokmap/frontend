@@ -1,10 +1,9 @@
 <script lang="ts" setup>
 import { faTag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { ref, useTemplateRef } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
 import { useFloatingPosition } from '@/composables/useFloatingPosition';
 import { type Role } from '@/domain/member';
-import { getContrastColor } from '@/utils/colorUtils';
 import RolePermissionsPopover from './RolePermissionsPopover.vue';
 import type { PermissionType } from '@/domain/auth';
 
@@ -24,12 +23,13 @@ const isPopoverVisible = ref(false);
 
 const { positionStyles } = useFloatingPosition(triggerRef, popoverRef, isPopoverVisible);
 
-/**
- * Calculate the high contrast text color for the badge.
- */
-function getTextColor(): string {
-    return role ? getContrastColor(role.colour) : '#555';
-}
+const bgColor = computed<string>(() => {
+    return 'var(--color-slate-100)';
+});
+
+const textColor = computed<string>(() => {
+    return 'var(--color-secondary-800)';
+});
 
 /**
  * Handle click on role label
@@ -46,7 +46,7 @@ function onClickLabel(): void {
         ref="trigger"
         class="role-badge"
         :class="{ 'role-badge--clickable': clickable }"
-        :style="{ backgroundColor: role?.colour ?? 'whitesmoke', color: getTextColor() }"
+        :style="{ backgroundColor: bgColor, color: textColor }"
         @click.stop="onClickLabel">
         <FontAwesomeIcon class="role-badge__icon" :icon="faTag" />
         <span class="role-badge__label">{{ role?.name ?? 'Geen Rol' }}</span>

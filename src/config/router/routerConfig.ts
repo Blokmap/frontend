@@ -30,13 +30,11 @@ import {
     LocationReservationsPage,
     LocationMembersPage,
     LocationRolesPage,
-    AuthorityOverviewPage,
     AuthorityInfoPage,
     AuthoritySettingsPage,
     AuthorityLocationsPage,
     AuthorityMembersPage,
     AuthorityRolesPage,
-    InstitutionOverviewPage,
     InstitutionInfoPage,
     InstitutionSettingsPage,
     InstitutionAuthoritiesPage,
@@ -206,11 +204,6 @@ const routes: RouteRecordRaw[] = [
                         redirect: { name: 'manage.authority.info' },
                         children: [
                             {
-                                path: 'overview',
-                                name: 'manage.authority.overview',
-                                component: AuthorityOverviewPage,
-                            },
-                            {
                                 path: 'info',
                                 name: 'manage.authority.info',
                                 component: AuthorityInfoPage,
@@ -245,11 +238,6 @@ const routes: RouteRecordRaw[] = [
                         props: true,
                         redirect: { name: 'manage.institution.info' },
                         children: [
-                            {
-                                path: 'overview',
-                                name: 'manage.institution.overview',
-                                component: InstitutionOverviewPage,
-                            },
                             {
                                 path: 'info',
                                 name: 'manage.institution.info',

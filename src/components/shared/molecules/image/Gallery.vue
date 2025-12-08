@@ -201,7 +201,7 @@ onUnmounted(() => {
 @reference '@/assets/styles/main.css';
 
 .gallery {
-    @apply grid h-full w-full gap-4 overflow-hidden;
+    @apply grid h-full w-full gap-2 overflow-hidden md:gap-4;
 }
 
 .gallery--skeleton {
@@ -210,6 +210,7 @@ onUnmounted(() => {
 
 .gallery__item {
     @apply relative cursor-pointer overflow-hidden rounded-lg;
+    @apply col-span-2 md:col-span-1;
 
     &:hover .gallery__image {
         @apply scale-110 brightness-90;
@@ -221,6 +222,14 @@ onUnmounted(() => {
 
     .gallery__image--loading {
         @apply opacity-0;
+    }
+
+    &.col-span-2 {
+        @apply col-span-2;
+    }
+
+    &.row-span-2 {
+        @apply row-span-1 md:row-span-2;
     }
 }
 
@@ -237,15 +246,15 @@ onUnmounted(() => {
     @apply fixed top-0 left-0 z-50 flex h-full w-full flex-col overflow-y-auto bg-white;
 
     .gallery-fullscreen__header {
-        @apply flex items-center justify-between p-4;
+        @apply flex items-center justify-between p-2 md:p-4;
     }
 
     .gallery-fullscreen__container {
-        @apply flex flex-1 justify-center p-4 pb-[88px];
+        @apply flex flex-1 justify-center p-2 pb-[88px] md:p-4;
     }
 
     .gallery-fullscreen__grid {
-        @apply grid w-full max-w-3xl grid-cols-2 gap-2;
+        @apply grid w-full max-w-3xl grid-cols-1 gap-2 md:grid-cols-2;
     }
 
     .gallery-fullscreen__grid-image {
@@ -254,13 +263,14 @@ onUnmounted(() => {
 
     .gallery-fullscreen__grid-item {
         @apply overflow-hidden rounded-lg;
+        @apply col-span-1;
 
         &:nth-child(3n + 1) {
-            @apply col-span-2;
+            @apply md:col-span-2;
         }
 
         &:last-child:nth-child(3n + 2) {
-            @apply col-span-2;
+            @apply md:col-span-2;
         }
     }
 }

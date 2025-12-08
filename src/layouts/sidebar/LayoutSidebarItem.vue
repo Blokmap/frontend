@@ -71,7 +71,7 @@ const component = computed(() => (props.to ? RouterLink : 'div'));
     }
 
     .item__img {
-        @apply text-primary-500 flex h-10 w-10 shrink-0 items-center justify-center text-xl;
+        @apply flex h-10 w-10 shrink-0 items-center justify-center text-xl text-slate-800;
     }
 
     .item__text {

@@ -6,7 +6,6 @@
     @apply rounded-xl px-4 py-2 font-medium;
     @apply transition-all duration-200;
     @apply disabled:cursor-default;
-
     @apply shadow-playful;
     --shadow-color: var(--color-primary-600);
 }
@@ -147,8 +146,9 @@
 }
 
 .p-button-outlined {
-    @apply text-primary-500 border-primary-300 border bg-transparent;
+    @apply text-primary-500 bg-primary-50;
     @apply transition-all duration-200;
+    --shadow-color: var(--color-primary-300);
 }
 
 .p-button-outlined.p-button-secondary {
@@ -244,7 +244,7 @@
 }
 
 .p-button-link {
-    @apply text-secondary bg-transparent;
+    @apply text-glacier bg-transparent;
     @apply border-transparent;
     @apply enabled:hover:border-transparent enabled:hover:bg-transparent;
     @apply enabled:active:border-transparent enabled:active:bg-transparent;

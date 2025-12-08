@@ -30,7 +30,7 @@ const { locale } = useI18n();
             <FontAwesomeIcon class="hierarchy__separator" :icon="faChevronRight" />
             <RouterLink
                 :to="{
-                    name: 'manage.institution.overview',
+                    name: 'manage.institution.info',
                     params: { institutionId: institution?.id },
                 }"
                 class="hierarchy__institution hierarchy__link">
@@ -40,7 +40,7 @@ const { locale } = useI18n();
                 <FontAwesomeIcon class="hierarchy__separator" :icon="faChevronRight" />
                 <RouterLink
                     :to="{
-                        name: 'manage.authority.overview',
+                        name: 'manage.authority.info',
                         params: { authorityId: authority.id },
                     }"
                     class="hierarchy__authority hierarchy__link">
@@ -74,7 +74,7 @@ const { locale } = useI18n();
     }
 
     .hierarchy__institution {
-        @apply text-primary-600 truncate font-bold;
+        @apply text-secondary-700 truncate font-bold;
     }
 
     .hierarchy__authority {
@@ -82,7 +82,7 @@ const { locale } = useI18n();
     }
 
     .hierarchy__link {
-        @apply hover:text-primary-600 transition-colors duration-150 hover:underline;
+        @apply hover:text-secondary-800 transition-colors duration-150 hover:underline;
     }
 
     .hierarchy__edit {

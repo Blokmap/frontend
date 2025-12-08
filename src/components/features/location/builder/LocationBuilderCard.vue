@@ -38,7 +38,7 @@ defineProps<{
     }
 
     .builder-card__icon {
-        @apply bg-secondary-50 text-secondary-600 hidden h-12 w-12 shrink-0 items-center justify-center sm:flex;
+        @apply bg-secondary-50 text-secondary-700 hidden h-12 w-12 shrink-0 items-center justify-center sm:flex;
         @apply rounded-full;
     }
 

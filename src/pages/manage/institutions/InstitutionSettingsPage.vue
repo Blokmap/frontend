@@ -13,22 +13,25 @@ const props = defineProps<{
     institution: Institution;
 }>();
 
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 
-const institutionName = computed(() => {
-    const name = props.institution?.name;
-    if (!name) return 'Instelling';
-    return name[locale.value] ?? name.nl ?? 'Instelling';
+const breadcrumbs = computed(() => {
+    const institutionName = props.institution.name[locale.value] ?? t('common.unknown');
+
+    return [
+        { label: 'Instellingen', to: { name: 'manage' } },
+        {
+            label: institutionName,
+            to: {
+                name: 'manage.institution.info',
+                params: {
+                    institutionId: props.institution.id,
+                },
+            },
+        },
+        { label: 'Instellingen' },
+    ];
 });
-
-const breadcrumbs = computed(() => [
-    { label: 'Instellingen', to: { name: 'manage' } },
-    {
-        label: institutionName.value,
-        to: { name: 'manage.institution.info', params: { institutionId: props.institution.id } },
-    },
-    { label: 'Instellingen' },
-]);
 </script>
 
 <template>

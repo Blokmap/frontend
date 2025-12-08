@@ -107,20 +107,3 @@ watchEffect(() => {
         </LocationBuilderCard>
     </form>
 </template>
-
-<style scoped>
-@reference '@/assets/styles/main.css';
-
-.checkbox {
-    @apply w-full cursor-pointer space-y-2 rounded-lg bg-slate-100 p-3;
-    @apply border-1 border-slate-200;
-
-    label {
-        @apply cursor-pointer text-sm font-medium;
-    }
-
-    p {
-        @apply text-xs text-slate-500;
-    }
-}
-</style>

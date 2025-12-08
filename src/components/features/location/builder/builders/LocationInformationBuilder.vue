@@ -141,7 +141,7 @@ function resetToCalculatedCoordinates(): void {
                         <LanguageSelector v-model="currentLanguage">
                             <template #button="{ toggle, currentFlag, currentLabel }">
                                 <Button severity="contrast" size="small" @click="toggle">
-                                    <img :src="currentFlag" alt="flag" class="mr-2 h-4 w-4" />
+                                    <img :src="currentFlag" alt="flag" class="h-4 w-4" />
                                     <span class="text-sm">{{ currentLabel }}</span>
                                 </Button>
                             </template>
@@ -271,7 +271,8 @@ function resetToCalculatedCoordinates(): void {
                                     size="small"
                                     class="w-full"
                                     @click="calculateCoordinates"
-                                    :disabled="!canCalculateCoordinates">
+                                    :disabled="!canCalculateCoordinates"
+                                    outlined>
                                     <FontAwesomeIcon
                                         :icon="faExclamationTriangle"
                                         class="mr-2 h-3 w-3">

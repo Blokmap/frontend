@@ -26,7 +26,7 @@ defineProps<{
 @reference '@/assets/styles/main.css';
 
 .checkbox {
-    @apply w-full cursor-pointer space-y-2 rounded-lg bg-slate-100 p-3;
+    @apply w-full cursor-pointer space-y-2 rounded-lg bg-slate-50 p-3;
     @apply border-1 border-slate-200;
 
     label {

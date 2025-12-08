@@ -49,19 +49,19 @@ const { locale } = useI18n();
     }
 
     &.openings-day--today {
-        @apply bg-secondary-50 rounded-lg border-b-0;
+        @apply bg-primary-50 rounded-lg border-b-0;
 
         &:hover {
-            @apply bg-secondary-200;
+            @apply bg-primary-100;
         }
 
         .openings-day__label,
         .openings-day__time {
-            @apply text-secondary-800;
+            @apply text-primary-800;
         }
 
         .openings-day__closed {
-            @apply text-secondary-800 text-sm italic;
+            @apply text-primary-800 text-sm italic;
         }
     }
 

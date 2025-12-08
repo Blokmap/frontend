@@ -257,13 +257,11 @@ export function useMapBox<T>(
         return new Promise((resolve, reject) => {
             if (!isLngLat(lngLat)) {
                 const error = new Error('Invalid LngLat provided for flyTo: ' + lngLat);
-                console.error(error.message);
                 return reject(error);
             }
 
             if (!map.value) {
                 const error = new Error('Map is not initialized, cannot fly to location');
-                console.error(error.message);
                 return reject(error);
             }
 

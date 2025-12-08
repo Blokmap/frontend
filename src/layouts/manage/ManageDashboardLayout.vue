@@ -8,6 +8,7 @@ import LayoutSidebar from '@/layouts/sidebar/LayoutSidebar.vue';
 import LayoutSidebarItem from '@/layouts/sidebar/LayoutSidebarItem.vue';
 import LayoutSidebarSection from '@/layouts/sidebar/LayoutSidebarSection.vue';
 import { faBuilding, faCity, faHome, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
@@ -21,7 +22,6 @@ import { getLocationImages } from '@/domain/image';
 import ManagementLoader from './ManagementLoader.vue';
 import ManagementLoaderError from './ManagementLoaderError.vue';
 import type { Profile } from '@/domain/profile';
-import type { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const props = defineProps<{
     authProfile: Profile;

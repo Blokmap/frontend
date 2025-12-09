@@ -41,6 +41,7 @@ import {
     readLocationMemberPermissions,
     readAuthorityMemberPermissions,
     readInstitutionMemberPermissions,
+    type MemberFilter,
 } from '@/domain/member';
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
@@ -105,12 +106,17 @@ export function useReadAuthorityMembers(
  */
 export function useReadInstitutionMembers(
     institutionId: MaybeRef<number>,
+    filters: MaybeRef<MemberFilter> = {},
     options: CompQueryOptions = {},
 ): CompQuery<Paginated<Member>> {
     const query = useQuery({
         ...options,
-        queryKey: ['members', 'list', 'byInstitution', institutionId],
-        queryFn: () => readInstitutionMembers(toValue(institutionId)),
+        queryKey: ['members', 'list', 'byInstitution', institutionId, filters],
+        queryFn: () => {
+            const institutionIdValue = toValue(institutionId);
+            const filtersValue = toValue(filters);
+            return readInstitutionMembers(institutionIdValue, filtersValue);
+        },
     });
 
     return query;

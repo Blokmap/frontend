@@ -6,8 +6,8 @@ import LocationDetailCard from '@/components/features/location/LocationDetailCar
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
 import EmptyState from '@/components/shared/molecules/EmptyState.vue';
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
 import { faMapMarkerAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
@@ -42,10 +42,10 @@ const {
 </script>
 
 <template>
-    <LayoutContent>
+    <PageContent>
         <ManageBreadcrumb :items="[{ label: 'Mijn locaties' }]" :profile-id="profileId" />
 
-        <LayoutTitle title="Mijn locaties" />
+        <PageTitle title="Mijn locaties" />
 
         <p class="text-slate-600">Locaties waar je rechtstreeks beherend lid van bent.</p>
 
@@ -98,7 +98,7 @@ const {
             :total-records="locations?.total"
             @page="onPageChange">
         </Paginator>
-    </LayoutContent>
+    </PageContent>
 </template>
 
 <style scoped>

@@ -219,7 +219,7 @@ function closeMenu(): void {
 }
 
 .menu-popover__item--danger {
-    @apply text-red-700;
+    @apply text-blushed-brick-500;
 }
 
 .menu-popover__cta {

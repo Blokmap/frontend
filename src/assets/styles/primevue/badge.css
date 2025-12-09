@@ -20,7 +20,7 @@
 }
 
 .p-badge-success {
-    @apply bg-primary-100 text-primary-800;
+    @apply bg-timber-green-100 text-timber-green-800;
 }
 
 .p-badge-info {

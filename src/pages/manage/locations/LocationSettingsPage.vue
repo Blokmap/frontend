@@ -2,8 +2,8 @@
 import LocationSettingsBuilder from '@/components/features/location/builder/builders/LocationSettingsBuilder.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import SaveBar from '@/components/shared/molecules/SaveBar.vue';
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
 import { computed } from 'vue';
 import { useUpdateLocation } from '@/composables/data/useLocations';
 import { useReadProfileAuthorityMemberships } from '@/composables/data/useMembers';
@@ -53,10 +53,10 @@ const breadcrumbs = computed(() => [
 </script>
 
 <template>
-    <LayoutContent>
+    <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
 
-        <LayoutTitle title="Instellingen" />
+        <PageTitle title="Instellingen" />
 
         <LocationSettingsBuilder
             v-if="locationForm"
@@ -69,5 +69,5 @@ const breadcrumbs = computed(() => [
             :loading="isUpdating"
             @save="saveChanges"
             @cancel="cancelChanges" />
-    </LayoutContent>
+    </PageContent>
 </template>

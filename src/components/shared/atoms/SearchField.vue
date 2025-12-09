@@ -1,15 +1,3 @@
-<template>
-    <IconField>
-        <InputIcon v-if="loading">
-            <FontAwesomeIcon :icon="faSpinner" spin />
-        </InputIcon>
-        <InputIcon v-else>
-            <FontAwesomeIcon :icon="faSearch" />
-        </InputIcon>
-        <InputText v-model="search" :placeholder="placeholder" @input="onInput" />
-    </IconField>
-</template>
-
 <script setup lang="ts">
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
@@ -28,13 +16,27 @@ withDefaults(
     },
 );
 
-const search = defineModel<string>({ default: '' });
+const search = defineModel<string>({
+    default: '',
+});
 
 const emit = defineEmits<{
-    (e: 'input', event: InputEvent): void;
+    input: [event: InputEvent];
 }>();
 
 const onInput = (event: InputEvent): void => {
     emit('input', event);
 };
 </script>
+
+<template>
+    <IconField>
+        <InputIcon v-if="loading">
+            <FontAwesomeIcon :icon="faSpinner" spin />
+        </InputIcon>
+        <InputIcon v-else>
+            <FontAwesomeIcon :icon="faSearch" />
+        </InputIcon>
+        <InputText class="w-full" v-model="search" :placeholder="placeholder" @input="onInput" />
+    </IconField>
+</template>

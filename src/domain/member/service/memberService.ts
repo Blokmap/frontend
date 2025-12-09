@@ -40,7 +40,10 @@ export async function readLocationMembers(
 
     const transformResponse = transformPaginatedResponseFactory(parseMemberResponse);
 
-    const { data } = await client.get(endpoint, { params: filters, transformResponse });
+    const { data } = await client.get(endpoint, {
+        params: filters,
+        transformResponse,
+    });
 
     return data;
 }
@@ -118,12 +121,18 @@ export async function readAuthorityMembers(authorityId: number): Promise<Paginat
  *
  * @param institutionId - The ID of the institution
  */
-export async function readInstitutionMembers(institutionId: number): Promise<Paginated<Member>> {
+export async function readInstitutionMembers(
+    institutionId: number,
+    filters: MemberFilter,
+): Promise<Paginated<Member>> {
     const endpoint = endpoints.institutions.members.list.replace('{id}', institutionId.toString());
 
     const transformResponse = transformPaginatedResponseFactory(parseMemberResponse);
 
-    const { data } = await client.get(endpoint, { transformResponse });
+    const { data } = await client.get(endpoint, {
+        params: filters,
+        transformResponse,
+    });
 
     return data;
 }

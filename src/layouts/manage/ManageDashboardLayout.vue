@@ -7,7 +7,7 @@ import LayoutContainer from '@/layouts/LayoutContainer.vue';
 import LayoutSidebar from '@/layouts/sidebar/LayoutSidebar.vue';
 import LayoutSidebarItem from '@/layouts/sidebar/LayoutSidebarItem.vue';
 import LayoutSidebarSection from '@/layouts/sidebar/LayoutSidebarSection.vue';
-import { faBuilding, faCity, faHome, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faBuilding, faCity, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -83,7 +83,7 @@ function goBack() {
         <template #sidebar>
             <LayoutSidebar title="Beheer" @click:back="goBack" show-back-button>
                 <LayoutSidebarSection>
-                    <LayoutSidebarItem
+                    <!-- <LayoutSidebarItem
                         :loading="isLoading"
                         :to="{
                             name: 'manage.dashboard',
@@ -98,7 +98,7 @@ function goBack() {
                             </EntityAvatar>
                         </template>
                         <template #text>Dashboard</template>
-                    </LayoutSidebarItem>
+                    </LayoutSidebarItem> -->
 
                     <LayoutSidebarItem
                         :loading="isLoading"

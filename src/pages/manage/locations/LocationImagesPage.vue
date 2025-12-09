@@ -2,8 +2,8 @@
 import LocationImagesBuilder from '@/components/features/location/builder/builders/LocationImagesBuilder.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import SaveBar from '@/components/shared/molecules/SaveBar.vue';
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
 import { computed } from 'vue';
 import { useUpdateLocationImages } from '@/composables/data/useLocations';
 import { useDirtyForm } from '@/composables/useDirtyForm';
@@ -56,10 +56,10 @@ const breadcrumbs = computed(() => [
 </script>
 
 <template>
-    <LayoutContent>
+    <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
 
-        <LayoutTitle title="Afbeeldingen" />
+        <PageTitle title="Afbeeldingen" />
 
         <LocationImagesBuilder v-if="imagesForm" v-model="imagesForm" />
 
@@ -68,5 +68,5 @@ const breadcrumbs = computed(() => [
             :loading="isUpdating"
             @save="saveChanges"
             @cancel="cancelChanges" />
-    </LayoutContent>
+    </PageContent>
 </template>

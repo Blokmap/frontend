@@ -7,8 +7,8 @@ import AccessCardLink from '@/components/features/member/AccessCardLink.vue';
 import MemberAddDialog from '@/components/features/member/MemberAddDialog.vue';
 import MembersTable from '@/components/features/member/MembersTable.vue';
 import Breadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
 import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
 import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
 import { faCity, faUserPlus } from '@fortawesome/free-solid-svg-icons';
@@ -117,10 +117,10 @@ function onAddMember(body: CreateMemberBody): void {
 </script>
 
 <template>
-    <LayoutContent>
+    <PageContent>
         <Breadcrumb :items="breadcrumbs" />
 
-        <LayoutTitle title="Groepsbeheerders">
+        <PageTitle title="Groepsbeheerders">
             <template #actions>
                 <PageHeaderButton
                     severity="primary"
@@ -129,7 +129,7 @@ function onAddMember(body: CreateMemberBody): void {
                     <FontAwesomeIcon :icon="faUserPlus" />
                 </PageHeaderButton>
             </template>
-        </LayoutTitle>
+        </PageTitle>
 
         <p class="text-slate-600">Beheer wie toegang heeft tot deze groep en hun rollen.</p>
 
@@ -189,7 +189,7 @@ function onAddMember(body: CreateMemberBody): void {
                 @click:submit="onAddMember">
             </MemberAddDialog>
         </Teleport>
-    </LayoutContent>
+    </PageContent>
 </template>
 
 <style scoped>

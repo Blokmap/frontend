@@ -17,9 +17,9 @@ onMounted(() => {
 </script>
 
 <template>
-    <td :class="['table-cell', props.class]" :data-column="column">
-        <div class="cell-label">{{ column }}</div>
-        <div class="cell-content">
+    <td :class="['cell', props.class]" :data-column="column">
+        <div class="cell__label">{{ column }}</div>
+        <div class="cell__content">
             <slot></slot>
         </div>
     </td>
@@ -28,18 +28,18 @@ onMounted(() => {
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.table-cell {
+.cell {
     @apply text-sm;
     @apply block px-0 py-2 whitespace-normal;
     @apply md:table-cell md:px-6 md:py-4 md:whitespace-nowrap;
 
-    .cell-label {
+    .cell__label {
         @apply text-xs font-medium tracking-wider text-slate-500 uppercase;
-        @apply mb-2;
+        @apply mb-3;
         @apply md:hidden;
     }
 
-    .cell-content {
+    .cell__content {
         @apply contents;
     }
 }

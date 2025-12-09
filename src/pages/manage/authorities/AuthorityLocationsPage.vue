@@ -4,8 +4,8 @@ import LocationDetailCard from '@/components/features/location/LocationDetailCar
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
 import EmptyState from '@/components/shared/molecules/EmptyState.vue';
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
 import { useReadAuthorityLocations } from '@/composables/data/useLocations';
@@ -40,9 +40,9 @@ const isDataLoading = computed(() => locationsLoading.value);
 </script>
 
 <template>
-    <LayoutContent>
+    <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
-        <LayoutTitle title="Locaties" />
+        <PageTitle title="Locaties" />
 
         <p class="text-slate-600">Locaties die onder deze groep vallen.</p>
 
@@ -76,7 +76,7 @@ const isDataLoading = computed(() => locationsLoading.value);
                 </LocationDetailCard>
             </template>
         </div>
-    </LayoutContent>
+    </PageContent>
 </template>
 
 <style scoped>

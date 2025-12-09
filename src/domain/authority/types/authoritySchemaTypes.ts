@@ -10,6 +10,8 @@ export type Authority = {
     description: string | null;
     createdBy?: Profile | null;
     updatedBy?: Profile | null;
+    createdAt: Date;
+    updatedAt: Date;
     institution?: Institution | null;
     members?: Profile[];
     locations?: Location[];

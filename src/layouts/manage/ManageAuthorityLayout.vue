@@ -54,7 +54,7 @@ const isLoading = computed<boolean>(() => {
     <LayoutContainer>
         <template #sidebar>
             <LayoutSidebar
-                :title="authority?.name ?? 'Groep'"
+                :title="authority?.name"
                 :logo="authority?.logo?.url"
                 :loading="isLoading">
                 <template #header>

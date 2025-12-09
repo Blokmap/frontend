@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import ConfirmDialog from '@/components/shared/molecules/ConfirmDialog.vue';
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useDeleteAuthority } from '@/composables/data/useAuthorities';
@@ -40,10 +40,10 @@ function onDeleteClick(): void {
 </script>
 
 <template>
-    <LayoutContent>
+    <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
 
-        <LayoutTitle title="Instellingen" />
+        <PageTitle title="Instellingen" />
 
         <p class="mb-6 text-slate-600">Beheer geavanceerde instellingen voor deze groep.</p>
 
@@ -54,5 +54,5 @@ function onDeleteClick(): void {
             severity="danger"
             @confirm="onDeleteClick">
         </ConfirmDialog>
-    </LayoutContent>
+    </PageContent>
 </template>

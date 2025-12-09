@@ -61,7 +61,7 @@ const emit = defineEmits<{
             }
 
             .sidebar__title {
-                @apply text-2xl leading-tight font-extrabold;
+                @apply text-xl leading-tight font-extrabold;
             }
         }
     }

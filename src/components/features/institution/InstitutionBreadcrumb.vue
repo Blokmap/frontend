@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Skeleton from 'primevue/skeleton';
-import { faChevronRight, faCog, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight, faHome } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
@@ -10,12 +10,7 @@ import type { Institution } from '@/domain/institution';
 defineProps<{
     institution?: Institution | null;
     authority?: Authority | null;
-    editable?: boolean;
     loading?: boolean;
-}>();
-
-const emit = defineEmits<{
-    'click:edit': [];
 }>();
 
 const { locale } = useI18n();
@@ -39,20 +34,17 @@ const { locale } = useI18n();
                     class="hierarchy__dashboard hierarchy__link">
                     <FontAwesomeIcon :icon="faHome" />
                 </RouterLink>
-                <FontAwesomeIcon
-                    class="hierarchy__separator"
-                    :icon="faChevronRight"
-                    v-if="institution">
-                </FontAwesomeIcon>
-                <RouterLink
-                    v-if="institution"
-                    :to="{
-                        name: 'manage.institution.info',
-                        params: { institutionId: institution.id },
-                    }"
-                    class="hierarchy__institution hierarchy__link">
-                    {{ institution.name[locale] }}
-                </RouterLink>
+                <template v-if="institution">
+                    <FontAwesomeIcon class="hierarchy__separator" :icon="faChevronRight" />
+                    <RouterLink
+                        :to="{
+                            name: 'manage.institution.info',
+                            params: { institutionId: institution.id },
+                        }"
+                        class="hierarchy__institution hierarchy__link">
+                        {{ institution.name[locale] }}
+                    </RouterLink>
+                </template>
                 <template v-if="authority">
                     <FontAwesomeIcon class="hierarchy__separator" :icon="faChevronRight" />
                     <RouterLink
@@ -66,9 +58,6 @@ const { locale } = useI18n();
                 </template>
             </template>
         </div>
-        <button v-if="editable && !loading" class="hierarchy__edit" @click="emit('click:edit')">
-            <FontAwesomeIcon :icon="faCog" />
-        </button>
     </div>
 </template>
 
@@ -101,10 +90,6 @@ const { locale } = useI18n();
 
     .hierarchy__link {
         @apply transition-colors duration-150 hover:text-slate-800 hover:underline;
-    }
-
-    .hierarchy__edit {
-        @apply flex-shrink-0 text-slate-500 transition-colors hover:text-slate-700;
     }
 }
 </style>

@@ -5,8 +5,8 @@ import ReservationScanner from '@/components/features/reservation/ReservationSca
 import LocationReservationsTable from '@/components/features/reservation/table/LocationReservationsTable.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import DateInput from '@/components/shared/molecules/form/DateInput.vue';
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
 import { faQrcode, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
@@ -102,9 +102,9 @@ function onStatusChange(reservationId: string, state: ReservationState): void {
 </script>
 
 <template>
-    <LayoutContent>
+    <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
-        <LayoutTitle title="Reservaties" />
+        <PageTitle title="Reservaties" />
 
         <!-- Filters -->
         <div class="flex flex-wrap items-end gap-3 md:gap-4">
@@ -154,7 +154,7 @@ function onStatusChange(reservationId: string, state: ReservationState): void {
             :is-reservation-pending="isReservationPending"
             @change:status="onStatusChange">
         </LocationReservationsTable>
-    </LayoutContent>
+    </PageContent>
 </template>
 
 <style scoped>

@@ -8,6 +8,7 @@ import type { Profile } from '@/domain/profile';
 defineProps<{
     profiles: Profile[] | undefined;
     loading: boolean;
+    hideInstitution?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -35,7 +36,7 @@ function onProfileClick(profile: Profile): void {
                 {{ profile.email }}
             </TableCell>
 
-            <TableCell column="Institutie">
+            <TableCell v-if="!hideInstitution" column="Institutie">
                 {{ profile.institution?.name || '-' }}
             </TableCell>
 
@@ -43,7 +44,7 @@ function onProfileClick(profile: Profile): void {
                 <ProfileStateBadge :profile="profile" />
             </TableCell>
 
-            <TableCell column="Acties" v-if="$slots.actions">
+            <TableCell v-if="$slots.actions" column="Acties">
                 <slot name="actions" :profile="profile"> </slot>
             </TableCell>
         </template>

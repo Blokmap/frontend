@@ -7,8 +7,8 @@ import AccessCardLink from '@/components/features/member/AccessCardLink.vue';
 import MemberAddDialog from '@/components/features/member/MemberAddDialog.vue';
 import MembersTable from '@/components/features/member/MembersTable.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
 import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
 import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
 import { faCity, faUserPlus } from '@fortawesome/free-solid-svg-icons';
@@ -128,10 +128,10 @@ function onAddMember(body: CreateMemberBody): void {
 </script>
 
 <template>
-    <LayoutContent>
+    <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
 
-        <LayoutTitle title="Locatiebeheerders">
+        <PageTitle title="Locatiebeheerders">
             <template #actions>
                 <PageHeaderButton
                     severity="primary"
@@ -140,11 +140,11 @@ function onAddMember(body: CreateMemberBody): void {
                     <FontAwesomeIcon :icon="faUserPlus" />
                 </PageHeaderButton>
             </template>
-        </LayoutTitle>
+        </PageTitle>
 
         <p class="text-slate-600">Beheer wie toegang heeft tot deze locatie en hun rollen.</p>
 
-        <AccessCard v-if="showAccessCard" :loading="isLoading">
+        <AccessCard v-if="showAccessCard">
             <template #header>
                 <h3 class="mb-1 text-sm font-semibold text-slate-700">Toegang via hierarchie</h3>
                 <p class="text-xs text-slate-600">
@@ -211,7 +211,7 @@ function onAddMember(body: CreateMemberBody): void {
                 v-model:is-visible="showMemberAddDialog">
             </MemberAddDialog>
         </Teleport>
-    </LayoutContent>
+    </PageContent>
 </template>
 
 <style scoped>

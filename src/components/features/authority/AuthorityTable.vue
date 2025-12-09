@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import AuthorityActionMenu from '@/components/features/authority/AuthorityActionMenu.vue';
+import AuthorityTableCell from '@/components/features/authority/table/AuthorityTableCell.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
+import { useI18n } from 'vue-i18n';
 import type { Authority } from '@/domain/authority';
 
 const props = defineProps<{
@@ -14,6 +15,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     'click:authority': [authority: Authority];
 }>();
+
+const { locale } = useI18n();
 
 const onAuthorityClick = (authority: Authority) => {
     emit('click:authority', authority);
@@ -29,13 +32,16 @@ const onAuthorityClick = (authority: Authority) => {
         @click:row="onAuthorityClick">
         <template #row="{ data: authority }">
             <TableCell column="Autoriteit">
-                {{ authority.name }}
+                <AuthorityTableCell :authority="authority" />
             </TableCell>
-
-            <TableCell column="Acties">
-                <slot name="actions" :authority="authority">
-                    <AuthorityActionMenu :authority="authority" />
-                </slot>
+            <TableCell column="Gemaakt op">
+                {{
+                    authority.createdAt.toLocaleString(locale, {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    })
+                }}
             </TableCell>
         </template>
     </Table>

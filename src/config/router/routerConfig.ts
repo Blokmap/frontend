@@ -21,7 +21,6 @@ import {
     Error404Page,
     Error405Page,
     // Manage pages
-    ManageDashboardPage,
     DashboardLocationsPage,
     LocationInfoPage,
     LocationImagesPage,
@@ -39,6 +38,7 @@ import {
     InstitutionSettingsPage,
     InstitutionAuthoritiesPage,
     InstitutionMembersPage,
+    InstitutionProfilesPage,
     InstitutionRolesPage,
 } from './routerPages';
 
@@ -120,14 +120,14 @@ const routes: RouteRecordRaw[] = [
                         component: ManageDashboardLayout,
                         props: true,
                         redirect: (to) => ({
-                            name: 'manage.dashboard',
+                            name: 'manage.locations',
                             params: to.params,
                         }),
                         children: [
                             {
                                 path: '',
                                 name: 'manage.dashboard',
-                                component: ManageDashboardPage,
+                                redirect: { name: 'manage.locations' },
                             },
                             {
                                 path: 'locations',
@@ -252,6 +252,11 @@ const routes: RouteRecordRaw[] = [
                                 path: 'authorities',
                                 name: 'manage.institution.authorities',
                                 component: InstitutionAuthoritiesPage,
+                            },
+                            {
+                                path: 'profiles',
+                                name: 'manage.institution.profiles',
+                                component: InstitutionProfilesPage,
                             },
                             {
                                 path: 'members',

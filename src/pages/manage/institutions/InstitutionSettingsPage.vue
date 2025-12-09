@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { Institution } from '@/domain/institution';
@@ -35,17 +35,17 @@ const breadcrumbs = computed(() => {
 </script>
 
 <template>
-    <LayoutContent>
+    <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
 
-        <LayoutTitle title="Instellingen" />
-
-        <p class="mb-6 text-slate-600">Beheer geavanceerde instellingen voor deze instelling.</p>
+        <PageTitle title="Instellingen" />
 
         <!-- Information -->
         <Callout severity="info">
-            <strong>Opmerking:</strong> Geavanceerde instellingen voor instellingen zijn momenteel
-            niet beschikbaar. Neem contact op met de beheerder voor wijzigingen.
+            <strong>Komt Binnenkort:</strong> In Blokmap v1.0 zal je met geavanceerde instellingen
+            specifieke configuraties voor deze organisatie kunnen beheren, waaronder het abonnement,
+            betalingsopties en integraties met externe diensten. Volg de vooruitgang gemakkelijk op
+            onze <a href="https://docs.blokmap.com" class="underline">documentatiewebsite</a>.
         </Callout>
-    </LayoutContent>
+    </PageContent>
 </template>

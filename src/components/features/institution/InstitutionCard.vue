@@ -51,7 +51,7 @@ const formData = ref<InstitutionBody>({
 
 const categoryOptions = computed(() => {
     return INSTITUTION_CATEGORIES.map((category) => ({
-        label: t(`components.institutions.categories.${category}`),
+        label: t(`domains.institutions.category.${category}`),
         value: category,
     }));
 });

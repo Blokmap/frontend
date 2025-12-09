@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
 import { computed } from 'vue';
 import {
     useReadProfileLocationMemberships,
@@ -31,8 +31,8 @@ const isLoading = computed(
 </script>
 
 <template>
-    <LayoutContent>
-        <LayoutTitle title="Dashboard" />
+    <PageContent>
+        <PageTitle title="Dashboard" />
 
         <p class="text-slate-600">
             Welkom in de beheermodus, {{ profile.firstName }}. Hier kun je al je locaties en
@@ -70,7 +70,7 @@ const isLoading = computed(
         </div>
 
         <div v-else class="text-slate-500">Laden...</div>
-    </LayoutContent>
+    </PageContent>
 </template>
 
 <style scoped>

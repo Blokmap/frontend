@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import AuthorityCard from '@/components/features/authority/AuthorityCard.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
 import { computed } from 'vue';
 import {
     useUpdateAuthority,
@@ -58,10 +58,10 @@ const breadcrumbs = computed(() => [
 </script>
 
 <template>
-    <LayoutContent>
+    <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
 
-        <LayoutTitle title="Informatie" />
+        <PageTitle title="Informatie" />
 
         <AuthorityCard
             :authority="authority"
@@ -73,5 +73,5 @@ const breadcrumbs = computed(() => [
             @update:authority="handleAuthorityUpdate"
             @update:avatar="handleLogoUpdate"
             @delete:avatar="handleLogoDelete" />
-    </LayoutContent>
+    </PageContent>
 </template>

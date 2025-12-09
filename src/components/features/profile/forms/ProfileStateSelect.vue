@@ -1,20 +1,19 @@
 <script lang="ts" setup>
 import Select from 'primevue/select';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { faChartBar, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faUserSlash, faTrash, faChartBar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-import { LocationState } from '@/domain/location';
+import { ProfileState } from '@/domain/profile';
 import type { FilterOption } from '@/utils/filter';
 
-const status = defineModel<LocationState | null>('status', {
+const status = defineModel<ProfileState | null>('status', {
     default: null,
 });
 
 const options: FilterOption[] = [
-    { label: 'In Afwachting', value: LocationState.Pending, icon: faClock },
-    { label: 'Goedgekeurd', value: LocationState.Approved, icon: faCheck },
-    { label: 'Afgekeurd', value: LocationState.Rejected, icon: faTimes },
+    { label: 'Actief', value: ProfileState.Active, icon: faUser },
+    { label: 'Uitgeschakeld', value: ProfileState.Disabled, icon: faUserSlash },
+    { label: 'Verwijderd', value: ProfileState.Deleted, icon: faTrash },
 ];
 
 const selectedOption = computed(() => {

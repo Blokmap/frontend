@@ -1,5 +1,6 @@
 import { parseLocationResponse } from '@/domain/location';
 import { parseProfileResponse } from '@/domain/profile';
+import { parseImageResponse } from '../image';
 import type { Authority } from './types';
 
 /**
@@ -11,6 +12,8 @@ import type { Authority } from './types';
 export function parseAuthorityResponse(data: any): Authority {
     const result: Authority = {
         ...data,
+        createdAt: new Date(data.createdAt),
+        updatedAt: new Date(data.updatedAt),
     };
 
     if (data.createdBy) {
@@ -19,6 +22,10 @@ export function parseAuthorityResponse(data: any): Authority {
 
     if (data.updatedBy) {
         result.updatedBy = parseProfileResponse(data.updatedBy);
+    }
+
+    if (data.logo) {
+        result.logo = parseImageResponse(data.logo);
     }
 
     if (data.members) {

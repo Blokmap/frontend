@@ -1,57 +1,66 @@
 <script lang="ts" setup>
+import Paginator from 'primevue/paginator';
 import AuthorityTable from '@/components/features/authority/AuthorityTable.vue';
-import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
-import Callout from '@/components/shared/molecules/Callout.vue';
-import EmptyState from '@/components/shared/molecules/EmptyState.vue';
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
-import { faBuilding } from '@fortawesome/free-solid-svg-icons';
+import ManageBreadcrumb, {
+    type BreadcrumbItem,
+} from '@/components/shared/molecules/Breadcrumb.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
+import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useReadInstitutionAuthorities } from '@/composables/data/useAuthorities';
-import type { Authority } from '@/domain/authority';
+import { usePagination } from '@/composables/usePagination';
+import { type AuthorityFilter, type Authority } from '@/domain/authority';
 import type { Institution } from '@/domain/institution';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
     authProfile: Profile;
-    institution?: Institution;
-    isLoading: boolean;
-    error?: Error | null;
+    institution: Institution;
 }>();
 
 const { locale } = useI18n();
 const router = useRouter();
 
-const institutionId = computed(() => props.institution?.id ?? 0);
-const enabled = computed(() => !!props.institution?.id);
+const institutionId = computed(() => props.institution.id);
 
-const filters = ref({});
-
-const { data: authoritiesData, isLoading: authoritiesLoading } = useReadInstitutionAuthorities(
-    institutionId,
-    filters,
-    { enabled },
-);
-
-const authorities = computed(() => authoritiesData.value?.data ?? []);
-
-const institutionName = computed(() => {
-    const name = props.institution?.name;
-    if (!name) return 'Instelling';
-    return name[locale.value] ?? name.nl ?? 'Instelling';
+const filters = ref<AuthorityFilter>({
+    page: 1,
+    perPage: 10,
 });
 
-const breadcrumbs = computed(() => [
-    {
-        label: institutionName.value,
-        to: { name: 'manage.institution.info' },
-    },
-    { label: 'Groepen' },
-]);
+const { first, onPageChange } = usePagination(filters);
 
-const isDataLoading = computed(() => props.isLoading || authoritiesLoading.value);
+const {
+    data: authorities,
+    isLoading: isLoadingAuthorities,
+    isError: isAuthoritiesError,
+    error: authoritiesError,
+} = useReadInstitutionAuthorities(institutionId, filters);
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => {
+    const institutionName = props.institution.name[locale.value];
+
+    return [
+        {
+            label: institutionName,
+            to: { name: 'manage.institution.info' },
+        },
+        {
+            label: 'Groepen',
+        },
+    ];
+});
+
+const isError = computed(() => {
+    return isAuthoritiesError.value;
+});
+
+const isLoading = computed(() => {
+    return isLoadingAuthorities.value;
+});
 
 function onAuthorityClick(authority: Authority) {
     router.push({
@@ -62,33 +71,29 @@ function onAuthorityClick(authority: Authority) {
 </script>
 
 <template>
-    <LayoutContent>
+    <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
-        <LayoutTitle title="Groepen" />
 
-        <p class="text-slate-600">Groepen (authorities) die onder deze instelling vallen.</p>
+        <PageTitle title="Groepen" />
 
-        <!-- Error State -->
-        <Callout v-if="error" severity="error">
-            Er ging iets mis bij het laden van de groepen. Probeer het later opnieuw.
-        </Callout>
+        <p class="text-slate-600">Groepen die onder deze instelling vallen.</p>
 
-        <!-- Empty State -->
-        <EmptyState
-            v-else-if="!isDataLoading && authorities.length === 0"
-            :icon="faBuilding"
-            title="Geen groepen"
-            message="Er zijn nog geen groepen toegevoegd aan deze instelling.">
-        </EmptyState>
+        <ManagementLoaderError v-if="isError" :errors="[authoritiesError]" />
 
-        <!-- Data / Loading State -->
         <AuthorityTable
             v-else
-            :authorities="authorities"
-            :loading="isDataLoading"
+            :authorities="authorities?.data"
+            :loading="isLoading"
             @click:authority="onAuthorityClick">
         </AuthorityTable>
-    </LayoutContent>
+
+        <Paginator
+            :first="first(authorities)"
+            :rows="authorities?.perPage"
+            :total-records="authorities?.total"
+            @page="onPageChange">
+        </Paginator>
+    </PageContent>
 </template>
 
 <style scoped>

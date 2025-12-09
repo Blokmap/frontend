@@ -15,8 +15,6 @@ defineProps<{
     avatarEditable?: boolean;
     editMode?: boolean;
     saving?: boolean;
-    avatarTitle?: string;
-    avatarSubtitle?: string;
     avatarUpdating?: boolean;
     avatarDeleting?: boolean;
     avatarDialogVisible?: boolean;
@@ -124,8 +122,6 @@ function onDeleteAvatar() {
         <Teleport to="body">
             <EntityAvatarDialog
                 v-if="avatarEditable"
-                :title="avatarTitle || 'Avatar'"
-                :subtitle="avatarSubtitle || ''"
                 :is-updating="avatarUpdating"
                 :is-deleting="avatarDeleting"
                 :image="avatarImage || undefined"
@@ -133,6 +129,12 @@ function onDeleteAvatar() {
                 @update:visible="emit('update:avatarDialogVisible', $event)"
                 @update="onUpdateAvatar"
                 @delete="onDeleteAvatar">
+                <template #title>
+                    <slot name="avatar-dialog-title"></slot>
+                </template>
+                <template #subtitle>
+                    <slot name="avatar-dialog-subtitle"></slot>
+                </template>
             </EntityAvatarDialog>
         </Teleport>
     </div>

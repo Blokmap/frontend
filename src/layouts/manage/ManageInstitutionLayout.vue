@@ -33,21 +33,17 @@ const institutionIdNum = computed(() => +props.institutionId);
 const enabled = computed(() => !Number.isNaN(institutionIdNum.value) && institutionIdNum.value > 0);
 
 const { data: institution, isLoading, error } = useReadInstitution(institutionIdNum, { enabled });
-
-const logoUrl = computed(() => institution.value?.logo?.url);
-const institutionName = computed(() => {
-    const name = institution.value?.name;
-    if (!name) return 'Instelling';
-    return name[locale.value] ?? name.nl ?? 'Instelling';
-});
 </script>
 
 <template>
     <LayoutContainer>
         <template #sidebar>
-            <LayoutSidebar :title="institutionName" :logo="logoUrl" :loading="isLoading">
+            <LayoutSidebar
+                :title="institution?.name[locale]"
+                :logo="institution?.logo?.url"
+                :loading="isLoading">
                 <template #header>
-                    <InstitutionBreadcrumb v-if="institution" :institution="institution" editable>
+                    <InstitutionBreadcrumb :institution="institution" :loading="isLoading">
                     </InstitutionBreadcrumb>
                 </template>
 
@@ -73,7 +69,17 @@ const institutionName = computed(() => {
                     </LayoutSidebarItem>
                 </LayoutSidebarSection>
 
-                <LayoutSidebarSection title="Relaties">
+                <LayoutSidebarSection title="Structuur">
+                    <LayoutSidebarItem
+                        :loading="isLoading"
+                        :to="{ name: 'manage.institution.profiles', params: { institutionId } }"
+                        :active="route.name === 'manage.institution.profiles'">
+                        <template #img>
+                            <FontAwesomeIcon :icon="faUsers" />
+                        </template>
+                        <template #text>Leden</template>
+                    </LayoutSidebarItem>
+
                     <LayoutSidebarItem
                         :loading="isLoading"
                         :to="{ name: 'manage.institution.authorities', params: { institutionId } }"
@@ -91,9 +97,9 @@ const institutionName = computed(() => {
                         :to="{ name: 'manage.institution.members', params: { institutionId } }"
                         :active="route.name === 'manage.institution.members'">
                         <template #img>
-                            <FontAwesomeIcon :icon="faUsers" />
+                            <FontAwesomeIcon :icon="faUserTag" />
                         </template>
-                        <template #text>Leden</template>
+                        <template #text>Beheerders</template>
                     </LayoutSidebarItem>
 
                     <LayoutSidebarItem

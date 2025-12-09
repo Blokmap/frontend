@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import LocationOpeningBuilder from '@/components/features/location/builder/builders/LocationOpeningBuilder.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
 import { computed, ref, watchEffect } from 'vue';
 import {
     useCreateOpeningTimes,
@@ -69,10 +69,10 @@ async function onDeleteOpeningTime(openingTimeId: number, sequence?: boolean): P
 </script>
 
 <template>
-    <LayoutContent>
+    <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
 
-        <LayoutTitle title="Openingsuren" />
+        <PageTitle title="Openingsuren" />
 
         <LocationOpeningBuilder
             :location="location"
@@ -81,7 +81,7 @@ async function onDeleteOpeningTime(openingTimeId: number, sequence?: boolean): P
             @update="onUpdateOpeningTime"
             @delete="onDeleteOpeningTime">
         </LocationOpeningBuilder>
-    </LayoutContent>
+    </PageContent>
 </template>
 
 <style scoped>

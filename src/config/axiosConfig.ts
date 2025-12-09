@@ -31,7 +31,7 @@ export function setupAxiosInterceptors(): void {
     client.interceptors.response.use(
         async (response) => {
             if (import.meta.env.DEV) {
-                await getRandomDelay(100, 350);
+                await getRandomDelay(0, 50);
             }
 
             return response;

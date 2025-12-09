@@ -50,7 +50,7 @@ const emit = defineEmits<{
 
 .save-bar {
     @apply fixed bottom-0 left-1/2 z-50;
-    @apply bg-primary-800 border-primary-900 rounded-lg border-2 shadow-lg;
+    @apply bg-primary-700 border-primary-800 rounded-lg border-2 shadow-lg;
     @apply right-8 bottom-6 lg:left-auto lg:max-w-md;
 }
 

@@ -239,7 +239,7 @@ provide('registerColumn', (column: string) => {
 
 /* Make table cells stack vertically on mobile */
 .card__item :deep(td) {
-    @apply block px-0 py-2;
+    @apply block px-0 py-4;
     @apply border-b border-slate-100 last:border-b-0;
     @apply whitespace-normal;
 }

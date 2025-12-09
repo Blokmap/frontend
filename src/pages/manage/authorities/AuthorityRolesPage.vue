@@ -3,8 +3,8 @@ import RoleActionsMenu from '@/components/features/auth/RoleActionsMenu.vue';
 import RoleBuilderDialog from '@/components/features/auth/forms/RoleBuilderDialog.vue';
 import RoleTable from '@/components/features/auth/roles/RoleTable.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
-import LayoutContent from '@/layouts/LayoutContent.vue';
-import LayoutTitle from '@/layouts/LayoutTitle.vue';
+import PageContent from '@/layouts/PageContent.vue';
+import PageTitle from '@/layouts/PageTitle.vue';
 import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
 import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -103,16 +103,16 @@ function onSubmitRole(form: CreateRoleBody): void {
 </script>
 
 <template>
-    <LayoutContent>
+    <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
 
-        <LayoutTitle title="Rollen en rechten">
+        <PageTitle title="Rollen en rechten">
             <template #actions>
                 <PageHeaderButton severity="primary" label="Rol toevoegen" @click="onAddRole">
                     <FontAwesomeIcon :icon="faPlus" />
                 </PageHeaderButton>
             </template>
-        </LayoutTitle>
+        </PageTitle>
 
         <p class="text-slate-600">Beheer de rollen die gebruikers toegang geven tot de groep.</p>
 
@@ -140,7 +140,7 @@ function onSubmitRole(form: CreateRoleBody): void {
                 @click:submit="onSubmitRole">
             </RoleBuilderDialog>
         </Teleport>
-    </LayoutContent>
+    </PageContent>
 </template>
 
 <style scoped>

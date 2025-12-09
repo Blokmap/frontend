@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import Skeleton from 'primevue/skeleton';
 import { faChevronRight, faCog, faHome } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
@@ -10,6 +11,7 @@ defineProps<{
     institution?: Institution | null;
     authority?: Authority | null;
     editable?: boolean;
+    loading?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -19,36 +21,52 @@ const emit = defineEmits<{
 const { locale } = useI18n();
 </script>
 
-<template v-if="institution">
+<template v-if="institution || loading">
     <div class="hierarchy">
         <div class="hierarchy__breadcrumb">
-            <RouterLink
-                :to="{ name: 'manage.locations' }"
-                class="hierarchy__dashboard hierarchy__link">
-                <FontAwesomeIcon :icon="faHome" />
-            </RouterLink>
-            <FontAwesomeIcon class="hierarchy__separator" :icon="faChevronRight" />
-            <RouterLink
-                :to="{
-                    name: 'manage.institution.info',
-                    params: { institutionId: institution?.id },
-                }"
-                class="hierarchy__institution hierarchy__link">
-                {{ institution?.name[locale] }}
-            </RouterLink>
-            <template v-if="authority">
-                <FontAwesomeIcon class="hierarchy__separator" :icon="faChevronRight" />
+            <template v-if="loading">
+                <Skeleton width="1rem" height="1rem" />
+                <Skeleton width="0.75rem" height="0.75rem" />
+                <Skeleton width="6rem" height="1rem" />
+                <template v-if="authority">
+                    <Skeleton width="0.75rem" height="0.75rem" />
+                    <Skeleton width="5rem" height="1rem" />
+                </template>
+            </template>
+            <template v-else>
                 <RouterLink
-                    :to="{
-                        name: 'manage.authority.info',
-                        params: { authorityId: authority.id },
-                    }"
-                    class="hierarchy__authority hierarchy__link">
-                    {{ authority?.name }}
+                    :to="{ name: 'manage.locations' }"
+                    class="hierarchy__dashboard hierarchy__link">
+                    <FontAwesomeIcon :icon="faHome" />
                 </RouterLink>
+                <FontAwesomeIcon
+                    class="hierarchy__separator"
+                    :icon="faChevronRight"
+                    v-if="institution">
+                </FontAwesomeIcon>
+                <RouterLink
+                    v-if="institution"
+                    :to="{
+                        name: 'manage.institution.info',
+                        params: { institutionId: institution.id },
+                    }"
+                    class="hierarchy__institution hierarchy__link">
+                    {{ institution.name[locale] }}
+                </RouterLink>
+                <template v-if="authority">
+                    <FontAwesomeIcon class="hierarchy__separator" :icon="faChevronRight" />
+                    <RouterLink
+                        :to="{
+                            name: 'manage.authority.info',
+                            params: { authorityId: authority.id },
+                        }"
+                        class="hierarchy__authority hierarchy__link">
+                        {{ authority.name }}
+                    </RouterLink>
+                </template>
             </template>
         </div>
-        <button v-if="editable" class="hierarchy__edit" @click="emit('click:edit')">
+        <button v-if="editable && !loading" class="hierarchy__edit" @click="emit('click:edit')">
             <FontAwesomeIcon :icon="faCog" />
         </button>
     </div>
@@ -74,7 +92,7 @@ const { locale } = useI18n();
     }
 
     .hierarchy__institution {
-        @apply text-secondary-700 truncate font-bold;
+        @apply truncate font-bold text-slate-700;
     }
 
     .hierarchy__authority {
@@ -82,7 +100,7 @@ const { locale } = useI18n();
     }
 
     .hierarchy__link {
-        @apply hover:text-secondary-800 transition-colors duration-150 hover:underline;
+        @apply transition-colors duration-150 hover:text-slate-800 hover:underline;
     }
 
     .hierarchy__edit {

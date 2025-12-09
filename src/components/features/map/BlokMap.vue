@@ -12,7 +12,7 @@ import Cluster from './Cluster.vue';
 import Marker from './Marker.vue';
 import type { LngLat, MapAdapter } from '@/domain/map';
 
-const props = defineProps<{
+const { map, locations } = defineProps<{
     map: MapAdapter;
     locations?: Location[];
     isLoading?: boolean;
@@ -31,13 +31,10 @@ const { coords } = useGeolocation();
 
 const router = useRouter();
 
-// Track whether we have flown to the user's location.
 const hasFlownToUserLocation = ref<boolean>(false);
 
-// Track clusters
-const clusters = computed(() => props.map.getClusters?.() || []);
+const clusters = computed(() => map.getClusters?.() || []);
 
-// Get the set of marker IDs that are currently in clusters
 const clusteredMarkerIds = computed(() => {
     const ids = new Set<number>();
 
@@ -48,10 +45,14 @@ const clusteredMarkerIds = computed(() => {
     return ids;
 });
 
-// Filter locations to show only unclustered markers
 const visibleLocations = computed(() => {
-    if (!props.locations) return [];
-    return props.locations.filter((location) => !clusteredMarkerIds.value.has(location.id));
+    if (!locations) {
+        return [];
+    }
+
+    return locations.filter((location) => {
+        return !clusteredMarkerIds.value.has(location.id);
+    });
 });
 
 function onMarkerClick(id: number): void {
@@ -71,31 +72,34 @@ function navigateToDetail(locationId: number): void {
 }
 
 function onClusterClick(clusterId: string): void {
-    props.map.zoomToCluster?.(clusterId);
+    map.zoomToCluster?.(clusterId);
 }
 
 // Update clustered markers when locations change or map loads
 watch(
-    [() => props.locations, () => props.map.isLoaded.value],
+    [() => locations, map.isLoaded],
     ([newLocations, loaded]) => {
-        if (props.map.updateClusteredMarkers && newLocations && loaded) {
-            const features = newLocations.map((location: Location) => ({
-                id: location.id,
-                coord: [location.longitude, location.latitude] as LngLat,
-                properties: {
-                    name: location.name,
-                },
-            }));
-            props.map.updateClusteredMarkers(features);
+        if (!map.updateClusteredMarkers || !newLocations || !loaded) {
+            return;
         }
+
+        const features = newLocations.map((location: Location) => ({
+            id: location.id,
+            coord: [location.longitude, location.latitude] as LngLat,
+            properties: {
+                name: location.name,
+            },
+        }));
+
+        map.updateClusteredMarkers(features);
     },
     { immediate: true, deep: true },
 );
 
 // Fly to user's geolocation when available
-watch([props.map.isLoaded, coords], async ([isLoaded, coords]) => {
+watch([map.isLoaded, coords], async ([isLoaded, coords]) => {
     if (isLoaded && isLngLat(coords) && !hasFlownToUserLocation.value) {
-        props.map.flyTo([coords.longitude, coords.latitude], 15);
+        map.flyTo([coords.longitude, coords.latitude], 15);
         hasFlownToUserLocation.value = true;
     }
 });
@@ -110,7 +114,7 @@ defineExpose({ mapContainer });
             <span>Loading</span>
             <FontAwesomeIcon :icon="faSpinner" spin />
         </div>
-        <slot v-if="props.map.isLoaded.value">
+        <slot v-if="map.isLoaded.value">
             <!-- Render clusters -->
             <Cluster
                 v-for="cluster in clusters"
@@ -118,7 +122,7 @@ defineExpose({ mapContainer });
                 :id="cluster.id"
                 :position="cluster.position"
                 :count="cluster.count"
-                :map="props.map"
+                :map="map"
                 @click="onClusterClick(cluster.id)">
             </Cluster>
 
@@ -128,7 +132,7 @@ defineExpose({ mapContainer });
                 :id="location.id"
                 :key="location.id"
                 :position="[location.longitude, location.latitude]"
-                :map="props.map"
+                :map="map"
                 :location="location"
                 :active="location.id === hoveredLocation?.id"
                 @click="onMarkerClick(location.id)"

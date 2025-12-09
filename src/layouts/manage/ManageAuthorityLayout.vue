@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useReadAuthority } from '@/composables/data/useAuthorities';
+import { useReadAuthorityMemberPermissions } from '@/composables/data/useMembers';
 import ManagementLoader from './ManagementLoader.vue';
 import ManagementLoaderError from './ManagementLoaderError.vue';
 import type { Profile } from '@/domain/profile';
@@ -26,25 +27,36 @@ const props = defineProps<{
 
 const route = useRoute();
 
-const authorityIdNum = computed(() => +props.authorityId);
-const enabled = computed(() => !Number.isNaN(authorityIdNum.value) && authorityIdNum.value > 0);
+const authorityId = computed(() => {
+    return +props.authorityId;
+});
 
 const {
     data: authority,
-    isLoading,
-    error,
-} = useReadAuthority(authorityIdNum, {
-    enabled,
+    isLoading: isLoadingAuthority,
+    error: authorityError,
+} = useReadAuthority(authorityId, {
     includes: ['institution'],
 });
 
-const logoUrl = computed(() => authority.value?.logo?.url);
+const {
+    data: permissions,
+    isLoading: isLoadingPermissions,
+    error: permissionsError,
+} = useReadAuthorityMemberPermissions(authorityId, props.authProfile.id);
+
+const isLoading = computed<boolean>(() => {
+    return isLoadingAuthority.value || isLoadingPermissions.value;
+});
 </script>
 
 <template>
-    <LayoutContainer sidebar-transition="slide-in-left" main-transition="fade-slide-up">
+    <LayoutContainer>
         <template #sidebar>
-            <LayoutSidebar :title="authority?.name ?? 'Groep'" :logo="logoUrl" :loading="isLoading">
+            <LayoutSidebar
+                :title="authority?.name ?? 'Groep'"
+                :logo="authority?.logo?.url"
+                :loading="isLoading">
                 <template #header>
                     <InstitutionBreadcrumb
                         v-if="authority"
@@ -118,12 +130,12 @@ const logoUrl = computed(() => authority.value?.logo?.url);
                 v-slot="{ Component, route }"
                 :authority="authority"
                 :auth-profile="authProfile"
-                :error="error">
+                :permissions="permissions">
                 <Transition name="fade-slide-up" mode="out-in">
                     <component :is="Component" :key="route.path" />
                 </Transition>
             </RouterView>
-            <ManagementLoaderError v-else :error="error" />
+            <ManagementLoaderError v-else :error="[authorityError, permissionsError]" />
         </template>
     </LayoutContainer>
 </template>

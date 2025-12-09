@@ -6,6 +6,8 @@ import {
     readInstitutions,
     readInstitution,
     updateInstitution,
+    updateInstitutionLogo,
+    deleteInstitutionLogo,
     type Institution,
     type InstitutionFilter,
     type InstitutionBody,
@@ -23,6 +25,11 @@ import type { Paginated } from '@/utils/pagination';
 export type UpdateInstitutionParams = {
     id: number;
     data: InstitutionBody;
+};
+
+export type UpdateInstitutionLogoParams = {
+    institutionId: number;
+    file: File;
 };
 
 export type AddInstitutionAuthorityParams = {
@@ -136,6 +143,74 @@ export function useUpdateInstitution(
             options.onSuccess?.(data, variables, context);
         },
         mutationFn: ({ id, data }: UpdateInstitutionParams) => updateInstitution(id, data),
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to handle updating an institution's logo image.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for updating an institution logo.
+ */
+export function useUpdateInstitutionLogo(
+    options: CompMutationOptions = {},
+): CompMutation<UpdateInstitutionLogoParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific institution query
+            invalidateQueries(queryClient, ['institutions'], variables.institutionId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Logo bijgewerkt',
+                    detail: 'Het logo van de instelling is succesvol bijgewerkt.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: async ({ institutionId, file }: UpdateInstitutionLogoParams) => {
+            await updateInstitutionLogo(institutionId, file);
+        },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to handle deleting an institution's logo.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for deleting an institution logo.
+ */
+export function useDeleteInstitutionLogo(options: CompMutationOptions = {}): CompMutation<number> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific institution query
+            invalidateQueries(queryClient, ['institutions'], variables);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Logo verwijderd',
+                    detail: 'Het logo van de instelling is succesvol verwijderd.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: deleteInstitutionLogo,
     });
 
     return mutation;

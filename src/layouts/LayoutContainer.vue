@@ -4,8 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue';
 
 defineProps<{
-    sidebarTransition?: 'slide-in-left' | 'none';
-    mainTransition?: 'fade-slide-up' | 'none';
     mainClass?: string;
 }>();
 
@@ -39,7 +37,7 @@ const closeSidebar = () => {
         </Transition>
 
         <!-- Sidebar -->
-        <Transition v-if="sidebarTransition !== 'none'" :name="sidebarTransition" appear>
+        <Transition name="fade-slide-up" appear>
             <aside
                 class="layout-container__sidebar"
                 :class="{ 'layout-container__sidebar--open': isSidebarOpen }"
@@ -48,23 +46,12 @@ const closeSidebar = () => {
             </aside>
         </Transition>
 
-        <aside
-            v-else
-            class="layout-container__sidebar"
-            :class="{ 'layout-container__sidebar--open': isSidebarOpen }"
-            @click="closeSidebar">
-            <slot name="sidebar"></slot>
-        </aside>
-
         <!-- Main content -->
-        <Transition v-if="mainTransition !== 'none'" :name="mainTransition" appear>
+        <Transition name="slide-in-left" appear>
             <main class="layout-container__main" :class="mainClass">
                 <slot name="main"></slot>
             </main>
         </Transition>
-        <main v-else class="layout-container__main" :class="mainClass">
-            <slot name="main"></slot>
-        </main>
     </div>
 </template>
 
@@ -100,15 +87,5 @@ const closeSidebar = () => {
 
 .layout-container__main {
     @apply col-span-3 lg:pl-12;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-    @apply transition-opacity duration-300;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    @apply opacity-0;
 }
 </style>

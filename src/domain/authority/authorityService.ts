@@ -1,6 +1,10 @@
 import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
-import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/serviceUtils';
+import {
+    formatFormDataBody,
+    transformPaginatedResponseFactory,
+    transformResponseFactory,
+} from '@/utils/serviceUtils';
 import { parseAuthorityResponse } from './authorityParser';
 import type { Authority, AuthorityBody, AuthorityFilter } from './types';
 import type { Paginated } from '@/utils/pagination';
@@ -92,6 +96,36 @@ export async function createAuthority(request: AuthorityBody): Promise<Authority
     });
 
     return data;
+}
+
+/**
+ * Updates the authority logo for a given authority ID.
+ *
+ * @param authorityId - The ID of the authority to update the logo for.
+ * @param file - The file to upload as the new logo.
+ * @returns A promise that resolves when the logo is updated.
+ */
+export async function updateAuthorityLogo(authorityId: number, file: File): Promise<void> {
+    const endpoint = endpoints.authorities.logo.replace('{id}', String(authorityId));
+    const data = formatFormDataBody({ image: file });
+
+    await client.put(endpoint, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+}
+
+/**
+ * Deletes the authority logo for a given authority ID.
+ *
+ * @param authorityId - The ID of the authority to delete the logo for.
+ * @returns A promise that resolves when the logo is deleted.
+ */
+export async function deleteAuthorityLogo(authorityId: number): Promise<void> {
+    const endpoint = endpoints.authorities.logo.replace('{id}', String(authorityId));
+
+    await client.delete(endpoint);
 }
 
 /**

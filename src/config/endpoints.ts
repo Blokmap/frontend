@@ -13,6 +13,7 @@ export const endpoints = {
         read: '/institutions/{id}',
         update: '/institutions/{id}',
         list: '/institutions',
+        logo: '/institutions/{id}/logo',
         roles: {
             list: '/institutions/{id}/roles',
             create: '/institutions/{id}/roles',
@@ -75,6 +76,7 @@ export const endpoints = {
         update: '/authorities/{id}',
         list: '/authorities',
         delete: '/authorities/{id}',
+        logo: '/authorities/{id}/logo',
         locations: {
             list: '/authorities/{id}/locations',
             create: '/authorities/{id}/locations',

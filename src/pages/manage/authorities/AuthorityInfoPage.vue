@@ -1,14 +1,16 @@
 <script lang="ts" setup>
-import AuthorityForm from '@/components/features/authority/forms/AuthorityForm.vue';
+import AuthorityCard from '@/components/features/authority/AuthorityCard.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
-import SaveBar from '@/components/shared/molecules/SaveBar.vue';
 import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import { computed } from 'vue';
-import { useUpdateAuthority } from '@/composables/data/useAuthorities';
+import {
+    useUpdateAuthority,
+    useUpdateAuthorityLogo,
+    useDeleteAuthorityLogo,
+} from '@/composables/data/useAuthorities';
 import { useReadProfileInstitutionMemberships } from '@/composables/data/useMembers';
-import { useDirtyForm } from '@/composables/useDirtyForm';
-import { authorityToBody, type Authority } from '@/domain/authority';
+import { type Authority, type AuthorityBody } from '@/domain/authority';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -22,20 +24,23 @@ const { data: institutions } = useReadProfileInstitutionMemberships(
 
 const { mutateAsync: updateAuthority, isPending: isUpdatingAuthority } = useUpdateAuthority();
 
-const {
-    form: authorityForm,
-    hasChanges,
-    isUpdating,
-    saveChanges,
-    cancelChanges,
-} = useDirtyForm({
-    source: () => props.authority,
-    toForm: authorityToBody,
-    onSave: async (formData) => {
-        await updateAuthority({ id: props.authority.id, data: formData });
-    },
-    isPending: isUpdatingAuthority,
-});
+const { mutateAsync: updateAuthorityLogo, isPending: isUpdatingAuthorityLogo } =
+    useUpdateAuthorityLogo();
+
+const { mutateAsync: deleteAuthorityLogo, isPending: isDeletingAuthorityLogo } =
+    useDeleteAuthorityLogo();
+
+async function handleAuthorityUpdate(data: AuthorityBody) {
+    await updateAuthority({ id: props.authority.id, data });
+}
+
+async function handleLogoUpdate(file: File) {
+    await updateAuthorityLogo({ authorityId: props.authority.id, file });
+}
+
+async function handleLogoDelete() {
+    await deleteAuthorityLogo(props.authority.id);
+}
 
 const breadcrumbs = computed(() => [
     { label: 'Groepen', to: { name: 'manage' } },
@@ -58,17 +63,15 @@ const breadcrumbs = computed(() => [
 
         <LayoutTitle title="Informatie" />
 
-        <AuthorityForm
-            v-if="authorityForm"
+        <AuthorityCard
             :authority="authority"
             :institutions="institutions"
-            @click:save="saveChanges">
-        </AuthorityForm>
-
-        <SaveBar
-            :show="hasChanges"
-            :loading="isUpdating"
-            @save="saveChanges"
-            @cancel="cancelChanges" />
+            :saving="isUpdatingAuthority"
+            :avatar-updating="isUpdatingAuthorityLogo"
+            :avatar-deleting="isDeletingAuthorityLogo"
+            editable
+            @update:authority="handleAuthorityUpdate"
+            @update:avatar="handleLogoUpdate"
+            @delete:avatar="handleLogoDelete" />
     </LayoutContent>
 </template>

@@ -91,6 +91,6 @@ onUnmounted(() => {
 
 .public-layout__footer {
     @apply bg-slate-900 text-slate-300;
-    @apply pt-4 pb-1 md:pt-6;
+    @apply py-4 md:py-6;
 }
 </style>

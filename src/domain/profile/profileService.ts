@@ -43,7 +43,7 @@ export async function updateProfileAvatar(profileId: string, file: File): Promis
     const endpoint = endpoints.profiles.avatar.replace('{id}', String(profileId));
     const data = formatFormDataBody({ image: file });
 
-    await client.post(endpoint, data, {
+    await client.put(endpoint, data, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },

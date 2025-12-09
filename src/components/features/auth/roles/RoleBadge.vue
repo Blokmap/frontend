@@ -28,7 +28,7 @@ const bgColor = computed<string>(() => {
 });
 
 const textColor = computed<string>(() => {
-    return 'var(--color-secondary-800)';
+    return 'var(--color-secondary-700)';
 });
 
 /**

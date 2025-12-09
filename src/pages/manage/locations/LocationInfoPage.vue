@@ -7,7 +7,7 @@ import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import { computed } from 'vue';
 import { useUpdateLocation } from '@/composables/data/useLocations';
 import { useDirtyForm } from '@/composables/useDirtyForm';
-import { locationToBody, type Location } from '@/domain/location';
+import { locationToBody, type Location, type LocationBody } from '@/domain/location';
 
 const props = defineProps<{
     location: Location;
@@ -22,19 +22,27 @@ const {
     saveChanges,
     cancelChanges,
 } = useDirtyForm({
+    isPending: isUpdatingLocation,
     source: () => props.location,
     toForm: locationToBody,
-    onSave: async (formData) => {
-        await updateLocation({ locationId: props.location.id, data: formData });
+    onSave: async (formData: LocationBody) => {
+        await updateLocation({
+            locationId: props.location.id,
+            data: formData,
+        });
     },
-    isPending: isUpdatingLocation,
 });
 
 const breadcrumbs = computed(() => [
     { label: 'Locaties', to: { name: 'manage.locations' } },
     {
-        label: props.location?.name ?? 'Locatie',
-        to: { name: 'manage.location.info', params: { locationId: props.location.id } },
+        label: props.location.name,
+        to: {
+            name: 'manage.location.info',
+            params: {
+                locationId: props.location.id,
+            },
+        },
     },
     { label: 'Informatie' },
 ]);
@@ -53,6 +61,7 @@ const breadcrumbs = computed(() => [
             :show="hasChanges"
             :loading="isUpdating"
             @save="saveChanges"
-            @cancel="cancelChanges" />
+            @cancel="cancelChanges">
+        </SaveBar>
     </LayoutContent>
 </template>

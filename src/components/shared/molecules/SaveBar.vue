@@ -49,9 +49,9 @@ const emit = defineEmits<{
 @reference '@/assets/styles/main.css';
 
 .save-bar {
-    @apply fixed right-0 bottom-0 left-0 z-50;
-    @apply border-t-2 border-slate-700 bg-slate-900 shadow-lg;
-    @apply lg:right-8 lg:bottom-8 lg:left-auto lg:max-w-md lg:rounded-lg lg:border-2;
+    @apply fixed bottom-0 left-1/2 z-50;
+    @apply bg-primary-800 border-primary-900 rounded-lg border-2 shadow-lg;
+    @apply right-8 bottom-6 lg:left-auto lg:max-w-md;
 }
 
 .save-bar__container {

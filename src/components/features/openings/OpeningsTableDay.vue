@@ -48,6 +48,10 @@ const { locale } = useI18n();
         @apply bg-slate-50;
     }
 
+    &:has(+ .openings-day--today) {
+        @apply border-b-0;
+    }
+
     &.openings-day--today {
         @apply bg-primary-50 rounded-lg border-b-0;
 

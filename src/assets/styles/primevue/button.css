@@ -153,10 +153,12 @@
 
 .p-button-outlined.p-button-secondary {
     @apply text-secondary-500 border-secondary-300;
+    --shadow-color: var(--color-secondary-300);
 }
 
 .p-button-outlined.p-button-success {
     @apply border-green-300 text-green-500;
+    --shadow-color: var(--color-green-300);
 }
 
 .p-button-outlined.p-button-info {
@@ -177,6 +179,7 @@
 
 .p-button-outlined.p-button-contrast {
     @apply border-0 bg-slate-100 text-slate-500;
+    --shadow-color: var(--color-slate-300);
 }
 
 .p-button-outlined.p-button-plain {
@@ -248,7 +251,7 @@
     @apply border-transparent;
     @apply enabled:hover:border-transparent enabled:hover:bg-transparent;
     @apply enabled:active:border-transparent enabled:active:bg-transparent;
-    @apply !translate-none !transform-none !shadow-none !transition-none;
+    @apply !translate-none !scale-none !transform-none !shadow-none !transition-none;
 }
 
 .p-button-link:not(:disabled):hover .p-button-label {

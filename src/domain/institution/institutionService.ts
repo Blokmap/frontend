@@ -1,6 +1,10 @@
 import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
-import { transformPaginatedResponseFactory, transformResponseFactory } from '@/utils/serviceUtils';
+import {
+    formatFormDataBody,
+    transformPaginatedResponseFactory,
+    transformResponseFactory,
+} from '@/utils/serviceUtils';
 import { parseAuthorityResponse } from '../authority';
 import { parseInstitutionResponse } from './institutionParser';
 import type { Authority } from '../authority';
@@ -84,6 +88,36 @@ export async function updateInstitution(
     });
 
     return data;
+}
+
+/**
+ * Updates the institution logo for a given institution ID.
+ *
+ * @param institutionId - The ID of the institution to update the logo for.
+ * @param file - The file to upload as the new logo.
+ * @returns A promise that resolves when the logo is updated.
+ */
+export async function updateInstitutionLogo(institutionId: number, file: File): Promise<void> {
+    const endpoint = endpoints.institutions.logo.replace('{id}', String(institutionId));
+    const data = formatFormDataBody({ image: file });
+
+    await client.put(endpoint, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+}
+
+/**
+ * Deletes the institution logo for a given institution ID.
+ *
+ * @param institutionId - The ID of the institution to delete the logo for.
+ * @returns A promise that resolves when the logo is deleted.
+ */
+export async function deleteInstitutionLogo(institutionId: number): Promise<void> {
+    const endpoint = endpoints.institutions.logo.replace('{id}', String(institutionId));
+
+    await client.delete(endpoint);
 }
 
 /**

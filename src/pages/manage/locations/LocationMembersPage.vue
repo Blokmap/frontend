@@ -2,6 +2,8 @@
 import Paginator from 'primevue/paginator';
 import MemberActionMenu from '@/components/features/auth/MemberActionMenu.vue';
 import RoleBadge from '@/components/features/auth/roles/RoleBadge.vue';
+import AccessCard from '@/components/features/member/AccessCard.vue';
+import AccessCardLink from '@/components/features/member/AccessCardLink.vue';
 import MemberAddDialog from '@/components/features/member/MemberAddDialog.vue';
 import MembersTable from '@/components/features/member/MembersTable.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
@@ -9,9 +11,10 @@ import LayoutContent from '@/layouts/LayoutContent.vue';
 import LayoutTitle from '@/layouts/LayoutTitle.vue';
 import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
 import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
-import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faCity, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import {
     useAddLocationMember,
     useDeleteLocationMember,
@@ -20,6 +23,12 @@ import {
     useUpdateLocationMember,
 } from '@/composables/data/useMembers';
 import { usePagination } from '@/composables/usePagination';
+import {
+    AuthorityPermission,
+    has,
+    InstitutionPermission,
+    type RecursivePermissions,
+} from '@/domain/auth';
 import type { Location } from '@/domain/location';
 import type { CreateMemberBody, MemberFilter } from '@/domain/member';
 import type { Profile } from '@/domain/profile';
@@ -27,10 +36,10 @@ import type { Profile } from '@/domain/profile';
 const props = defineProps<{
     authProfile: Profile;
     location: Location;
+    permissions: RecursivePermissions;
 }>();
 
 const locationId = computed<number>(() => props.location.id);
-// const profileId = computed<string>(() => props.authProfile.id);
 
 const showMemberAddDialog = ref<boolean>(false);
 
@@ -38,6 +47,8 @@ const filters = ref<MemberFilter>({
     page: 1,
     perPage: 25,
 });
+
+const { locale } = useI18n();
 
 const { onPageChange, first } = usePagination(filters);
 
@@ -66,6 +77,20 @@ const { mutate: deleteLocationMember } = useDeleteLocationMember();
 
 const isLoading = computed(() => membersLoading.value || rolesLoading.value);
 const isError = computed(() => !!membersError.value || !!rolesError.value);
+
+const showInstitutionAccess = computed(() => {
+    if (!props.location.institution) return false;
+    const hasPermission = has(InstitutionPermission.ManageMembers)(props.permissions.institution);
+    return hasPermission || props.authProfile.isAdmin;
+});
+
+const showAuthorityAccess = computed(() => {
+    if (!props.location.authority) return false;
+    const hasPermission = has(AuthorityPermission.ManageMembers)(props.permissions.authority);
+    return hasPermission || props.authProfile.isAdmin;
+});
+
+const showAccessCard = computed(() => showInstitutionAccess.value || showAuthorityAccess.value);
 
 const breadcrumbs = computed(() => [
     { label: 'Mijn locaties', to: { name: 'manage.locations' } },
@@ -118,6 +143,38 @@ function onAddMember(body: CreateMemberBody): void {
         </LayoutTitle>
 
         <p class="text-slate-600">Beheer wie toegang heeft tot deze locatie en hun rollen.</p>
+
+        <AccessCard v-if="showAccessCard" :loading="isLoading">
+            <template #header>
+                <h3 class="mb-1 text-sm font-semibold text-slate-700">Toegang via hierarchie</h3>
+                <p class="text-xs text-slate-600">
+                    Bekijk beheerders met toegang via de organisatie- en groepshierarchie
+                </p>
+            </template>
+
+            <AccessCardLink
+                v-if="showInstitutionAccess && location.institution"
+                :to="{
+                    name: 'manage.institution.members',
+                    params: { institutionId: location.institution.id },
+                }"
+                label="Organisatie"
+                :name="location.institution.name[locale]"
+                :logo="location.institution.logo?.url"
+                :icon="faCity">
+            </AccessCardLink>
+
+            <AccessCardLink
+                v-if="showAuthorityAccess && location.authority"
+                :to="{
+                    name: 'manage.authority.members',
+                    params: { authorityId: location.authority.id },
+                }"
+                label="Groep"
+                :name="location.authority.name"
+                :logo="location.authority.logo?.url"
+                :icon="faCity" />
+        </AccessCard>
 
         <!-- Error State -->
         <ManagementLoaderError v-if="isError" :errors="[membersError]" />

@@ -5,6 +5,8 @@ import {
     readAuthorities,
     readAuthority,
     updateAuthority,
+    updateAuthorityLogo,
+    deleteAuthorityLogo,
     type Authority,
     type AuthorityFilter,
     type AuthorityBody,
@@ -27,6 +29,11 @@ import type { AxiosError } from 'axios';
 export type UpdateAuthorityParams = {
     id: number;
     data: AuthorityBody;
+};
+
+export type UpdateAuthorityLogoParams = {
+    authorityId: number;
+    file: File;
 };
 
 /**
@@ -188,6 +195,74 @@ export function useDeleteAuthority(options: CompMutationOptions = {}): CompMutat
 
             options.onSuccess?.(data, variables, context);
         },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to handle updating an authority's logo image.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for updating an authority logo.
+ */
+export function useUpdateAuthorityLogo(
+    options: CompMutationOptions = {},
+): CompMutation<UpdateAuthorityLogoParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific authority query
+            invalidateQueries(queryClient, ['authorities'], variables.authorityId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Logo bijgewerkt',
+                    detail: 'Het logo van de autoriteit is succesvol bijgewerkt.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: async ({ authorityId, file }: UpdateAuthorityLogoParams) => {
+            await updateAuthorityLogo(authorityId, file);
+        },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to handle deleting an authority's logo.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for deleting an authority logo.
+ */
+export function useDeleteAuthorityLogo(options: CompMutationOptions = {}): CompMutation<number> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific authority query
+            invalidateQueries(queryClient, ['authorities'], variables);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Logo verwijderd',
+                    detail: 'Het logo van de autoriteit is succesvol verwijderd.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: deleteAuthorityLogo,
     });
 
     return mutation;

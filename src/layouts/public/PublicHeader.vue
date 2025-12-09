@@ -47,9 +47,10 @@ onUnmounted(() => {
                 </RouterLink>
 
                 <RouterLink :to="{ name: 'auth' }" v-else>
-                    <Button severity="contrast">
-                        <FontAwesomeIcon :icon="faUser" />
-                        Inloggen
+                    <Button severity="contrast" rounded>
+                        <template #icon>
+                            <FontAwesomeIcon :icon="faUser" />
+                        </template>
                     </Button>
                 </RouterLink>
 

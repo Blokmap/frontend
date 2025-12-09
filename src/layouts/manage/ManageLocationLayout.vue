@@ -17,6 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useReadLocation } from '@/composables/data/useLocations';
+import { useReadLocationMemberPermissions } from '@/composables/data/useMembers';
 import { getLocationImageUrl } from '@/domain/location';
 import LayoutSidebarSection from '../sidebar/LayoutSidebarSection.vue';
 import ManagementLoader from './ManagementLoader.vue';
@@ -30,16 +31,30 @@ const props = defineProps<{
 
 const route = useRoute();
 
+const profileId = computed<string>(() => {
+    return props.authProfile.id;
+});
+
 const locationId = computed<number>(() => {
     return +props.locationId;
 });
 
 const {
     data: location,
-    isLoading,
-    error,
+    isLoading: isLoadingLocation,
+    error: locationError,
 } = useReadLocation(locationId, {
     includes: ['authority', 'description', 'institution'],
+});
+
+const {
+    data: permissions,
+    isLoading: isLoadingPermissions,
+    error: permissionsError,
+} = useReadLocationMemberPermissions(locationId, profileId);
+
+const isLoading = computed<boolean>(() => {
+    return isLoadingLocation.value || isLoadingPermissions.value;
 });
 
 const locationImageUrl = computed<string>(() => {
@@ -48,7 +63,7 @@ const locationImageUrl = computed<string>(() => {
 </script>
 
 <template>
-    <LayoutContainer sidebar-transition="slide-in-left" main-transition="fade-slide-up">
+    <LayoutContainer>
         <template #sidebar>
             <LayoutSidebar
                 :title="location?.name ?? 'Locatie'"
@@ -56,9 +71,9 @@ const locationImageUrl = computed<string>(() => {
                 :loading="isLoading">
                 <template #header>
                     <InstitutionBreadcrumb
-                        v-if="location"
                         :institution="location?.institution"
                         :authority="location?.authority"
+                        :loading="isLoading"
                         editable>
                     </InstitutionBreadcrumb>
                 </template>
@@ -159,14 +174,14 @@ const locationImageUrl = computed<string>(() => {
                 v-else-if="location"
                 v-slot="{ Component, route }"
                 :location="location"
-                :auth-profile="authProfile"
-                :error="error">
+                :permissions="permissions"
+                :auth-profile="authProfile">
                 <Transition name="fade-slide-up" mode="out-in">
                     <component :is="Component" :key="route.path" />
                 </Transition>
             </RouterView>
 
-            <ManagementLoaderError v-else :error="error" />
+            <ManagementLoaderError v-else :error="[locationError, permissionsError]" />
         </template>
     </LayoutContainer>
 </template>

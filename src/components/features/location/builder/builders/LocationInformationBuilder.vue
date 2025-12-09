@@ -271,8 +271,7 @@ function resetToCalculatedCoordinates(): void {
                                     size="small"
                                     class="w-full"
                                     @click="calculateCoordinates"
-                                    :disabled="!canCalculateCoordinates"
-                                    outlined>
+                                    :disabled="!canCalculateCoordinates">
                                     <FontAwesomeIcon
                                         :icon="faExclamationTriangle"
                                         class="mr-2 h-3 w-3">

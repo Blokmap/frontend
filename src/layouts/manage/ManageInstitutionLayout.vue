@@ -43,7 +43,7 @@ const institutionName = computed(() => {
 </script>
 
 <template>
-    <LayoutContainer sidebar-transition="slide-in-left" main-transition="fade-slide-up">
+    <LayoutContainer>
         <template #sidebar>
             <LayoutSidebar :title="institutionName" :logo="logoUrl" :loading="isLoading">
                 <template #header>

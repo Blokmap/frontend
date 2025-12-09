@@ -46,7 +46,7 @@ const component = computed(() => (props.to ? RouterLink : 'div'));
     @apply !h-[72px] w-full rounded-lg;
 
     &.item-skeleton--compact {
-        @apply !h-[48px];
+        @apply !h-[40px];
     }
 }
 

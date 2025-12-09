@@ -79,7 +79,7 @@ function goBack() {
 </script>
 
 <template>
-    <LayoutContainer sidebar-transition="slide-in-left" main-transition="fade-slide-up">
+    <LayoutContainer>
         <template #sidebar>
             <LayoutSidebar title="Beheer" @click:back="goBack" show-back-button>
                 <LayoutSidebarSection>

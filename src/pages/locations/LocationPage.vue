@@ -138,7 +138,8 @@ function onLoginClick(): void {
                         </PageHeaderButton>
                     </RouterLink>
 
-                    <RouterLink :to="{ name: 'profile' }">
+                    <RouterLink
+                        :to="{ name: 'manage.location.info', params: { locationId: location.id } }">
                         <PageHeaderButton severity="secondary" :label="$t('general.actions.edit')">
                             <FontAwesomeIcon :icon="faEdit" />
                         </PageHeaderButton>

@@ -47,10 +47,7 @@ const recentLocationImages = computed<Image[] | undefined>(() =>
 </script>
 
 <template>
-    <LayoutContainer
-        sidebar-transition="slide-in-left"
-        main-transition="fade-slide-up"
-        main-class="space-y-12">
+    <LayoutContainer main-class="space-y-12">
         <template #sidebar>
             <LayoutSidebar title="Profiel">
                 <template v-if="profile" #default>

@@ -14,6 +14,7 @@ import {
     scanProfile,
     readInstitutionProfiles,
     findProfiles,
+    addInstitutionProfile,
 } from '@/domain/profile';
 import {
     type Profile,
@@ -300,6 +301,36 @@ export function useReadInstitutionProfiles(
     return query;
 }
 
+export function useAddInstitutionProfile(
+    institutionId: MaybeRefOrGetter<number>,
+    options: CompMutationOptions = {},
+): CompMutation<string, Profile> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: (username: string) => {
+            const institutionIdValue = toValue(institutionId);
+            return addInstitutionProfile(institutionIdValue, username);
+        },
+        onSuccess: (data, variables, context) => {
+            invalidateQueries(queryClient, ['profiles', 'list', 'byInstitution', institutionId]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Profiel toegevoegd',
+                    detail: 'Het profiel is succesvol toegevoegd aan de organisatie.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+    });
+
+    return mutation;
+}
 /**
  * Composable to search/find profiles by query string.
  *

@@ -54,8 +54,7 @@ const roleOptions = computed<{ label: string; value: number }[]>(() => {
 });
 
 const debouncedSearch = useDebounceFn((event: { query: string }) => {
-    filters.value.query = event.query || '';
-    filters.value.page = 1;
+    filters.value.query = event.query;
 }, 300);
 
 function onSubmitForm(): void {

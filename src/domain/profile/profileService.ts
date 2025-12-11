@@ -167,6 +167,32 @@ export async function readInstitutionProfiles(
 }
 
 /**
+ * Add a profile to a specific institution.
+ * That profile is then said to have an association with the institution.
+ *
+ * @param institutionId - The ID of the institution.
+ * @param profileId - The ID of the profile to add.
+ *
+ * @returns A promise that resolves to the added profile.
+ */
+export async function addInstitutionProfile(
+    institutionId: number,
+    username: string,
+): Promise<Profile> {
+    const endpoint = endpoints.institutions.profiles.add.replace('{id}', institutionId.toString());
+
+    const body = { username };
+
+    const transformResponse = transformResponseFactory(parseProfileResponse);
+
+    const { data } = await client.post<Profile>(endpoint, body, {
+        transformResponse,
+    });
+
+    return data;
+}
+
+/**
  * Block a profile to prevent it from accessing the application.
  *
  * @param profileId - The ID of the profile to block.

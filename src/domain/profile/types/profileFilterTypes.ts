@@ -8,5 +8,5 @@ export type ProfileFilter = Pagination & {
 };
 
 export type ProfileFindFilter = Pagination & {
-    query: string;
+    query?: string | null;
 };

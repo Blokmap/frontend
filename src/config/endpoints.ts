@@ -29,6 +29,7 @@ export const endpoints = {
         },
         profiles: {
             list: '/institutions/{id}/profiles',
+            add: '/institutions/{id}/profiles',
         },
         authorities: {
             list: '/institutions/{id}/authorities',

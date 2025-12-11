@@ -2,6 +2,7 @@
 import Select from 'primevue/select';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
+import { closeFloatingOverlays } from '@/composables/useFloatingPosition';
 import type { SelectOption } from '.';
 
 const props = withDefaults(
@@ -9,17 +10,26 @@ const props = withDefaults(
         value?: T | null;
         options: SelectOption<T>[];
         label: string;
+        autoclose?: boolean;
         placeholder?: string;
         loading?: boolean;
     }>(),
     {
-        placeholder: 'Selecteer een optie',
+        autoclose: true,
     },
 );
 
 const emit = defineEmits<{
     change: [value: T];
 }>();
+
+function onSelect(option: SelectOption<T>): void {
+    if (props.autoclose) {
+        closeFloatingOverlays();
+    }
+
+    emit('change', option.value);
+}
 
 const selectedOption = computed<SelectOption<T> | undefined>(() => {
     return props.options.find((opt) => opt.value === props.value);
@@ -36,7 +46,7 @@ const selectedOption = computed<SelectOption<T> | undefined>(() => {
         :options="options"
         :loading="loading"
         :placeholder="placeholder"
-        @update:model-value="emit('change', $event.value)">
+        @update:model-value="onSelect">
         <template #option="{ option }">
             <slot name="option" :option="option">
                 <div class="flex items-center gap-2 text-sm">

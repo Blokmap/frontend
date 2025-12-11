@@ -56,7 +56,9 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
     return [
         {
             label: institutionName,
-            to: { name: 'manage.institution.info' },
+            to: {
+                name: 'manage.institution.info',
+            },
         },
         {
             label: 'Leden',

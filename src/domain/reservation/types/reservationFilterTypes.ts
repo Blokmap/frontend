@@ -4,6 +4,7 @@ import type { Pagination } from '@/utils/pagination';
 export type ReservationFilter = Pagination & {
     day?: Date | null;
     inWeekOf?: Date | null;
+    query?: string | null;
     state?: ReservationState | null;
     locationId?: number | null;
 };

@@ -29,6 +29,7 @@ import {
     readLocationReservations,
     type Reservation,
     type ReservationFilter,
+    type ReservationIncludes,
 } from '@/domain/reservation';
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
@@ -131,16 +132,19 @@ export function useReadLocation(
 export function useReadLocationReservations(
     locationId: MaybeRef<number | null>,
     filters: MaybeRef<ReservationFilter> = {},
+    options: CompQueryOptions<ReservationIncludes> = {},
 ): CompQuery<Reservation[]> {
     const enabled = computed(() => toValue(locationId) !== null);
 
     const query = useQuery<Reservation[], AxiosError>({
+        ...options,
         enabled,
         queryKey: ['reservations', 'list', 'byLocation', locationId, filters],
         queryFn: () => {
             const locationIdValue = toValue(locationId)!;
             const filtersValue = toValue(filters);
-            return readLocationReservations(locationIdValue, filtersValue);
+            const includesValue = options.includes;
+            return readLocationReservations(locationIdValue, filtersValue, includesValue);
         },
     });
 

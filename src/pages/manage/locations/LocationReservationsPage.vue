@@ -9,7 +9,8 @@ import PageContent from '@/layouts/PageContent.vue';
 import PageTitle from '@/layouts/PageTitle.vue';
 import { faQrcode, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref } from 'vue';
+import { debouncedWatch } from '@vueuse/core';
+import { computed, ref, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useReadLocationReservations } from '@/composables/data/useLocations';
 import {
@@ -17,9 +18,9 @@ import {
     type ReservationStateParams,
 } from '@/composables/data/useReservations';
 import { useRouteDate } from '@/composables/useRouteDate';
+import { type ReservationFilter, type ReservationState } from '@/domain/reservation';
 import type { Location } from '@/domain/location';
 import type { Profile } from '@/domain/profile';
-import type { Reservation, ReservationState } from '@/domain/reservation';
 
 const props = defineProps<{
     authProfile: Profile;
@@ -28,18 +29,12 @@ const props = defineProps<{
 
 const route = useRoute();
 const router = useRouter();
-const selectedDay = useRouteDate();
 
-const showScanner = computed<boolean>({
-    get: () => route.hash === '#scan',
-    set: (value: boolean) => {
-        if (value) {
-            router.replace({ hash: '#scan' });
-        } else {
-            router.replace({ hash: '' });
-        }
-    },
-});
+const pendingStatusChanges = ref<Set<string>>(new Set());
+
+function isReservationPending(reservationId: string): boolean {
+    return pendingStatusChanges.value.has(reservationId);
+}
 
 const { mutateAsync: changeReservationState } = useReservationState({
     onMutate: (variables: ReservationStateParams) => {
@@ -57,33 +52,47 @@ const { mutateAsync: changeReservationState } = useReservationState({
     },
 });
 
-const { data: reservations, isLoading } = useReadLocationReservations(
-    computed(() => +props.location.id),
-    computed(() => ({ day: selectedDay.value })),
+function onStatusChange(reservationId: string, state: ReservationState): void {
+    changeReservationState({ reservationId, state });
+}
+
+const selectedDay = useRouteDate();
+const searchQuery = ref<string>('');
+
+const filters = ref<ReservationFilter>({
+    day: selectedDay.value,
+    query: searchQuery.value,
+});
+
+debouncedWatch(
+    searchQuery,
+    (newQuery: string) => {
+        filters.value.query = newQuery;
+    },
+    { debounce: 300 },
 );
 
-const reservationSearchQuery = ref<string>('');
-const pendingStatusChanges = ref<Set<string>>(new Set());
+watchEffect(() => {
+    filters.value.day = selectedDay.value;
+});
 
-const filteredReservations = computed(() => {
-    if (!reservations.value) return [];
-    if (!reservationSearchQuery.value.trim()) return reservations.value;
+const locationId = computed<number>(() => {
+    return +props.location.id;
+});
 
-    const query = reservationSearchQuery.value.toLowerCase();
+const { data: reservations, isLoading } = useReadLocationReservations(locationId, filters, {
+    includes: ['profile'],
+});
 
-    return reservations.value.filter((reservation: Reservation) => {
-        const profile = reservation.createdBy;
-
-        if (!profile) {
-            return false;
+const showScanner = computed<boolean>({
+    get: () => route.hash === '#scan',
+    set: (value: boolean) => {
+        if (value) {
+            router.replace({ hash: '#scan' });
+        } else {
+            router.replace({ hash: '' });
         }
-
-        const fullName = `${profile.firstName} ${profile.lastName}`.toLowerCase();
-        const username = profile.username?.toLowerCase() || '';
-        const email = profile.email?.toLowerCase() || '';
-
-        return fullName.includes(query) || username.includes(query) || email.includes(query);
-    });
+    },
 });
 
 const breadcrumbs = computed(() => [
@@ -91,14 +100,6 @@ const breadcrumbs = computed(() => [
     { label: props.location?.name ?? 'Locatie', to: { name: 'manage.location.info' } },
     { label: 'Reservaties' },
 ]);
-
-function isReservationPending(reservationId: string): boolean {
-    return pendingStatusChanges.value.has(reservationId);
-}
-
-function onStatusChange(reservationId: string, state: ReservationState): void {
-    changeReservationState({ reservationId, state });
-}
 </script>
 
 <template>
@@ -119,7 +120,7 @@ function onStatusChange(reservationId: string, state: ReservationState): void {
                 <label class="mb-2 block text-sm font-medium text-slate-700">Zoeken</label>
                 <div class="relative">
                     <InputText
-                        v-model="reservationSearchQuery"
+                        v-model="searchQuery"
                         placeholder="Zoek op naam, gebruikersnaam of e-mail..."
                         class="w-full pl-10">
                     </InputText>
@@ -149,7 +150,7 @@ function onStatusChange(reservationId: string, state: ReservationState): void {
 
         <!-- Reservations Table -->
         <LocationReservationsTable
-            :reservations="filteredReservations"
+            :reservations="reservations"
             :loading="isLoading"
             :is-reservation-pending="isReservationPending"
             @change:status="onStatusChange">

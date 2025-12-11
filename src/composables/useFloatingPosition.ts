@@ -2,6 +2,11 @@ import { nextTick, onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 
 const FLOATING_OPEN_EVENT = 'floating-position:open';
 
+export function closeFloatingOverlays(except?: symbol) {
+    const event = new CustomEvent(FLOATING_OPEN_EVENT, { detail: except });
+    document.dispatchEvent?.(event);
+}
+
 /**
  * Composable to manage the floating position of an overlay element relative to a trigger element.
  * The overlay will position itself above or below the trigger based on available space in the viewport.
@@ -44,13 +49,19 @@ export function useFloatingPosition(
             : triggerRect.bottom + scrollY + 8;
 
         // Apply calculated styles
-        positionStyles.value = {
+        const styles = {
             position: 'absolute',
             left: `${left}px`,
             top: `${top}px`,
             zIndex: '200',
-            ...(enforceMaxWidth ? { maxWidth: `${triggerRect.width}px` } : {}),
+            maxWidth: '',
         };
+
+        if (enforceMaxWidth) {
+            styles.maxWidth = `${triggerRect.width}px`;
+        }
+
+        positionStyles.value = styles;
     }
 
     function onOutsideClick(event: MouseEvent) {
@@ -67,6 +78,7 @@ export function useFloatingPosition(
 
     function onFloatingOpen(event: Event) {
         const customEvent = event as CustomEvent<symbol>;
+
         if (customEvent.detail !== instanceId && isVisible.value) {
             isVisible.value = false;
         }
@@ -74,11 +86,7 @@ export function useFloatingPosition(
 
     watch(isVisible, async (visible) => {
         if (visible) {
-            // Notify other instances to close
-            const event = new CustomEvent(FLOATING_OPEN_EVENT, { detail: instanceId });
-            document.dispatchEvent?.(event);
-
-            // Wait for DOM updates before calculating position
+            closeFloatingOverlays(instanceId);
             await nextTick();
             updatePosition();
         }

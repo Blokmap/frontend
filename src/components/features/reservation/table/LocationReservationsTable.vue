@@ -22,19 +22,24 @@ const emit = defineEmits<{
     'change:status': [reservationId: string, status: ReservationState];
 }>();
 
+function onStatusChange(reservationId: string, state: ReservationState): void {
+    emit('change:status', reservationId, state);
+}
+
 const { locale } = useI18n();
 
 // Group reservations by profile
 const groupedReservations = computed(() => {
-    if (!props.reservations?.length) return [];
+    if (!props.reservations?.length) {
+        return [];
+    }
 
-    // Group reservations per profile
     const grouped = new Map<string, ReservationGroup>();
 
     for (const reservation of props.reservations) {
         const profileId = reservation.createdBy?.id;
 
-        if (!profileId || !reservation.createdBy) {
+        if (!reservation.createdBy || !profileId) {
             continue;
         }
 
@@ -55,16 +60,6 @@ const groupedReservations = computed(() => {
 
     return result;
 });
-
-/**
- * Handle status change for a reservation.
- *
- * @param reservationId - The ID of the reservation.
- * @param state - The new state to set.
- */
-function onStatusChange(reservationId: string, state: ReservationState): void {
-    emit('change:status', reservationId, state);
-}
 </script>
 
 <template>
@@ -77,9 +72,8 @@ function onStatusChange(reservationId: string, state: ReservationState): void {
                 }"
                 class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <div class="h-10 w-10 flex-shrink-0">
-                        <EntityAvatar :profile="data.profile" />
-                    </div>
+                    <EntityAvatar class="h-10 w-10 flex-shrink-0" :profile="data.profile" />
+
                     <div>
                         <div class="text-sm font-medium text-slate-900">
                             {{ data.profile.firstName }} {{ data.profile.lastName }}

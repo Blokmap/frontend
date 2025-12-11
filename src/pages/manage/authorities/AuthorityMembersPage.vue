@@ -57,9 +57,7 @@ const {
     data: roles,
     isLoading: rolesLoading,
     error: rolesError,
-} = useReadAuthorityRoles(authorityId, {
-    enabled: showMemberAddDialog,
-});
+} = useReadAuthorityRoles(authorityId);
 
 const { mutate: addAuthorityMember, isPending: addMemberIsPending } = useAddAuthorityMember({
     onSuccess: () => {

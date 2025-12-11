@@ -222,7 +222,7 @@ function goBack() {
                     </div>
                 </Transition>
             </RouterView>
-            <ManagementLoaderError v-else :error="error" />
+            <ManagementLoaderError v-else :errors="[error]" />
         </template>
     </LayoutContainer>
 </template>

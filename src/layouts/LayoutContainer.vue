@@ -42,17 +42,25 @@ const closeSidebar = () => {
             :class="{ 'layout-container__sidebar--open': isSidebarOpen }"
             @click="closeSidebar">
             <Transition v-if="!loading" name="fade-slide-right" appear>
-                <slot name="sidebar"></slot>
+                <div>
+                    <slot name="sidebar"></slot>
+                </div>
             </Transition>
-            <slot v-else name="sidebar"></slot>
+            <div v-else>
+                <slot name="sidebar"></slot>
+            </div>
         </aside>
 
         <!-- Main content -->
         <main class="layout-container__main">
             <Transition v-if="!loading" name="fade-slide-up" appear>
-                <slot name="main"></slot>
+                <div>
+                    <slot name="main"></slot>
+                </div>
             </Transition>
-            <slot v-else name="main"></slot>
+            <div v-else>
+                <slot name="main"></slot>
+            </div>
         </main>
     </div>
 </template>
@@ -85,6 +93,10 @@ const closeSidebar = () => {
 
 .layout-container__sidebar--open {
     @apply translate-x-0;
+}
+
+.layout-container__sidebar > div {
+    @apply h-full;
 }
 
 .layout-container__main {

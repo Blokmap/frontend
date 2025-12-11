@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
+import ConfirmPopover from '@/components/shared/molecules/ConfirmPopover.vue';
 import ImageStack from '@/components/shared/molecules/ImageStack.vue';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref } from 'vue';
-import { useFloatingPosition } from '@/composables/useFloatingPosition';
+import { computed } from 'vue';
 import { getLocationImages, type Image } from '@/domain/image';
 import {
     formatReservationTimeRange,
@@ -24,27 +24,8 @@ const emit = defineEmits<{
 
 const images = computed<Image[]>(() => getLocationImages([props.reservation.location]));
 
-const deleteButtonRef = ref<HTMLElement | null>(null);
-const confirmPopoverRef = ref<HTMLElement | null>(null);
-const showConfirmPopover = ref(false);
-
-const { positionStyles } = useFloatingPosition(
-    deleteButtonRef,
-    confirmPopoverRef,
-    showConfirmPopover,
-);
-
-function onDeleteClick() {
-    showConfirmPopover.value = !showConfirmPopover.value;
-}
-
 function onConfirmCancel() {
-    showConfirmPopover.value = false;
     emit('click:cancel', props.reservation);
-}
-
-function onCancelPopover() {
-    showConfirmPopover.value = false;
 }
 </script>
 
@@ -67,47 +48,27 @@ function onCancelPopover() {
                     {{ formatReservationTimeRange(reservation) }}
                 </p>
             </div>
-            <div v-if="isReservationInFuture(reservation)" ref="deleteButtonRef">
-                <Button
-                    size="small"
-                    severity="contrast"
-                    text
-                    rounded
-                    :disabled="!isReservationCancellable(reservation) || isCancelling"
-                    @click="onDeleteClick"
-                    v-tooltip.top="'Annuleren'">
-                    <template #icon>
-                        <FontAwesomeIcon :icon="faTrash" />
-                    </template>
-                </Button>
-            </div>
+            <ConfirmPopover
+                v-if="isReservationInFuture(reservation)"
+                message="Reservatie annuleren?"
+                :loading="isCancelling"
+                @confirm="onConfirmCancel">
+                <template #trigger="{ toggle }">
+                    <Button
+                        size="small"
+                        severity="contrast"
+                        text
+                        rounded
+                        :disabled="!isReservationCancellable(reservation) || isCancelling"
+                        @click="toggle"
+                        v-tooltip.top="'Annuleren'">
+                        <template #icon>
+                            <FontAwesomeIcon :icon="faTrash" />
+                        </template>
+                    </Button>
+                </template>
+            </ConfirmPopover>
         </div>
-
-        <Teleport to="body">
-            <Transition name="slide-down">
-                <div
-                    v-if="showConfirmPopover"
-                    ref="confirmPopoverRef"
-                    :style="positionStyles"
-                    class="confirm-popover">
-                    <p class="confirm-popover__text">Reservatie annuleren?</p>
-                    <div class="confirm-popover__actions">
-                        <Button
-                            size="small"
-                            severity="secondary"
-                            text
-                            label="Annuleren"
-                            @click="onCancelPopover" />
-                        <Button
-                            size="small"
-                            severity="danger"
-                            label="Bevestigen"
-                            :loading="isCancelling"
-                            @click="onConfirmCancel" />
-                    </div>
-                </div>
-            </Transition>
-        </Teleport>
     </div>
 </template>
 
@@ -132,19 +93,5 @@ function onCancelPopover() {
     .reservation-card__stack {
         @apply h-14 w-14 flex-shrink-0 rounded-lg;
     }
-}
-
-.confirm-popover {
-    @apply rounded-lg border border-slate-200 bg-white p-3 shadow-lg;
-    width: max-content;
-    max-width: 300px;
-}
-
-.confirm-popover__text {
-    @apply mb-3 text-sm font-medium text-slate-900;
-}
-
-.confirm-popover__actions {
-    @apply flex items-center justify-end gap-2;
 }
 </style>

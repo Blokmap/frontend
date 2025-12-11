@@ -64,9 +64,7 @@ const {
     data: roles,
     isLoading: rolesLoading,
     error: rolesError,
-} = useReadLocationRoles(locationId, {
-    enabled: showMemberAddDialog,
-});
+} = useReadLocationRoles(locationId);
 
 const { mutate: addLocationMember, isPending: addMemberIsPending } = useAddLocationMember({
     onSuccess: () => {

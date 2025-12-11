@@ -38,8 +38,6 @@ const { locale } = useI18n();
 
 const authorityId = computed<number>(() => props.authority.id);
 
-const showMemberAddDialog = ref<boolean>(false);
-
 const filters = ref<MemberFilter>({
     page: 1,
     perPage: 10,
@@ -52,6 +50,8 @@ const {
     isLoading: membersLoading,
     error: membersError,
 } = useReadAuthorityMembers(authorityId);
+
+const showMemberAddDialog = ref<boolean>(false);
 
 const {
     data: roles,
@@ -67,25 +67,14 @@ const { mutate: addAuthorityMember, isPending: addMemberIsPending } = useAddAuth
     },
 });
 
+function onAddMember(body: CreateMemberBody): void {
+    addAuthorityMember({
+        id: props.authority.id,
+        body,
+    });
+}
+
 const { mutate: updateAuthorityMember } = useUpdateAuthorityMember();
-const { mutate: deleteAuthorityMember } = useDeleteAuthorityMember();
-
-const isLoading = computed(() => membersLoading.value || rolesLoading.value);
-const isError = computed(() => !!membersError.value || !!rolesError.value);
-
-const showInstitutionAccess = computed(() => {
-    const hasPermission = has(InstitutionPermission.ManageMembers)(props.permissions.institution);
-    return hasPermission || props.authProfile.isAdmin;
-});
-
-const breadcrumbs = computed(() => [
-    { label: 'Groepen', to: { name: 'manage' } },
-    {
-        label: props.authority?.name ?? 'Groep',
-        to: { name: 'manage.authority.info' },
-    },
-    { label: 'Leden' },
-]);
 
 function onSelectRole(memberId: string, roleId: number): void {
     const member = members.value?.data.find((m) => m.profile.id === memberId);
@@ -101,6 +90,8 @@ function onSelectRole(memberId: string, roleId: number): void {
     });
 }
 
+const { mutate: deleteAuthorityMember } = useDeleteAuthorityMember();
+
 function onDeleteClick(memberId: string): void {
     deleteAuthorityMember({
         id: props.authority.id,
@@ -108,12 +99,22 @@ function onDeleteClick(memberId: string): void {
     });
 }
 
-function onAddMember(body: CreateMemberBody): void {
-    addAuthorityMember({
-        id: props.authority.id,
-        body,
-    });
-}
+const isLoading = computed(() => membersLoading.value || rolesLoading.value);
+const isError = computed(() => !!membersError.value || !!rolesError.value);
+
+const showInstitutionAccess = computed<boolean>(() => {
+    const hasPermission = has(InstitutionPermission.ManageMembers)(props.permissions.institution);
+    return hasPermission || props.authProfile.isAdmin;
+});
+
+const breadcrumbs = computed(() => [
+    { label: 'Groepen', to: { name: 'manage' } },
+    {
+        label: props.authority?.name ?? 'Groep',
+        to: { name: 'manage.authority.info' },
+    },
+    { label: 'Leden' },
+]);
 </script>
 
 <template>

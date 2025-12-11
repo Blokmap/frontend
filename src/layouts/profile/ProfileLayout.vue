@@ -47,7 +47,7 @@ const recentLocationImages = computed<Image[] | undefined>(() =>
 </script>
 
 <template>
-    <LayoutContainer main-class="space-y-12">
+    <LayoutContainer>
         <template #sidebar>
             <LayoutSidebar title="Profiel">
                 <template v-if="profile" #default>
@@ -86,19 +86,21 @@ const recentLocationImages = computed<Image[] | undefined>(() =>
         </template>
 
         <template #main>
-            <template v-if="profile">
-                <template v-if="route.name === 'profile'">
-                    <section class="pt-6" id="about" ref="about">
-                        <ProfileAboutPage :profile="profile" />
-                    </section>
-                    <section class="pt-6" id="reservations" ref="reservations">
-                        <ProfileReservationsPage :profile="profile" />
-                    </section>
+            <div class="space-y-12">
+                <template v-if="profile">
+                    <template v-if="route.name === 'profile'">
+                        <section class="pt-6" id="about" ref="about">
+                            <ProfileAboutPage :profile="profile" />
+                        </section>
+                        <section class="pt-6" id="reservations" ref="reservations">
+                            <ProfileReservationsPage :profile="profile" />
+                        </section>
+                    </template>
+                    <template v-else>
+                        <RouterView :profile="profile" is-own-profile />
+                    </template>
                 </template>
-                <template v-else>
-                    <RouterView :profile="profile" is-own-profile />
-                </template>
-            </template>
+            </div>
         </template>
     </LayoutContainer>
 </template>

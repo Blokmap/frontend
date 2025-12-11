@@ -65,7 +65,15 @@ const { data: institutionMemberships, isLoading: isLoadingInstitutions } =
     useReadProfileInstitutionMemberships(profileId);
 
 const isLoading = computed(() => {
-    return isLoadingLocations.value || isLoadingAuthorities.value || isLoadingInstitutions.value;
+    const baseLoading =
+        isLoadingLocations.value && isLoadingAuthorities.value && isLoadingInstitutions.value;
+
+    // If viewing another profile, also wait for that profile to load
+    if (isOtherProfile.value) {
+        return baseLoading && isLoadingProfile.value;
+    }
+
+    return baseLoading;
 });
 
 const locationImages = computed(() => {
@@ -79,7 +87,7 @@ function goBack() {
 </script>
 
 <template>
-    <LayoutContainer>
+    <LayoutContainer :loading="isLoading">
         <template #sidebar>
             <LayoutSidebar title="Beheer" @click:back="goBack" show-back-button>
                 <LayoutSidebarSection>
@@ -184,7 +192,7 @@ function goBack() {
         </template>
 
         <template #main>
-            <ManagementLoader v-if="isLoadingProfile" />
+            <ManagementLoader v-if="isLoading" />
             <RouterView
                 v-else-if="profile"
                 v-slot="{ Component, route }"

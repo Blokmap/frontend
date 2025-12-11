@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue';
 
 defineProps<{
-    mainClass?: string;
+    loading?: boolean;
 }>();
 
 const isSidebarOpen = ref(false);
@@ -37,21 +37,23 @@ const closeSidebar = () => {
         </Transition>
 
         <!-- Sidebar -->
-        <Transition name="fade-slide-up" appear>
-            <aside
-                class="layout-container__sidebar"
-                :class="{ 'layout-container__sidebar--open': isSidebarOpen }"
-                @click="closeSidebar">
+        <aside
+            class="layout-container__sidebar"
+            :class="{ 'layout-container__sidebar--open': isSidebarOpen }"
+            @click="closeSidebar">
+            <Transition v-if="!loading" name="fade-slide-right" appear>
                 <slot name="sidebar"></slot>
-            </aside>
-        </Transition>
+            </Transition>
+            <slot v-else name="sidebar"></slot>
+        </aside>
 
         <!-- Main content -->
-        <Transition name="slide-in-left" appear>
-            <main class="layout-container__main" :class="mainClass">
+        <main class="layout-container__main">
+            <Transition v-if="!loading" name="fade-slide-up" appear>
                 <slot name="main"></slot>
-            </main>
-        </Transition>
+            </Transition>
+            <slot v-else name="main"></slot>
+        </main>
     </div>
 </template>
 

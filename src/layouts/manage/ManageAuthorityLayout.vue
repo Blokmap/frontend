@@ -46,12 +46,12 @@ const {
 } = useReadAuthorityMemberPermissions(authorityId, props.authProfile.id);
 
 const isLoading = computed<boolean>(() => {
-    return isLoadingAuthority.value || isLoadingPermissions.value;
+    return isLoadingAuthority.value && isLoadingPermissions.value;
 });
 </script>
 
 <template>
-    <LayoutContainer>
+    <LayoutContainer :loading="isLoading">
         <template #sidebar>
             <LayoutSidebar
                 :title="authority?.name"

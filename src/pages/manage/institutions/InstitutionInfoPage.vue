@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import InstitutionAddressCard from '@/components/features/institution/InstitutionAddressCard.vue';
-import InstitutionInfoCard from '@/components/features/institution/InstitutionInfoCard.vue';
 import InstitutionCard from '@/components/features/institution/InstitutionCard.vue';
 import InstitutionContactCard from '@/components/features/institution/InstitutionContactCard.vue';
+import InstitutionInfoCard from '@/components/features/institution/InstitutionInfoCard.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import PageContent from '@/layouts/PageContent.vue';
 import { computed, ref } from 'vue';

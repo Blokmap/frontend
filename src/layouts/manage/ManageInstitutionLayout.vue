@@ -35,7 +35,7 @@ const { data: institution, isLoading, error } = useReadInstitution(institutionId
 </script>
 
 <template>
-    <LayoutContainer>
+    <LayoutContainer :loading="isLoading">
         <template #sidebar>
             <LayoutSidebar
                 :title="institution?.name[locale]"

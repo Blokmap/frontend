@@ -211,3 +211,23 @@
     opacity: 1;
     transform: translateY(0);
 }
+
+/* Fade Slide Right Transition */
+/* Used for: Sidebar elements that fade and slide in from left to right */
+.fade-slide-right-enter-active,
+.fade-slide-right-leave-active {
+    @apply transition-all duration-300 ease-out;
+}
+
+.fade-slide-right-enter-from {
+    @apply -translate-x-4 opacity-0;
+}
+
+.fade-slide-right-enter-to,
+.fade-slide-right-leave-from {
+    @apply translate-x-0 opacity-100;
+}
+
+.fade-slide-right-leave-to {
+    @apply -translate-x-4 opacity-0;
+}

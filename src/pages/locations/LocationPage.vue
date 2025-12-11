@@ -130,7 +130,12 @@ function onLoginClick(): void {
 
             <div class="location-page__actions">
                 <template v-if="profile?.isAdmin">
-                    <RouterLink v-if="location.isReservable" :to="{ name: 'profile' }">
+                    <RouterLink
+                        v-if="location.isReservable"
+                        :to="{
+                            name: 'manage.location.reservations',
+                            params: { locationId: location.id },
+                        }">
                         <PageHeaderButton
                             severity="contrast"
                             :label="$t('domains.reservations.name', 2)">

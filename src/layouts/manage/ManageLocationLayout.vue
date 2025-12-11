@@ -63,7 +63,7 @@ const locationImageUrl = computed<string>(() => {
 </script>
 
 <template>
-    <LayoutContainer>
+    <LayoutContainer :loading="isLoading">
         <template #sidebar>
             <LayoutSidebar
                 :title="location?.name ?? 'Locatie'"

@@ -301,7 +301,7 @@ onMounted(() => {
 
 .calendar__cell {
     @apply relative cursor-pointer;
-    @apply border-b border-slate-100;
+    @apply border-b border-slate-100 hover:bg-slate-100;
     @apply transition-colors;
 }
 

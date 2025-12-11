@@ -1,42 +1,47 @@
 <script lang="ts" setup>
 import ProfileReservations from '@/components/features/profile/ProfileReservations.vue';
+import ReservationCard from '@/components/features/reservation/ReservationCard.vue';
+import ReservationDayCard from '@/components/features/reservation/ReservationDayCard.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { useReadRecentProfileLocations } from '@/composables/data/useLocations';
 import {
     useDeleteReservation,
     useReadProfileReservations,
 } from '@/composables/data/useReservations';
-import { type Reservation } from '@/domain/reservation';
+import { useRouteDate } from '@/composables/useRouteDate';
+import { type ReservationFilter, type Reservation } from '@/domain/reservation';
 
 const { data: profile } = useAuthProfile();
 
-const currentDate = ref(new Date());
-
-const cancellingId = ref<string | null>(null);
+const profileId = computed<string | null>(() => profile.value?.id || null);
 
 const { data: recentLocations } = useReadRecentProfileLocations(
-    computed(() => profile.value?.id ?? null),
+    profileId,
     computed(() => ({ maxCount: 5 })),
 );
 
-const { data: reservations, isLoading: loading } = useReadProfileReservations(
-    computed(() => profile.value?.id ?? null),
-    computed(() => ({ inWeekOf: currentDate.value })),
-);
+const currentDate = useRouteDate();
 
-const { mutate: deleteReservation, isPending: isDeleting } = useDeleteReservation({
-    onMutate: (variables) => {
-        cancellingId.value = variables.reservationId;
-    },
-    onSettled: () => {
-        cancellingId.value = null;
-    },
-});
+const filters = computed<ReservationFilter>(() => ({
+    inWeekOf: currentDate.value,
+}));
+
+const { data: reservations, isLoading: loading } = useReadProfileReservations(profileId, filters);
+
+const {
+    mutate: deleteReservation,
+    isPending: isDeleting,
+    variables: deletingVariables,
+} = useDeleteReservation();
 
 function onCancel(reservation: Reservation) {
     deleteReservation({ reservationId: reservation.id });
+}
+
+function isCancelling(reservationId: string) {
+    return isDeleting && deletingVariables?.value?.reservationId === reservationId;
 }
 </script>
 
@@ -51,9 +56,23 @@ function onCancel(reservation: Reservation) {
             :reservations="reservations"
             :recent-locations="recentLocations"
             :loading="loading"
-            :current-date="currentDate"
-            :cancelling-reservation-id="isDeleting ? cancellingId : null"
-            @cancel="onCancel">
+            :current-date="currentDate">
+            <template #card="{ day, reservations: dayReservations }">
+                <ReservationDayCard :day="day">
+                    <template #reservation v-if="dayReservations.length > 0">
+                        <ReservationCard
+                            v-for="reservation in dayReservations"
+                            :key="reservation.id"
+                            :reservation="reservation"
+                            :is-cancelling="isCancelling(reservation.id)"
+                            @click:cancel="onCancel">
+                        </ReservationCard>
+                    </template>
+                    <template #empty>
+                        <div class="day-card__empty">Geen reservaties</div>
+                    </template>
+                </ReservationDayCard>
+            </template>
         </ProfileReservations>
     </div>
 </template>

@@ -134,7 +134,7 @@ const { data: institution, isLoading, error } = useReadInstitution(institutionId
                     <component :is="Component" :key="route.path" />
                 </Transition>
             </RouterView>
-            <ManagementLoaderError v-else :error="error" />
+            <ManagementLoaderError v-else :errors="[error]" />
         </template>
     </LayoutContainer>
 </template>

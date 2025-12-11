@@ -181,7 +181,7 @@ const locationImageUrl = computed<string>(() => {
                 </Transition>
             </RouterView>
 
-            <ManagementLoaderError v-else :error="[locationError, permissionsError]" />
+            <ManagementLoaderError v-else :errors="[locationError, permissionsError]" />
         </template>
     </LayoutContainer>
 </template>

@@ -135,7 +135,7 @@ const isLoading = computed<boolean>(() => {
                     <component :is="Component" :key="route.path" />
                 </Transition>
             </RouterView>
-            <ManagementLoaderError v-else :error="[authorityError, permissionsError]" />
+            <ManagementLoaderError v-else :errors="[authorityError, permissionsError]" />
         </template>
     </LayoutContainer>
 </template>

@@ -114,7 +114,8 @@ function goBack() {
                             name: 'manage.locations',
                             params: { profileId: props.profileId },
                         }"
-                        :active="route.name === 'manage.locations'">
+                        :active="route.name === 'manage.locations'"
+                        :compact="false">
                         <template #img>
                             <ImageStack :images="locationImages" />
                         </template>

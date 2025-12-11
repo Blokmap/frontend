@@ -221,7 +221,8 @@ function switchToRegister(): void {
                 <RegisterForm
                     :loading="registerIsLoading"
                     :error="registerError"
-                    @submit="register" />
+                    @submit="register">
+                </RegisterForm>
                 <span
                     class="mt-4 block cursor-pointer text-center hover:underline"
                     @click="switchToLogin">

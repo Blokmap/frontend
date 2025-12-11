@@ -17,21 +17,20 @@ const props = defineProps<{
     authority: Authority;
 }>();
 
-const authorityId = computed(() => props.authority?.id ?? 0);
-const enabled = computed(() => !!props.authority?.id);
+const authorityId = computed(() => props.authority.id);
 
 const {
     data: locations,
     isLoading: locationsLoading,
     error,
-} = useReadAuthorityLocations(authorityId, {
-    enabled,
-});
+} = useReadAuthorityLocations(authorityId);
 
 const breadcrumbs = computed(() => [
     {
         label: props.authority?.name ?? 'Groep',
-        to: { name: 'manage.authority.info' },
+        to: {
+            name: 'manage.authority.info',
+        },
     },
     { label: 'Locaties' },
 ]);

@@ -7,6 +7,7 @@ import AuthLayout from '@/layouts/profile/AuthLayout.vue';
 import ProfileLayout from '@/layouts/profile/ProfileLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
 import TestPage from '@/pages/TestPage.vue';
+import InstitutionLocationsPage from '@/pages/manage/institutions/InstitutionLocationsPage.vue';
 import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 import { useToast } from '@/composables/store/useToast';
@@ -252,6 +253,11 @@ const routes: RouteRecordRaw[] = [
                                 path: 'authorities',
                                 name: 'manage.institution.authorities',
                                 component: InstitutionAuthoritiesPage,
+                            },
+                            {
+                                path: 'locations',
+                                name: 'manage.institution.locations',
+                                component: InstitutionLocationsPage,
                             },
                             {
                                 path: 'profiles',

@@ -8,6 +8,7 @@ import {
     faBuilding,
     faCog,
     faInfoCircle,
+    faMapLocationDot,
     faUsers,
     faUserTag,
 } from '@fortawesome/free-solid-svg-icons';
@@ -26,13 +27,11 @@ const props = defineProps<{
 }>();
 
 const { locale } = useI18n();
-
 const route = useRoute();
 
-const institutionIdNum = computed(() => +props.institutionId);
-const enabled = computed(() => !Number.isNaN(institutionIdNum.value) && institutionIdNum.value > 0);
+const institutionId = computed(() => +props.institutionId);
 
-const { data: institution, isLoading, error } = useReadInstitution(institutionIdNum, { enabled });
+const { data: institution, isLoading, error } = useReadInstitution(institutionId);
 </script>
 
 <template>
@@ -43,8 +42,7 @@ const { data: institution, isLoading, error } = useReadInstitution(institutionId
                 :logo="institution?.logo?.url"
                 :loading="isLoading">
                 <template #header>
-                    <InstitutionBreadcrumb :institution="institution" :loading="isLoading">
-                    </InstitutionBreadcrumb>
+                    <InstitutionBreadcrumb :institution="institution" :loading="isLoading" />
                 </template>
 
                 <LayoutSidebarSection title="Instellingen">
@@ -70,6 +68,16 @@ const { data: institution, isLoading, error } = useReadInstitution(institutionId
                 </LayoutSidebarSection>
 
                 <LayoutSidebarSection title="Structuur">
+                    <LayoutSidebarItem
+                        :loading="isLoading"
+                        :to="{ name: 'manage.institution.locations', params: { institutionId } }"
+                        :active="route.name === 'manage.institution.locations'">
+                        <template #img>
+                            <FontAwesomeIcon :icon="faMapLocationDot" />
+                        </template>
+                        <template #text>Locaties</template>
+                    </LayoutSidebarItem>
+
                     <LayoutSidebarItem
                         :loading="isLoading"
                         :to="{ name: 'manage.institution.profiles', params: { institutionId } }"
@@ -121,8 +129,7 @@ const { data: institution, isLoading, error } = useReadInstitution(institutionId
                 v-else-if="institution"
                 v-slot="{ Component, route }"
                 :institution="institution"
-                :auth-profile="authProfile"
-                :error="error">
+                :auth-profile="authProfile">
                 <Transition name="fade-slide-up" mode="out-in">
                     <component :is="Component" :key="route.path" />
                 </Transition>

@@ -324,6 +324,25 @@ export async function readAuthorityLocations(authorityId: number): Promise<Locat
     return data;
 }
 
+export async function readInstitutionLocations(
+    institutionId: number,
+    filters: Partial<LocationFilter> = {},
+): Promise<Paginated<Location>> {
+    const endpoint = endpoints.institutions.locations.list.replace(
+        '{id}',
+        institutionId.toString(),
+    );
+
+    const transformResponse = transformPaginatedResponseFactory(parseLocationResponse);
+
+    const { data } = await client.get<Paginated<Location>>(endpoint, {
+        params: filters,
+        transformResponse,
+    });
+
+    return data;
+}
+
 /**
  * Fetches the recent locations associated with a specific profile.
  * A recent location is defined as a location that the profile has most recently made reservations for.

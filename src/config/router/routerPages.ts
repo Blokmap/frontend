@@ -41,6 +41,8 @@ export const InstitutionAuthoritiesPage = () =>
     import('@/pages/manage/institutions/InstitutionAuthoritiesPage.vue');
 export const InstitutionMembersPage = () =>
     import('@/pages/manage/institutions/InstitutionMembersPage.vue');
+export const InstitutionLocationsPage = () =>
+    import('@/pages/manage/institutions/InstitutionLocationsPage.vue');
 export const InstitutionProfilesPage = () =>
     import('@/pages/manage/institutions/InstitutionProfilesPage.vue');
 export const InstitutionRolesPage = () =>

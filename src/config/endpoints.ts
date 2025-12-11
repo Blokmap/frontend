@@ -35,6 +35,9 @@ export const endpoints = {
             add: '/institutions/{id}/authorities',
             remove: '/institutions/{id}/authorities/{authorityId}',
         },
+        locations: {
+            list: '/institutions/{id}/locations',
+        },
     },
     profiles: {
         list: '/profiles',

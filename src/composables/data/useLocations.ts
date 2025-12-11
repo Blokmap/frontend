@@ -21,6 +21,7 @@ import {
     deleteLocationImage,
     reorderLocationImages,
     readAuthorityLocations,
+    readInstitutionLocations,
     readRecentProfileLocations,
     type RecentLocationFilter,
     readProfileLocations,
@@ -167,6 +168,24 @@ export function useReadAuthorityLocations(
         queryKey: ['locations', 'list', 'byAuthority', authorityId],
         enabled,
         queryFn: () => readAuthorityLocations(toValue(authorityId)!),
+    });
+
+    return query;
+}
+
+export function useReadInstitutionLocations(
+    institutionId: MaybeRef<number>,
+    filters: MaybeRef<LocationFilter> = {},
+    options: CompQueryOptions = {},
+): CompQuery<Paginated<Location>> {
+    const query = useQuery<Paginated<Location>, AxiosError>({
+        ...options,
+        queryKey: ['locations', 'list', 'byInstitution', institutionId, filters],
+        queryFn: () => {
+            const idValue = toValue(institutionId);
+            const filtersValue = toValue(filters);
+            return readInstitutionLocations(idValue, filtersValue);
+        },
     });
 
     return query;

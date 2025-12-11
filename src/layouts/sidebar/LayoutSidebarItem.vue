@@ -62,7 +62,7 @@ const component = computed(() => (props.to ? RouterLink : 'div'));
         @apply px-3 py-2;
 
         .item__img {
-            @apply !h-6 !w-6 text-lg;
+            @apply !h-8 !w-8 text-lg;
         }
 
         .item__text {

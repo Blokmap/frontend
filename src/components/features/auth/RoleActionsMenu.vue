@@ -18,33 +18,22 @@ const emit = defineEmits<{
 
 const showDeleteDialog = ref(false);
 
-const onEdit = (hideMenu: () => void) => {
-    hideMenu();
+function onEdit() {
     emit('edit', props.role);
-};
+}
 
-const onDeleteClick = (hideMenu: () => void) => {
-    hideMenu();
+function onDeleteClick() {
     showDeleteDialog.value = true;
-};
+}
 
-/**
- * Confirm role deletion and emit delete event.
- */
 function onConfirmDeletion(): void {
     emit('delete', props.role);
 }
 
-/**
- * Cancel role deletion dialog.
- */
 function onCancelDeletion(): void {
     showDeleteDialog.value = false;
 }
 
-/**
- * Close dialog when deletion completes successfully.
- */
 watch(
     () => props.isPending,
     (isPending, wasPending) => {
@@ -66,14 +55,13 @@ watch(
             </slot>
         </template>
 
-        <template #navigation="{ hideMenu }">
-            <ActionMenuButton :icon="faPencil" label="Bewerken" @click="onEdit(hideMenu)">
-            </ActionMenuButton>
+        <template #navigation>
+            <ActionMenuButton :icon="faPencil" label="Bewerken" @click="onEdit" />
             <ActionMenuButton
                 :icon="faTrash"
                 label="Verwijderen"
                 destructive
-                @click="onDeleteClick(hideMenu)">
+                @click="onDeleteClick">
             </ActionMenuButton>
         </template>
     </ActionMenu>

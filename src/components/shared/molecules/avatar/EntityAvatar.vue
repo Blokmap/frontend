@@ -5,7 +5,7 @@ import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 withDefaults(
     defineProps<{
-        image?: string;
+        image?: string | null;
         editable?: boolean;
         icon?: IconDefinition;
         circle?: boolean;

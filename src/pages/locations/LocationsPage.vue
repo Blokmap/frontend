@@ -14,11 +14,13 @@ import { useMapBox } from '@/composables/maps/useMapBox';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { usePagination } from '@/composables/usePagination';
 import { hasNextPage } from '@/utils/pagination';
-import type { Location, NearestLocation } from '@/domain/location';
+import type { NearestLocation } from '@/domain/location';
 
+// Needed for KeepAlive
 defineOptions({ name: 'LocationsPage' });
 
 const filterStore = useLocationFilters();
+
 const { geoLocation, filters, config } = storeToRefs(filterStore);
 const { first, onPageChange } = usePagination(filters);
 
@@ -32,18 +34,27 @@ const { mutate: flyToNearestLocation, isPending: isFlyingToNearestLocation } = u
     },
 );
 
+function onNearestClick(): void {
+    const center = map.center.value;
+
+    if (center) {
+        flyToNearestLocation(center);
+    }
+}
+
 const blokMapRef = useTemplateRef('blokMapRef');
 const mapContainerRef = computed(() => blokMapRef.value?.mapContainer ?? null);
 const map = useMapBox(mapContainerRef, config.value);
 
-const hoveredLocation = ref<Location | null>(null);
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
 
+// Keep track of previous location count to show skeletons when loading new data
 watch(locations, (locations) => {
     if (!locations || !locations.data.length) return;
     previousLocationCount.value = locations.data.length;
 });
 
+// Watch for changes in geoLocation to fly the map to that location
 watch(
     [geoLocation, map.isLoaded],
     ([geoLocation, isLoaded]) => {
@@ -69,20 +80,18 @@ watch(
 );
 
 const debouncedFilterUpdate = useDebounceFn(() => {
-    filterStore.updateFilters({ bounds: map.bounds.value, page: 1 });
+    filterStore.updateFilters({
+        bounds: map.bounds.value,
+        page: 1,
+    });
 }, 400);
 
 const debouncedConfigUpdate = useDebounceFn(() => {
-    filterStore.updateConfig({ center: map.center.value, zoom: map.zoom.value });
+    filterStore.updateConfig({
+        center: map.center.value,
+        zoom: map.zoom.value,
+    });
 }, 400);
-
-function onNearestClick(): void {
-    const center = map.center.value;
-
-    if (center) {
-        flyToNearestLocation(center);
-    }
-}
 </script>
 
 <template>
@@ -173,11 +182,7 @@ function onNearestClick(): void {
                                     name: 'locations.detail',
                                     params: { locationId: location.id },
                                 }">
-                                <LocationCard
-                                    :location="location"
-                                    @mouseenter="hoveredLocation = location"
-                                    @mouseleave="hoveredLocation = null">
-                                </LocationCard>
+                                <LocationCard :location="location" />
                             </RouterLink>
                         </div>
                     </template>
@@ -196,7 +201,6 @@ function onNearestClick(): void {
             <BlokMap
                 ref="blokMapRef"
                 :map="map"
-                v-model:hovered-location="hoveredLocation"
                 class="w-full shadow-md"
                 :style="{ height: 'calc(100vh - 2rem)' }"
                 :locations="locations?.data"
@@ -220,7 +224,6 @@ function onNearestClick(): void {
 }
 
 .map-container {
-    @apply -mx-3 -my-4 w-[calc(100%+1.5rem)];
     @apply md:mx-0 md:my-0 md:flex md:w-1/2;
 }
 

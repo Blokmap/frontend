@@ -185,26 +185,22 @@ function resetToCalculatedCoordinates(): void {
                 </div>
 
                 <!-- Detailed Description -->
-                <div class="border-t border-gray-200 pt-6">
-                    <h4 class="mb-4 text-lg font-medium text-gray-900">Uitgebreide beschrijving</h4>
-
-                    <!-- Current language description -->
-                    <div>
-                        <InputLabel :htmlFor="`description-${currentLanguage}`">
-                            Beschrijving ({{ currentLanguage }})
-                        </InputLabel>
-                        <EditorInput
-                            :id="`description-${currentLanguage}`"
-                            :max-length="LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH"
-                            v-model="form.description![currentLanguage]">
-                        </EditorInput>
-                        <InputHint>
-                            {{ getOutputDataLength(form.description?.[currentLanguage] || '') }}/{{
-                                LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH
-                            }}
-                            karakters
-                        </InputHint>
-                    </div>
+                <!-- Current language description -->
+                <div>
+                    <InputLabel :htmlFor="`description-${currentLanguage}`">
+                        Uitgebreide Beschrijving ({{ currentLanguage }})
+                    </InputLabel>
+                    <EditorInput
+                        :id="`description-${currentLanguage}`"
+                        :max-length="LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH"
+                        v-model="form.description![currentLanguage]">
+                    </EditorInput>
+                    <InputHint>
+                        {{ getOutputDataLength(form.description?.[currentLanguage] || '') }}/{{
+                            LOCATION_SETTINGS.MAX_DESCRIPTION_LENGTH
+                        }}
+                        karakters
+                    </InputHint>
                 </div>
             </template>
         </LocationBuilderCard>

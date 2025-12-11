@@ -26,7 +26,7 @@ const profileId = computed<string>(() => props.profileId ?? props.profile.id);
 
 const filters = ref<LocationFilter>({
     page: 1,
-    perPage: 20,
+    perPage: 10,
     query: '',
 });
 

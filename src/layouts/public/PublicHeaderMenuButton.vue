@@ -112,7 +112,7 @@ function closeMenu(): void {
                     <span>Reservaties</span>
                 </RouterLink>
 
-                <RouterLink :to="{ name: 'manage' }" class="menu-popover__item">
+                <RouterLink :to="{ name: 'manage' }" class="menu-popover__item" @click="closeMenu">
                     <FontAwesomeIcon :icon="faSliders" class="w-4" />
                     <span>Beheermodus</span>
                 </RouterLink>

@@ -57,13 +57,12 @@ export function useSearchLocations(
 ): CompQuery<Paginated<Location>> {
     const { locale } = useI18n();
 
-    const query = useQuery({
+    const query = useQuery<Paginated<Location>, AxiosError>({
         ...options,
         queryKey: ['locations', 'list', filters],
         placeholderData: keepPreviousData,
         queryFn: async () => {
             const params = { ...toValue(filters), locale: toValue(locale) };
-
             return await searchLocations(params);
         },
     });
@@ -84,7 +83,7 @@ export function useReadLocations(
 ): CompQuery<Paginated<Location>> {
     const { locale } = useI18n();
 
-    const query = useQuery({
+    const query = useQuery<Paginated<Location>, AxiosError>({
         ...options,
         queryKey: ['locations', 'list', filters, locale],
         placeholderData: keepPreviousData,
@@ -109,7 +108,7 @@ export function useReadLocation(
     id: MaybeRef<number>,
     options: CompQueryOptions<LocationIncludes> = {},
 ): CompQuery<Location> {
-    const query = useQuery({
+    const query = useQuery<Location, AxiosError>({
         ...options,
         queryKey: ['locations', 'read', id],
         queryFn: () => {

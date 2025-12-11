@@ -38,12 +38,12 @@ defineProps<{
     }
 
     .builder-card__icon {
-        @apply bg-secondary-50 text-secondary-700 hidden h-12 w-12 shrink-0 items-center justify-center sm:flex;
+        @apply bg-primary-50 text-primary-700 hidden h-13 w-13 shrink-0 items-center justify-center sm:flex;
         @apply rounded-full;
     }
 
     .builder-card__title {
-        @apply w-full space-y-2;
+        @apply w-full space-y-1;
     }
 }
 </style>

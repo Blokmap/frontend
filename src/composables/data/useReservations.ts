@@ -203,16 +203,15 @@ export function useDeleteReservations(
 export function useReadLocationReservations(
     locationId: MaybeRef<number>,
     filters?: MaybeRef<ReservationFilter>,
-    options: CompQueryOptions = {},
+    options: CompQueryOptions<ReservationIncludes> = {},
 ): CompQuery<Reservation[]> {
-    const query = useQuery({
+    const query = useQuery<Reservation[], AxiosError>({
         ...options,
         queryKey: ['reservations', 'list', 'byLocation', locationId, filters],
         queryFn: () => {
             const locationIdValue = toValue(locationId);
             const filtersValue = toValue(filters);
-            const includes: ReservationIncludes[] = ['profile'];
-            return readLocationReservations(locationIdValue, filtersValue, includes);
+            return readLocationReservations(locationIdValue, filtersValue, options.includes);
         },
     });
 

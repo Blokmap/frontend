@@ -56,30 +56,19 @@ import type {
 import type { Paginated } from '@/utils/pagination';
 import type { AxiosError } from 'axios';
 
-export type UpdateMemberParams = {
-    id: number;
-    memberId: string;
-    body: UpdateMemberBody;
-};
-
-export type DeleteMemberParams = {
-    id: number;
-    memberId: string;
-};
-
-/**
- * Composable to fetch members for a specific location.
- *
- */
 export function useReadLocationMembers(
     locationId: MaybeRef<number>,
     filters: MaybeRef<LocationFilter> = {},
     options: CompQueryOptions = {},
 ): CompQuery<Paginated<Member>> {
-    const query = useQuery({
+    const query = useQuery<Paginated<Member>, AxiosError>({
         ...options,
         queryKey: ['members', 'list', 'byLocation', locationId, filters],
-        queryFn: () => readLocationMembers(toValue(locationId), toValue(filters)),
+        queryFn: () => {
+            const locationIdValue = toValue(locationId);
+            const filtersValue = toValue(filters);
+            return readLocationMembers(locationIdValue, filtersValue);
+        },
     });
 
     return query;
@@ -109,7 +98,7 @@ export function useReadInstitutionMembers(
     filters: MaybeRef<MemberFilter> = {},
     options: CompQueryOptions = {},
 ): CompQuery<Paginated<Member>> {
-    const query = useQuery({
+    const query = useQuery<Paginated<Member>, AxiosError>({
         ...options,
         queryKey: ['members', 'list', 'byInstitution', institutionId, filters],
         queryFn: () => {
@@ -157,6 +146,12 @@ export function useAddAuthorityMember(
 
     return mutation;
 }
+
+export type UpdateMemberParams = {
+    id: number;
+    memberId: string;
+    body: UpdateMemberBody;
+};
 
 /**
  * Composable to update a member's role in an authority.
@@ -285,9 +280,11 @@ export function useUpdateInstitutionMember(
     return mutation;
 }
 
-/**
- * Composable to remove a member from an institution.
- */
+export type DeleteMemberParams = {
+    id: number;
+    memberId: string;
+};
+
 export function useDeleteMemberFromInstitution(
     options: CompMutationOptions = {},
 ): CompMutation<DeleteMemberParams> {
@@ -431,7 +428,7 @@ export function useReadProfileLocationMemberships(
 ): CompQuery<LocationMembership[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 
-    const query = useQuery({
+    const query = useQuery<LocationMembership[], AxiosError>({
         ...options,
         enabled,
         queryKey: ['memberships', 'list', 'locations', 'byProfile', profileId],
@@ -455,7 +452,7 @@ export function useReadProfileAuthorityMemberships(
 ): CompQuery<AuthorityMembership[]> {
     const enabled = computed(() => toValue(profileId) !== null);
 
-    const query = useQuery({
+    const query = useQuery<AuthorityMembership[], AxiosError>({
         ...options,
         enabled,
         queryKey: ['memberships', 'list', 'authorities', 'byProfile', profileId],
@@ -475,9 +472,12 @@ export function useReadProfileInstitutionMemberships(
     profileId: MaybeRef<string | null>,
     options: CompQueryOptions = {},
 ): CompQuery<InstitutionMembership[]> {
-    const enabled = computed(() => toValue(profileId) !== null);
+    const enabled = computed(() => {
+        const enabled = !options.enabled || toValue(options.enabled);
+        return enabled && toValue(profileId) !== null;
+    });
 
-    const query = useQuery({
+    const query = useQuery<InstitutionMembership[], AxiosError>({
         ...options,
         enabled,
         queryKey: ['memberships', 'list', 'byProfileInstitutions', profileId],
@@ -874,7 +874,7 @@ export function useReadLocationMemberPermissions(
     profileId: MaybeRef<string>,
     options: CompQueryOptions = {},
 ): CompQuery<RecursivePermissions> {
-    const query = useQuery({
+    const query = useQuery<RecursivePermissions, AxiosError>({
         ...options,
         queryKey: ['permissions', 'list', 'byLocation', locationId, profileId],
         queryFn: () => readLocationMemberPermissions(toValue(locationId), toValue(profileId)),
@@ -888,7 +888,7 @@ export function useReadAuthorityMemberPermissions(
     profileId: MaybeRef<string>,
     options: CompQueryOptions = {},
 ): CompQuery<RecursivePermissions> {
-    const query = useQuery({
+    const query = useQuery<RecursivePermissions, AxiosError>({
         ...options,
         queryKey: ['permissions', 'list', 'byAuthority', authorityId, profileId],
         queryFn: () => readAuthorityMemberPermissions(toValue(authorityId), toValue(profileId)),
@@ -902,7 +902,7 @@ export function useReadInstitutionMemberPermissions(
     profileId: MaybeRef<string>,
     options: CompQueryOptions = {},
 ): CompQuery<RecursivePermissions> {
-    const query = useQuery({
+    const query = useQuery<RecursivePermissions, AxiosError>({
         ...options,
         queryKey: ['permissions', 'list', 'byInstitution', institutionId, profileId],
         queryFn: () => readInstitutionMemberPermissions(toValue(institutionId), toValue(profileId)),

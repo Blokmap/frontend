@@ -1,44 +1,145 @@
 <script lang="ts" setup>
+import LocationHierarchyBuilder from '@/components/features/location/builder/builders/LocationHierarchyBuilder.vue';
 import LocationSettingsBuilder from '@/components/features/location/builder/builders/LocationSettingsBuilder.vue';
-import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
+import ManageBreadcrumb, {
+    type BreadcrumbItem,
+} from '@/components/shared/molecules/Breadcrumb.vue';
 import SaveBar from '@/components/shared/molecules/SaveBar.vue';
 import PageContent from '@/layouts/PageContent.vue';
 import PageTitle from '@/layouts/PageTitle.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { useReadInstitutionAuthorities } from '@/composables/data/useAuthorities';
+import { useReadInstitutions } from '@/composables/data/useInstitutions';
 import { useUpdateLocation } from '@/composables/data/useLocations';
-import { useReadProfileAuthorityMemberships } from '@/composables/data/useMembers';
+import { useReadProfileInstitutionMemberships } from '@/composables/data/useMembers';
 import { useDirtyForm } from '@/composables/useDirtyForm';
-import { locationToBody, type Location } from '@/domain/location';
+import { has, InstitutionPermission, type RecursivePermissions } from '@/domain/auth';
+import { type Authority, type AuthorityFilter } from '@/domain/authority';
+import { locationToBody, type Location, type LocationBody } from '@/domain/location';
+import type { Institution, InstitutionFilter } from '@/domain/institution';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
     authProfile: Profile;
     location: Location;
+    permissions: RecursivePermissions;
 }>();
-
-const { data: authorities } = useReadProfileAuthorityMemberships(
-    computed(() => props.authProfile.id),
-);
 
 const { mutateAsync: updateLocation, isPending: isUpdatingLocation } = useUpdateLocation();
 
-const {
-    form: locationForm,
-    hasChanges,
-    isUpdating,
-    saveChanges,
-    cancelChanges,
-} = useDirtyForm({
+const { form, hasChanges, isUpdating, saveChanges, cancelChanges } = useDirtyForm({
+    isPending: isUpdatingLocation,
     source: () => props.location,
     toForm: locationToBody,
-    onSave: async (formData) => {
-        await updateLocation({ locationId: props.location.id, data: formData });
+    onSave: (data: LocationBody) => {
+        updateLocation({ locationId: props.location.id, data });
     },
-    isPending: isUpdatingLocation,
 });
 
-const breadcrumbs = computed(() => [
-    { label: 'Locaties', to: { name: 'manage.locations' } },
+const profileId = computed<string>(() => props.authProfile.id);
+
+// We only allow institution admins to change the location hierarchy.
+// Makes it easier to manage permissions.
+
+// For non-admins: institution memberships only.
+const { data: memberInstitutions } = useReadProfileInstitutionMemberships(profileId, {
+    enabled: computed(() => !props.authProfile.isAdmin),
+});
+
+// For admins: all institutions.
+const institutionFilters = ref<InstitutionFilter>({
+    perPage: 50,
+    page: 1,
+    query: null,
+});
+
+const { data: allInstitutions, isLoading: isLoadingInstitutions } = useReadInstitutions(
+    institutionFilters,
+    {
+        enabled: computed(() => props.authProfile.isAdmin),
+    },
+);
+
+const institutionOptions = computed<Institution[] | undefined>(() => {
+    const predicate = has(InstitutionPermission.Administrator);
+
+    const result =
+        allInstitutions.value?.data ??
+        memberInstitutions.value
+            ?.filter((membership) => {
+                const permissions = membership.role?.permissions;
+
+                if (!permissions) {
+                    return false;
+                }
+
+                return predicate(permissions);
+            })
+            .map((membership) => {
+                return membership.institution;
+            });
+
+    const current = props.location.institution;
+    const exists = result?.find((i) => i.id === current?.id);
+
+    if (current && !exists) {
+        result?.push(current);
+    }
+
+    return result;
+});
+
+// Fetch authorities for the selected institution.
+// (Institution) admins can switch to all authorities within their institution.
+const institutionId = computed<number | null>(() => {
+    return form.value?.institutionId ?? null;
+});
+
+const authorityFilter = ref<AuthorityFilter>({
+    perPage: 50,
+    page: 1,
+    query: null,
+});
+
+const { data: authorities, isLoading: isLoadingAuthorities } = useReadInstitutionAuthorities(
+    institutionId,
+    authorityFilter,
+);
+
+const authorityOptions = computed<Authority[] | undefined>(() => {
+    const result = authorities.value?.data;
+    const current = props.location.authority;
+    const exists = result?.find((a) => a.id === current?.id);
+
+    if (current && !exists) {
+        result?.push(current);
+    }
+
+    return result;
+});
+
+const isLoadingHierarchyOptions = computed<boolean>(() => {
+    return isLoadingInstitutions.value || isLoadingAuthorities.value;
+});
+
+const disableHierarchyBuilder = computed<boolean>(() => {
+    let disable = !props.authProfile.isAdmin;
+
+    if (props.location.institution || props.location.authority) {
+        const perms = props.permissions.institution;
+        disable = disable && !has(InstitutionPermission.Administrator)(perms);
+    }
+
+    return disable;
+});
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+    {
+        label: 'Locaties',
+        to: {
+            name: 'manage.locations',
+        },
+    },
     {
         label: props.location.name,
         to: {
@@ -48,7 +149,9 @@ const breadcrumbs = computed(() => [
             },
         },
     },
-    { label: 'Instellingen' },
+    {
+        label: 'Instellingen',
+    },
 ]);
 </script>
 
@@ -58,16 +161,23 @@ const breadcrumbs = computed(() => [
 
         <PageTitle title="Instellingen" />
 
-        <LocationSettingsBuilder
-            v-if="locationForm"
-            :authorities="authorities"
-            v-model:form="locationForm">
+        <LocationSettingsBuilder v-if="form" :authorities="authorities" v-model:form="form">
         </LocationSettingsBuilder>
+
+        <LocationHierarchyBuilder
+            v-if="form"
+            :authority-options="authorityOptions"
+            :institution-options="institutionOptions"
+            :is-loading-options="isLoadingHierarchyOptions"
+            :disabled="disableHierarchyBuilder"
+            v-model:form="form">
+        </LocationHierarchyBuilder>
 
         <SaveBar
             :show="hasChanges"
             :loading="isUpdating"
             @save="saveChanges"
-            @cancel="cancelChanges" />
+            @cancel="cancelChanges">
+        </SaveBar>
     </PageContent>
 </template>

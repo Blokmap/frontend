@@ -45,7 +45,7 @@ export function useReadAuthorities(
     filters: MaybeRefOrGetter<Partial<AuthorityFilter>>,
     options: CompQueryOptions = {},
 ): CompQuery<Paginated<Authority>> {
-    const authorities = useQuery({
+    const authorities = useQuery<Paginated<Authority>, AxiosError>({
         ...options,
         queryKey: ['authorities', 'list'],
         queryFn: () => readAuthorities(toValue(filters)),
@@ -62,14 +62,25 @@ export function useReadAuthorities(
  * @returns The query object containing institution authorities and their state.
  */
 export function useReadInstitutionAuthorities(
-    institutionId: MaybeRef<number>,
-    filters: MaybeRefOrGetter<Partial<AuthorityFilter>>,
+    institutionId: MaybeRef<number | null>,
+    filters: MaybeRefOrGetter<Partial<AuthorityFilter>> = {},
     options: CompQueryOptions = {},
 ): CompQuery<Paginated<Authority>> {
+    const enabled = computed(() => {
+        const enabled = !options.enabled || toValue(options.enabled);
+        return enabled && toValue(institutionId) !== null;
+    });
+
     const query = useQuery<Paginated<Authority>, AxiosError>({
         ...options,
+        enabled,
         queryKey: ['authorities', 'list', 'byInstitution', institutionId, filters],
-        queryFn: () => readInstitutionAuthorities(toValue(institutionId), toValue(filters)),
+        queryFn: () => {
+            const institutionIdValue = toValue(institutionId)!;
+            const filtersValue = toValue(filters);
+
+            return readInstitutionAuthorities(institutionIdValue, filtersValue);
+        },
     });
 
     return query;
@@ -86,10 +97,13 @@ export function useReadAuthority(
     id: MaybeRefOrGetter<number>,
     options: CompQueryOptions<AuthorityIncludes> = {},
 ): CompQuery<Authority> {
-    const authority = useQuery({
+    const authority = useQuery<Authority, AxiosError>({
         ...options,
         queryKey: ['authorities', 'read', id],
-        queryFn: () => readAuthority(toValue(id), options.includes),
+        queryFn: () => {
+            const idValue = toValue(id);
+            return readAuthority(idValue, options.includes);
+        },
     });
 
     return authority;

@@ -1,18 +1,21 @@
-import type {
-    MutationOptions,
-    UseMutationReturnType,
-    UseQueryOptions,
-    UseQueryReturnType,
+import {
+    type MutationOptions,
+    type UseMutationReturnType,
+    type UseQueryOptions,
+    type UseQueryReturnType,
 } from '@tanstack/vue-query';
 import type { AxiosError } from 'axios';
+import type { Ref } from 'vue';
 
-export type CompMutationOptions<D = any, V = any> = Partial<
-    MutationOptions<D, AxiosError | Error, V, any>
-> & {
+export type CompMutationOptions<D = any, V = any> = Partial<MutationOptions<D, AxiosError, V>> & {
     disableToasts?: boolean;
 };
 
-export type CompQueryOptions<I = string> = Partial<UseQueryOptions<any, any, any, any, any>> & {
+type UnwrapMaybeRef<T> = T extends Ref<infer U> ? U : T;
+
+export type CompQueryOptions<I = string, D = any> = Partial<
+    UnwrapMaybeRef<UseQueryOptions<D, AxiosError>>
+> & {
     includes?: I[];
     disableToasts?: boolean;
     disableInvalidates?: boolean;

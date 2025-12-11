@@ -2,27 +2,32 @@ import { checkPermissions } from './permissionHelpers';
 import type { Predicate } from '../types/predicateTypes';
 
 /**
- * Creates a predicate that returns true if ANY of the given permissions are present.
+ * Creates a predicate that returns true if ANY of the given permissions/predicates are satisfied.
  * Also returns true if the user has administrator privileges.
  *
- * @param permissions - Permission bitmasks to check
+ * @param items - Permission bitmasks or predicate functions to check
  * @returns Predicate function
  *
  */
-export function any(...permissions: number[]): Predicate {
-    return (perms: number) => permissions.some((permission) => checkPermissions(perms, permission));
+export function any(...items: (number | Predicate)[]): Predicate {
+    return (perms: number) =>
+        items.some((item) =>
+            typeof item === 'function' ? item(perms) : checkPermissions(perms, item),
+        );
 }
 
 /**
- * Creates a predicate that returns true if ALL of the given permissions are present.
+ * Creates a predicate that returns true if ALL of the given permissions/predicates are satisfied.
  * Also returns true if the user has administrator privileges.
  *
- * @param permissions - Permission bitmasks to check
+ * @param items - Permission bitmasks or predicate functions to check
  * @returns Predicate function
  */
-export function all(...permissions: number[]): Predicate {
+export function all(...items: (number | Predicate)[]): Predicate {
     return (perms: number) =>
-        permissions.every((permission) => checkPermissions(perms, permission));
+        items.every((item) =>
+            typeof item === 'function' ? item(perms) : checkPermissions(perms, item),
+        );
 }
 
 /**

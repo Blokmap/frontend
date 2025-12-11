@@ -20,6 +20,7 @@ import type {
     CompQueryOptions,
 } from '@/utils/composable';
 import type { Paginated } from '@/utils/pagination';
+import type { AxiosError } from 'axios';
 
 // Mutation parameter types
 export type UpdateInstitutionParams = {
@@ -48,10 +49,10 @@ export type RemoveInstitutionAuthorityParams = {
  * @returns An object containing the institutions and their state.
  */
 export function useReadInstitutions(
-    filters: MaybeRefOrGetter<Partial<InstitutionFilter>>,
+    filters: MaybeRefOrGetter<InstitutionFilter> = {},
     options: CompQueryOptions = {},
 ): CompQuery<Paginated<Institution>> {
-    const institutions = useQuery({
+    const institutions = useQuery<Paginated<Institution>, AxiosError>({
         ...options,
         queryKey: ['institutions', 'list', filters],
         queryFn: () => readInstitutions(toValue(filters)),
@@ -71,10 +72,13 @@ export function useReadInstitution(
     id: MaybeRefOrGetter<number>,
     options: CompQueryOptions = {},
 ): CompQuery<Institution> {
-    const institution = useQuery({
+    const institution = useQuery<Institution, AxiosError>({
         ...options,
         queryKey: ['institutions', 'read', id],
-        queryFn: () => readInstitution(toValue(id)),
+        queryFn: () => {
+            const idValue = toValue(id);
+            return readInstitution(idValue);
+        },
     });
 
     return institution;

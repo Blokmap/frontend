@@ -6,7 +6,9 @@ import AccessCard from '@/components/features/member/AccessCard.vue';
 import AccessCardLink from '@/components/features/member/AccessCardLink.vue';
 import MemberAddDialog from '@/components/features/member/MemberAddDialog.vue';
 import MembersTable from '@/components/features/member/MembersTable.vue';
-import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
+import ManageBreadcrumb, {
+    type BreadcrumbItem,
+} from '@/components/shared/molecules/Breadcrumb.vue';
 import PageContent from '@/layouts/PageContent.vue';
 import PageTitle from '@/layouts/PageTitle.vue';
 import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
@@ -39,6 +41,8 @@ const props = defineProps<{
     permissions: RecursivePermissions;
 }>();
 
+const { locale } = useI18n();
+
 const locationId = computed<number>(() => props.location.id);
 
 const showMemberAddDialog = ref<boolean>(false);
@@ -47,8 +51,6 @@ const filters = ref<MemberFilter>({
     page: 1,
     perPage: 25,
 });
-
-const { locale } = useI18n();
 
 const { onPageChange, first } = usePagination(filters);
 
@@ -72,31 +74,14 @@ const { mutate: addLocationMember, isPending: addMemberIsPending } = useAddLocat
     },
 });
 
+function onAddMember(body: CreateMemberBody): void {
+    addLocationMember({
+        id: props.location.id,
+        body,
+    });
+}
+
 const { mutate: updateLocationMember } = useUpdateLocationMember();
-const { mutate: deleteLocationMember } = useDeleteLocationMember();
-
-const isLoading = computed(() => membersLoading.value || rolesLoading.value);
-const isError = computed(() => !!membersError.value || !!rolesError.value);
-
-const showInstitutionAccess = computed(() => {
-    if (!props.location.institution) return false;
-    const hasPermission = has(InstitutionPermission.ManageMembers)(props.permissions.institution);
-    return hasPermission || props.authProfile.isAdmin;
-});
-
-const showAuthorityAccess = computed(() => {
-    if (!props.location.authority) return false;
-    const hasPermission = has(AuthorityPermission.ManageMembers)(props.permissions.authority);
-    return hasPermission || props.authProfile.isAdmin;
-});
-
-const showAccessCard = computed(() => showInstitutionAccess.value || showAuthorityAccess.value);
-
-const breadcrumbs = computed(() => [
-    { label: 'Mijn locaties', to: { name: 'manage.locations' } },
-    { label: props.location?.name ?? 'Locatie', to: { name: 'manage.location.info' } },
-    { label: 'Beheerders' },
-]);
 
 function onSelectRole(memberId: string, roleId: number): void {
     const member = members.value?.data.find((m) => m.profile.id === memberId);
@@ -112,6 +97,8 @@ function onSelectRole(memberId: string, roleId: number): void {
     });
 }
 
+const { mutate: deleteLocationMember } = useDeleteLocationMember();
+
 function onDeleteClick(memberId: string): void {
     deleteLocationMember({
         id: props.location.id,
@@ -119,12 +106,43 @@ function onDeleteClick(memberId: string): void {
     });
 }
 
-function onAddMember(body: CreateMemberBody): void {
-    addLocationMember({
-        id: props.location.id,
-        body,
-    });
-}
+const isLoading = computed<boolean>(() => {
+    return membersLoading.value || rolesLoading.value;
+});
+
+const isError = computed<boolean>(() => {
+    return !!membersError.value || !!rolesError.value;
+});
+
+const showInstitutionAccess = computed<boolean>(() => {
+    if (!props.location.institution) {
+        return false;
+    }
+
+    const predicate = has(InstitutionPermission.ManageMembers);
+
+    return predicate(props.permissions.institution) || props.authProfile.isAdmin;
+});
+
+const showAuthorityAccess = computed<boolean>(() => {
+    if (!props.location.authority) {
+        return false;
+    }
+
+    const predicate = has(AuthorityPermission.ManageMembers);
+
+    return predicate(props.permissions.authority) || props.authProfile.isAdmin;
+});
+
+const showAccessCard = computed<boolean>(() => {
+    return showInstitutionAccess.value || showAuthorityAccess.value;
+});
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+    { label: 'Mijn locaties', to: { name: 'manage.locations' } },
+    { label: props.location?.name ?? 'Locatie', to: { name: 'manage.location.info' } },
+    { label: 'Beheerders' },
+]);
 </script>
 
 <template>
@@ -144,21 +162,25 @@ function onAddMember(body: CreateMemberBody): void {
 
         <p class="text-slate-600">Beheer wie toegang heeft tot deze locatie en hun rollen.</p>
 
+        <!-- Error State -->
+        <ManagementLoaderError v-if="isError" :errors="[membersError]" />
+
         <AccessCard v-if="showAccessCard">
             <template #header>
-                <h3 class="mb-1 text-sm font-semibold text-slate-700">Toegang via hierarchie</h3>
-                <p class="text-xs text-slate-600">
-                    Bekijk beheerders met toegang via de organisatie- en groepshierarchie
+                <h3 class="mb-1 text-lg font-semibold text-slate-700">Externe Beheerders</h3>
+                <p class="text-slate-600">
+                    Bekijk de beheerders met toegang via de groep of organisatie waartoe deze
+                    locatie behoort.
                 </p>
             </template>
 
             <AccessCardLink
                 v-if="showInstitutionAccess && location.institution"
+                label="Organisatie"
                 :to="{
                     name: 'manage.institution.members',
                     params: { institutionId: location.institution.id },
                 }"
-                label="Organisatie"
                 :name="location.institution.name[locale]"
                 :logo="location.institution.logo?.url"
                 :icon="faCity">
@@ -166,18 +188,16 @@ function onAddMember(body: CreateMemberBody): void {
 
             <AccessCardLink
                 v-if="showAuthorityAccess && location.authority"
+                label="Groep"
                 :to="{
                     name: 'manage.authority.members',
                     params: { authorityId: location.authority.id },
                 }"
-                label="Groep"
                 :name="location.authority.name"
                 :logo="location.authority.logo?.url"
-                :icon="faCity" />
+                :icon="faCity">
+            </AccessCardLink>
         </AccessCard>
-
-        <!-- Error State -->
-        <ManagementLoaderError v-if="isError" :errors="[membersError]" />
 
         <!-- Data / Loading State -->
         <MembersTable :members="members?.data" :is-loading="isLoading">

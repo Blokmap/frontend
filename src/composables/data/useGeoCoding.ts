@@ -36,7 +36,7 @@ export function useSearchGeoLocations(
     const { locale } = useI18n();
 
     const query = useQuery<GeoJSON.GeoJsonProperties[], AxiosError>({
-        ...options,
+        ...toValue(options),
         queryKey: ['geo', 'search', filters, locale],
         retry: false,
         queryFn: async () => {

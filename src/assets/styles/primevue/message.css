@@ -58,12 +58,12 @@
 }
 
 .p-message-error {
-    @apply shadow-playful-no-transform border-red-200 bg-red-50/95 text-red-700;
-    --shadow-color: theme(colors.red.200);
+    @apply shadow-playful-no-transform border-blushed-brick-200 bg-blushed-brick-50/95 text-blushed-brick-700;
+    --shadow-color: theme(colors.blushed-brick.200);
 }
 
 .p-message-error .p-message-close-button {
-    @apply hover:bg-red-100;
+    @apply hover:bg-blushed-brick-100;
 }
 
 .p-message-error.p-message-outlined {

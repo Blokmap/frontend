@@ -35,7 +35,7 @@ export {
 export async function readLocationMembers(
     locationId: number,
     filters: MemberFilter,
-): Promise<Paginated<LocationMembership>> {
+): Promise<Paginated<Member>> {
     const endpoint = endpoints.locations.members.list.replace('{id}', locationId.toString());
 
     const transformResponse = transformPaginatedResponseFactory(parseMemberResponse);

@@ -15,7 +15,7 @@ export interface DirtyFormOptions<TSource, TForm> {
      * Function to perform the save/update operation
      * Should return a Promise
      */
-    onSave: (form: TForm) => Promise<void>;
+    onSave: (form: TForm) => Promise<void> | void;
 
     /**
      * Whether the save operation is currently pending

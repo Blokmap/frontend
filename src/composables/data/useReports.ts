@@ -23,6 +23,7 @@ import type {
     CompQueryOptions,
 } from '@/utils/composable';
 import type { Paginated } from '@/utils/pagination';
+import type { AxiosError } from 'axios';
 
 export type CreateLocationReportParams = {
     locationId: number;
@@ -98,7 +99,7 @@ export function useReadLocationReports(
     locationId: MaybeRef<number>,
     options: CompQueryOptions<ReportIncludes> = {},
 ): CompQuery<Paginated<Report>> {
-    const query = useQuery({
+    const query = useQuery<Paginated<Report>, AxiosError>({
         ...options,
         queryKey: ['reports', 'list', 'byLocation', locationId],
         queryFn: () => {
@@ -114,7 +115,7 @@ export function useReadAllLocationReports(
     filters: MaybeRef<ReportFilter>,
     options: CompQueryOptions<ReportIncludes> = {},
 ): CompQuery<Paginated<LocationReport>> {
-    const query = useQuery({
+    const query = useQuery<Paginated<LocationReport>, AxiosError>({
         ...options,
         queryKey: ['reports', 'list', 'all', 'locations', filters],
         queryFn: () => {
@@ -130,7 +131,7 @@ export function useReadAllAuthorityReports(
     filters: MaybeRef<ReportFilter>,
     options: CompQueryOptions<ReportIncludes> = {},
 ): CompQuery<Paginated<AuthorityReport>> {
-    const query = useQuery({
+    const query = useQuery<Paginated<AuthorityReport>, AxiosError>({
         ...options,
         queryKey: ['reports', 'list', 'all', 'authorities', filters],
         queryFn: () => {
@@ -146,7 +147,7 @@ export function useReadAllProfileReports(
     filters: MaybeRef<ReportFilter>,
     options: CompQueryOptions<ReportIncludes> = {},
 ): CompQuery<Paginated<ProfileReport>> {
-    const query = useQuery({
+    const query = useQuery<Paginated<ProfileReport>, AxiosError>({
         ...options,
         queryKey: ['reports', 'list', 'all', 'profiles', filters],
         queryFn: () => {

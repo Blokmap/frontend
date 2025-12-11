@@ -79,6 +79,7 @@ export type LocationBody = {
     latitude: number;
     longitude: number;
     authorityId?: number | null;
+    institutionId?: number | null;
 };
 
 export type NearestLocation = {

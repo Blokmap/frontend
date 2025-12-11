@@ -19,7 +19,7 @@
 
 @theme {
     --text-base: 16px;
-    --font-serif: 'Merriweather', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'OpenSans', ui-sans-serif, system-ui, sans-serif;
 
     --color-ocean-mist-50: oklch(0.962 0.039 160.76);
     --color-ocean-mist-100: oklch(0.922 0.081 165.11);
@@ -129,7 +129,7 @@
 }
 
 body {
-    @apply bg-slate-900 font-serif text-base text-slate-800;
+    @apply bg-slate-900 font-serif text-base text-slate-900;
 
     h1,
     h2,

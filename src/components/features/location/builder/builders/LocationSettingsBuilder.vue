@@ -1,35 +1,15 @@
 <script setup lang="ts">
 import InputNumber from 'primevue/inputnumber';
-import Select from 'primevue/select';
 import FormCheckbox from '@/components/shared/molecules/form/FormCheckbox.vue';
 import InputHint from '@/components/shared/molecules/form/InputHint.vue';
 import InputLabel from '@/components/shared/molecules/form/InputLabel.vue';
 import { faCircleQuestion, faClock, faCog } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, watchEffect } from 'vue';
 import LocationBuilderCard from '../LocationBuilderCard.vue';
 import type { LocationBody } from '@/domain/location';
-import type { AuthorityMembership } from '@/domain/member';
 
-const props = defineProps<{
-    authorities?: AuthorityMembership[];
-}>();
-
-const form = defineModel<LocationBody>('form', { required: true });
-
-const authorityOptions = computed(() => {
-    if (!props.authorities) return [];
-
-    return props.authorities.map((membership) => ({
-        label: membership.authority.name,
-        value: membership.authority.id,
-    }));
-});
-
-watchEffect(() => {
-    if (!props.authorities?.length) {
-        form.value.authorityId = null;
-    }
+const form = defineModel<LocationBody>('form', {
+    required: true,
 });
 </script>
 
@@ -44,23 +24,6 @@ watchEffect(() => {
                 </p>
             </template>
             <template #default>
-                <div v-if="authorities?.length">
-                    <InputLabel html-for="authority"> Autoriteit </InputLabel>
-                    <Select
-                        class="w-full"
-                        v-model="form.authorityId"
-                        input-id="authority"
-                        :options="authorityOptions"
-                        option-label="label"
-                        option-value="value"
-                        placeholder="Selecteer een autoriteit"
-                        show-clear>
-                    </Select>
-                    <InputHint>
-                        Selecteer de autoriteit waaronder deze locatie wordt aangemaakt
-                    </InputHint>
-                </div>
-
                 <FormCheckbox
                     v-model="form.isVisible"
                     input-id="visible"

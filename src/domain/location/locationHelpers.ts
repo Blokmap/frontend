@@ -53,6 +53,7 @@ export function locationToBody(location: Location): LocationBody {
         description: translationToBody(location.description),
         excerpt: translationToBody(location.excerpt),
         authorityId: location.authority?.id || null,
+        institutionId: location.institution?.id || null,
     };
 }
 

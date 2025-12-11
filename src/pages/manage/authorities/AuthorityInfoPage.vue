@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import AuthorityCard from '@/components/features/authority/AuthorityCard.vue';
+import AuthorityInfoCard from '@/components/features/authority/AuthorityInfoCard.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import PageContent from '@/layouts/PageContent.vue';
 import PageTitle from '@/layouts/PageTitle.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import {
     useUpdateAuthority,
     useUpdateAuthorityLogo,
     useDeleteAuthorityLogo,
 } from '@/composables/data/useAuthorities';
-import { useReadProfileInstitutionMemberships } from '@/composables/data/useMembers';
 import { type Authority, type AuthorityBody } from '@/domain/authority';
 import type { Profile } from '@/domain/profile';
 
@@ -18,28 +18,27 @@ const props = defineProps<{
     authority: Authority;
 }>();
 
-const { data: institutions } = useReadProfileInstitutionMemberships(
-    computed(() => props.authProfile.id),
-);
+const infoEditMode = ref(false);
 
 const { mutateAsync: updateAuthority, isPending: isUpdatingAuthority } = useUpdateAuthority();
 
-const { mutateAsync: updateAuthorityLogo, isPending: isUpdatingAuthorityLogo } =
-    useUpdateAuthorityLogo();
-
-const { mutateAsync: deleteAuthorityLogo, isPending: isDeletingAuthorityLogo } =
-    useDeleteAuthorityLogo();
-
-async function handleAuthorityUpdate(data: AuthorityBody) {
+async function saveAuthority(data: AuthorityBody) {
     await updateAuthority({ id: props.authority.id, data });
+    infoEditMode.value = false;
 }
 
-async function handleLogoUpdate(file: File) {
-    await updateAuthorityLogo({ authorityId: props.authority.id, file });
+const logoDialogVisible = ref<boolean>(false);
+
+const { mutateAsync: updateLogo, isPending: isUpdatingLogo } = useUpdateAuthorityLogo();
+
+async function onLogoUpdate(file: File) {
+    await updateLogo({ authorityId: props.authority.id, file });
 }
 
-async function handleLogoDelete() {
-    await deleteAuthorityLogo(props.authority.id);
+const { mutateAsync: deleteLogo, isPending: isDeletingLogo } = useDeleteAuthorityLogo();
+
+async function onLogoDelete() {
+    await deleteLogo(props.authority.id);
 }
 
 const breadcrumbs = computed(() => [
@@ -65,13 +64,21 @@ const breadcrumbs = computed(() => [
 
         <AuthorityCard
             :authority="authority"
-            :institutions="institutions"
-            :saving="isUpdatingAuthority"
-            :avatar-updating="isUpdatingAuthorityLogo"
-            :avatar-deleting="isDeletingAuthorityLogo"
-            editable
-            @update:authority="handleAuthorityUpdate"
-            @update:avatar="handleLogoUpdate"
-            @delete:avatar="handleLogoDelete" />
+            :updating="isUpdatingLogo"
+            :deleting="isDeletingLogo"
+            v-model:avatar-dialog-visible="logoDialogVisible"
+            avatar-editable
+            @update:avatar="onLogoUpdate"
+            @delete:avatar="onLogoDelete">
+        </AuthorityCard>
+
+        <div class="mt-8 grid items-start gap-8 lg:grid-cols-2">
+            <AuthorityInfoCard
+                v-model:edit-mode="infoEditMode"
+                :authority="authority"
+                :is-updating="isUpdatingAuthority"
+                @save="saveAuthority">
+            </AuthorityInfoCard>
+        </div>
     </PageContent>
 </template>

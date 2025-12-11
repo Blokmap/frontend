@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import InstitutionAddressCard from '@/components/features/institution/InstitutionAddressCard.vue';
 import InstitutionBasicInfoCard from '@/components/features/institution/InstitutionBasicInfoCard.vue';
+import InstitutionCard from '@/components/features/institution/InstitutionCard.vue';
 import InstitutionContactCard from '@/components/features/institution/InstitutionContactCard.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
-import EntityCard from '@/components/shared/molecules/EntityCard.vue';
 import PageContent from '@/layouts/PageContent.vue';
-import { faBuilding } from '@fortawesome/free-solid-svg-icons';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
@@ -21,40 +20,13 @@ const props = defineProps<{
     institution: Institution;
 }>();
 
-const { locale, t } = useI18n();
+const { locale } = useI18n();
 
-const avatarDialogVisible = ref(false);
 const basicInfoEditMode = ref(false);
 const contactEditMode = ref(false);
 const addressEditMode = ref(false);
 
 const { mutateAsync: updateInstitution, isPending: isUpdating } = useUpdateInstitution();
-
-const { mutateAsync: updateInstitutionLogo, isPending: isUpdatingLogo } =
-    useUpdateInstitutionLogo();
-
-const { mutateAsync: deleteInstitutionLogo, isPending: isDeletingLogo } =
-    useDeleteInstitutionLogo();
-
-const institutionName = computed(() => {
-    const name = props.institution?.name;
-    if (!name) return 'N/A';
-    return name[locale.value] ?? name.nl ?? 'N/A';
-});
-
-const breadcrumbs = computed(() => [
-    { label: 'Instellingen', to: { name: 'manage' } },
-    {
-        label: institutionName.value,
-        to: {
-            name: 'manage.institution.info',
-            params: {
-                institutionId: props.institution.id,
-            },
-        },
-    },
-    { label: 'Profiel' },
-]);
 
 async function saveInstitution(data: InstitutionBody) {
     await updateInstitution({ id: props.institution.id, data });
@@ -63,45 +35,56 @@ async function saveInstitution(data: InstitutionBody) {
     addressEditMode.value = false;
 }
 
-async function onUpdateAvatar(file: File) {
+const logoDialogVisible = ref(false);
+
+const { mutateAsync: updateInstitutionLogo, isPending: isUpdatingLogo } =
+    useUpdateInstitutionLogo();
+
+async function onUpdateLogo(file: File) {
     await updateInstitutionLogo({ institutionId: props.institution.id, file });
-    avatarDialogVisible.value = false;
+    logoDialogVisible.value = false;
 }
 
-async function onDeleteAvatar() {
+const { mutateAsync: deleteInstitutionLogo, isPending: isDeletingLogo } =
+    useDeleteInstitutionLogo();
+
+async function onDeleteLogo() {
     await deleteInstitutionLogo(props.institution.id);
-    avatarDialogVisible.value = false;
+    logoDialogVisible.value = false;
 }
+
+const breadcrumbs = computed(() => {
+    const institutionName = props.institution.name[locale.value] || props.institution.name.nl;
+
+    return [
+        { label: 'Instellingen', to: { name: 'manage' } },
+        {
+            label: institutionName ?? 'N/A',
+            to: {
+                name: 'manage.institution.info',
+                params: {
+                    institutionId: props.institution.id,
+                },
+            },
+        },
+        { label: 'Profiel' },
+    ];
+});
 </script>
 
 <template>
     <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
 
-        <EntityCard
-            :avatar-image="institution.logo?.url"
-            :avatar-icon="faBuilding"
+        <InstitutionCard
+            :institution="institution"
             :avatar-editable="true"
-            :avatar-updating="isUpdatingLogo"
-            :avatar-deleting="isDeletingLogo"
-            :avatar-dialog-visible="avatarDialogVisible"
-            @update:avatar-dialog-visible="avatarDialogVisible = $event"
-            @update:avatar="onUpdateAvatar"
-            @delete:avatar="onDeleteAvatar">
-            <template #avatar-dialog-title>
-                <h2 class="avatar-dialog__title">Logo</h2>
-            </template>
-            <template #avatar-dialog-subtitle>
-                <p class="avatar-dialog__subtitle">Upload het logo van deze instelling</p>
-            </template>
-            <template #content>
-                <h2 class="text-2xl font-bold">{{ institutionName }}</h2>
-                <p class="text-sm text-gray-500">{{ institution.slug || 'N/A' }}</p>
-                <p class="text-sm text-gray-600">
-                    {{ t(`domains.institutions.category.${institution.category}`) }}
-                </p>
-            </template>
-        </EntityCard>
+            :updating="isUpdatingLogo"
+            :deleting="isDeletingLogo"
+            v-model:avatar-dialog-visible="logoDialogVisible"
+            @update:avatar="onUpdateLogo"
+            @delete:avatar="onDeleteLogo">
+        </InstitutionCard>
 
         <div class="mt-8 grid items-start gap-8 lg:grid-cols-2">
             <InstitutionBasicInfoCard

@@ -10,15 +10,19 @@ import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 defineProps<{
     loading?: boolean;
     editable?: boolean;
-    avatarImage?: string;
-    avatarIcon?: IconDefinition;
+    image?: string;
+    icon?: IconDefinition;
     avatarEditable?: boolean;
     editMode?: boolean;
     saving?: boolean;
-    avatarUpdating?: boolean;
-    avatarDeleting?: boolean;
-    avatarDialogVisible?: boolean;
+    updating?: boolean;
+    deleting?: boolean;
 }>();
+
+const avatarDialogVisible = defineModel<boolean>('avatarDialogVisible', {
+    required: false,
+    default: false,
+});
 
 const emit = defineEmits<{
     'click:edit': [];
@@ -26,7 +30,6 @@ const emit = defineEmits<{
     'click:cancel': [];
     'update:avatar': [file: File];
     'delete:avatar': [];
-    'update:avatarDialogVisible': [value: boolean];
 }>();
 
 function onEditClick() {
@@ -42,7 +45,7 @@ function onCancelClick() {
 }
 
 function onAvatarEditClick() {
-    emit('update:avatarDialogVisible', true);
+    avatarDialogVisible.value = true;
 }
 
 function onUpdateAvatar(file: File) {
@@ -96,8 +99,8 @@ function onDeleteAvatar() {
             <EntityAvatar
                 v-else
                 class="!h-24 !w-24"
-                :image="avatarImage"
-                :icon="avatarIcon"
+                :image="image"
+                :icon="icon"
                 :editable="avatarEditable"
                 @click:edit="onAvatarEditClick">
             </EntityAvatar>
@@ -122,11 +125,10 @@ function onDeleteAvatar() {
         <Teleport to="body">
             <EntityAvatarDialog
                 v-if="avatarEditable"
-                :is-updating="avatarUpdating"
-                :is-deleting="avatarDeleting"
-                :image="avatarImage || undefined"
-                :visible="avatarDialogVisible"
-                @update:visible="emit('update:avatarDialogVisible', $event)"
+                :is-updating="updating"
+                :is-deleting="deleting"
+                :image="image || undefined"
+                v-model:visible="avatarDialogVisible"
                 @update="onUpdateAvatar"
                 @delete="onDeleteAvatar">
                 <template #title>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import InstitutionAddressCard from '@/components/features/institution/InstitutionAddressCard.vue';
-import InstitutionBasicInfoCard from '@/components/features/institution/InstitutionBasicInfoCard.vue';
+import InstitutionInfoCard from '@/components/features/institution/InstitutionInfoCard.vue';
 import InstitutionCard from '@/components/features/institution/InstitutionCard.vue';
 import InstitutionContactCard from '@/components/features/institution/InstitutionContactCard.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
@@ -87,12 +87,12 @@ const breadcrumbs = computed(() => {
         </InstitutionCard>
 
         <div class="mt-8 grid items-start gap-8 lg:grid-cols-2">
-            <InstitutionBasicInfoCard
+            <InstitutionInfoCard
                 v-model:edit-mode="basicInfoEditMode"
                 :institution="institution"
                 :is-updating="isUpdating"
                 @save="saveInstitution">
-            </InstitutionBasicInfoCard>
+            </InstitutionInfoCard>
 
             <InstitutionContactCard
                 v-model:edit-mode="contactEditMode"

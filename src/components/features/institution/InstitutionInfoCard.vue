@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import CardField from '@/components/shared/molecules/CardField.vue';
@@ -7,7 +6,8 @@ import CardValue from '@/components/shared/molecules/CardValue.vue';
 import LanguageSelector from '@/components/shared/molecules/LanguageSelector.vue';
 import InputLabel from '@/components/shared/molecules/form/InputLabel.vue';
 import EditableCard from '@/components/shared/organisms/EditableCard.vue';
-import { faBuilding } from '@fortawesome/free-solid-svg-icons';
+import { faBuilding, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
@@ -65,15 +65,16 @@ function onCancelClick() {
         :is-updating="isUpdating"
         @save="onSaveClick"
         @cancel="onCancelClick">
-        <div class="card__field">
+        <div class="card-field">
             <div class="card__label-row">
                 <InputLabel uppercase>Naam</InputLabel>
                 <LanguageSelector v-model="lang">
                     <template #button="{ toggle, currentFlag, currentLabel }">
-                        <Button severity="contrast" size="small" @click="toggle">
-                            <img :src="currentFlag" alt="flag" class="mr-2 h-4 w-4" />
+                        <button class="lang-selector" @click="toggle">
+                            <img :src="currentFlag" alt="flag" class="h-4 w-4" />
                             {{ currentLabel }}
-                        </Button>
+                            <FontAwesomeIcon :icon="faChevronDown" />
+                        </button>
                     </template>
                 </LanguageSelector>
             </div>
@@ -100,7 +101,7 @@ function onCancelClick() {
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.card__field {
+.card-field {
     @apply block min-w-0;
 }
 
@@ -110,5 +111,9 @@ function onCancelClick() {
 
 .card__label-row label {
     @apply mb-0;
+}
+
+.lang-selector {
+    @apply flex items-center gap-2 text-sm;
 }
 </style>

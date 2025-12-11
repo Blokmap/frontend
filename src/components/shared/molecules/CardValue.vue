@@ -8,6 +8,6 @@
 @reference '@/assets/styles/main.css';
 
 .card-value {
-    @apply px-3 py-2 text-sm break-words;
+    @apply flex h-[42px] items-center px-3 break-words;
 }
 </style>

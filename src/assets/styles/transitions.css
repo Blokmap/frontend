@@ -162,7 +162,7 @@
 }
 
 .staggered-cards-enter-active {
-    transition-delay: calc(var(--i) * 0.1s);
+    transition-delay: calc(var(--i) * 0.02s);
 }
 
 .staggered-cards-leave-active {

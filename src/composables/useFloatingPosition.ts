@@ -53,7 +53,7 @@ export function useFloatingPosition(
             position: 'absolute',
             left: `${left}px`,
             top: `${top}px`,
-            zIndex: '200',
+            zIndex: '1500',
             maxWidth: '',
         };
 

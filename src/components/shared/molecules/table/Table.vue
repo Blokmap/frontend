@@ -71,9 +71,8 @@ provide('registerColumn', (column: string) => {
     <EmptyState v-else-if="isEmpty" :message="emptyMessage" :title="emptyTitle"> </EmptyState>
 
     <!-- Content -->
-    <template v-else>
-        <!-- Desktop Table View -->
-        <div v-if="!isMobile" class="table">
+    <Transition v-else name="fade-slide-up" appear>
+        <div v-if="!isMobile" key="desktop" class="table">
             <table class="table__inner">
                 <thead v-if="$slots.header || columns.length" class="table__header">
                     <slot name="header">
@@ -133,7 +132,7 @@ provide('registerColumn', (column: string) => {
         </div>
 
         <!-- Mobile Card View -->
-        <div v-else class="card">
+        <div v-else key="mobile" class="card">
             <!-- Grouped rendering -->
             <template v-if="props.grouped">
                 <div
@@ -172,7 +171,7 @@ provide('registerColumn', (column: string) => {
                 </div>
             </template>
         </div>
-    </template>
+    </Transition>
 </template>
 
 <style scoped>

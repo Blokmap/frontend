@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import InstitutionBreadcrumb from '@/components/features/institution/InstitutionBreadcrumb.vue';
 import LayoutContainer from '@/layouts/LayoutContainer.vue';
 import LayoutSidebar from '@/layouts/sidebar/LayoutSidebar.vue';
 import LayoutSidebarItem from '@/layouts/sidebar/LayoutSidebarItem.vue';
@@ -13,9 +12,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { useRoute, useRouter } from 'vue-router';
 import { useReadAuthority } from '@/composables/data/useAuthorities';
 import { useReadAuthorityMemberPermissions } from '@/composables/data/useMembers';
+import { getInstitutionName } from '@/domain/institution';
 import ManagementLoader from './ManagementLoader.vue';
 import ManagementLoaderError from './ManagementLoaderError.vue';
 import type { Profile } from '@/domain/profile';
@@ -26,6 +27,8 @@ const props = defineProps<{
 }>();
 
 const route = useRoute();
+const router = useRouter();
+const { locale } = useI18n();
 
 const authorityId = computed(() => {
     return +props.authorityId;
@@ -48,6 +51,25 @@ const {
 const isLoading = computed<boolean>(() => {
     return isLoadingAuthority.value && isLoadingPermissions.value;
 });
+
+const isError = computed<boolean>(() => {
+    return !!authorityError.value || !!permissionsError.value;
+});
+
+const backButtonText = computed<string>(() => {
+    return getInstitutionName(authority.value?.institution, locale.value);
+});
+
+function goBack() {
+    if (authority.value?.institution) {
+        router.push({
+            name: 'manage.institution',
+            params: { institutionId: authority.value.institution.id },
+        });
+    } else {
+        router.push({ name: 'manage.dashboard' });
+    }
+}
 </script>
 
 <template>
@@ -56,15 +78,10 @@ const isLoading = computed<boolean>(() => {
             <LayoutSidebar
                 :title="authority?.name"
                 :logo="authority?.logo?.url"
-                :loading="isLoading">
-                <template #header>
-                    <InstitutionBreadcrumb
-                        v-if="authority"
-                        :institution="authority?.institution"
-                        editable>
-                    </InstitutionBreadcrumb>
-                </template>
-
+                :loading="isLoading"
+                show-back-button
+                :back-button-text="backButtonText"
+                @click:back="goBack">
                 <LayoutSidebarSection title="Instellingen">
                     <LayoutSidebarItem
                         :loading="isLoading"
@@ -79,7 +96,8 @@ const isLoading = computed<boolean>(() => {
                     <LayoutSidebarItem
                         :loading="isLoading"
                         :to="{ name: 'manage.authority.settings', params: { authorityId } }"
-                        :active="route.name === 'manage.authority.settings'">
+                        :active="route.name === 'manage.authority.settings'"
+                        disabled>
                         <template #img>
                             <FontAwesomeIcon :icon="faCog" />
                         </template>
@@ -125,8 +143,11 @@ const isLoading = computed<boolean>(() => {
 
         <template #main>
             <ManagementLoader v-if="isLoading" />
+            <ManagementLoaderError
+                v-else-if="isError"
+                :errors="[authorityError, permissionsError]" />
             <RouterView
-                v-else-if="authority"
+                v-else-if="authority && permissions"
                 v-slot="{ Component, route }"
                 :authority="authority"
                 :auth-profile="authProfile"
@@ -135,7 +156,6 @@ const isLoading = computed<boolean>(() => {
                     <component :is="Component" :key="route.path" />
                 </Transition>
             </RouterView>
-            <ManagementLoaderError v-else :errors="[authorityError, permissionsError]" />
         </template>
     </LayoutContainer>
 </template>

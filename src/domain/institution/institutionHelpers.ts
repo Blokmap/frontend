@@ -1,3 +1,4 @@
+import { SUPPORTED_LOCALES } from '@/config/i18nConfig';
 import { translationToBody } from '../translation/translationHelpers';
 import type { Institution, InstitutionBody } from './types';
 
@@ -22,4 +23,30 @@ export function institutionToBody(institution: Institution): InstitutionBody {
         email: institution.email,
         phoneNumber: institution.phone,
     };
+}
+
+/**
+ * Retrieves the institution name in the specified locale, with fallback to the first available name.
+ *
+ * @param institution - The institution object.
+ * @param locale - The desired locale code.
+ *
+ * @returns The institution name in the specified locale or a fallback.
+ */
+export function getInstitutionName(institution: Institution | undefined, locale: string): string {
+    if (!institution) {
+        return 'N/A';
+    }
+
+    if (institution.name[locale]) {
+        return institution.name[locale];
+    }
+
+    for (const locale of SUPPORTED_LOCALES) {
+        if (institution.name[locale]) {
+            return institution.name[locale]!;
+        }
+    }
+
+    return 'N/A';
 }

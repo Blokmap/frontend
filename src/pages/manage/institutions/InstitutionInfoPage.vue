@@ -12,7 +12,7 @@ import {
     useUpdateInstitutionLogo,
     useDeleteInstitutionLogo,
 } from '@/composables/data/useInstitutions';
-import { type Institution, type InstitutionBody } from '@/domain/institution';
+import { getInstitutionName, type Institution, type InstitutionBody } from '@/domain/institution';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -54,12 +54,11 @@ async function onDeleteLogo() {
 }
 
 const breadcrumbs = computed(() => {
-    const institutionName = props.institution.name[locale.value] || props.institution.name.nl;
+    const institutionName = getInstitutionName(props.institution, locale.value);
 
     return [
-        { label: 'Instellingen', to: { name: 'manage' } },
         {
-            label: institutionName ?? 'N/A',
+            label: institutionName,
             to: {
                 name: 'manage.institution.info',
                 params: {
@@ -67,7 +66,9 @@ const breadcrumbs = computed(() => {
                 },
             },
         },
-        { label: 'Profiel' },
+        {
+            label: 'Informatie',
+        },
     ];
 });
 </script>

@@ -9,6 +9,7 @@ const props = withDefaults(
         active?: boolean;
         compact?: boolean;
         loading?: boolean;
+        disabled?: boolean;
     }>(),
     {
         compact: true,
@@ -19,7 +20,7 @@ defineEmits<{
     click: void;
 }>();
 
-const component = computed(() => (props.to ? RouterLink : 'div'));
+const component = computed(() => (props.to && !props.disabled ? RouterLink : 'div'));
 </script>
 
 <template>
@@ -27,7 +28,11 @@ const component = computed(() => (props.to ? RouterLink : 'div'));
     <component
         v-else
         class="item"
-        :class="{ 'item--active': active, 'item--compact': compact }"
+        :class="{
+            'item--active': active,
+            'item--compact': compact,
+            'item--disabled': disabled,
+        }"
         :is="component"
         :to="to">
         <div class="item__img">
@@ -56,6 +61,11 @@ const component = computed(() => (props.to ? RouterLink : 'div'));
 
     &.item--active {
         @apply bg-slate-100;
+    }
+
+    &.item--disabled {
+        @apply cursor-not-allowed opacity-50;
+        @apply hover:bg-transparent;
     }
 
     &.item--compact {

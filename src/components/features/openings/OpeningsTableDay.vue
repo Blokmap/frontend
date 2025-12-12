@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import Skeleton from 'primevue/skeleton';
 import { useI18n } from 'vue-i18n';
-import { getOpeningTimesForDay } from '@/domain/openings/helpers';
 import { formatDayName, isToday } from '@/utils/date';
 import { timeToString } from '@/utils/time';
 import type { OpeningTime } from '@/domain/openings';
 
 defineProps<{
     day: Date;
-    openingTimesByDay: Map<string, OpeningTime[]>;
+    loading?: boolean;
+    openings?: OpeningTime[];
 }>();
 
 const { locale } = useI18n();
@@ -20,17 +21,18 @@ const { locale } = useI18n();
         </span>
 
         <div class="openings-day__times">
-            <template v-if="getOpeningTimesForDay(openingTimesByDay, day).length > 0">
+            <template v-if="openings && openings.length > 0">
                 <span
-                    v-for="(opening, index) in getOpeningTimesForDay(openingTimesByDay, day)"
+                    v-for="(opening, index) in openings"
                     :key="opening.id"
                     class="openings-day__time">
                     {{ timeToString(opening.startTime, true) }}–{{
                         timeToString(opening.endTime, true)
-                    }}{{
-                        index < getOpeningTimesForDay(openingTimesByDay, day).length - 1 ? ', ' : ''
-                    }}
+                    }}{{ index < openings.length - 1 ? ', ' : '' }}
                 </span>
+            </template>
+            <template v-else-if="loading">
+                <Skeleton width="75px" height="16px"></Skeleton>
             </template>
             <span v-else class="openings-day__closed"> Gesloten </span>
         </div>

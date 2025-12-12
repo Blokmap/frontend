@@ -13,7 +13,7 @@ import { useRouter } from 'vue-router';
 import { useReadInstitutionAuthorities } from '@/composables/data/useAuthorities';
 import { usePagination } from '@/composables/usePagination';
 import { type AuthorityFilter, type Authority } from '@/domain/authority';
-import type { Institution } from '@/domain/institution';
+import { getInstitutionName, type Institution } from '@/domain/institution';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -40,20 +40,6 @@ const {
     error: authoritiesError,
 } = useReadInstitutionAuthorities(institutionId, filters);
 
-const breadcrumbs = computed<BreadcrumbItem[]>(() => {
-    const institutionName = props.institution.name[locale.value];
-
-    return [
-        {
-            label: institutionName,
-            to: { name: 'manage.institution.info' },
-        },
-        {
-            label: 'Groepen',
-        },
-    ];
-});
-
 const isError = computed(() => {
     return isAuthoritiesError.value;
 });
@@ -68,6 +54,21 @@ function onAuthorityClick(authority: Authority) {
         params: { authorityId: authority.id },
     });
 }
+const breadcrumbs = computed<BreadcrumbItem[]>(() => {
+    const institutionName = getInstitutionName(props.institution, locale.value);
+
+    return [
+        {
+            label: institutionName,
+            to: {
+                name: 'manage.institution.info',
+            },
+        },
+        {
+            label: 'Groepen',
+        },
+    ];
+});
 </script>
 
 <template>

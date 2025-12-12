@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import InstitutionBreadcrumb from '@/components/features/institution/InstitutionBreadcrumb.vue';
 import LayoutContainer from '@/layouts/LayoutContainer.vue';
 import LayoutSidebar from '@/layouts/sidebar/LayoutSidebar.vue';
 import LayoutSidebarItem from '@/layouts/sidebar/LayoutSidebarItem.vue';
@@ -15,9 +14,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { useRoute, useRouter } from 'vue-router';
 import { useReadLocation } from '@/composables/data/useLocations';
 import { useReadLocationMemberPermissions } from '@/composables/data/useMembers';
+import { getInstitutionName } from '@/domain/institution';
 import { getLocationImageUrl } from '@/domain/location';
 import LayoutSidebarSection from '../sidebar/LayoutSidebarSection.vue';
 import ManagementLoader from './ManagementLoader.vue';
@@ -30,6 +31,8 @@ const props = defineProps<{
 }>();
 
 const route = useRoute();
+const router = useRouter();
+const { locale } = useI18n();
 
 const profileId = computed<string>(() => {
     return props.authProfile.id;
@@ -60,6 +63,34 @@ const isLoading = computed<boolean>(() => {
 const locationImageUrl = computed<string>(() => {
     return getLocationImageUrl(location.value);
 });
+
+const backButtonText = computed<string>(() => {
+    if (location.value?.authority) {
+        return location.value.authority.name;
+    }
+
+    if (location.value?.institution) {
+        return getInstitutionName(location.value.institution, locale.value);
+    }
+
+    return 'Dashboard';
+});
+
+function goBack(): void {
+    if (location.value?.authority) {
+        router.push({
+            name: 'manage.authority',
+            params: { authorityId: location.value.authority.id },
+        });
+    } else if (location.value?.institution) {
+        router.push({
+            name: 'manage.institution',
+            params: { institutionId: location.value.institution.id },
+        });
+    } else {
+        router.push({ name: 'manage.dashboard' });
+    }
+}
 </script>
 
 <template>
@@ -68,16 +99,10 @@ const locationImageUrl = computed<string>(() => {
             <LayoutSidebar
                 :title="location?.name ?? 'Locatie'"
                 :logo="locationImageUrl"
-                :loading="isLoading">
-                <template #header>
-                    <InstitutionBreadcrumb
-                        :institution="location?.institution"
-                        :authority="location?.authority"
-                        :loading="isLoading"
-                        editable>
-                    </InstitutionBreadcrumb>
-                </template>
-
+                :loading="isLoading"
+                show-back-button
+                :back-button-text="backButtonText"
+                @click:back="goBack">
                 <LayoutSidebarSection title="Instellingen">
                     <LayoutSidebarItem
                         :loading="isLoading"

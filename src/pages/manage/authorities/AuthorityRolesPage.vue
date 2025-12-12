@@ -10,12 +10,14 @@ import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import {
     useCreateAuthorityRole,
     useDeleteAuthorityRole,
     useReadAuthorityRoles,
     useUpdateAuthorityRole,
 } from '@/composables/data/useMembers';
+import { getInstitutionName } from '@/domain/institution';
 import { type CreateRoleBody, type Role } from '@/domain/member';
 import type { Authority } from '@/domain/authority';
 import type { Profile } from '@/domain/profile';
@@ -24,6 +26,8 @@ const props = defineProps<{
     authProfile: Profile;
     authority: Authority;
 }>();
+
+const { locale } = useI18n();
 
 const authorityId = computed<number>(() => props.authority.id);
 
@@ -48,42 +52,6 @@ const { mutate: updateRole, isPending: updateIsPending } = useUpdateAuthorityRol
     },
 });
 
-const { mutate: deleteRole, isPending: deleteIsPending } = useDeleteAuthorityRole();
-
-const showRoleBuilderDialog = ref<boolean>(false);
-const selectedRole = ref<Role | undefined>(undefined);
-
-const isError = computed<boolean>(() => {
-    return rolesIsError.value;
-});
-
-const isPending = computed(() => {
-    return createIsPending.value || updateIsPending.value || deleteIsPending.value;
-});
-
-const breadcrumbs = computed(() => [
-    { label: 'Groepen', to: { name: 'manage' } },
-    { label: props.authority?.name ?? 'Groep', to: { name: 'manage.authority.info' } },
-    { label: 'Rollen' },
-]);
-
-function onAddRole(): void {
-    selectedRole.value = undefined;
-    showRoleBuilderDialog.value = true;
-}
-
-function onEditRole(role: Role): void {
-    selectedRole.value = role;
-    showRoleBuilderDialog.value = true;
-}
-
-function onDeleteRole(role: Role): void {
-    deleteRole({
-        id: authorityId.value,
-        roleId: role.id,
-    });
-}
-
 function onSubmitRole(form: CreateRoleBody): void {
     if (selectedRole.value) {
         // Update existing role
@@ -99,6 +67,62 @@ function onSubmitRole(form: CreateRoleBody): void {
             body: form,
         });
     }
+}
+
+const { mutate: deleteRole, isPending: deleteIsPending } = useDeleteAuthorityRole();
+
+function onDeleteRole(role: Role): void {
+    deleteRole({
+        id: authorityId.value,
+        roleId: role.id,
+    });
+}
+
+const showRoleBuilderDialog = ref<boolean>(false);
+const selectedRole = ref<Role | undefined>(undefined);
+
+const isError = computed<boolean>(() => {
+    return rolesIsError.value;
+});
+
+const isPending = computed(() => {
+    return createIsPending.value || updateIsPending.value || deleteIsPending.value;
+});
+
+const breadcrumbs = computed(() => {
+    const institutionId = props.authority.institution?.id;
+    const institutionName = getInstitutionName(props.authority.institution, locale.value);
+
+    return [
+        {
+            label: institutionName,
+            to: {
+                name: 'manage.institution.info',
+                params: {
+                    institutionId,
+                },
+            },
+        },
+        {
+            label: props.authority?.name ?? 'Groep',
+            to: {
+                name: 'manage.authority.info',
+            },
+        },
+        {
+            label: 'Rollen',
+        },
+    ];
+});
+
+function onAddRole(): void {
+    selectedRole.value = undefined;
+    showRoleBuilderDialog.value = true;
+}
+
+function onEditRole(role: Role): void {
+    selectedRole.value = role;
+    showRoleBuilderDialog.value = true;
 }
 </script>
 

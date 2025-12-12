@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import InstitutionBreadcrumb from '@/components/features/institution/InstitutionBreadcrumb.vue';
 import LayoutContainer from '@/layouts/LayoutContainer.vue';
 import LayoutSidebar from '@/layouts/sidebar/LayoutSidebar.vue';
 import LayoutSidebarItem from '@/layouts/sidebar/LayoutSidebarItem.vue';
@@ -15,7 +14,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useReadInstitution } from '@/composables/data/useInstitutions';
 import ManagementLoader from './ManagementLoader.vue';
 import ManagementLoaderError from './ManagementLoaderError.vue';
@@ -28,10 +27,15 @@ const props = defineProps<{
 
 const { locale } = useI18n();
 const route = useRoute();
+const router = useRouter();
 
 const institutionId = computed(() => +props.institutionId);
 
 const { data: institution, isLoading, error } = useReadInstitution(institutionId);
+
+function goBack() {
+    router.push({ name: 'manage.dashboard' });
+}
 </script>
 
 <template>
@@ -40,11 +44,10 @@ const { data: institution, isLoading, error } = useReadInstitution(institutionId
             <LayoutSidebar
                 :title="institution?.name[locale]"
                 :logo="institution?.logo?.url"
-                :loading="isLoading">
-                <template #header>
-                    <InstitutionBreadcrumb :institution="institution" :loading="isLoading" />
-                </template>
-
+                :loading="isLoading"
+                show-back-button
+                back-button-text="Dashboard"
+                @click:back="goBack">
                 <LayoutSidebarSection title="Instellingen">
                     <LayoutSidebarItem
                         :loading="isLoading"
@@ -59,7 +62,8 @@ const { data: institution, isLoading, error } = useReadInstitution(institutionId
                     <LayoutSidebarItem
                         :loading="isLoading"
                         :to="{ name: 'manage.institution.settings', params: { institutionId } }"
-                        :active="route.name === 'manage.institution.settings'">
+                        :active="route.name === 'manage.institution.settings'"
+                        disabled>
                         <template #img>
                             <FontAwesomeIcon :icon="faCog" />
                         </template>

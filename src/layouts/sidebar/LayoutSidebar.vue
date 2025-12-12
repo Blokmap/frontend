@@ -8,6 +8,7 @@ defineProps<{
     title?: string | null;
     logo?: string | null;
     showBackButton?: boolean;
+    backButtonText?: string;
     loading?: boolean;
 }>();
 
@@ -20,7 +21,7 @@ const emit = defineEmits<{
     <aside class="sidebar">
         <button v-if="showBackButton" class="sidebar__back-button" @click="emit('click:back')">
             <FontAwesomeIcon :icon="faChevronLeft" />
-            <span>Terug</span>
+            <span>{{ backButtonText || 'Terug' }}</span>
         </button>
         <slot name="header"> </slot>
         <div v-if="title || loading" class="sidebar__header">
@@ -68,7 +69,7 @@ const emit = defineEmits<{
 
     .sidebar__nav {
         @apply flex flex-col space-y-3;
-        @apply lg:sticky lg:top-6 lg:max-h-[calc(100vh-180px)] lg:overflow-y-auto;
+        @apply lg:sticky lg:top-6 lg:max-h-[calc(100vh-180px)];
     }
 }
 </style>

@@ -13,7 +13,6 @@ import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router'
 import { useToast } from '@/composables/store/useToast';
 import { readAuthProfile, pullRedirectUrl } from '@/domain/auth';
 import { blank } from '@/domain/member';
-import { authRouterGuard, redirectRouterGuard, titleRouterGuard } from './routerGuards';
 import {
     AuthPage,
     LocationPage,
@@ -385,9 +384,5 @@ const router = createRouter({
     },
     routes,
 });
-
-router.beforeEach(authRouterGuard);
-router.afterEach(redirectRouterGuard);
-router.afterEach(titleRouterGuard);
 
 export { router };

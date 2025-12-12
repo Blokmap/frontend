@@ -24,6 +24,7 @@ import {
 } from '@/composables/data/useMembers';
 import { usePagination } from '@/composables/usePagination';
 import { has, InstitutionPermission, type RecursivePermissions } from '@/domain/auth';
+import { getInstitutionName } from '@/domain/institution';
 import type { Authority } from '@/domain/authority';
 import type { CreateMemberBody, MemberFilter } from '@/domain/member';
 import type { Profile } from '@/domain/profile';
@@ -105,14 +106,29 @@ const showInstitutionAccess = computed<boolean>(() => {
     return hasPermission || props.authProfile.isAdmin;
 });
 
-const breadcrumbs = computed(() => [
-    { label: 'Groepen', to: { name: 'manage' } },
-    {
-        label: props.authority?.name ?? 'Groep',
-        to: { name: 'manage.authority.info' },
-    },
-    { label: 'Leden' },
-]);
+const breadcrumbs = computed(() => {
+    const institutionId = props.authority.institution?.id;
+    const institutionName = getInstitutionName(props.authority.institution, locale.value);
+
+    return [
+        {
+            label: institutionName,
+            to: {
+                name: 'manage.institution.info',
+                params: {
+                    institutionId,
+                },
+            },
+        },
+        {
+            label: props.authority.name,
+            to: { name: 'manage.authority.info' },
+        },
+        {
+            label: 'Leden',
+        },
+    ];
+});
 </script>
 
 <template>

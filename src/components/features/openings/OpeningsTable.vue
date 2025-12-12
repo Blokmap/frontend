@@ -10,15 +10,16 @@ import type { OpeningTime } from '@/domain/openings';
 const props = defineProps<{
     openingTimes?: OpeningTime[];
     currentWeek?: Date;
-    isLoading?: boolean;
+    loading?: boolean;
 }>();
 
-const weekDays = computed(() => {
-    const days = [];
+const weekDays = computed<Date[]>(() => {
     const referenceDate = props.currentWeek || new Date();
+
     const current = startOfWeek(referenceDate);
     const weekEnd = endOfWeek(referenceDate);
 
+    const days = [];
     while (current <= weekEnd) {
         days.push(new Date(current));
         current.setDate(current.getDate() + 1);
@@ -27,31 +28,25 @@ const weekDays = computed(() => {
     return days;
 });
 
-const openingTimesByDay = computed(() => {
-    if (!props.openingTimes) return new Map();
+const openingTimesByDay = computed<Map<string, OpeningTime[]>>(() => {
+    if (!props.openingTimes) {
+        return new Map();
+    }
+
     return groupOpeningTimesByDay(props.openingTimes);
 });
 </script>
 
 <template>
     <div class="openings-table">
-        <!-- Loading State -->
-        <template v-if="isLoading">
-            <div class="openings-table__loading">
-                <div v-for="n in 7" :key="n" class="openings-table__loading-item">
-                    <div class="h-4 w-16 animate-pulse rounded bg-slate-200"></div>
-                    <div class="h-4 w-24 animate-pulse rounded bg-slate-200"></div>
-                </div>
-            </div>
-        </template>
-
         <!-- Opening Hours Table -->
-        <template v-else-if="openingTimes && openingTimes.length > 0">
+        <template v-if="loading">
             <OpeningsTableDay
                 v-for="day in weekDays"
                 :key="day.toDateString()"
                 :day="day"
-                :opening-times-by-day="openingTimesByDay">
+                :loading="loading"
+                :openings="openingTimesByDay.get(day.toDateString())">
             </OpeningsTableDay>
         </template>
 

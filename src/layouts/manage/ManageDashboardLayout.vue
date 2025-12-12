@@ -89,8 +89,12 @@ function goBack() {
 <template>
     <LayoutContainer :loading="isLoading">
         <template #sidebar>
-            <LayoutSidebar title="Beheer" @click:back="goBack" show-back-button>
-                <LayoutSidebarSection>
+            <LayoutSidebar
+                title="Beheer"
+                @click:back="goBack"
+                show-back-button
+                back-button-text="Profiel">
+                <LayoutSidebarSection title="Dashboard">
                     <!-- <LayoutSidebarItem
                         :loading="isLoading"
                         :to="{
@@ -147,16 +151,22 @@ function goBack() {
                                 :icon="faCity">
                             </EntityAvatar>
                         </template>
-                        <template #text>{{ m.institution.name[locale] }}</template>
+                        <template #text>
+                            <p>{{ m.institution.name[locale] }}</p>
+                            <p class="text-xs font-normal text-slate-600">
+                                <span v-if="m.role">{{ m.role.name }}</span>
+                                <span class="italic" v-else>Geen rol toegewezen</span>
+                            </p>
+                        </template>
                     </LayoutSidebarItem>
                     <template v-else>
-                        <div>
+                        <div class="space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg">
                             <p>
-                                Je bent nog geen lid van een organisatie. Maak een organisatie aan
-                                voor je bedrijf of instelling om bloklocaties te beheren.
+                                Maak een organisatie aan voor je instelling om bloklocaties te
+                                beheren, of vraag een beheerder om je toe te voegen.
                             </p>
-                            <Button>
-                                <span>Nieuwe organisatie maken</span>
+                            <Button severity="secondary" size="small" class="w-full">
+                                <span>Maak Organisatie</span>
                                 <FontAwesomeIcon :icon="faPlus" />
                             </Button>
                         </div>
@@ -185,7 +195,14 @@ function goBack() {
                                 :icon="faBuilding">
                             </EntityAvatar>
                         </template>
-                        <template #text>{{ m.authority.name }}</template>
+                        <template #text>
+                            <p>{{ m.authority.name }}</p>
+
+                            <p class="text-xs font-normal text-slate-600">
+                                <span v-if="m.role">{{ m.role.name }}</span>
+                                <span class="italic" v-else>Geen rol toegewezen</span>
+                            </p>
+                        </template>
                     </LayoutSidebarItem>
                 </LayoutSidebarSection>
             </LayoutSidebar>

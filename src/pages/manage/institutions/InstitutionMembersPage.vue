@@ -19,7 +19,7 @@ import {
     useReadInstitutionRoles,
     useUpdateInstitutionMember,
 } from '@/composables/data/useMembers';
-import type { Institution } from '@/domain/institution';
+import { getInstitutionName, type Institution } from '@/domain/institution';
 import type { CreateMemberBody } from '@/domain/member';
 import type { Profile } from '@/domain/profile';
 
@@ -93,10 +93,9 @@ const isError = computed(() => {
 });
 
 const breadcrumbs = computed(() => {
-    const institutionName = props.institution.name[locale.value];
+    const institutionName = getInstitutionName(props.institution, locale.value);
 
     return [
-        { label: 'Organisaties', to: { name: 'manage' } },
         {
             label: institutionName,
             to: {
@@ -106,7 +105,9 @@ const breadcrumbs = computed(() => {
                 },
             },
         },
-        { label: 'Beheerders' },
+        {
+            label: 'Beheerders',
+        },
     ];
 });
 </script>

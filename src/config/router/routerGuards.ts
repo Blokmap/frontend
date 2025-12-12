@@ -1,8 +1,9 @@
 import { useQueryClient } from '@tanstack/vue-query';
-import { computed, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
+import { useProgress } from '@/composables/store/useProgress';
 import { useToast } from '@/composables/store/useToast';
 import { pushRedirectUrl, readAuthProfile } from '@/domain/auth';
 import {
@@ -168,4 +169,31 @@ export function setupAuthGuard(): void {
 
         router.push({ name: 'auth' });
     });
+}
+
+export function setupRouterGuards(): void {
+    const router = useRouter();
+    const progressStore = useProgress();
+
+    const progressTimeout = ref<number | null>(null);
+
+    router.beforeEach(() => {
+        progressTimeout.value = window.setTimeout(() => {
+            progressStore.start();
+            progressTimeout.value = null;
+        }, 100);
+    });
+
+    router.afterEach(() => {
+        if (progressTimeout.value !== null) {
+            clearTimeout(progressTimeout.value);
+            progressTimeout.value = null;
+        } else {
+            progressStore.finish();
+        }
+    });
+
+    router.beforeEach(authRouterGuard);
+    router.afterEach(redirectRouterGuard);
+    router.afterEach(titleRouterGuard);
 }

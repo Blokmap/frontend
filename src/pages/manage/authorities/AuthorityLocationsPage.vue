@@ -8,7 +8,9 @@ import PageContent from '@/layouts/PageContent.vue';
 import PageTitle from '@/layouts/PageTitle.vue';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useReadAuthorityLocations } from '@/composables/data/useLocations';
+import { getInstitutionName } from '@/domain/institution';
 import type { Authority } from '@/domain/authority';
 import type { Profile } from '@/domain/profile';
 
@@ -16,6 +18,8 @@ const props = defineProps<{
     authProfile: Profile;
     authority: Authority;
 }>();
+
+const { locale } = useI18n();
 
 const authorityId = computed(() => props.authority.id);
 
@@ -25,15 +29,29 @@ const {
     error,
 } = useReadAuthorityLocations(authorityId);
 
-const breadcrumbs = computed(() => [
-    {
-        label: props.authority?.name ?? 'Groep',
-        to: {
-            name: 'manage.authority.info',
+const breadcrumbs = computed(() => {
+    const institutionId = props.authority.institution?.id;
+    const institutionName = getInstitutionName(props.authority.institution, locale.value);
+
+    return [
+        {
+            label: institutionName,
+            to: {
+                name: 'manage.institution.info',
+                params: {
+                    institutionId,
+                },
+            },
         },
-    },
-    { label: 'Locaties' },
-]);
+        {
+            label: props.authority?.name ?? 'Groep',
+            to: {
+                name: 'manage.authority.info',
+            },
+        },
+        { label: 'Locaties' },
+    ];
+});
 
 const isDataLoading = computed(() => locationsLoading.value);
 </script>

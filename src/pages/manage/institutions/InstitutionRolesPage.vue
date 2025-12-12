@@ -17,8 +17,8 @@ import {
     useReadInstitutionRoles,
     useUpdateInstitutionRole,
 } from '@/composables/data/useMembers';
+import { getInstitutionName, type Institution } from '@/domain/institution';
 import { type CreateRoleBody, type Role } from '@/domain/member';
-import type { Institution } from '@/domain/institution';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -64,18 +64,6 @@ const isPending = computed(() => {
     return createIsPending.value || updateIsPending.value || deleteIsPending.value;
 });
 
-const institutionName = computed(() => {
-    const name = props.institution?.name;
-    if (!name) return 'Instelling';
-    return name[locale.value] ?? name.nl ?? 'Instelling';
-});
-
-const breadcrumbs = computed(() => [
-    { label: 'Instellingen', to: { name: 'manage' } },
-    { label: institutionName.value, to: { name: 'manage.institution.info' } },
-    { label: 'Rollen' },
-]);
-
 function onAddRole(): void {
     selectedRole.value = undefined;
     showRoleBuilderDialog.value = true;
@@ -109,6 +97,24 @@ function onSubmitRole(form: CreateRoleBody): void {
         });
     }
 }
+
+const institutionName = computed<string>(() => {
+    return getInstitutionName(props.institution, locale.value);
+});
+
+const breadcrumbs = computed(() => {
+    return [
+        {
+            label: institutionName.value,
+            to: {
+                name: 'manage.institution.info',
+            },
+        },
+        {
+            label: 'Rollen',
+        },
+    ];
+});
 </script>
 
 <template>

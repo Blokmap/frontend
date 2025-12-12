@@ -22,8 +22,8 @@ import {
     useReadInstitutionProfiles,
 } from '@/composables/data/useProfile';
 import { usePagination } from '@/composables/usePagination';
+import { getInstitutionName, type Institution } from '@/domain/institution';
 import { type Profile, type ProfileFilter } from '@/domain/profile';
-import type { Institution } from '@/domain/institution';
 
 const props = defineProps<{
     authProfile: Profile;
@@ -69,7 +69,7 @@ const onSearchChange = useDebounceFn(() => {
 }, 300);
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => {
-    const institutionName = props.institution.name[locale.value];
+    const institutionName = getInstitutionName(props.institution, locale.value);
 
     return [
         {

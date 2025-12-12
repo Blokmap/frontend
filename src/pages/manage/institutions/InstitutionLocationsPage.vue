@@ -16,8 +16,8 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useReadInstitutionLocations } from '@/composables/data/useLocations';
 import { usePagination } from '@/composables/usePagination';
+import { getInstitutionName, type Institution } from '@/domain/institution';
 import { type LocationFilter } from '@/domain/location';
-import type { Institution } from '@/domain/institution';
 
 const props = defineProps<{
     institution: Institution;
@@ -59,10 +59,9 @@ const {
 } = useReadInstitutionLocations(institutionId, filters);
 
 const breadcrumbs = computed(() => {
-    const institutionName = props.institution.name[locale.value];
+    const institutionName = getInstitutionName(props.institution, locale.value);
 
     return [
-        { label: 'Organisaties', to: { name: 'manage' } },
         {
             label: institutionName,
             to: {
@@ -72,7 +71,9 @@ const breadcrumbs = computed(() => {
                 },
             },
         },
-        { label: 'Beheerders' },
+        {
+            label: 'Locaties',
+        },
     ];
 });
 </script>

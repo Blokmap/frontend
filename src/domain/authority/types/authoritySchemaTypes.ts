@@ -12,7 +12,7 @@ export type Authority = {
     updatedBy?: Profile | null;
     createdAt: Date;
     updatedAt: Date;
-    institution?: Institution | null;
+    institution?: Institution;
     members?: Profile[];
     locations?: Location[];
 };

@@ -15,7 +15,7 @@ import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
 import PublicContent from '@/layouts/public/PublicContent.vue';
 import { faArrowRight, faBullhorn, faEdit, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import placeholder from '@/assets/img/placeholder/location-stock-1.jpg';
@@ -27,8 +27,9 @@ import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useRouteDate } from '@/composables/useRouteDate';
 import { pushRedirectUrl } from '@/domain/auth';
 import { formatLocationAddress } from '@/domain/location';
+import type { OpeningTimeFilter } from '@/domain/openings';
 
-const { locationId } = defineProps<{ locationId: string }>();
+const props = defineProps<{ locationId: string }>();
 
 const { locale } = useI18n();
 const { setPageTitle } = usePageTitleStore();
@@ -38,20 +39,21 @@ const route = useRoute();
 
 const currentWeek = useRouteDate({ paramName: 'week' });
 
+const locationId = computed<number>(() => +props.locationId);
+
 const { profileId, data: profile } = useAuthProfile();
 
-const { data: location, isPending } = useReadLocation(
-    computed(() => +locationId),
-    { includes: ['createdBy', 'description'] },
-);
+const { data: location, isPending } = useReadLocation(locationId, {
+    includes: ['createdBy', 'description'],
+});
 
-const {
-    data: openingTimes,
-    isPending: openingTimesIsPending,
-    isError: _openingTimesIsError,
-} = useReadOpeningTimes(
-    computed(() => +locationId),
-    computed(() => ({ inWeekOf: currentWeek.value })),
+const openingTimesFilter = computed<OpeningTimeFilter>(() => ({
+    inWeekOf: currentWeek.value,
+}));
+
+const { data: openingTimes, isFetching: openingTimesIsFetching } = useReadOpeningTimes(
+    locationId,
+    openingTimesFilter,
 );
 
 const showReservationDialog = computed<boolean>({
@@ -65,18 +67,14 @@ const showReservationDialog = computed<boolean>({
     },
 });
 
-watch(
-    location,
-    (newLocation) => {
-        if (newLocation) {
-            setPageTitle(newLocation.name);
-        }
-    },
-    { immediate: true },
-);
+watchEffect(() => {
+    if (location.value) {
+        setPageTitle(location.value.name);
+    }
+});
 
-const showReportDialog = ref(false);
-const reportReason = ref('');
+const showReportDialog = ref<boolean>(false);
+const reportReason = ref<string>('');
 
 const { mutateAsync: createReport, isPending: isCreatingReport } = useCreateLocationReport({
     onSuccess: () => {
@@ -84,16 +82,6 @@ const { mutateAsync: createReport, isPending: isCreatingReport } = useCreateLoca
         reportReason.value = '';
     },
 });
-
-function onReportClick(): void {
-    showReportDialog.value = true;
-    reportReason.value = '';
-}
-
-function onCancelReport(): void {
-    showReportDialog.value = false;
-    reportReason.value = '';
-}
 
 function onConfirmReport(): void {
     if (!reportReason.value.trim()) {
@@ -106,10 +94,20 @@ function onConfirmReport(): void {
     });
 }
 
+function onReportClick(): void {
+    showReportDialog.value = true;
+    reportReason.value = '';
+}
+
+function onCancelReport(): void {
+    showReportDialog.value = false;
+    reportReason.value = '';
+}
+
 function onLoginClick(): void {
     const redirectRoute = router.resolve({
         name: 'locations.detail',
-        params: { locationId },
+        params: { locationId: locationId.value },
         hash: '#reservations',
     });
 
@@ -245,6 +243,7 @@ function onLoginClick(): void {
                                     {{ $t('domains.openings.name', 2) }}
                                 </template>
                             </h3>
+
                             <Skeleton v-else height="24px" width="150px" class="mb-6" />
 
                             <div class="location-page__sidebar-content">
@@ -252,7 +251,7 @@ function onLoginClick(): void {
                                 <OpeningsTable
                                     :opening-times="openingTimes"
                                     :current-week="currentWeek"
-                                    :loading="openingTimesIsPending">
+                                    :loading="openingTimesIsFetching">
                                 </OpeningsTable>
                             </div>
 

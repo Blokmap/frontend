@@ -5,12 +5,14 @@ import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import PageContent from '@/layouts/PageContent.vue';
 import PageTitle from '@/layouts/PageTitle.vue';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import {
     useUpdateAuthority,
     useUpdateAuthorityLogo,
     useDeleteAuthorityLogo,
 } from '@/composables/data/useAuthorities';
 import { type Authority, type AuthorityBody } from '@/domain/authority';
+import { getInstitutionName } from '@/domain/institution';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -18,9 +20,11 @@ const props = defineProps<{
     authority: Authority;
 }>();
 
-const infoEditMode = ref(false);
+const { locale } = useI18n();
 
 const { mutateAsync: updateAuthority, isPending: isUpdatingAuthority } = useUpdateAuthority();
+
+const infoEditMode = ref(false);
 
 async function saveAuthority(data: AuthorityBody) {
     await updateAuthority({ id: props.authority.id, data });
@@ -41,19 +45,34 @@ async function onLogoDelete() {
     await deleteLogo(props.authority.id);
 }
 
-const breadcrumbs = computed(() => [
-    { label: 'Groepen', to: { name: 'manage' } },
-    {
-        label: props.authority.name,
-        to: {
-            name: 'manage.authority.info',
-            params: {
-                authorityId: props.authority.id,
+const breadcrumbs = computed(() => {
+    const institutionId = props.authority.institution?.id;
+    const institutionName = getInstitutionName(props.authority.institution, locale.value);
+
+    return [
+        {
+            label: institutionName,
+            to: {
+                name: 'manage.institution.info',
+                params: {
+                    institutionId,
+                },
             },
         },
-    },
-    { label: 'Informatie' },
-]);
+        {
+            label: props.authority.name,
+            to: {
+                name: 'manage.authority.info',
+                params: {
+                    authorityId: props.authority.id,
+                },
+            },
+        },
+        {
+            label: 'Informatie',
+        },
+    ];
+});
 </script>
 
 <template>

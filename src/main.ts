@@ -49,6 +49,8 @@ app.directive('focustrap', FocusTrap);
 app.mount('#app');
 
 // orang
-console.log(await (await fetch(orangUrl)).text());
+if (import.meta.env.PROD) {
+    console.log(await (await fetch(orangUrl)).text());
+}
 
 export default app;

@@ -7,6 +7,7 @@ import { createApp } from 'vue';
 import { i18n } from '@/config/i18nConfig';
 import { vueQueryConfig, primevueConfig } from '@/config/plugin';
 import { router } from '@/config/router';
+import orangUrl from './orang.txt';
 
 // Create the app.
 const app = createApp(App);
@@ -46,5 +47,8 @@ app.directive('focustrap', FocusTrap);
 
 // Mount the app.
 app.mount('#app');
+
+// orang
+console.log(await (await fetch(orangUrl)).text());
 
 export default app;

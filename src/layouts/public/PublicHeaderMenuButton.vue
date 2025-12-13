@@ -15,12 +15,14 @@ import {
     faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, useTemplateRef } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAuthLogout } from '@/composables/data/useAuth';
 import { useReadRecentProfileLocations } from '@/composables/data/useLocations';
 import { DOCS_URL } from '@/config';
+import { getFlagImage } from '@/config/i18nConfig';
 import { getLocationImages, type Image } from '@/domain/image';
+import { type RecentLocationFilter } from '@/domain/location';
 import type { Profile } from '@/domain/profile/types/profileSchemaTypes';
 
 const props = defineProps<{
@@ -28,13 +30,18 @@ const props = defineProps<{
     profile?: Profile | null;
 }>();
 
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 const { mutateAsync: logout } = useAuthLogout();
 
-const { data: recentLocations } = useReadRecentProfileLocations(
-    computed(() => props.profile?.id ?? null),
-    computed(() => ({ maxCount: 3 })),
-);
+const profileId = computed<string | null>(() => {
+    return props.profile?.id ?? null;
+});
+
+const filters = ref<RecentLocationFilter>({
+    maxCount: 3,
+});
+
+const { data: recentLocations } = useReadRecentProfileLocations(profileId, filters);
 
 const recentLocationImages = computed<Image[] | undefined>(() =>
     getLocationImages(recentLocations.value),
@@ -132,6 +139,13 @@ function closeMenu(): void {
                         <button class="menu-popover__item" @click="toggle">
                             <FontAwesomeIcon :icon="faGlobe" class="w-4" />
                             <span>Taal</span>
+                            <div class="ms-auto flex items-center gap-2 text-xs">
+                                <img
+                                    :src="getFlagImage(locale)"
+                                    :alt="t(`locales.${locale}`)"
+                                    class="h-5 w-5 rounded-sm" />
+                                <span>{{ t(`locales.${locale}`) }}</span>
+                            </div>
                         </button>
                     </template>
                 </LanguageSelector>

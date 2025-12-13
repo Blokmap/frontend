@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
+import FloatingPopover from '@/components/shared/atoms/FloatingPopover.vue';
 import { ref } from 'vue';
-import { useFloatingPosition } from '@/composables/useFloatingPosition';
 
 withDefaults(
     defineProps<{
@@ -19,10 +19,7 @@ const emit = defineEmits<{
 }>();
 
 const triggerRef = ref<HTMLElement | null>(null);
-const popoverRef = ref<HTMLElement | null>(null);
 const isVisible = ref(false);
-
-const { positionStyles } = useFloatingPosition(triggerRef, popoverRef, isVisible);
 
 function togglePopover() {
     isVisible.value = !isVisible.value;
@@ -45,37 +42,31 @@ function onCancel() {
             <slot name="trigger" :toggle="togglePopover"></slot>
         </div>
 
-        <Teleport to="body">
-            <Transition name="slide-down">
-                <div
-                    v-if="isVisible"
-                    ref="popoverRef"
-                    :style="positionStyles"
-                    class="confirm-popover">
-                    <div class="confirm-popover__message">
-                        <slot name="message">{{ message || 'Are you sure?' }}</slot>
-                    </div>
-                    <div class="confirm-popover__actions">
-                        <slot name="actions" :on-confirm="onConfirm" :on-cancel="onCancel">
-                            <Button
-                                size="small"
-                                severity="secondary"
-                                text
-                                label="Annuleren"
-                                @click="onCancel">
-                            </Button>
-                            <Button
-                                size="small"
-                                severity="danger"
-                                label="Bevestigen"
-                                :loading="loading"
-                                @click="onConfirm">
-                            </Button>
-                        </slot>
-                    </div>
+        <FloatingPopover :target-ref="triggerRef" v-model:visible="isVisible">
+            <div class="confirm-popover">
+                <div class="confirm-popover__message">
+                    <slot name="message">{{ message || 'Are you sure?' }}</slot>
                 </div>
-            </Transition>
-        </Teleport>
+                <div class="confirm-popover__actions">
+                    <slot name="actions" :on-confirm="onConfirm" :on-cancel="onCancel">
+                        <Button
+                            size="small"
+                            severity="secondary"
+                            text
+                            label="Annuleren"
+                            @click="onCancel">
+                        </Button>
+                        <Button
+                            size="small"
+                            severity="danger"
+                            label="Bevestigen"
+                            :loading="loading"
+                            @click="onConfirm">
+                        </Button>
+                    </slot>
+                </div>
+            </div>
+        </FloatingPopover>
     </div>
 </template>
 

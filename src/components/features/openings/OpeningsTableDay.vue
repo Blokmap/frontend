@@ -43,22 +43,11 @@ const { locale } = useI18n();
 
 .openings-day {
     @apply flex items-center justify-between px-4 py-2.5;
-    @apply border-b-2 border-slate-200 transition-colors last:border-b-0;
-
-    &:hover {
-        @apply bg-slate-50;
-    }
-
-    &:has(+ .openings-day--today) {
-        @apply border-b-0;
-    }
+    @apply rounded-lg transition-colors last:border-b-0;
 
     &.openings-day--today {
-        @apply bg-primary-50 rounded-lg border-b-0;
-
-        &:hover {
-            @apply bg-primary-100;
-        }
+        @apply border-b-0 bg-slate-100;
+        @apply bg-primary-50 hover:bg-primary-100;
 
         .openings-day__label,
         .openings-day__time {

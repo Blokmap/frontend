@@ -16,7 +16,7 @@ export type WebsocketMessageHandler<T = unknown> = (message: WebsocketMessage<T>
 
 export type WebsocketSubscription<T = unknown> = {
     channel: WebsocketChannel;
-    onMessage: WebsocketMessageHandler<T>;
+    onMessage?: WebsocketMessageHandler<T>;
 };
 
 /**
@@ -79,7 +79,7 @@ export function useWebsocket(enabled: MaybeRef<boolean> = true) {
                 // Find matching subscription and call its handler
                 for (const subscription of subscriptions.value.values()) {
                     if (isWebsocketChannelsEqual(message.channel, subscription.channel)) {
-                        subscription.onMessage(message);
+                        subscription.onMessage?.(message);
                     }
                 }
             } catch (error) {
@@ -118,7 +118,7 @@ export function useWebsocket(enabled: MaybeRef<boolean> = true) {
      */
     function subscribe<T = unknown>(
         channel: WebsocketChannel,
-        onMessage: WebsocketMessageHandler<T>,
+        onMessage?: WebsocketMessageHandler<T>,
     ): () => void {
         const key = getWebsocketChannelKey(channel);
 

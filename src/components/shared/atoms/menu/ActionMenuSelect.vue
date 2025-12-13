@@ -2,7 +2,7 @@
 import Select from 'primevue/select';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-import { closeFloatingOverlays } from '@/composables/useFloatingPosition';
+import { closeFloatingOverlays } from '@/composables/useFloatingOverlayManager';
 import type { SelectOption } from '.';
 
 const props = withDefaults(

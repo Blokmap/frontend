@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import Popover from 'primevue/popover';
 import ProgressSpinner from 'primevue/progressspinner';
 import ReservationBuilderCalendar from '@/components/features/reservation/builder/ReservationBuilderCalendar.vue';
 import ReservationBuilderLegend from '@/components/features/reservation/builder/ReservationBuilderLegend.vue';
+import ReservationBuilderSubmitDialog from '@/components/features/reservation/builder/ReservationBuilderSubmitDialog.vue';
+import FloatingPopover from '@/components/shared/atoms/FloatingPopover.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import TimeInput from '@/components/shared/molecules/form/TimeInput.vue';
 import { faCheck, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref, watch, useTemplateRef } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { computed, ref, watch, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
 import {
@@ -19,14 +19,18 @@ import {
     useReadProfileReservations,
 } from '@/composables/data/useReservations';
 import { useWebsocket } from '@/composables/data/useWebsocket';
-import { useToast } from '@/composables/store/useToast';
-import { type Reservation, type ReservationBody } from '@/domain/reservation';
+import {
+    type ReservationFilter,
+    type Reservation,
+    type ReservationBody,
+    ReservationState,
+    adjustReservationForOverlaps,
+} from '@/domain/reservation';
 import {
     WebsocketChannelName,
     WebsocketMessageEvent,
     type WebsocketMessage,
 } from '@/domain/websocket';
-import { minutesToTime, timeToMinutes, doTimeRangesOverlap } from '@/utils/time';
 import type { TimeSlot } from '@/domain/calendar';
 import type { Location } from '@/domain/location';
 import type { OpeningTime } from '@/domain/openings';
@@ -36,16 +40,19 @@ const props = defineProps<{
     openings: OpeningTime[];
 }>();
 
-const visible = defineModel<boolean>('visible', { required: true });
-const currentWeek = defineModel<Date>('date', { required: true });
-
 const router = useRouter();
-const toast = useToast();
-const i18n = useI18n();
+
+const visible = defineModel<boolean>('visible', {
+    required: true,
+});
+
+const currentWeek = defineModel<Date>('date', {
+    required: true,
+});
 
 const { profileId } = useAuthProfile();
 
-const reservationFilters = computed(() => ({
+const reservationFilters = computed<ReservationFilter>(() => ({
     inWeekOf: currentWeek.value,
     locationId: props.location.id,
 }));
@@ -62,77 +69,111 @@ const { mutateAsync: createReservations } = useCreateReservations({
 
 const { mutateAsync: deleteReservations } = useDeleteReservations();
 
-const { subscribe } = useWebsocket(computed(() => visible.value && props.location.isReservable));
+const enableWebsocket = computed(() => {
+    return visible.value && props.location.isReservable;
+});
 
-watch(
-    [visible, profileId],
-    ([isVisible, currentProfileId]) => {
-        if (isVisible && currentProfileId) {
-            const unsubscribe = subscribe(
-                {
-                    name: WebsocketChannelName.Reservations,
-                    meta: { profileId: currentProfileId },
-                },
-                (message: WebsocketMessage<any>) => {
-                    if (message.event === WebsocketMessageEvent.ReservationCreated) {
-                        toast.add({
-                            severity: 'success',
-                            summary: i18n.t('components.reservation.created.title'),
-                            detail: i18n.t('components.reservation.created.message'),
-                        });
-                    }
+const { subscribe } = useWebsocket(enableWebsocket);
 
-                    if (message.event === WebsocketMessageEvent.ReservationError) {
-                        toast.add({
-                            severity: 'warn',
-                            summary: i18n.t('components.reservation.rejected.title'),
-                            detail: i18n.t('components.reservation.rejected.message'),
-                        });
-                    }
+// Update reservation states from websocket messages
+const createdReservationStates = ref<Record<string, ReservationState>>({});
+const createdReservations = ref<Reservation[]>([]);
 
-                    if (message.event === WebsocketMessageEvent.ReservationError) {
-                        toast.add({
-                            severity: 'error',
-                            summary: i18n.t('components.reservation.error.title'),
-                            detail: i18n.t('components.reservation.error.message'),
-                        });
-                    }
-                },
-            );
+const progressedCreatedReservations = computed<Reservation[]>(() => {
+    return createdReservations.value.map((reservation) => {
+        const updatedState = createdReservationStates.value[reservation.id];
 
-            return () => {
-                unsubscribe();
-            };
+        if (updatedState) {
+            return { ...reservation, state: updatedState };
         }
-    },
-    { immediate: true },
-);
+
+        return reservation;
+    });
+});
+
+watchEffect(() => {
+    const isVisible = visible.value;
+    const currentProfileId = profileId.value;
+
+    if (!isVisible || !currentProfileId) {
+        return;
+    }
+
+    const onMessage = (message: WebsocketMessage<any>) => {
+        const { reservationId } = message.data;
+
+        if (!reservationId) {
+            return;
+        }
+
+        switch (message.event) {
+            case WebsocketMessageEvent.ReservationCreated:
+                createdReservationStates.value[reservationId] = ReservationState.Created;
+                break;
+            default:
+                createdReservationStates.value[reservationId] = ReservationState.Rejected;
+                break;
+        }
+    };
+
+    subscribe(
+        {
+            name: WebsocketChannelName.Reservations,
+            meta: { profileId: currentProfileId },
+        },
+        onMessage,
+    );
+});
 
 // Builder state
 const reservationsToCreate = ref<ReservationBody[]>([]);
 const reservationsToDelete = ref<Reservation[]>([]);
 
 // Popover state
-const reservationPopover = useTemplateRef('reservationPopover');
+const popoverTriggerRef = ref<HTMLElement | null>(null);
+const isPopoverVisible = ref(false);
+
 const activeRequest = ref<ReservationBody | null>(null);
 const activeOpeningTimeSlot = ref<TimeSlot<OpeningTime> | null>(null);
 
 const isSaving = ref<boolean>(false);
 const isLoading = computed<boolean>(() => isLoadingReservations.value);
 
+const showProgressDialog = computed<boolean>({
+    get: () => createdReservations.value.length > 0,
+    set: (value: boolean) => {
+        if (value === false) {
+            createdReservations.value = [];
+            createdReservationStates.value = {};
+        }
+    },
+});
+
 const hasPendingChanges = computed(() => {
     return reservationsToCreate.value.length + reservationsToDelete.value.length > 0;
 });
 
-function onOpeningTimeClick(slot: TimeSlot<OpeningTime>, event: Event): void {
+const onOpeningTimeClick = (slot: TimeSlot<OpeningTime>, event: Event): void => {
     if (isSaving.value || !slot.metadata) {
+        return;
+    }
+
+    const clickedElement = event.currentTarget as HTMLElement;
+    const isSameSlot = popoverTriggerRef.value === clickedElement && isPopoverVisible.value;
+
+    // If clicking the same slot that's already open, toggle it closed
+    if (isSameSlot) {
+        isPopoverVisible.value = false;
         return;
     }
 
     // Store the opening time slot for min/max constraints
     activeOpeningTimeSlot.value = slot;
 
-    // Show popover to create new reservation
+    // Update the trigger element for positioning
+    popoverTriggerRef.value = clickedElement;
+
+    // Update popover data
     activeRequest.value = {
         day: slot.metadata.day,
         openingTimeId: slot.metadata.id,
@@ -140,10 +181,10 @@ function onOpeningTimeClick(slot: TimeSlot<OpeningTime>, event: Event): void {
         endTime: slot.endTime,
     };
 
-    reservationPopover.value?.toggle(event);
-}
+    isPopoverVisible.value = true;
+};
 
-function onRequestDelete(request: ReservationBody): void {
+const onRequestDelete = (request: ReservationBody): void => {
     if (isSaving.value) {
         return;
     }
@@ -153,57 +194,23 @@ function onRequestDelete(request: ReservationBody): void {
     if (index !== -1) {
         reservationsToCreate.value.splice(index, 1);
     }
-}
+};
 
-function onReservationCreate(): void {
-    if (!activeRequest.value) {
+const onReservationCreate = (): void => {
+    if (!activeRequest.value || !reservations.value) {
         return;
     }
 
-    const request = { ...activeRequest.value };
-    const reqStart = timeToMinutes(request.startTime);
-    const reqEnd = timeToMinutes(request.endTime);
+    const existingReservations = [...reservations.value, ...reservationsToCreate.value];
+    reservationsToCreate.value.push(
+        adjustReservationForOverlaps(activeRequest.value, existingReservations),
+    );
 
-    // Check for overlapping reservations and adjust times accordingly
-    const overlaps = [...(reservations.value || []), ...reservationsToCreate.value]
-        .filter((r) => {
-            const isSameDay = r.day === request.day;
-
-            return (
-                isSameDay &&
-                doTimeRangesOverlap(request.startTime, request.endTime, r.startTime, r.endTime)
-            );
-        })
-        .map((r) => ({ start: timeToMinutes(r.startTime), end: timeToMinutes(r.endTime) }));
-
-    if (overlaps.length) {
-        let finalStart = reqStart;
-        let finalEnd = reqEnd;
-
-        // Adjust start if covered by a conflict
-        const startConflict = overlaps.find((r) => finalStart >= r.start && finalStart < r.end);
-        if (startConflict) finalStart = startConflict.end;
-
-        // Adjust end if there's a conflict after the (possibly adjusted) start
-        const endConflict = overlaps.find((r) => r.start >= finalStart && r.start < finalEnd);
-        if (endConflict) finalEnd = endConflict.start;
-
-        request.startTime = minutesToTime(finalStart);
-        request.endTime = minutesToTime(finalEnd);
-    }
-
-    reservationsToCreate.value.push(request);
-
-    reservationPopover.value?.hide();
+    isPopoverVisible.value = false;
     activeRequest.value = null;
-}
+};
 
-/**
- * Handles deletion of a reservation.
- *
- * @param reservation - The reservation to delete
- */
-function onReservationDelete(reservation: Reservation): void {
+const onReservationDelete = (reservation: Reservation): void => {
     if (isSaving.value) return;
 
     const index = reservationsToDelete.value.findIndex((r) => r.id === reservation.id);
@@ -213,13 +220,12 @@ function onReservationDelete(reservation: Reservation): void {
     } else {
         reservationsToDelete.value.push(reservation);
     }
-}
+};
 
-/**
- * Save all pending changes (creations and deletions)
- */
-async function savePendingChanges(): Promise<void> {
-    if (!hasPendingChanges.value || isSaving.value) return;
+const savePendingChanges = async (): Promise<void> => {
+    if (!hasPendingChanges.value || isSaving.value) {
+        return;
+    }
 
     isSaving.value = true;
 
@@ -228,30 +234,32 @@ async function savePendingChanges(): Promise<void> {
 
         // Bulk create reservations
         if (reservationsToCreate.value.length > 0) {
-            promises.push(
-                createReservations({
-                    locationId: props.location.id,
-                    requests: reservationsToCreate.value,
-                }),
-            );
+            const promise = createReservations({
+                locationId: props.location.id,
+                requests: reservationsToCreate.value,
+            }).then((reservations: Reservation[]) => {
+                showProgressDialog.value = true;
+                createdReservations.value = reservations;
+            });
+
+            promises.push(promise);
         }
 
         // Bulk delete reservations
         if (reservationsToDelete.value.length > 0) {
+            const reservationIds = reservationsToDelete.value.map((r) => r.id);
+
             promises.push(
                 deleteReservations({
                     locationId: props.location.id,
-                    reservationIds: reservationsToDelete.value.map((r) => r.id),
+                    reservationIds,
                 }),
             );
         }
 
         await Promise.all(promises);
-
-        // Refetch reservations to get the updated data
         await refetchReservations();
 
-        // Reset pending changes after refetch completes
         reservationsToCreate.value = [];
         reservationsToDelete.value = [];
     } catch (e) {
@@ -259,16 +267,20 @@ async function savePendingChanges(): Promise<void> {
     } finally {
         isSaving.value = false;
     }
-}
+};
 
-/**
- * Cancel all pending changes and reset state
- */
-function cancelPendingChanges(): void {
-    if (isSaving.value) return;
+const onProgressDialogClose = async (): Promise<void> => {
+    await refetchReservations();
+};
+
+const cancelPendingChanges = (): void => {
+    if (isSaving.value) {
+        return;
+    }
+
     reservationsToCreate.value = [];
     reservationsToDelete.value = [];
-}
+};
 
 // Navigate back when dialog closes
 watch(visible, (newVisible) => {
@@ -346,9 +358,18 @@ watch(visible, (newVisible) => {
         </template>
     </Dialog>
 
+    <!-- Progress Dialog -->
+    <Teleport to="body">
+        <ReservationBuilderSubmitDialog
+            v-model:visible="showProgressDialog"
+            :reservations="progressedCreatedReservations"
+            @close="onProgressDialogClose">
+        </ReservationBuilderSubmitDialog>
+    </Teleport>
+
     <!-- Reservation Creation Popover -->
-    <Popover ref="reservationPopover">
-        <div class="w-80 space-y-4 p-4">
+    <FloatingPopover :target-ref="popoverTriggerRef" v-model:visible="isPopoverVisible">
+        <div class="reservation-popover">
             <h3 class="text-base font-semibold text-gray-900">Nieuwe reservatie</h3>
 
             <div class="space-y-3">
@@ -374,13 +395,13 @@ watch(visible, (newVisible) => {
             </div>
 
             <div class="flex justify-end gap-2">
-                <Button severity="contrast" text size="small" @click="reservationPopover?.hide()">
+                <Button severity="contrast" text size="small" @click="isPopoverVisible = false">
                     Annuleren
                 </Button>
                 <Button size="small" @click="onReservationCreate">Toevoegen</Button>
             </div>
         </div>
-    </Popover>
+    </FloatingPopover>
 </template>
 
 <style>
@@ -399,5 +420,9 @@ watch(visible, (newVisible) => {
         @apply flex flex-shrink-0 items-center justify-between rounded-b-xl bg-gray-50 p-4;
         @apply border-t-1 border-slate-200;
     }
+}
+
+.reservation-popover {
+    @apply w-80 max-w-[calc(100vw-16px)] space-y-4 rounded-lg bg-white p-4;
 }
 </style>

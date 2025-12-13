@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import DatePicker from 'primevue/datepicker';
 import InputText from 'primevue/inputtext';
-import { computed, useTemplateRef } from 'vue';
+import FloatingPopover from '@/components/shared/atoms/FloatingPopover.vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useFloatingPosition } from '@/composables/useFloatingPosition';
 
 defineProps<{
     minDate?: Date;
@@ -19,11 +19,9 @@ const date = defineModel<Date>('date', {
     required: true,
 });
 
-const containerRef = useTemplateRef('container');
-const overlayRef = useTemplateRef('overlay');
+const containerRef = ref<HTMLElement | null>(null);
 
 const { locale } = useI18n();
-const { positionStyles } = useFloatingPosition(containerRef, overlayRef, isVisible);
 
 const formattedDate = computed(() => {
     return date.value.toLocaleDateString(locale.value, {
@@ -51,7 +49,7 @@ function handleDateSelect(newDate: any): void {
 
 <template>
     <!-- Trigger -->
-    <div ref="container">
+    <div ref="containerRef">
         <slot name="toggle" :toggle="toggleOverlay" :isOpen="isVisible">
             <InputText class="w-full" @click="toggleOverlay" :model-value="formattedDate" readonly>
             </InputText>
@@ -59,21 +57,19 @@ function handleDateSelect(newDate: any): void {
     </div>
 
     <!-- Overlay -->
-    <Teleport to="body">
-        <Transition name="slide-down">
-            <div v-if="isVisible" ref="overlay" :style="positionStyles" @click.stop>
-                <DatePicker
-                    v-model="date"
-                    :locale="locale"
-                    :min-date="minDate"
-                    :max-date="maxDate"
-                    @update:model-value="handleDateSelect"
-                    inline>
-                    <template #footer>
-                        <slot name="footer" :close="hideOverlay"></slot>
-                    </template>
-                </DatePicker>
-            </div>
-        </Transition>
-    </Teleport>
+    <FloatingPopover :target-ref="containerRef" v-model:visible="isVisible">
+        <div @click.stop>
+            <DatePicker
+                v-model="date"
+                :locale="locale"
+                :min-date="minDate"
+                :max-date="maxDate"
+                @update:model-value="handleDateSelect"
+                inline>
+                <template #footer>
+                    <slot name="footer" :close="hideOverlay"></slot>
+                </template>
+            </DatePicker>
+        </div>
+    </FloatingPopover>
 </template>

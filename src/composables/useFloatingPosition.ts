@@ -1,6 +1,13 @@
-import { nextTick, onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref, watch, watchEffect, type Ref } from 'vue';
 
 const FLOATING_OPEN_EVENT = 'floating-position:open';
+
+// Position constants
+const VERTICAL_GAP = 16;
+const HORIZONTAL_MARGIN = 12;
+const VERTICAL_MARGIN = 8;
+const Z_INDEX = '1500';
+const TRANSITION_DURATION = 200;
 
 export function closeFloatingOverlays(except?: symbol) {
     const event = new CustomEvent(FLOATING_OPEN_EVENT, { detail: except });
@@ -9,13 +16,6 @@ export function closeFloatingOverlays(except?: symbol) {
 
 /**
  * Composable to manage the floating position of an overlay element relative to a trigger element.
- * The overlay will position itself above or below the trigger based on available space in the viewport.
- *
- * @param triggerRef - Ref to the trigger HTMLElement
- * @param overlayRef - Ref to the overlay HTMLElement
- * @param isVisible - Ref indicating whether the overlay is visible
- * @param enforceMaxWidth - Whether to enforce the overlay's max-width to match the trigger's width
- * @returns An object containing styles for positioning and a method to update the position
  */
 export function useFloatingPosition(
     triggerRef: Ref<HTMLElement | null>,
@@ -26,35 +26,93 @@ export function useFloatingPosition(
     const positionStyles = ref<Record<string, string>>({});
     const instanceId = Symbol('floatingPosition');
 
-    function updatePosition() {
+    function alignOverlay(animate = false) {
         if (!triggerRef.value || !overlayRef.value) {
             return;
         }
 
-        const triggerRect = triggerRef.value.getBoundingClientRect();
-        const overlayRect = overlayRef.value.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
-        const scrollX = window.scrollX || window.pageXOffset;
-        const scrollY = window.scrollY || window.pageYOffset;
+        const trigger = triggerRef.value;
+        const overlay = overlayRef.value;
 
-        // Position above if there's more space above and overlay won't fit below
-        const spaceBelow = viewportHeight - triggerRect.bottom - 16;
-        const spaceAbove = triggerRect.top - 16;
-        const positionOnTop = spaceBelow < overlayRect.height && spaceAbove > spaceBelow;
+        // Enable/disable transition animation
+        if (animate) {
+            overlay.style.transition = `left ${TRANSITION_DURATION}ms ease-out, top ${TRANSITION_DURATION}ms ease-out`;
+        } else {
+            overlay.style.transition = '';
+        }
 
-        // Calculate top position with an 8px margin
-        const left = triggerRect.left + scrollX;
-        const top = positionOnTop
-            ? triggerRect.top + scrollY - overlayRect.height - 8
-            : triggerRect.bottom + scrollY + 8;
+        overlay.style.left = '';
+        overlay.style.top = '';
+        overlay.style.transformOrigin = 'center top';
 
-        // Apply calculated styles
-        const styles = {
+        const viewport = {
+            width: window.innerWidth,
+            height: window.innerHeight,
+        };
+
+        const triggerRect = trigger.getBoundingClientRect();
+        const overlayRect = overlay.getBoundingClientRect();
+        const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+        let top = 0;
+        let left = 0;
+
+        // Determine vertical position
+        const spaceBelow = viewport.height - triggerRect.bottom;
+        const spaceAbove = triggerRect.top;
+
+        if (spaceBelow >= overlayRect.height || spaceBelow > spaceAbove) {
+            // Position below trigger
+            top = triggerRect.bottom + scrollY + VERTICAL_GAP;
+            overlay.style.transformOrigin = 'center top';
+        } else {
+            // Position above trigger - align top of overlay with top of trigger minus gap
+            top = triggerRect.top + scrollY - overlayRect.height - VERTICAL_GAP;
+            overlay.style.transformOrigin = 'center bottom';
+        }
+
+        // Horizontal positioning: center relative to trigger
+        const triggerCenterX = triggerRect.left + triggerRect.width / 2;
+        left = triggerCenterX + scrollX - overlayRect.width / 2;
+
+        // Check if horizontal centering would overflow viewport
+        const wouldOverflowRight =
+            left + overlayRect.width > viewport.width + scrollX - HORIZONTAL_MARGIN;
+
+        const wouldOverflowLeft = left < scrollX + HORIZONTAL_MARGIN;
+
+        // If it would overflow, center it horizontally in the viewport instead
+        if (wouldOverflowRight || wouldOverflowLeft) {
+            left = scrollX + (viewport.width - overlayRect.width) / 2;
+        }
+
+        // Final constraint: ensure it stays within viewport bounds
+        if (left < scrollX + HORIZONTAL_MARGIN) {
+            left = scrollX + HORIZONTAL_MARGIN;
+        }
+
+        if (left + overlayRect.width > viewport.width + scrollX - HORIZONTAL_MARGIN) {
+            left = viewport.width + scrollX - overlayRect.width - HORIZONTAL_MARGIN;
+        }
+
+        // Constrain to viewport vertically
+        if (top + overlayRect.height > viewport.height + scrollY) {
+            top = Math.max(
+                VERTICAL_MARGIN,
+                viewport.height + scrollY - overlayRect.height - VERTICAL_MARGIN,
+            );
+        }
+
+        if (top < scrollY + VERTICAL_MARGIN) {
+            top = scrollY + VERTICAL_MARGIN;
+        }
+
+        const styles: Record<string, string> = {
             position: 'absolute',
-            left: `${left}px`,
-            top: `${top}px`,
-            zIndex: '1500',
-            maxWidth: '',
+            left: `${Math.round(left)}px`,
+            top: `${Math.round(top)}px`,
+            zIndex: Z_INDEX,
         };
 
         if (enforceMaxWidth) {
@@ -84,13 +142,25 @@ export function useFloatingPosition(
         }
     }
 
-    watch(isVisible, async (visible) => {
-        if (visible) {
-            closeFloatingOverlays(instanceId);
-            await nextTick();
-            updatePosition();
+    // Watch for visibility changes and recalculate position
+    watchEffect(() => {
+        if (isVisible.value && triggerRef.value && overlayRef.value) {
+            alignOverlay();
         }
     });
+
+    // Watch for trigger ref changes and recalculate position
+    watch(
+        triggerRef,
+        async () => {
+            if (isVisible.value && triggerRef.value && overlayRef.value) {
+                await nextTick();
+                // Enable animation when switching between triggers
+                alignOverlay(true);
+            }
+        },
+        { flush: 'post' },
+    );
 
     onMounted(() => {
         document.addEventListener(FLOATING_OPEN_EVENT, onFloatingOpen);
@@ -104,6 +174,6 @@ export function useFloatingPosition(
 
     return {
         positionStyles,
-        updatePosition,
+        updatePosition: alignOverlay,
     };
 }

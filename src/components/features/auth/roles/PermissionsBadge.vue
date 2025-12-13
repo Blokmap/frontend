@@ -1,8 +1,8 @@
 <script lang="ts" setup>
+import FloatingPopover from '@/components/shared/atoms/FloatingPopover.vue';
 import { faEllipsis, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { ref, computed, useTemplateRef } from 'vue';
-import { useFloatingPosition } from '@/composables/useFloatingPosition';
+import { ref, computed } from 'vue';
 import { extractPermissions, isAdministrator, type Role } from '@/domain/member';
 import RolePermissionsPopover from './RolePermissionsPopover.vue';
 import type { PermissionType } from '@/domain/auth';
@@ -12,11 +12,8 @@ const props = defineProps<{
     type: PermissionType;
 }>();
 
-const triggerRef = useTemplateRef<HTMLElement>('trigger');
-const popoverRef = useTemplateRef<HTMLElement>('popover');
+const triggerRef = ref<HTMLElement | null>(null);
 const isPopoverVisible = ref(false);
-
-const { positionStyles } = useFloatingPosition(triggerRef, popoverRef, isPopoverVisible);
 
 const permissions = computed(() => extractPermissions(props.role.permissions, props.type));
 const isAdmin = computed(() => isAdministrator(props.role.permissions));
@@ -42,7 +39,7 @@ function togglePopover(): void {
             </span>
             <button
                 v-if="hasMorePermissions"
-                ref="trigger"
+                ref="triggerRef"
                 type="button"
                 class="permissions-badge__more"
                 @click.stop="togglePopover">
@@ -56,11 +53,9 @@ function togglePopover(): void {
         </span>
     </div>
 
-    <Teleport to="body">
-        <div v-if="isPopoverVisible" ref="popover" :style="positionStyles">
-            <RolePermissionsPopover :role="role" :type="type" />
-        </div>
-    </Teleport>
+    <FloatingPopover :target-ref="triggerRef" v-model:visible="isPopoverVisible">
+        <RolePermissionsPopover :role="role" :type="type" />
+    </FloatingPopover>
 </template>
 
 <style scoped>

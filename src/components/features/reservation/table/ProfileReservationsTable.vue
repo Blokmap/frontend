@@ -5,37 +5,22 @@ import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
-import { useDeleteReservation } from '@/composables/data/useReservations';
-import { useToast } from '@/composables/store/useToast';
-import { timeToString, getTimeDuration, minutesToTime } from '@/utils/time';
+import { timeToString } from '@/utils/time';
 import ReservationActionMenu from '../ReservationActionMenu.vue';
 import type { DayGroup } from '.';
 import type { Reservation } from '@/domain/reservation';
 
-const props = defineProps<{
-    reservations?: Reservation[];
-    loading?: boolean;
-}>();
-
-const toast = useToast();
+const props = withDefaults(
+    defineProps<{
+        reservations?: Reservation[];
+        loading?: boolean;
+        showActions?: boolean;
+    }>(),
+    {
+        showActions: true,
+    },
+);
 const i18n = useI18n();
-
-const { mutateAsync: deleteReservation, isPending: isPendingDelete } = useDeleteReservation({
-    onSuccess: () => {
-        toast.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Reservation deleted successfully',
-        });
-    },
-    onError: () => {
-        toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to delete reservation',
-        });
-    },
-});
 
 // Group reservations by day of the week
 const groupedReservations = computed(() => {
@@ -83,18 +68,6 @@ const groupedReservations = computed(() => {
 
     return data;
 });
-
-const getTotalDuration = (reservations: Reservation[]) => {
-    let totalMinutes = 0;
-
-    for (const reservation of reservations) {
-        totalMinutes += getTimeDuration(reservation.startTime, reservation.endTime);
-    }
-
-    const time = minutesToTime(totalMinutes);
-
-    return `${time.hours}u ${time.minutes}m`;
-};
 </script>
 
 <template>
@@ -103,19 +76,11 @@ const getTotalDuration = (reservations: Reservation[]) => {
         :loading="loading"
         empty-message="Geen reservaties deze week.">
         <template #group="{ data, items }">
-            <div class="group-day">
-                <div class="flex items-center gap-2">
-                    <span class="text-lg font-bold text-slate-900 uppercase">
-                        {{ data.dayName }}
-                    </span>
-                    <span class="text-sm text-slate-600">{{ data.fullDate }}</span>
-                </div>
-                <div class="text-xs text-slate-500">
-                    {{ items.length }}
-                    {{ $t('domains.reservations.name', { count: items.length }) }}
-                    •
-                    {{ getTotalDuration(items) }}
-                </div>
+            <div class="flex items-center gap-2">
+                <span class="text-lg font-bold text-slate-900 uppercase">
+                    {{ data.dayName }}
+                </span>
+                <span class="text-sm text-slate-600">{{ data.fullDate }}</span>
             </div>
         </template>
 
@@ -124,7 +89,7 @@ const getTotalDuration = (reservations: Reservation[]) => {
                 <RouterLink
                     v-if="data.location"
                     :to="{ name: 'locations.detail', params: { locationId: data.location.id } }"
-                    class="text-secondary font-medium hover:underline">
+                    class="underline">
                     {{ data.location.name }}
                 </RouterLink>
                 <span v-else class="font-medium text-slate-900">Onbekende Locatie</span>
@@ -146,13 +111,10 @@ const getTotalDuration = (reservations: Reservation[]) => {
             <TableCell column="Status">
                 <ReservationStateBadge :state="data.state" />
             </TableCell>
-            <TableCell column="Acties">
-                <ReservationActionMenu
-                    :reservation="data"
-                    :show-state-select="false"
-                    :pending="isPendingDelete"
-                    @click:delete="deleteReservation({ reservationId: data.id })">
-                </ReservationActionMenu>
+            <TableCell column="Acties" v-if="showActions">
+                <slot name="actions">
+                    <ReservationActionMenu :reservation="data" :show-state-select="false" />
+                </slot>
             </TableCell>
         </template>
     </Table>

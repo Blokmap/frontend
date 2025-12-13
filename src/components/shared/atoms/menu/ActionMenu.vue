@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
+import FloatingPopover from '@/components/shared/atoms/FloatingPopover.vue';
 import { faEllipsisH, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue';
-import { useFloatingPosition } from '@/composables/useFloatingPosition';
 
 const props = defineProps<{
     pending?: boolean;
@@ -12,10 +12,7 @@ const props = defineProps<{
 }>();
 
 const triggerRef = ref<HTMLElement | null>(null);
-const overlayRef = ref<HTMLElement | null>(null);
 const isVisible = ref<boolean>(false);
-
-const { positionStyles } = useFloatingPosition(triggerRef, overlayRef, isVisible);
 
 function onToggleActionMenu(): void {
     if (props.disabled) {
@@ -49,28 +46,22 @@ function hideMenu(): void {
             </slot>
         </div>
 
-        <Teleport to="body">
-            <Transition name="slide-down">
-                <div
-                    v-if="isVisible"
-                    ref="overlayRef"
-                    :style="positionStyles"
-                    class="rounded-lg bg-white p-2 shadow-lg">
-                    <p class="mb-3 text-sm font-medium text-slate-500">Acties</p>
-                    <div class="space-y-3">
-                        <!-- Main content slot -->
-                        <slot name="content" :hide-menu="hideMenu">
-                            <!-- Default content slot -->
-                            <slot :hide-menu="hideMenu"></slot>
-                        </slot>
+        <FloatingPopover :target-ref="triggerRef" v-model:visible="isVisible">
+            <div class="rounded-lg bg-white p-2 shadow-lg">
+                <p class="mb-3 text-sm font-medium text-slate-500">Acties</p>
+                <div class="space-y-3">
+                    <!-- Main content slot -->
+                    <slot name="content" :hide-menu="hideMenu">
+                        <!-- Default content slot -->
+                        <slot :hide-menu="hideMenu"></slot>
+                    </slot>
 
-                        <!-- Navigation section (always rendered independently) -->
-                        <div v-if="$slots.navigation" class="space-y-2">
-                            <slot name="navigation" :hide-menu="hideMenu"></slot>
-                        </div>
+                    <!-- Navigation section (always rendered independently) -->
+                    <div v-if="$slots.navigation" class="space-y-2">
+                        <slot name="navigation" :hide-menu="hideMenu"></slot>
                     </div>
                 </div>
-            </Transition>
-        </Teleport>
+            </div>
+        </FloatingPopover>
     </div>
 </template>

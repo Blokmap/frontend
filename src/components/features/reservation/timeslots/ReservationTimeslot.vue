@@ -20,7 +20,7 @@ defineEmits<{
 </script>
 
 <template>
-    <div class="reservation-card" :class="{ deleted: pendingDeletion }">
+    <div class="reservation-card" :class="{ deleted: pendingDeletion, saving }">
         <FontAwesomeIcon
             v-if="!pendingDeletion"
             :icon="RESERVATION_STATE_ICONS[reservation.state]"
@@ -103,6 +103,10 @@ defineEmits<{
         .delete-btn {
             @apply text-red-700;
         }
+    }
+
+    &.saving {
+        @apply cursor-wait;
     }
 }
 

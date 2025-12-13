@@ -8,7 +8,7 @@ defineProps<{
 }>();
 
 const severities: Record<ReservationState, string> = {
-    [ReservationState.Created]: 'info',
+    [ReservationState.Created]: 'success',
     [ReservationState.Present]: 'success',
     [ReservationState.Absent]: 'danger',
     [ReservationState.Rejected]: 'contrast',
@@ -21,7 +21,8 @@ const severities: Record<ReservationState, string> = {
         <div class="flex w-full items-center justify-around gap-1">
             <FontAwesomeIcon
                 :icon="RESERVATION_STATE_ICONS[state]"
-                :spin="state === ReservationState.Pending" />
+                :spin="state === ReservationState.Pending">
+            </FontAwesomeIcon>
             <span>{{ $t(`domains.reservations.state.${state}`) }}</span>
         </div>
     </Badge>

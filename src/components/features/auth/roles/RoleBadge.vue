@@ -1,8 +1,8 @@
 <script lang="ts" setup>
+import FloatingPopover from '@/components/shared/atoms/FloatingPopover.vue';
 import { faTag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref, useTemplateRef } from 'vue';
-import { useFloatingPosition } from '@/composables/useFloatingPosition';
+import { computed, ref } from 'vue';
 import { type Role } from '@/domain/member';
 import RolePermissionsPopover from './RolePermissionsPopover.vue';
 import type { PermissionType } from '@/domain/auth';
@@ -17,11 +17,8 @@ const {
     type: PermissionType;
 }>();
 
-const triggerRef = useTemplateRef<HTMLElement>('trigger');
-const popoverRef = useTemplateRef<HTMLElement>('popover');
+const triggerRef = ref<HTMLElement | null>(null);
 const isPopoverVisible = ref(false);
-
-const { positionStyles } = useFloatingPosition(triggerRef, popoverRef, isPopoverVisible);
 
 const bgColor = computed<string>(() => {
     return 'var(--color-slate-100)';
@@ -43,7 +40,7 @@ function onClickLabel(): void {
 
 <template>
     <div
-        ref="trigger"
+        ref="triggerRef"
         class="role-badge"
         :class="{ 'role-badge--clickable': clickable }"
         :style="{ backgroundColor: bgColor, color: textColor }"
@@ -52,11 +49,9 @@ function onClickLabel(): void {
         <span class="role-badge__label">{{ role?.name ?? 'Geen Rol' }}</span>
     </div>
 
-    <Teleport to="body">
-        <div v-if="role && isPopoverVisible" ref="popover" :style="positionStyles">
-            <RolePermissionsPopover :role="role" :type="type" />
-        </div>
-    </Teleport>
+    <FloatingPopover v-if="role" :target-ref="triggerRef" v-model:visible="isPopoverVisible">
+        <RolePermissionsPopover :role="role" :type="type" />
+    </FloatingPopover>
 </template>
 
 <style scoped>

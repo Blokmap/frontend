@@ -47,7 +47,7 @@
 }
 
 .p-datepicker-panel {
-    @apply mt-2 w-auto rounded-md p-3;
+    @apply w-auto rounded-md p-3;
     @apply bg-surface-0 text-surface-700;
     @apply !shadow-md;
 }

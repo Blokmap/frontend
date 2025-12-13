@@ -24,7 +24,7 @@
 }
 
 .p-message-success {
-    @apply bg-primary-50 text-primary-600 border-timber-green-200 shadow-playful-no-transform;
+    @apply bg-timber-green-50 text-timber-green-600 border-timber-green-200 shadow-playful-no-transform;
     --shadow-color: theme(colors.timber-green.200);
 }
 

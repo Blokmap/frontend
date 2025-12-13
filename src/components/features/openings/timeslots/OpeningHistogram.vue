@@ -34,11 +34,6 @@ const bins = computed<{ occupancy: number; ratio: number }[]>(() => {
     });
 });
 
-/**
- * Get tooltip text for a histogram bin
- *
- * @param bin - The histogram bin
- */
 function getTooltip(bin: { occupancy: number; ratio: number }) {
     return `${Math.round(bin.occupancy)} / ${props.seatCount}`;
 }
@@ -61,6 +56,7 @@ function getTooltip(bin: { occupancy: number; ratio: number }) {
 .histogram {
     @apply flex h-full w-full flex-col;
     @apply pointer-events-none;
+    @apply overflow-hidden rounded-xl;
 
     .histogram__bin {
         @apply flex-1;

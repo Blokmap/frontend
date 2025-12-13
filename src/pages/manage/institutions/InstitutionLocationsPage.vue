@@ -86,7 +86,7 @@ const breadcrumbs = computed(() => {
 
         <PageFilters>
             <SearchField v-model="query" :loading="isFetching" />
-            <LocationStateSelect v-model="filters.state" />
+            <LocationStateSelect v-model="filters.state" :loading="isFetching" />
         </PageFilters>
 
         <p class="text-slate-600">Locaties die onder deze organisatie vallen.</p>

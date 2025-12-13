@@ -10,8 +10,8 @@ defineProps<{
     startTime: Time;
     endTime: Time;
     reservation: Reservation;
-    isPendingDeletion?: boolean;
-    isSaving?: boolean;
+    pendingDeletion?: boolean;
+    saving?: boolean;
 }>();
 
 defineEmits<{
@@ -20,9 +20,9 @@ defineEmits<{
 </script>
 
 <template>
-    <div class="reservation-card" :class="{ deleted: isPendingDeletion }">
+    <div class="reservation-card" :class="{ deleted: pendingDeletion }">
         <FontAwesomeIcon
-            v-if="!isPendingDeletion"
+            v-if="!pendingDeletion"
             :icon="RESERVATION_STATE_ICONS[reservation.state]"
             class="state-icon"
             :spin="reservation.state === ReservationState.Pending">
@@ -32,14 +32,14 @@ defineEmits<{
             class="delete-btn"
             size="small"
             severity="contrast"
-            :disabled="isSaving"
+            :disabled="saving"
             @click.stop="$emit('delete', reservation)"
             text>
             <template #icon>
                 <FontAwesomeIcon :icon="faTrash" class="h-3 w-3" />
             </template>
         </Button>
-        <FontAwesomeIcon :icon="faSlash" class="delete-cross" v-if="isPendingDeletion">
+        <FontAwesomeIcon :icon="faSlash" class="delete-cross" v-if="pendingDeletion">
         </FontAwesomeIcon>
         <div class="time-display">
             <span class="time-text">

@@ -59,6 +59,7 @@ const {
 const { mutateAsync: createReservations } = useCreateReservations({
     disableToasts: true,
 });
+
 const { mutateAsync: deleteReservations } = useDeleteReservations();
 
 const { subscribe } = useWebsocket(computed(() => visible.value && props.location.isReservable));
@@ -119,18 +120,14 @@ const activeOpeningTimeSlot = ref<TimeSlot<OpeningTime> | null>(null);
 const isSaving = ref<boolean>(false);
 const isLoading = computed<boolean>(() => isLoadingReservations.value);
 
-const hasPendingChanges = computed(
-    () => reservationsToCreate.value.length + reservationsToDelete.value.length > 0,
-);
+const hasPendingChanges = computed(() => {
+    return reservationsToCreate.value.length + reservationsToDelete.value.length > 0;
+});
 
-/**
- * Handle click on an opening time slot
- *
- * @param slot - The clicked time slot
- * @param event - The click event
- */
 function onOpeningTimeClick(slot: TimeSlot<OpeningTime>, event: Event): void {
-    if (isSaving.value || !slot.metadata) return;
+    if (isSaving.value || !slot.metadata) {
+        return;
+    }
 
     // Store the opening time slot for min/max constraints
     activeOpeningTimeSlot.value = slot;
@@ -146,11 +143,10 @@ function onOpeningTimeClick(slot: TimeSlot<OpeningTime>, event: Event): void {
     reservationPopover.value?.toggle(event);
 }
 
-/**
- * Handle deletion of a tentative reservation request
- */
 function onRequestDelete(request: ReservationBody): void {
-    if (isSaving.value) return;
+    if (isSaving.value) {
+        return;
+    }
 
     const index = reservationsToCreate.value.findIndex((r) => r === request);
 
@@ -159,28 +155,24 @@ function onRequestDelete(request: ReservationBody): void {
     }
 }
 
-/**
- * Handle creation of a new reservation
- */
 function onReservationCreate(): void {
-    if (!activeRequest.value) return;
+    if (!activeRequest.value) {
+        return;
+    }
 
     const request = { ...activeRequest.value };
     const reqStart = timeToMinutes(request.startTime);
     const reqEnd = timeToMinutes(request.endTime);
 
+    // Check for overlapping reservations and adjust times accordingly
     const overlaps = [...(reservations.value || []), ...reservationsToCreate.value]
         .filter((r) => {
             const isSameDay = r.day === request.day;
 
-            const overlaps = doTimeRangesOverlap(
-                request.startTime,
-                request.endTime,
-                r.startTime,
-                r.endTime,
+            return (
+                isSameDay &&
+                doTimeRangesOverlap(request.startTime, request.endTime, r.startTime, r.endTime)
             );
-
-            return isSameDay && overlaps;
         })
         .map((r) => ({ start: timeToMinutes(r.startTime), end: timeToMinutes(r.endTime) }));
 

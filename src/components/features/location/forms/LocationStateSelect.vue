@@ -1,11 +1,15 @@
 <script lang="ts" setup>
 import Select from 'primevue/select';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { faChartBar, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faChartBar, faCheck, faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { LocationState } from '@/domain/location';
 import type { FilterOption } from '@/utils/filter';
+
+defineProps<{
+    loading?: boolean;
+}>();
 
 const status = defineModel<LocationState | null>('status', {
     default: null,
@@ -30,9 +34,6 @@ const selectedOption = computed(() => {
         option-label="label"
         option-value="value"
         show-clear>
-        <template #filtericon>
-            <FontAwesomeIcon :icon="faChartBar" />
-        </template>
         <template #option="{ option }">
             <div class="flex items-center gap-2">
                 <FontAwesomeIcon :icon="option.icon" />
@@ -42,7 +43,8 @@ const selectedOption = computed(() => {
         <template #value="{ value }">
             <div class="flex items-center gap-3">
                 <template v-if="value && selectedOption">
-                    <FontAwesomeIcon :icon="selectedOption.icon || faChartBar" />
+                    <FontAwesomeIcon class="text-slate-400" v-if="loading" :icon="faSpinner" spin />
+                    <FontAwesomeIcon v-else :icon="selectedOption.icon || faChartBar" />
                     <span>{{ selectedOption.label }}</span>
                 </template>
                 <template v-else>

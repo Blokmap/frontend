@@ -113,16 +113,10 @@ const allTimeSlots = computed<TimeSlot<SlotMetadata>[]>(() => {
     ];
 });
 
-/**
- * Checks if a reservation is pending deletion.
- */
 function isPendingDeletion(reservation: Reservation): boolean {
     return props.reservationsToDelete.some((pd) => pd.id === reservation.id);
 }
 
-/**
- * Handles click on an opening time slot.
- */
 function onOpeningTimeClick(slot: TimeSlot<OpeningMetadata>, event: Event): void {
     if (props.isSaving || !slot.metadata) return;
 
@@ -179,7 +173,7 @@ function onReservationDelete(reservation: Reservation): void {
                     :end-time="slot.endTime"
                     :reservation="slot.metadata.data"
                     :pending-deletion="isPendingDeletion(slot.metadata.data)"
-                    :is-saving="isSaving"
+                    :saving="isSaving"
                     @delete="onReservationDelete">
                 </ReservationTimeslot>
             </template>

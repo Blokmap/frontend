@@ -15,3 +15,22 @@ export function formatTime(
 ): string | undefined | null {
     return timeToString(time, compact);
 }
+
+/**
+ * Formats a time range from start to end Time objects.
+ *
+ * @param startTime - The starting Time object.
+ * @param endTime - The ending Time object.
+ * @param compact - If true, returns a compact format.
+ *
+ * @returns A string representing the time range in "HH:MM - HH:MM" format.
+ */
+export function formatTimeRange(
+    startTime?: Time,
+    endTime?: Time,
+    compact: boolean = false,
+): string {
+    const startTimeString = timeToString(startTime, compact);
+    const endTimeString = timeToString(endTime, compact);
+    return `${startTimeString}-${endTimeString}`;
+}

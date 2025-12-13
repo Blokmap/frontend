@@ -2,7 +2,7 @@
 import Skeleton from 'primevue/skeleton';
 import { useI18n } from 'vue-i18n';
 import { formatDayName, isToday } from '@/utils/date';
-import { timeToString } from '@/utils/time';
+import { formatTimeRange } from '@/utils/time';
 import type { OpeningTime } from '@/domain/openings';
 
 defineProps<{
@@ -26,13 +26,12 @@ const { locale } = useI18n();
                     v-for="(opening, index) in openings"
                     :key="opening.id"
                     class="openings-day__time">
-                    {{ timeToString(opening.startTime, true) }}–{{
-                        timeToString(opening.endTime, true)
-                    }}{{ index < openings.length - 1 ? ', ' : '' }}
+                    {{ formatTimeRange(opening.startTime, opening.endTime, true) }}
+                    {{ index < openings.length - 1 ? ', ' : '' }}
                 </span>
             </template>
             <template v-else-if="loading">
-                <Skeleton width="75px" height="16px"></Skeleton>
+                <Skeleton width="60px" height="25px" />
             </template>
             <span v-else class="openings-day__closed"> Gesloten </span>
         </div>

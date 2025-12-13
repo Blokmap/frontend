@@ -40,7 +40,7 @@ const openingTimesByDay = computed<Map<string, OpeningTime[]>>(() => {
 <template>
     <div class="openings-table">
         <!-- Opening Hours Table -->
-        <template v-if="loading">
+        <template v-if="loading || openingTimesByDay.size > 0">
             <OpeningsTableDay
                 v-for="day in weekDays"
                 :key="day.toDateString()"

@@ -6,7 +6,6 @@
  * @returns A new Date object representing the start of the week (Monday).
  */
 export function startOfWeek(date: Date = new Date()): Date {
-    // Work on a copy to avoid mutating the incoming date object.
     const d = new Date(date.getTime());
     const day = d.getDay();
     const diff = d.getDate() - day + (day === 0 ? -6 : 1);
@@ -22,7 +21,6 @@ export function startOfWeek(date: Date = new Date()): Date {
  * @returns A new Date object representing the end of the week (Sunday).
  */
 export function endOfWeek(date: Date = new Date()): Date {
-    // Work on a copy to avoid mutating the incoming date object.
     const d = new Date(date.getTime());
     const day = d.getDay();
     const diff = d.getDate() - day + (day === 0 ? 0 : 7);
@@ -130,4 +128,16 @@ export function isToday(date: Date): boolean {
  */
 export function isWeekend(day: Date): boolean {
     return day.getDay() === 0 || day.getDay() === 6;
+}
+
+/**
+ * Checks if a date is in the past (before today).
+ *
+ * @param date - The date to check.
+ * @returns True if the date is in the past, false otherwise.
+ */
+export function isDateInPast(date: Date): boolean {
+    const today = startOfDay(new Date());
+    const checkDate = startOfDay(new Date(date));
+    return checkDate < today;
 }

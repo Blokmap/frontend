@@ -5,6 +5,7 @@ import ReservationTimeslot from '@/components/features/reservation/timeslots/Res
 import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
 import { computed } from 'vue';
 import { toTimeslots, type TimeSlot } from '@/domain/calendar';
+import { canInteractWithOpening, canDeleteReservation } from '@/domain/reservation';
 import OpeningHistogram from '../../openings/timeslots/OpeningHistogram.vue';
 import {
     isOpeningTimeSlot,
@@ -117,8 +118,13 @@ function isPendingDeletion(reservation: Reservation): boolean {
     return props.reservationsToDelete.some((pd) => pd.id === reservation.id);
 }
 
+function isOpeningDisabled(slot: TimeSlot<OpeningMetadata>): boolean {
+    if (!slot.metadata) return true;
+    return !canInteractWithOpening(slot.metadata.data);
+}
+
 function onOpeningTimeClick(slot: TimeSlot<OpeningMetadata>, event: Event): void {
-    if (props.isSaving || !slot.metadata) return;
+    if (props.isSaving || !slot.metadata || isOpeningDisabled(slot)) return;
 
     const data: TimeSlot<OpeningTime> = {
         ...slot,
@@ -140,7 +146,7 @@ function onRequestDelete(request: ReservationBody): void {
  * Handles deletion of a reservation.
  */
 function onReservationDelete(reservation: Reservation): void {
-    if (props.isSaving) return;
+    if (props.isSaving || !canDeleteReservation(reservation)) return;
     emit('delete:reservation', reservation);
 }
 </script>
@@ -162,6 +168,7 @@ function onReservationDelete(reservation: Reservation): void {
                 <OpeningTimeslot
                     :start-time="slot.startTime"
                     :end-time="slot.endTime"
+                    :disabled="isOpeningDisabled(slot)"
                     @click="onOpeningTimeClick(slot, $event)">
                 </OpeningTimeslot>
             </template>
@@ -173,6 +180,7 @@ function onReservationDelete(reservation: Reservation): void {
                     :end-time="slot.endTime"
                     :reservation="slot.metadata.data"
                     :pending-deletion="isPendingDeletion(slot.metadata.data)"
+                    :disabled="!canDeleteReservation(slot.metadata.data)"
                     :saving="isSaving"
                     @delete="onReservationDelete">
                 </ReservationTimeslot>

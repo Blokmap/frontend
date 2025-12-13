@@ -292,6 +292,7 @@ function onLoginClick(): void {
                 v-model:date="currentWeek"
                 v-model:visible="showReservationDialog"
                 :openings="openingTimes"
+                :openings-loading="openingTimesIsFetching"
                 :location="location">
             </ReservationBuilderDialog>
 

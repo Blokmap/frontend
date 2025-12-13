@@ -25,6 +25,7 @@ import {
     type ReservationBody,
     ReservationState,
     adjustReservationForOverlaps,
+    canDeleteReservation,
 } from '@/domain/reservation';
 import {
     WebsocketChannelName,
@@ -38,6 +39,7 @@ import type { OpeningTime } from '@/domain/openings';
 const props = defineProps<{
     location: Location;
     openings: OpeningTime[];
+    openingsLoading?: boolean;
 }>();
 
 const router = useRouter();
@@ -59,7 +61,7 @@ const reservationFilters = computed<ReservationFilter>(() => ({
 
 const {
     data: reservations,
-    isPending: isLoadingReservations,
+    isFetching: isFetchingReservations,
     refetch: refetchReservations,
 } = useReadProfileReservations(profileId, reservationFilters);
 
@@ -136,9 +138,6 @@ const isPopoverVisible = ref(false);
 const activeRequest = ref<ReservationBody | null>(null);
 const activeOpeningTimeSlot = ref<TimeSlot<OpeningTime> | null>(null);
 
-const isSaving = ref<boolean>(false);
-const isLoading = computed<boolean>(() => isLoadingReservations.value);
-
 const showProgressDialog = computed<boolean>({
     get: () => createdReservations.value.length > 0,
     set: (value: boolean) => {
@@ -153,35 +152,27 @@ const hasPendingChanges = computed(() => {
     return reservationsToCreate.value.length + reservationsToDelete.value.length > 0;
 });
 
+const isSaving = ref<boolean>(false);
+
+const isLoading = computed<boolean>(() => {
+    return isFetchingReservations.value || props.openingsLoading || false;
+});
+
 const onOpeningTimeClick = (slot: TimeSlot<OpeningTime>, event: Event): void => {
     if (isSaving.value || !slot.metadata) {
         return;
     }
 
-    const clickedElement = event.currentTarget as HTMLElement;
-    const isSameSlot = popoverTriggerRef.value === clickedElement && isPopoverVisible.value;
-
-    // If clicking the same slot that's already open, toggle it closed
-    if (isSameSlot) {
-        isPopoverVisible.value = false;
-        return;
-    }
-
-    // Store the opening time slot for min/max constraints
+    isPopoverVisible.value = true;
     activeOpeningTimeSlot.value = slot;
+    popoverTriggerRef.value = event.currentTarget as HTMLElement;
 
-    // Update the trigger element for positioning
-    popoverTriggerRef.value = clickedElement;
-
-    // Update popover data
     activeRequest.value = {
         day: slot.metadata.day,
         openingTimeId: slot.metadata.id,
         startTime: slot.startTime,
         endTime: slot.endTime,
     };
-
-    isPopoverVisible.value = true;
 };
 
 const onRequestDelete = (request: ReservationBody): void => {
@@ -211,7 +202,7 @@ const onReservationCreate = (): void => {
 };
 
 const onReservationDelete = (reservation: Reservation): void => {
-    if (isSaving.value) return;
+    if (isSaving.value || !canDeleteReservation(reservation)) return;
 
     const index = reservationsToDelete.value.findIndex((r) => r.id === reservation.id);
 
@@ -307,25 +298,30 @@ watch(visible, (newVisible) => {
             </div>
 
             <!-- Calendar Content -->
-            <div class="flex-1 overflow-auto">
-                <!-- Loading State -->
-                <div v-if="isLoading" class="flex h-full items-center justify-center">
-                    <ProgressSpinner style="width: 50px; height: 50px" />
-                </div>
+            <div class="calendar-content flex-1 overflow-auto">
+                <!-- Loading Overlay -->
+                <Transition name="fade">
+                    <div v-if="isLoading" class="loading-overlay">
+                        <ProgressSpinner style="width: 50px; height: 50px" />
+                    </div>
+                </Transition>
 
                 <!-- Calendar -->
-                <ReservationBuilderCalendar
-                    v-else-if="openings && reservations"
-                    :current-week="currentWeek"
-                    :opening-times="openings"
-                    :reservations="reservations"
-                    :reservations-to-create="reservationsToCreate"
-                    :reservations-to-delete="reservationsToDelete"
-                    :is-saving="isSaving"
-                    @click:opening="onOpeningTimeClick"
-                    @delete:request="onRequestDelete"
-                    @delete:reservation="onReservationDelete">
-                </ReservationBuilderCalendar>
+                <Transition name="fade-in" mode="out-in">
+                    <ReservationBuilderCalendar
+                        v-if="!isLoading && reservations"
+                        :key="currentWeek.toISOString()"
+                        :current-week="currentWeek"
+                        :opening-times="openings"
+                        :reservations="reservations"
+                        :reservations-to-create="reservationsToCreate"
+                        :reservations-to-delete="reservationsToDelete"
+                        :is-saving="isSaving"
+                        @click:opening="onOpeningTimeClick"
+                        @delete:request="onRequestDelete"
+                        @delete:reservation="onReservationDelete">
+                    </ReservationBuilderCalendar>
+                </Transition>
             </div>
 
             <!-- Footer -->
@@ -419,6 +415,16 @@ watch(visible, (newVisible) => {
     .dialog__footer {
         @apply flex flex-shrink-0 items-center justify-between rounded-b-xl bg-gray-50 p-4;
         @apply border-t-1 border-slate-200;
+    }
+
+    .calendar-content {
+        @apply relative;
+
+        .loading-overlay {
+            @apply absolute inset-0 z-50;
+            @apply flex items-center justify-center;
+            @apply bg-white/80 backdrop-blur-sm;
+        }
     }
 }
 

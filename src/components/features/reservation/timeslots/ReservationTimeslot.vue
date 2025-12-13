@@ -12,6 +12,7 @@ defineProps<{
     reservation: Reservation;
     pendingDeletion?: boolean;
     saving?: boolean;
+    disabled?: boolean;
 }>();
 
 defineEmits<{
@@ -20,7 +21,7 @@ defineEmits<{
 </script>
 
 <template>
-    <div class="reservation-card" :class="{ deleted: pendingDeletion, saving }">
+    <div class="reservation-card" :class="{ deleted: pendingDeletion, saving, disabled }">
         <FontAwesomeIcon
             v-if="!pendingDeletion"
             :icon="RESERVATION_STATE_ICONS[reservation.state]"
@@ -28,6 +29,7 @@ defineEmits<{
             :spin="reservation.state === ReservationState.Pending">
         </FontAwesomeIcon>
         <Button
+            v-if="!disabled"
             rounded
             class="delete-btn"
             size="small"
@@ -107,6 +109,18 @@ defineEmits<{
 
     &.saving {
         @apply cursor-wait;
+    }
+
+    &.disabled {
+        @apply cursor-not-allowed opacity-40;
+
+        .time-display {
+            @apply text-gray-400;
+        }
+
+        .state-icon {
+            @apply text-gray-400;
+        }
     }
 }
 

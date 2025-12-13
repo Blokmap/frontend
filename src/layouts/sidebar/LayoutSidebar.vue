@@ -21,7 +21,8 @@ const emit = defineEmits<{
     <aside class="sidebar">
         <button v-if="showBackButton" class="sidebar__back-button" @click="emit('click:back')">
             <FontAwesomeIcon :icon="faChevronLeft" />
-            <span>{{ backButtonText || 'Terug' }}</span>
+            <Skeleton v-if="loading" class="!h-5 !w-25" />
+            <span v-else>{{ backButtonText || 'Terug' }}</span>
         </button>
         <slot name="header"> </slot>
         <div v-if="title || loading" class="sidebar__header">

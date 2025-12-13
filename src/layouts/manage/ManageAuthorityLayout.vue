@@ -49,7 +49,7 @@ const {
 } = useReadAuthorityMemberPermissions(authorityId, props.authProfile.id);
 
 const isLoading = computed<boolean>(() => {
-    return isLoadingAuthority.value && isLoadingPermissions.value;
+    return isLoadingAuthority.value || isLoadingPermissions.value;
 });
 
 const isError = computed<boolean>(() => {
@@ -79,9 +79,9 @@ function goBack() {
                 :title="authority?.name"
                 :logo="authority?.logo?.url"
                 :loading="isLoading"
-                show-back-button
                 :back-button-text="backButtonText"
-                @click:back="goBack">
+                @click:back="goBack"
+                show-back-button>
                 <LayoutSidebarSection title="Instellingen">
                     <LayoutSidebarItem
                         :loading="isLoading"

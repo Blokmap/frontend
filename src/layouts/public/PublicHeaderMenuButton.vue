@@ -4,6 +4,7 @@ import Popover from 'primevue/popover';
 import Skeleton from 'primevue/skeleton';
 import ImageStack from '@/components/shared/molecules/ImageStack.vue';
 import LanguageSelector from '@/components/shared/molecules/LanguageSelector.vue';
+import LocaleDisplay from '@/components/shared/molecules/LocaleDisplay.vue';
 import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
 import {
     faBars,
@@ -20,7 +21,6 @@ import { useI18n } from 'vue-i18n';
 import { useAuthLogout } from '@/composables/data/useAuth';
 import { useReadRecentProfileLocations } from '@/composables/data/useLocations';
 import { DOCS_URL } from '@/config';
-import { getFlagImage } from '@/config/i18nConfig';
 import { getLocationImages, type Image } from '@/domain/image';
 import { type RecentLocationFilter } from '@/domain/location';
 import type { Profile } from '@/domain/profile/types/profileSchemaTypes';
@@ -30,7 +30,7 @@ const props = defineProps<{
     profile?: Profile | null;
 }>();
 
-const { locale, t } = useI18n();
+const { locale } = useI18n();
 const { mutateAsync: logout } = useAuthLogout();
 
 const profileId = computed<string | null>(() => {
@@ -139,13 +139,7 @@ function closeMenu(): void {
                         <button class="menu-popover__item" @click="toggle">
                             <FontAwesomeIcon :icon="faGlobe" class="w-4" />
                             <span>Taal</span>
-                            <div class="ms-auto flex items-center gap-2 text-xs">
-                                <img
-                                    :src="getFlagImage(locale)"
-                                    :alt="t(`locales.${locale}`)"
-                                    class="h-5 w-5 rounded-sm" />
-                                <span>{{ t(`locales.${locale}`) }}</span>
-                            </div>
+                            <LocaleDisplay :locale="locale" class="ms-auto" />
                         </button>
                     </template>
                 </LanguageSelector>

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
 import Popover from 'primevue/popover';
+import LocaleDisplay from '@/components/shared/molecules/LocaleDisplay.vue';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, useTemplateRef } from 'vue';
@@ -51,11 +52,7 @@ function handleLocaleChange(newLocale: string): void {
                 :key="loc"
                 @click="handleLocaleChange(loc)"
                 :class="['locale-item', { active: loc === currentLocale }]">
-                <img
-                    :src="getFlagImage(loc)"
-                    :alt="t(`locales.${loc}`)"
-                    class="h-5 w-5 rounded-sm" />
-                <span>{{ t(`locales.${loc}`) }}</span>
+                <LocaleDisplay :locale="loc" />
             </button>
         </nav>
     </Popover>

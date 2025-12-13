@@ -7,7 +7,7 @@ import type { Institution } from '@/domain/institution';
 withDefaults(
     defineProps<{
         institution: Institution;
-        isPending?: boolean;
+        pending?: boolean;
         showProfiles?: boolean;
         showAuthorities?: boolean;
         showEdit?: boolean;
@@ -34,7 +34,7 @@ function onDeleteClick(): void {
 </script>
 
 <template>
-    <ActionMenu :is-pending="isPending">
+    <ActionMenu :pending="pending">
         <template #trigger="{ toggle }">
             <slot name="trigger" :toggle="toggle"></slot>
         </template>

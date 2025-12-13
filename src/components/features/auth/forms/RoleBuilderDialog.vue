@@ -9,10 +9,10 @@ const props = withDefaults(
     defineProps<{
         role?: Role;
         type: PermissionType;
-        isPending?: boolean;
+        pending?: boolean;
     }>(),
     {
-        isPending: false,
+        pending: false,
     },
 );
 
@@ -54,7 +54,7 @@ function onSubmitForm(form: CreateRoleBody): void {
 </script>
 
 <template>
-    <Dialog v-model:visible="isVisible" modal :dismissable-mask="!isPending" :closable="!isPending">
+    <Dialog v-model:visible="isVisible" modal :dismissable-mask="!pending" :closable="!pending">
         <template #header>
             <div class="flex flex-col">
                 <h3 class="text-lg font-semibold text-gray-900">{{ dialogTitle }}</h3>
@@ -68,7 +68,7 @@ function onSubmitForm(form: CreateRoleBody): void {
                 <RoleForm
                     :role="role"
                     :type="type"
-                    :is-loading="isPending"
+                    :is-loading="pending"
                     @click:save="onSubmitForm">
                 </RoleForm>
             </div>

@@ -150,7 +150,7 @@ const getTotalDuration = (reservations: Reservation[]) => {
                 <ReservationActionMenu
                     :reservation="data"
                     :show-state-select="false"
-                    :is-pending="isPendingDelete"
+                    :pending="isPendingDelete"
                     @click:delete="deleteReservation({ reservationId: data.id })">
                 </ReservationActionMenu>
             </TableCell>

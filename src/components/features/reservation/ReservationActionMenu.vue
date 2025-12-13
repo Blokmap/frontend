@@ -15,7 +15,7 @@ import {
 const _props = withDefaults(
     defineProps<{
         reservation: Reservation;
-        isPending?: boolean;
+        pending?: boolean;
         showStateSelect?: boolean;
         showDelete?: boolean;
     }>(),
@@ -58,7 +58,7 @@ function onDeleteClick(): void {
 </script>
 
 <template>
-    <ActionMenu :is-pending="isPending">
+    <ActionMenu :pending="pending">
         <template #trigger="{ toggle }">
             <slot name="trigger" :toggle="toggle"></slot>
         </template>
@@ -68,7 +68,7 @@ function onDeleteClick(): void {
                 v-if="showStateSelect"
                 :value="reservation.state"
                 :options="statusOptions"
-                :loading="isPending"
+                :loading="pending"
                 label="Status wijzigen"
                 placeholder="Selecteer nieuwe status"
                 @change="onStateSelect">

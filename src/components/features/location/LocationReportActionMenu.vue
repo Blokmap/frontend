@@ -9,10 +9,10 @@ import type { LocationReport } from '@/domain/report';
 const props = withDefaults(
     defineProps<{
         report: LocationReport;
-        isPending?: boolean;
+        pending?: boolean;
     }>(),
     {
-        isPending: false,
+        pending: false,
     },
 );
 
@@ -35,7 +35,7 @@ function onCancelDeletion(): void {
 }
 
 watch(
-    () => props.isPending,
+    () => props.pending,
     (isPending, wasPending) => {
         if (wasPending && !isPending && showDeleteDialog.value) {
             showDeleteDialog.value = false;
@@ -45,7 +45,7 @@ watch(
 </script>
 
 <template>
-    <ActionMenu :is-pending="isPending">
+    <ActionMenu :pending="pending">
         <template #navigation>
             <ActionMenuButton
                 label="Verwijderen"
@@ -61,7 +61,7 @@ watch(
             v-model:visible="showDeleteDialog"
             title="Melding verwijderen"
             confirm-label="Verwijderen"
-            :loading="isPending"
+            :loading="pending"
             @click:confirm="onConfirmDeletion"
             @click:cancel="onCancelDeletion"
             destructive>

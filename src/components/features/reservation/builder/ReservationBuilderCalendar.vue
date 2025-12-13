@@ -178,7 +178,7 @@ function onReservationDelete(reservation: Reservation): void {
                     :start-time="slot.startTime"
                     :end-time="slot.endTime"
                     :reservation="slot.metadata.data"
-                    :is-pending-deletion="isPendingDeletion(slot.metadata.data)"
+                    :pending-deletion="isPendingDeletion(slot.metadata.data)"
                     :is-saving="isSaving"
                     @delete="onReservationDelete">
                 </ReservationTimeslot>

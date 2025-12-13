@@ -7,7 +7,7 @@ import type { Authority } from '@/domain/authority';
 const props = withDefaults(
     defineProps<{
         authority: Authority;
-        isPending?: boolean;
+        pending?: boolean;
         showMembers?: boolean;
         showLocations?: boolean;
         showEdit?: boolean;
@@ -34,7 +34,7 @@ function onDeleteClick(): void {
 </script>
 
 <template>
-    <ActionMenu :is-pending="isPending">
+    <ActionMenu :pending="pending">
         <template #trigger="{ toggle }">
             <slot name="trigger" :toggle="toggle"></slot>
         </template>

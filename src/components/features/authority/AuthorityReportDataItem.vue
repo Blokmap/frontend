@@ -4,7 +4,7 @@ import type { AuthorityReport } from '@/domain/report';
 
 defineProps<{
     report: AuthorityReport;
-    isPending?: boolean;
+    pending?: boolean;
 }>();
 
 defineEmits<{

@@ -16,7 +16,7 @@ import type { FoundProfile } from '@/domain/profile';
 
 const props = defineProps<{
     roles: Role[];
-    isPending?: boolean;
+    pending?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -143,7 +143,7 @@ function onSubmitForm(): void {
                 severity="primary"
                 type="submit"
                 :label="$t('general.actions.save')"
-                :loading="isPending"
+                :loading="pending"
                 @click="onSubmitForm">
                 <template #icon>
                     <FontAwesomeIcon :icon="faSave" />

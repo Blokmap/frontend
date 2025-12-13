@@ -6,7 +6,7 @@ import { ref } from 'vue';
 import { useFloatingPosition } from '@/composables/useFloatingPosition';
 
 const props = defineProps<{
-    isPending?: boolean;
+    pending?: boolean;
     disabled?: boolean;
     disabledTooltip?: string;
 }>();
@@ -42,7 +42,7 @@ function hideMenu(): void {
                     @click.stop="onToggleActionMenu"
                     text>
                     <template #icon>
-                        <FontAwesomeIcon :icon="faEllipsisH" v-if="!isPending" />
+                        <FontAwesomeIcon :icon="faEllipsisH" v-if="!pending" />
                         <FontAwesomeIcon :icon="faSpinner" spin v-else />
                     </template>
                 </Button>

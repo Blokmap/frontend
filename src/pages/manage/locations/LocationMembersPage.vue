@@ -223,7 +223,7 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => [
         <Teleport to="body">
             <MemberAddDialog
                 v-if="roles"
-                :is-pending="addMemberIsPending"
+                :pending="addMemberIsPending"
                 :roles="roles"
                 @click:submit="onAddMember"
                 v-model:is-visible="showMemberAddDialog">

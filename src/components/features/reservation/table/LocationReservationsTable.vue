@@ -110,7 +110,7 @@ const groupedReservations = computed(() => {
                 <div class="flex justify-center">
                     <ReservationActionMenu
                         :reservation="data"
-                        :is-pending-update="isReservationPending?.(data.id)"
+                        :pending-update="isReservationPending?.(data.id)"
                         @select:state="onStatusChange(data.id, $event)">
                     </ReservationActionMenu>
                 </div>

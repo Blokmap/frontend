@@ -18,7 +18,7 @@ import LocationConfirmationDialog from './LocationConfirmationDialog.vue';
 const props = withDefaults(
     defineProps<{
         location: Location;
-        isPending?: boolean;
+        pending?: boolean;
         showStateSelect?: boolean;
         showEdit?: boolean;
         showReservations?: boolean;
@@ -109,7 +109,7 @@ function onDeleteClick(): void {
  * Close dialog when deletion completes successfully.
  */
 watch(
-    () => props.isPending,
+    () => props.pending,
     (isPending, wasPending) => {
         if (wasPending && !isPending && showDeleteDialog.value) {
             showDeleteDialog.value = false;
@@ -119,7 +119,7 @@ watch(
 </script>
 
 <template>
-    <ActionMenu :is-pending="isPending">
+    <ActionMenu :pending="pending">
         <template #trigger="{ toggle }">
             <slot name="trigger" :toggle="toggle">
                 <!-- Default trigger is provided by ActionMenu -->
@@ -131,7 +131,7 @@ watch(
                 v-if="showStateSelect"
                 :value="props.location.state"
                 :options="statusOptions"
-                :loading="isPending"
+                :loading="pending"
                 label="Status wijzigen"
                 placeholder="Selecteer nieuwe status"
                 @change="onStateSelect">
@@ -182,7 +182,7 @@ watch(
             v-model:visible="showDeleteDialog"
             title="Locatie verwijderen"
             confirm-label="Verwijderen"
-            :loading="isPending"
+            :loading="pending"
             @click:confirm="onConfirmDeletion"
             @click:cancel="onCancelDeletion"
             destructive>

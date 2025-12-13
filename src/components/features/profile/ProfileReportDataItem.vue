@@ -5,7 +5,7 @@ import type { ProfileReport } from '@/domain/report';
 
 defineProps<{
     report: ProfileReport;
-    isPending?: boolean;
+    pending?: boolean;
 }>();
 
 defineEmits<{

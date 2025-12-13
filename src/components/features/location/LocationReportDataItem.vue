@@ -5,7 +5,7 @@ import type { LocationReport } from '@/domain/report';
 
 defineProps<{
     report: LocationReport;
-    isPending?: boolean;
+    pending?: boolean;
 }>();
 
 defineEmits<{

@@ -8,7 +8,7 @@ import { DEFAULT_ROLE_NAME, type Role } from '@/domain/member';
 
 const props = defineProps<{
     role: Role;
-    isPending?: boolean;
+    pending?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -35,7 +35,7 @@ function onCancelDeletion(): void {
 }
 
 watch(
-    () => props.isPending,
+    () => props.pending,
     (isPending, wasPending) => {
         if (wasPending && !isPending && showDeleteDialog.value) {
             showDeleteDialog.value = false;
@@ -46,7 +46,7 @@ watch(
 
 <template>
     <ActionMenu
-        :is-pending="isPending"
+        :pending="pending"
         :disabled="role.name === DEFAULT_ROLE_NAME"
         disabled-tooltip="Deze rol kan niet worden aangepast.">
         <template #trigger="{ toggle }">
@@ -71,7 +71,7 @@ watch(
             v-model:visible="showDeleteDialog"
             title="Rol verwijderen"
             confirm-label="Verwijderen"
-            :loading="isPending"
+            :loading="pending"
             @click:confirm="onConfirmDeletion"
             @click:cancel="onCancelDeletion"
             destructive>

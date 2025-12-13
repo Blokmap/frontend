@@ -14,7 +14,7 @@ import { ProfileState, type Profile } from '@/domain/profile';
 const props = withDefaults(
     defineProps<{
         profile: Profile;
-        isPending?: boolean;
+        pending?: boolean;
         showStateSelect?: boolean;
         showLocations?: boolean;
         showAuthorities?: boolean;
@@ -48,7 +48,7 @@ function onStateSelect(state: ProfileState): void {
 </script>
 
 <template>
-    <ActionMenu :is-pending="isPending">
+    <ActionMenu :pending="pending">
         <template #trigger="{ toggle }">
             <slot name="trigger" :toggle="toggle" />
         </template>
@@ -58,7 +58,7 @@ function onStateSelect(state: ProfileState): void {
                 v-if="showStateSelect"
                 :value="props.profile.state"
                 :options="statusOptions"
-                :loading="isPending"
+                :loading="pending"
                 label="Status wijzigen"
                 placeholder="Selecteer nieuwe status"
                 @change="onStateSelect" />

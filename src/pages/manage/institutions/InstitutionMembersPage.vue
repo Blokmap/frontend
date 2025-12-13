@@ -150,7 +150,7 @@ const breadcrumbs = computed(() => {
                 v-if="roles"
                 v-model:is-visible="showMemberAddDialog"
                 :roles="roles"
-                :is-pending="addMemberIsPending"
+                :pending="addMemberIsPending"
                 @click:submit="onAddMember">
             </MemberAddDialog>
         </Teleport>

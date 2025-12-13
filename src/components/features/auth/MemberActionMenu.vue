@@ -10,7 +10,7 @@ const props = withDefaults(
     defineProps<{
         member: Member;
         availableRoles: Role[];
-        isPending?: boolean;
+        pending?: boolean;
         showRoleSelect?: boolean;
         showDelete?: boolean;
         disabled?: boolean;
@@ -51,7 +51,7 @@ function onDeleteClick(): void {
 </script>
 
 <template>
-    <ActionMenu :is-pending="isPending" :disabled="disabled">
+    <ActionMenu :pending="pending" :disabled="disabled">
         <template #trigger="{ toggle }">
             <slot name="trigger" :toggle="toggle"></slot>
         </template>
@@ -61,7 +61,7 @@ function onDeleteClick(): void {
                 v-if="showRoleSelect"
                 :value="member.role?.id"
                 :options="roleOptions"
-                :loading="isPending"
+                :loading="pending"
                 label="Rol wijzigen"
                 placeholder="Selecteer rol"
                 @change="onRoleSelect">

@@ -141,7 +141,7 @@ const breadcrumbs = computed(() => {
             <template #actions="{ role }">
                 <RoleActionsMenu
                     :role="role"
-                    :is-pending="deleteIsPending"
+                    :pending="deleteIsPending"
                     @edit="onEditRole"
                     @delete="onDeleteRole">
                 </RoleActionsMenu>
@@ -153,7 +153,7 @@ const breadcrumbs = computed(() => {
                 type="institution"
                 v-model:is-visible="showRoleBuilderDialog"
                 :role="selectedRole"
-                :is-pending="isPending"
+                :pending="isPending"
                 @click:submit="onSubmitRole">
             </RoleBuilderDialog>
         </Teleport>

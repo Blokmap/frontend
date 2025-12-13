@@ -124,7 +124,7 @@ function onSubmitRole(form: CreateRoleBody): void {
             <template #actions="{ role }">
                 <RoleActionsMenu
                     :role="role"
-                    :is-pending="deleteIsPending"
+                    :pending="deleteIsPending"
                     @edit="onEditRole"
                     @delete="onDeleteRole">
                 </RoleActionsMenu>
@@ -136,7 +136,7 @@ function onSubmitRole(form: CreateRoleBody): void {
                 type="location"
                 v-model:is-visible="showRoleBuilderDialog"
                 :role="selectedRole"
-                :is-pending="isPending"
+                :pending="isPending"
                 @click:submit="onSubmitRole">
             </RoleBuilderDialog>
         </Teleport>

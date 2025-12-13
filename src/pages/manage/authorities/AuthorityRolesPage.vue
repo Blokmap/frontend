@@ -148,7 +148,7 @@ function onEditRole(role: Role): void {
             <template #actions="{ role }">
                 <RoleActionsMenu
                     :role="role"
-                    :is-pending="deleteIsPending"
+                    :pending="deleteIsPending"
                     @edit="onEditRole"
                     @delete="onDeleteRole">
                 </RoleActionsMenu>
@@ -160,7 +160,7 @@ function onEditRole(role: Role): void {
                 type="authority"
                 v-model:is-visible="showRoleBuilderDialog"
                 :role="selectedRole"
-                :is-pending="isPending"
+                :pending="isPending"
                 @click:submit="onSubmitRole">
             </RoleBuilderDialog>
         </Teleport>

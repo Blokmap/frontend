@@ -11,8 +11,8 @@ import ConfirmDialog from '@/components/shared/molecules/ConfirmDialog.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
 import EditorOuput from '@/components/shared/molecules/editor/EditorOuput.vue';
 import Gallery from '@/components/shared/molecules/image/Gallery.vue';
+import PageContent from '@/layouts/PageContent.vue';
 import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
-import PublicContent from '@/layouts/public/PublicContent.vue';
 import { faArrowRight, faBullhorn, faEdit, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
@@ -118,7 +118,7 @@ function onLoginClick(): void {
 </script>
 
 <template>
-    <PublicContent class="location-page">
+    <PageContent class="location-page">
         <!-- Header -->
         <div v-if="!isPending && location" class="location-page__header">
             <div class="my-4 space-y-1">
@@ -321,14 +321,14 @@ function onLoginClick(): void {
                 </template>
             </ConfirmDialog>
         </Teleport>
-    </PublicContent>
+    </PageContent>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
 .location-page {
-    @apply mx-auto w-full max-w-[1280px] space-y-6;
+    @apply max-w-[1280px] space-y-6;
 }
 
 .location-page__header {

@@ -25,23 +25,24 @@ const component = computed(() => (props.to && !props.disabled ? RouterLink : 'di
 
 <template>
     <Skeleton v-if="loading" class="item-skeleton" :class="{ 'item-skeleton--compact': compact }" />
-    <component
-        v-else
-        class="item"
-        :class="{
-            'item--active': active,
-            'item--compact': compact,
-            'item--disabled': disabled,
-        }"
-        :is="component"
-        :to="to">
-        <div class="item__img">
-            <slot name="img"></slot>
-        </div>
-        <div class="item__text">
-            <slot name="text"></slot>
-        </div>
-    </component>
+    <Transition v-else name="fade-slide-right" appear>
+        <component
+            class="item"
+            :class="{
+                'item--active': active,
+                'item--compact': compact,
+                'item--disabled': disabled,
+            }"
+            :is="component"
+            :to="to">
+            <div class="item__img">
+                <slot name="img"></slot>
+            </div>
+            <div class="item__text">
+                <slot name="text"></slot>
+            </div>
+        </component>
+    </Transition>
 </template>
 
 <style scoped>
@@ -51,7 +52,7 @@ const component = computed(() => (props.to && !props.disabled ? RouterLink : 'di
     @apply !h-[72px] w-full rounded-lg;
 
     &.item-skeleton--compact {
-        @apply !h-[40px];
+        @apply !h-[48px];
     }
 }
 

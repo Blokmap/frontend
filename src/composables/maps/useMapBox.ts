@@ -89,6 +89,7 @@ export function useMapBox<T>(
             maxBounds: maxBounds.value,
             zoom: zoom.value,
             interactive: options.interactive,
+            testMode: import.meta.env.DEV,
         });
 
         // Listeners //
@@ -329,7 +330,7 @@ export function useMapBox<T>(
         zoomToCluster: options.clustering ? zoomToCluster : undefined,
         center,
         zoom,
-        bounds: bounds,
+        bounds,
         isLoaded: readonly(isLoaded),
         isDragging: readonly(isDragging),
         isZooming: readonly(isZooming),

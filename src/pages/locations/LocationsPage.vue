@@ -153,43 +153,40 @@ const debouncedConfigUpdate = useDebounceFn(() => {
                 </template>
             </div>
 
-            <Transition name="fade" mode="out-in">
+            <div class="locations-grid">
+                <template v-if="locationsIsPending">
+                    <div
+                        v-for="n in previousLocationCount"
+                        :key="`skeleton-${n}`"
+                        class="locations-grid__item">
+                        <LocationCardSkeleton></LocationCardSkeleton>
+                    </div>
+                </template>
+
                 <TransitionGroup
-                    :key="locations?.data?.map((l) => l.id).join(',')"
+                    v-else-if="locations?.data?.length"
                     name="staggered-cards"
                     tag="div"
-                    appear
-                    class="locations-grid">
-                    <template v-if="locationsIsPending">
-                        <div
-                            v-for="n in previousLocationCount"
-                            :key="`skeleton-${n}`"
-                            class="locations-grid__item"
-                            :style="{ '--i': n - 1 }">
-                            <LocationCardSkeleton></LocationCardSkeleton>
-                        </div>
-                    </template>
-
-                    <template v-else-if="locations?.data?.length">
-                        <div
-                            v-for="(location, index) in locations.data"
-                            :key="location.id"
-                            class="locations-grid__item"
-                            :style="{ '--i': index }">
-                            <RouterLink
-                                class="locations-grid__link"
-                                :to="{
-                                    name: 'locations.detail',
-                                    params: { locationId: location.id },
-                                }">
-                                <LocationCard :location="location" />
-                            </RouterLink>
-                        </div>
-                    </template>
+                    class="locations-grid__transition-wrapper">
+                    <div
+                        v-for="(location, index) in locations.data"
+                        class="locations-grid__item"
+                        :key="location.id"
+                        :style="{ '--i': index }">
+                        <RouterLink
+                            class="locations-grid__link"
+                            :to="{
+                                name: 'locations.detail',
+                                params: { locationId: location.id },
+                            }">
+                            <LocationCard :location="location" />
+                        </RouterLink>
+                    </div>
                 </TransitionGroup>
-            </Transition>
+            </div>
 
             <Paginator
+                v-if="locations?.data.length"
                 :first="first(locations)"
                 :rows="locations?.perPage"
                 :total-records="locations?.total"
@@ -236,6 +233,10 @@ const debouncedConfigUpdate = useDebounceFn(() => {
 
     .locations-grid__link {
         @apply block h-full;
+    }
+
+    .locations-grid__transition-wrapper {
+        @apply contents;
     }
 }
 </style>

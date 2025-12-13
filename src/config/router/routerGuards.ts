@@ -177,6 +177,14 @@ export function setupRouterGuards(): void {
 
     const progressTimeout = ref<number | null>(null);
 
+    const clearProgress = () => {
+        if (progressTimeout.value !== null) {
+            clearTimeout(progressTimeout.value);
+            progressTimeout.value = null;
+        }
+        progressStore.finish();
+    };
+
     router.beforeEach(() => {
         progressTimeout.value = window.setTimeout(() => {
             progressStore.start();
@@ -184,14 +192,8 @@ export function setupRouterGuards(): void {
         }, 100);
     });
 
-    router.afterEach(() => {
-        if (progressTimeout.value !== null) {
-            clearTimeout(progressTimeout.value);
-            progressTimeout.value = null;
-        } else {
-            progressStore.finish();
-        }
-    });
+    router.afterEach(clearProgress);
+    router.onError(clearProgress);
 
     router.beforeEach(authRouterGuard);
     router.afterEach(redirectRouterGuard);

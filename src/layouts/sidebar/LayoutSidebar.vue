@@ -29,8 +29,7 @@ const emit = defineEmits<{
                 <Skeleton class="!h-7 !w-32" />
             </div>
             <div v-else class="sidebar__title-group">
-                <EntityAvatar v-if="logo" :image="logo" :alt="title" class="sidebar__logo">
-                </EntityAvatar>
+                <EntityAvatar v-if="logo" :image="logo" :alt="title" class="sidebar__logo" />
                 <h1 class="sidebar__title">{{ title }}</h1>
             </div>
         </div>
@@ -68,7 +67,7 @@ const emit = defineEmits<{
     }
 
     .sidebar__nav {
-        @apply flex flex-col space-y-3;
+        @apply flex flex-col space-y-3 overflow-y-auto;
         @apply lg:sticky lg:top-6 lg:max-h-[calc(100vh-180px)];
     }
 }

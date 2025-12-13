@@ -57,7 +57,7 @@ const isError = computed<boolean>(() => {
 });
 
 const backButtonText = computed<string>(() => {
-    return getInstitutionName(authority.value?.institution, locale.value);
+    return 'Terug naar ' + getInstitutionName(authority.value?.institution, locale.value);
 });
 
 function goBack() {

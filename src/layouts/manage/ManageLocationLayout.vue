@@ -73,7 +73,7 @@ const backButtonText = computed<string>(() => {
         return getInstitutionName(location.value.institution, locale.value);
     }
 
-    return 'Dashboard';
+    return 'Terug naar dashboard';
 });
 
 function goBack(): void {

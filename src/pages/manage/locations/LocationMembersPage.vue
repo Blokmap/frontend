@@ -45,8 +45,6 @@ const { locale } = useI18n();
 
 const locationId = computed<number>(() => props.location.id);
 
-const showMemberAddDialog = ref<boolean>(false);
-
 const filters = ref<MemberFilter>({
     page: 1,
     perPage: 25,
@@ -59,6 +57,8 @@ const {
     isLoading: membersLoading,
     error: membersError,
 } = useReadLocationMembers(locationId, filters);
+
+const showMemberAddDialog = ref<boolean>(false);
 
 const {
     data: roles,

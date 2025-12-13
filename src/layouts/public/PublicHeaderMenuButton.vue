@@ -10,7 +10,6 @@ import {
     faCalendarAlt,
     faGlobe,
     faQuestionCircle,
-    faRightToBracket,
     faSignOut,
     faSliders,
     faUser,
@@ -18,7 +17,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
 import { useAuthLogout } from '@/composables/data/useAuth';
 import { useReadRecentProfileLocations } from '@/composables/data/useLocations';
 import { DOCS_URL } from '@/config';
@@ -31,8 +29,6 @@ const props = defineProps<{
 }>();
 
 const { locale } = useI18n();
-const router = useRouter();
-
 const { mutateAsync: logout } = useAuthLogout();
 
 const { data: recentLocations } = useReadRecentProfileLocations(
@@ -48,12 +44,6 @@ const popoverRef = useTemplateRef('popover');
 
 function toggleMenu(event: MouseEvent): void {
     popoverRef.value?.toggle(event);
-}
-
-async function handleLogout(): Promise<void> {
-    await router.push({ name: 'auth' });
-    await logout();
-    popoverRef.value?.hide();
 }
 
 function closeMenu(): void {
@@ -82,16 +72,17 @@ function closeMenu(): void {
         <div v-else class="max-w-[300px]">
             <!-- Profile Header -->
             <RouterLink
-                v-if="profile"
-                :to="{ name: 'profile' }"
+                :to="profile ? { name: 'profile' } : { name: 'auth' }"
                 @click="closeMenu"
                 class="menu-popover__profile">
-                <EntityAvatar :image="profile.avatar?.url" class="h-12 w-12" />
+                <EntityAvatar :image="profile?.avatar?.url" :logo="faUser" class="h-12 w-12" />
                 <div class="menu-popover__profile-info">
                     <div class="menu-popover__profile-name">
-                        {{ profile.firstName }}
+                        {{ profile ? profile.firstName : 'Blokmap Account' }}
                     </div>
-                    <div class="menu-popover__profile-greeting">Welkom terug!</div>
+                    <div class="menu-popover__profile-greeting">
+                        {{ profile ? 'Welkom terug!' : 'Log in om door te gaan' }}
+                    </div>
                 </div>
             </RouterLink>
 
@@ -117,8 +108,6 @@ function closeMenu(): void {
                     <span>Beheermodus</span>
                 </RouterLink>
             </nav>
-
-            <div v-if="profile" class="menu-popover__divider"></div>
 
             <!-- CTA Section -->
             <RouterLink
@@ -157,18 +146,10 @@ function closeMenu(): void {
 
             <!-- Logout -->
             <nav v-if="profile" class="menu-popover__nav">
-                <button @click="handleLogout" class="menu-popover__item menu-popover__item--danger">
+                <button @click="logout()" class="menu-popover__item menu-popover__item--danger">
                     <FontAwesomeIcon :icon="faSignOut" class="w-4" />
                     <span>Uitloggen</span>
                 </button>
-            </nav>
-
-            <!-- Login  -->
-            <nav v-else class="menu-popover__nav">
-                <RouterLink :to="{ name: 'auth' }" @click="closeMenu" class="menu-popover__item">
-                    <FontAwesomeIcon :icon="faRightToBracket" class="w-4" />
-                    <span>Inloggen</span>
-                </RouterLink>
             </nav>
         </div>
     </Popover>

@@ -41,14 +41,7 @@ const closeSidebar = () => {
             class="layout-container__sidebar"
             :class="{ 'layout-container__sidebar--open': isSidebarOpen }"
             @click="closeSidebar">
-            <Transition v-if="!loading" name="fade-slide-right" appear>
-                <div>
-                    <slot name="sidebar"></slot>
-                </div>
-            </Transition>
-            <div v-else>
-                <slot name="sidebar"></slot>
-            </div>
+            <slot name="sidebar"></slot>
         </aside>
 
         <!-- Main content -->

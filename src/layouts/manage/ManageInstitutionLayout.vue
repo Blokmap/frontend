@@ -46,7 +46,7 @@ function goBack() {
                 :logo="institution?.logo?.url"
                 :loading="isLoading"
                 show-back-button
-                back-button-text="Dashboard"
+                back-button-text="Terug naar dashboard"
                 @click:back="goBack">
                 <LayoutSidebarSection title="Instellingen">
                     <LayoutSidebarItem

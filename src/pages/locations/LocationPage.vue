@@ -29,6 +29,12 @@ import { pushRedirectUrl } from '@/domain/auth';
 import { formatLocationAddress } from '@/domain/location';
 import type { OpeningTimeFilter } from '@/domain/openings';
 
+const openingsSidebarRef = ref<HTMLElement>();
+
+function scrollToOpenings(): void {
+    openingsSidebarRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 const props = defineProps<{ locationId: string }>();
 
 const { locale } = useI18n();
@@ -233,7 +239,7 @@ function onLoginClick(): void {
 
                 <!-- Sidebar -->
                 <Transition name="stagger-fade" appear>
-                    <div class="location-page__sidebar">
+                    <div ref="openingsSidebarRef" class="location-page__sidebar">
                         <div class="location-page__sidebar-card">
                             <h3 v-if="!isPending && location" class="location-page__sidebar-title">
                                 <template v-if="location.isReservable">
@@ -284,6 +290,26 @@ function onLoginClick(): void {
                 </Transition>
             </div>
         </div>
+
+        <!-- Mobile Sticky Banner -->
+        <Transition name="fade-slide-up">
+            <div
+                v-if="!isPending && location"
+                class="mobile-banner lg:hidden"
+                @click="scrollToOpenings">
+                <div class="mobile-banner-content">
+                    <span class="mobile-banner-title">
+                        <template v-if="location.isReservable">
+                            {{ $t('pages.locations.sections.reservations.title') }}
+                        </template>
+                        <template v-else>
+                            {{ $t('domains.openings.name', 2) }}
+                        </template>
+                    </span>
+                    <FontAwesomeIcon :icon="faArrowRight" class="mobile-banner-icon" />
+                </div>
+            </div>
+        </Transition>
 
         <Teleport to="body">
             <!-- Reservation Builder Dialog -->
@@ -427,5 +453,26 @@ function onLoginClick(): void {
 
 .location-page__sidebar {
     transition-delay: 0.4s;
+}
+
+.mobile-banner {
+    @apply fixed right-0 bottom-0 left-0 z-50 px-4 py-3;
+    @apply bg-secondary-700 cursor-pointer shadow-lg transition-all duration-300 hover:bg-gray-900;
+
+    .mobile-banner-content {
+        @apply mx-auto flex max-w-[1280px] items-center justify-between;
+    }
+
+    .mobile-banner-title {
+        @apply font-semibold text-white;
+    }
+
+    .mobile-banner-icon {
+        @apply text-lg text-white transition-transform duration-300;
+    }
+
+    &:active .mobile-banner-icon {
+        @apply translate-x-1;
+    }
 }
 </style>

@@ -20,24 +20,24 @@ export function useClustering<T = number>(options: MapOptions): ClusteringAdapte
         maxZoom: options.clusterMaxZoom || 14,
     });
 
+    // Maps stable composite IDs to Supercluster numeric IDs
+    const clusterIdMap = new Map<string, number>();
     const currentClusters = ref<ClusterData[]>([]);
-    const clusterIdMap = new Map<string, number>(); // Maps stable composite IDs to Supercluster numeric IDs
+    const isLoaded = ref<boolean>(false);
 
-    /**
-     * Update clusters based on current map bounds and zoom.
-     *
-     * @param bounds - The current map bounds.
-     * @param zoom - The current zoom level.
-     */
-    function updateClusters(bounds: LngLatBounds, zoom: number): void {
-        const zoomLevel = Math.floor(zoom);
+    const updateClusters = (bounds: LngLatBounds, zoom: number): void => {
+        if (!isLoaded.value) {
+            currentClusters.value = [];
+            return;
+        }
 
         const clusters = clusterIndex.getClusters(
             [bounds[0][0], bounds[0][1], bounds[1][0], bounds[1][1]],
-            zoomLevel,
+            Math.floor(zoom),
         );
 
         const newClusters: ClusterData[] = [];
+
         clusterIdMap.clear();
 
         clusters.forEach((cluster) => {
@@ -62,20 +62,20 @@ export function useClustering<T = number>(options: MapOptions): ClusteringAdapte
         });
 
         currentClusters.value = newClusters;
-    }
+    };
 
-    /**
-     * Load markers and immediately update clusters.
-     *
-     * @param features - Array of features with id, coordinates, and optional properties.
-     * @param bounds - Current map bounds.
-     * @param zoom - Current zoom level.
-     */
-    function loadMarkers(
+    const loadMarkers = (
         features: Array<{ id: T; coord: LngLat; properties?: Record<string, any> }>,
         bounds: LngLatBounds,
         zoom: number,
-    ): void {
+    ): void => {
+        if (!features || features.length === 0) {
+            isLoaded.value = false;
+            currentClusters.value = [];
+            clusterIdMap.clear();
+            return;
+        }
+
         // Convert to GeoJSON features for supercluster
         const points = features.map((feature) => ({
             type: 'Feature' as const,
@@ -89,34 +89,29 @@ export function useClustering<T = number>(options: MapOptions): ClusteringAdapte
             },
         }));
 
-        clusterIndex.load(points);
+        try {
+            clusterIndex.load(points);
+            isLoaded.value = true;
+            updateClusters(bounds, zoom);
+        } catch (error) {
+            console.error('Error loading markers into cluster index:', error);
+            isLoaded.value = false;
+            currentClusters.value = [];
+            clusterIdMap.clear();
+        }
+    };
 
-        // Immediately update clusters
-        updateClusters(bounds, zoom);
-    }
-
-    /**
-     * Get current clusters.
-     *
-     * @returns Array of cluster data.
-     */
-    function getClusters(): ClusterData[] {
+    const getClusters = (): ClusterData[] => {
         return currentClusters.value;
-    }
+    };
 
-    /**
-     * Get the expansion zoom level for a cluster.
-     *
-     * @param clusterId - The cluster ID to get expansion zoom for.
-     * @returns The expansion zoom level or null if not found.
-     */
-    function getExpansionZoom(clusterId: string): number | null {
+    const getExpansionZoom = (clusterId: string): number | null => {
         const numericId = clusterIdMap.get(clusterId);
         if (numericId === undefined) {
             return null;
         }
         return clusterIndex.getClusterExpansionZoom(numericId);
-    }
+    };
 
     return {
         updateClusters,

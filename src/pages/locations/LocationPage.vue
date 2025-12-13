@@ -435,7 +435,7 @@ function onLoginClick(): void {
 }
 
 .location-page__no-reservation {
-    @apply mt-6 text-center;
+    @apply mt-6 text-center text-sm text-slate-600;
 }
 
 /* Staggered transition delays for sections */

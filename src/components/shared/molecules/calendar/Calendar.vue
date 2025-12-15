@@ -224,7 +224,7 @@ onMounted(() => {
 @reference '@/assets/styles/main.css';
 
 .calendar {
-    @apply flex max-h-[80vh] min-h-[500px] w-full flex-col;
+    @apply flex h-full w-full flex-col;
     @apply rounded-lg bg-white shadow-md;
     @apply overflow-hidden;
 }

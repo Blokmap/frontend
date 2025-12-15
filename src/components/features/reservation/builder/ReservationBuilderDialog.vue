@@ -392,17 +392,18 @@ watch(visible, (newVisible) => {
     @apply rounded-none bg-white md:rounded-xl;
 
     .dialog__header {
-        @apply flex w-full flex-shrink-0 items-center justify-between;
+        @apply flex w-full items-center justify-between;
         @apply rounded-t-xl px-4 py-3;
     }
 
     .dialog__footer {
-        @apply flex flex-shrink-0 flex-col items-center justify-between gap-4 p-4 md:flex-row;
+        @apply flex flex-col items-center justify-between gap-4 p-4 md:flex-row;
         @apply rounded-b-xl border-t-1 border-slate-200 bg-gray-50;
     }
 
     .calendar-content {
-        @apply relative flex-1 border-t border-slate-100;
+        @apply relative flex flex-1 border-t border-slate-100;
+        @apply min-h-0;
 
         .loading-overlay {
             @apply absolute inset-0 z-50;

@@ -306,7 +306,7 @@ watch(visible, (newVisible) => {
             </div>
 
             <!-- Calendar Content -->
-            <div class="calendar-content flex-1 overflow-auto">
+            <div class="calendar-content">
                 <!-- Loading Overlay -->
                 <Transition name="fade">
                     <div v-if="isLoading" class="loading-overlay">
@@ -402,7 +402,7 @@ watch(visible, (newVisible) => {
     }
 
     .calendar-content {
-        @apply relative;
+        @apply relative flex-1 border-t border-slate-100;
 
         .loading-overlay {
             @apply absolute inset-0 z-50;

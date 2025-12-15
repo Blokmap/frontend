@@ -161,11 +161,11 @@ onMounted(() => {
                         { 'calendar__header-col--today': isToday(day) },
                     ]"
                     @click="onDayClick(day)">
-                    <div class="text-sm font-medium md:text-xs">
+                    <div class="text-sm font-medium">
                         {{ formatDayName(day, 'short', locale) }}
                     </div>
                     <div
-                        class="mt-1 text-sm font-semibold md:text-base"
+                        class="mt-1 text-xs font-semibold"
                         :class="{ 'calendar__today-badge': isToday(day) }">
                         {{ day.getDate() }}
                     </div>
@@ -224,7 +224,7 @@ onMounted(() => {
 @reference '@/assets/styles/main.css';
 
 .calendar {
-    @apply flex h-full w-full flex-col;
+    @apply flex h-full max-h-[600px] w-full flex-col;
     @apply rounded-lg bg-white shadow-md;
     @apply overflow-hidden;
 }

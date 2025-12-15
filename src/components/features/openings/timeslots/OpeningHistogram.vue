@@ -56,7 +56,7 @@ function getTooltip(bin: { occupancy: number; ratio: number }) {
 .histogram {
     @apply flex h-full w-full flex-col;
     @apply pointer-events-none;
-    @apply overflow-hidden rounded-xl;
+    @apply overflow-hidden rounded-lg;
 
     .histogram__bin {
         @apply flex-1;

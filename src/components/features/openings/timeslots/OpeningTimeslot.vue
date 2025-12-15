@@ -35,7 +35,7 @@ const onTimeslotClick = (event: Event) => {
 
 .opening-time-card {
     @apply relative flex items-center justify-center p-2;
-    @apply h-full rounded-xl bg-slate-100 transition-colors hover:bg-slate-200;
+    @apply h-full rounded-lg bg-slate-100 transition-colors hover:bg-slate-200;
     @apply pointer-events-auto cursor-pointer overflow-hidden;
 
     &.disabled {

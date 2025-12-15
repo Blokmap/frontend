@@ -275,63 +275,62 @@ onMounted(() => {
 .calendar__grid {
     @apply relative grid grid-cols-[50px_repeat(7,1fr)];
     @apply w-full min-w-max md:min-w-0;
-}
 
-.calendar__time-col {
-    @apply sticky left-0 z-40;
-    @apply relative border-r border-slate-100;
-}
+    .calendar__time-col {
+        @apply sticky left-0 z-40;
+        @apply relative border-r border-slate-100;
 
-.calendar__time-label {
-    @apply absolute right-0 left-0 -translate-y-[50%];
-    @apply pr-2 text-right text-[12px] text-slate-600 md:pr-1;
-}
+        .calendar__time-label {
+            @apply absolute right-0 left-0 -translate-y-[50%];
+            @apply pr-2 text-right text-[12px] text-slate-600 md:pr-1;
+        }
+    }
 
-.calendar__day-col {
-    @apply relative;
-    @apply border-r border-slate-100 last:border-r-0;
+    .calendar__day-col {
+        @apply relative;
+        @apply border-r border-slate-100 last:border-r-0;
 
-    &::before {
-        @apply pointer-events-none absolute inset-0;
-        @apply content-[''];
+        &::before {
+            @apply pointer-events-none absolute inset-0;
+            @apply content-[''];
+        }
+    }
+
+    .calendar__cell {
+        @apply relative cursor-pointer;
+        @apply border-b border-slate-100 hover:bg-slate-100;
+        @apply transition-colors;
+
+        &.calendar__cell--disabled {
+            @apply cursor-not-allowed bg-slate-100 opacity-40;
+            @apply hover:bg-slate-100;
+        }
+    }
+
+    .calendar__slot {
+        @apply absolute right-0 left-0 z-10 min-h-[20px];
+        @apply p-1;
+        @apply pointer-events-none overflow-visible select-none;
+
+        :deep(> *) {
+            @apply pointer-events-auto;
+        }
     }
 }
 
-.calendar__cell {
-    @apply relative cursor-pointer;
-    @apply border-b border-slate-100 hover:bg-slate-100;
-    @apply transition-colors;
-}
-
-.calendar__cell--disabled {
-    @apply cursor-not-allowed bg-slate-100 opacity-40;
-    @apply hover:bg-slate-100;
-}
-
-.calendar__slot {
-    @apply absolute right-0 left-0 z-10 min-h-[20px];
-    @apply p-1;
-    @apply pointer-events-none overflow-visible select-none;
-}
-
-.calendar__slot :deep(> *) {
-    @apply pointer-events-auto;
-}
-
 .calendar__now-indicator {
-    @apply pointer-events-none absolute right-0 left-0 z-20;
-}
+    @apply pointer-events-none absolute right-0 left-0 z-55;
 
-.calendar__now-line {
-    @apply flex items-center;
-}
+    .calendar__now-line {
+        @apply flex items-center;
 
-.calendar__now-line::after {
-    content: '';
-    @apply h-0.5 flex-1 bg-red-500;
-}
+        .calendar__now-dot {
+            @apply -ml-1 h-2 w-2 rounded-full bg-red-500;
+        }
 
-.calendar__now-dot {
-    @apply -ml-1 h-2 w-2 rounded-full bg-red-500;
+        &::after {
+            @apply h-0.5 flex-1 bg-red-500 content-[''];
+        }
+    }
 }
 </style>

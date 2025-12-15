@@ -7,7 +7,7 @@ import PageTitle from '@/layouts/PageTitle.vue';
 import { computed } from 'vue';
 import { useUpdateLocation } from '@/composables/data/useLocations';
 import { useDirtyForm } from '@/composables/useDirtyForm';
-import { locationToBody, type Location, type LocationBody } from '@/domain/location';
+import { locationToRequest, type Location, type LocationRequest } from '@/domain/location';
 
 const props = defineProps<{
     location: Location;
@@ -24,8 +24,8 @@ const {
 } = useDirtyForm({
     isPending: isUpdatingLocation,
     source: () => props.location,
-    toForm: locationToBody,
-    onSave: async (formData: LocationBody) => {
+    toForm: locationToRequest,
+    onSave: async (formData: LocationRequest) => {
         await updateLocation({
             locationId: props.location.id,
             data: formData,

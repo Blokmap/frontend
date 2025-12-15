@@ -10,7 +10,7 @@ import { useI18n } from 'vue-i18n';
 import {
     DEFAULT_INSTITUTION_REQUEST,
     INSTITUTION_CATEGORIES,
-    institutionToBody,
+    institutionToRequest,
 } from '@/domain/institution';
 import type { Institution, InstitutionBody } from '@/domain/institution';
 
@@ -31,7 +31,7 @@ const currentLanguage = ref(locale.value);
 
 watchEffect(() => {
     if (props.institution) {
-        form.value = institutionToBody(props.institution);
+        form.value = institutionToRequest(props.institution);
     }
 });
 

@@ -1,17 +1,28 @@
 <script setup lang="ts">
 import Skeleton from 'primevue/skeleton';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { formatDayName, isToday } from '@/utils/date';
 import { formatTimeRange } from '@/utils/time';
 import type { OpeningTime } from '@/domain/openings';
 
-defineProps<{
+const props = defineProps<{
     day: Date;
     loading?: boolean;
     openings?: OpeningTime[];
 }>();
 
 const { locale } = useI18n();
+
+const times = computed<string>(() => {
+    if (!props.openings || props.openings.length === 0) {
+        return '';
+    }
+
+    return props.openings
+        .map((opening) => formatTimeRange(opening.startTime, opening.endTime, true))
+        .join(', ');
+});
 </script>
 
 <template>
@@ -22,13 +33,7 @@ const { locale } = useI18n();
 
         <div class="openings-day__times">
             <template v-if="openings && openings.length > 0">
-                <span
-                    v-for="(opening, index) in openings"
-                    :key="opening.id"
-                    class="openings-day__time">
-                    {{ formatTimeRange(opening.startTime, opening.endTime, true) }}
-                    {{ index < openings.length - 1 ? ', ' : '' }}
-                </span>
+                <span class="openings-day__time">{{ times }}</span>
             </template>
             <template v-else-if="loading">
                 <Skeleton width="60px" height="25px" />

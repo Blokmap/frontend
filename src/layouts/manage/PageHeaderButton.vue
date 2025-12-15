@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
-import { computed } from 'vue';
 import type { ButtonProps } from 'primevue/button';
 
 interface Props extends /* @vue-ignore */ ButtonProps {
@@ -8,19 +7,34 @@ interface Props extends /* @vue-ignore */ ButtonProps {
 }
 
 const props = defineProps<Props>();
-
-// If no label is provided we want the button to stay square at all sizes.
-// When a label exists, keep the mobile (small) square sizing but allow
-// the md+ styles to switch to auto sizing so the label can appear inline.
-const computedClasses = computed(() => {
-    if (!props.label) return 'aspect-square h-10 w-10';
-    return 'aspect-square h-10 w-10 md:aspect-auto md:h-auto md:w-auto';
-});
 </script>
 
 <template>
-    <Button v-bind="$attrs" :class="computedClasses">
-        <span v-if="props.label" class="hidden md:inline">{{ props.label }}</span>
+    <Button
+        v-bind="$attrs"
+        class="page-header-btn"
+        :class="{ 'page-header-btn--icon-only': !props.label }">
         <slot></slot>
+        <span v-if="props.label" class="page-header-btn__label">{{ props.label }}</span>
     </Button>
 </template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+
+.page-header-btn {
+    @apply h-8 w-8 text-xs;
+
+    &:not(.page-header-btn--icon-only) {
+        @apply md:h-auto md:w-auto md:text-base;
+    }
+
+    &.page-header-btn--icon-only {
+        @apply h-8 w-8 md:h-10 md:w-10 md:text-base;
+    }
+
+    :deep(.page-header-btn__label) {
+        @apply hidden md:inline;
+    }
+}
+</style>

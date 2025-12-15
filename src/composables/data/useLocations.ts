@@ -10,7 +10,7 @@ import {
     type LocationIncludes,
     type Location,
     type LocationSearchFilter,
-    type LocationBody,
+    type LocationRequest,
     type NearestLocation,
     type LocationFilter,
     readLocations,
@@ -225,7 +225,7 @@ export function useNearestLocation(
  */
 export function useCreateLocation(
     options: CompMutationOptions = {},
-): CompMutation<LocationBody, Location> {
+): CompMutation<LocationRequest, Location> {
     const queryClient = useQueryClient();
     const toast = useToast();
 
@@ -253,7 +253,7 @@ export function useCreateLocation(
 
 export type UpdateLocationParams = {
     locationId: number;
-    data: Partial<LocationBody>;
+    data: Partial<LocationRequest>;
 };
 
 export function useUpdateLocation(

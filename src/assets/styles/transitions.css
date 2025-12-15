@@ -155,21 +155,9 @@
 
 /* Staggered Cards Transition */
 /* Used for: Grid items with delayed enter/leave animations */
-.staggered-cards-move,
-.staggered-cards-enter-active,
-.staggered-cards-leave-active {
-    transition:
-        opacity 0.4s ease-out,
-        transform 0.4s ease-out;
-}
-
 .staggered-cards-enter-active {
-    transition-delay: calc(var(--i) * 0.03s);
-}
-
-.staggered-cards-leave-active {
-    position: absolute;
-    transition-delay: 0s;
+    transition: all 0.4s ease-out;
+    transition-delay: calc(var(--i) * 0.05s);
 }
 
 .staggered-cards-enter-from {
@@ -177,9 +165,9 @@
     transform: translateY(20px) scale(0.95);
 }
 
-.staggered-cards-leave-to {
-    opacity: 0;
-    transform: scale(0.95);
+.staggered-cards-enter-to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
 }
 
 /* Fade Slide Up Transition */

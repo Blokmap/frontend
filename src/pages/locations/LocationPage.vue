@@ -15,6 +15,7 @@ import PageContent from '@/layouts/PageContent.vue';
 import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
 import { faArrowRight, faBullhorn, faEdit, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useElementVisibility } from '@vueuse/core';
 import { computed, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
@@ -31,9 +32,8 @@ import type { OpeningTimeFilter } from '@/domain/openings';
 
 const openingsSidebarRef = ref<HTMLElement>();
 
-function scrollToOpenings(): void {
-    openingsSidebarRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+const isOpeningsSidebarVisible = useElementVisibility(openingsSidebarRef);
+const showMobileBanner = computed(() => !isOpeningsSidebarVisible.value);
 
 const props = defineProps<{ locationId: string }>();
 
@@ -53,9 +53,11 @@ const { data: location, isPending } = useReadLocation(locationId, {
     includes: ['createdBy', 'description'],
 });
 
-const openingTimesFilter = computed<OpeningTimeFilter>(() => ({
-    inWeekOf: currentWeek.value,
-}));
+const openingTimesFilter = computed<OpeningTimeFilter>(() => {
+    return {
+        inWeekOf: currentWeek.value,
+    };
+});
 
 const { data: openingTimes, isFetching: openingTimesIsFetching } = useReadOpeningTimes(
     locationId,
@@ -89,7 +91,7 @@ const { mutateAsync: createReport, isPending: isCreatingReport } = useCreateLoca
     },
 });
 
-function onConfirmReport(): void {
+const onConfirmReport = (): void => {
     if (!reportReason.value.trim()) {
         return;
     }
@@ -98,19 +100,19 @@ function onConfirmReport(): void {
         locationId: +locationId,
         reason: reportReason.value,
     });
-}
+};
 
-function onReportClick(): void {
+const onReportClick = (): void => {
     showReportDialog.value = true;
     reportReason.value = '';
-}
+};
 
-function onCancelReport(): void {
+const onCancelReport = (): void => {
     showReportDialog.value = false;
     reportReason.value = '';
-}
+};
 
-function onLoginClick(): void {
+const onLoginClick = (): void => {
     const redirectRoute = router.resolve({
         name: 'locations.detail',
         params: { locationId: locationId.value },
@@ -120,7 +122,11 @@ function onLoginClick(): void {
     pushRedirectUrl(redirectRoute.fullPath);
 
     router.push({ name: 'auth' });
-}
+};
+
+const scrollToOpenings = (): void => {
+    openingsSidebarRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
 </script>
 
 <template>
@@ -136,6 +142,7 @@ function onLoginClick(): void {
                 <template v-if="profile?.isAdmin">
                     <RouterLink
                         v-if="location.isReservable"
+                        class="hidden md:block"
                         :to="{
                             name: 'manage.location.reservations',
                             params: { locationId: location.id },
@@ -148,6 +155,7 @@ function onLoginClick(): void {
                     </RouterLink>
 
                     <RouterLink
+                        class="hidden md:block"
                         :to="{ name: 'manage.location.info', params: { locationId: location.id } }">
                         <PageHeaderButton severity="secondary" :label="$t('general.actions.edit')">
                             <FontAwesomeIcon :icon="faEdit" />
@@ -170,144 +178,131 @@ function onLoginClick(): void {
             </div>
         </div>
 
-        <!-- Content Grid -->
-        <div class="location-page__content">
-            <!-- Gallery -->
-            <Transition name="fade-slide-up" appear>
-                <div class="location-page__gallery">
-                    <Gallery
-                        :images="location?.images ?? []"
-                        :placeholder="placeholder"
-                        :loading="isPending">
-                    </Gallery>
-                </div>
-            </Transition>
+        <!-- Gallery -->
+        <Transition name="fade-slide-up" appear>
+            <div class="location-page__gallery">
+                <Gallery
+                    :images="location?.images ?? []"
+                    :placeholder="placeholder"
+                    :loading="isPending">
+                </Gallery>
+            </div>
+        </Transition>
 
-            <div class="location-page__grid">
-                <!-- Main Content -->
-                <div class="location-page__main">
-                    <Transition name="stagger-fade" appear>
-                        <div class="location-page__description">
-                            <h2
-                                v-if="!isPending && location"
-                                class="location-page__section-title !mb-5">
-                                {{ location.excerpt[locale] }}
-                            </h2>
-                            <Skeleton v-else height="28px" width="400px" class="mb-5" />
-
-                            <EditorOuput
-                                v-if="location?.description"
-                                :data="location.description[locale]"
-                                :loading="isPending">
-                            </EditorOuput>
-                        </div>
-                    </Transition>
-
-                    <div class="location-page__divider"></div>
-
-                    <Transition name="stagger-fade" appear>
-                        <div class="location-page__features">
-                            <h2 class="location-page__section-title">
-                                {{ $t('pages.locations.sections.features.title') }}
-                            </h2>
-                            <LocationFeatures :location="location" :loading="isPending" />
-                        </div>
-                    </Transition>
-
-                    <div class="location-page__divider"></div>
-
-                    <Transition name="stagger-fade" appear>
-                        <div class="location-page__location" v-if="location">
-                            <h2 class="location-page__section-title">
-                                {{ $t('pages.locations.sections.geolocation.title') }}
-                            </h2>
-
-                            <LocationAddress :location="location" :loading="isPending" />
-
-                            <div class="location-page__map">
-                                <LocationMap
-                                    :center="[location.longitude, location.latitude]"
-                                    :zoom="17"
-                                    :interactive="false"
-                                    :geo-location-control="false"
-                                    :loading="isPending">
-                                </LocationMap>
-                            </div>
-                        </div>
-                    </Transition>
-                </div>
-
-                <!-- Sidebar -->
+        <div class="location-page__grid">
+            <!-- Main Content -->
+            <div class="location-page__main">
                 <Transition name="stagger-fade" appear>
-                    <div ref="openingsSidebarRef" class="location-page__sidebar">
-                        <div class="location-page__sidebar-card">
-                            <h3 v-if="!isPending && location" class="location-page__sidebar-title">
-                                <template v-if="location.isReservable">
-                                    {{ $t('pages.locations.sections.reservations.title') }}
-                                </template>
-                                <template v-else>
-                                    {{ $t('domains.openings.name', 2) }}
-                                </template>
-                            </h3>
+                    <div class="max-w-[850px]">
+                        <h2
+                            v-if="!isPending && location"
+                            class="location-page__section-title !mb-5">
+                            {{ location.excerpt[locale] }}
+                        </h2>
+                        <Skeleton v-else height="28px" width="400px" class="mb-5" />
 
-                            <Skeleton v-else height="24px" width="150px" class="mb-6" />
+                        <EditorOuput
+                            v-if="location?.description"
+                            :data="location.description[locale]"
+                            :loading="isPending">
+                        </EditorOuput>
+                    </div>
+                </Transition>
 
-                            <div class="location-page__sidebar-content">
-                                <CalendarControls v-model:date="currentWeek" />
-                                <OpeningsTable
-                                    :opening-times="openingTimes"
-                                    :current-week="currentWeek"
-                                    :loading="openingTimesIsFetching">
-                                </OpeningsTable>
-                            </div>
+                <div class="location-page__divider"></div>
 
-                            <div
-                                v-if="!isPending && location?.isReservable"
-                                class="location-page__cta">
-                                <Button
-                                    v-if="profileId"
-                                    class="w-full"
-                                    @click="showReservationDialog = true">
-                                    {{ $t('pages.locations.sections.reservations.create') }}
-                                    <FontAwesomeIcon :icon="faArrowRight" />
-                                </Button>
-                                <Button
-                                    v-else
-                                    class="w-full"
-                                    severity="secondary"
-                                    @click="onLoginClick">
-                                    {{ $t('pages.locations.sections.reservations.login') }}
-                                    <FontAwesomeIcon :icon="faArrowRight" />
-                                </Button>
-                            </div>
-                            <div
-                                v-else-if="!isPending && location && !location.isReservable"
-                                class="location-page__no-reservation">
-                                {{ $t('pages.locations.sections.reservations.notNeeded') }}
-                            </div>
+                <Transition name="stagger-fade" appear>
+                    <div>
+                        <h2 class="location-page__section-title">
+                            {{ $t('pages.locations.sections.features.title') }}
+                        </h2>
+                        <LocationFeatures :location="location" :loading="isPending" />
+                    </div>
+                </Transition>
+
+                <div class="location-page__divider"></div>
+
+                <Transition name="stagger-fade" appear>
+                    <div v-if="location">
+                        <h2 class="location-page__section-title">
+                            {{ $t('pages.locations.sections.geolocation.title') }}
+                        </h2>
+
+                        <LocationAddress :location="location" :loading="isPending" />
+
+                        <div class="location-page__map">
+                            <LocationMap
+                                :center="[location.longitude, location.latitude]"
+                                :zoom="17"
+                                :interactive="false"
+                                :geo-location-control="false"
+                                :loading="isPending">
+                            </LocationMap>
                         </div>
                     </div>
                 </Transition>
             </div>
-        </div>
 
-        <!-- Mobile Sticky Banner -->
-        <Transition name="fade-slide-up">
-            <div
-                v-if="!isPending && location"
-                class="mobile-banner lg:hidden"
-                @click="scrollToOpenings">
-                <div class="mobile-banner-content">
-                    <span class="mobile-banner-title">
+            <!-- Sidebar -->
+            <Transition name="stagger-fade" appear>
+                <div ref="openingsSidebarRef" class="location-page__sidebar">
+                    <h3 v-if="!isPending && location" class="location-page__sidebar-title">
                         <template v-if="location.isReservable">
                             {{ $t('pages.locations.sections.reservations.title') }}
                         </template>
                         <template v-else>
                             {{ $t('domains.openings.name', 2) }}
                         </template>
-                    </span>
-                    <FontAwesomeIcon :icon="faArrowRight" class="mobile-banner-icon" />
+                    </h3>
+
+                    <Skeleton v-else height="24px" width="150px" class="mb-6" />
+
+                    <div class="space-y-4">
+                        <CalendarControls v-model:date="currentWeek" />
+                        <OpeningsTable
+                            :opening-times="openingTimes"
+                            :current-week="currentWeek"
+                            :loading="openingTimesIsFetching">
+                        </OpeningsTable>
+                    </div>
+
+                    <div v-if="!isPending && location?.isReservable" class="location-page__cta">
+                        <Button
+                            v-if="profileId"
+                            class="w-full"
+                            @click="showReservationDialog = true">
+                            {{ $t('pages.locations.sections.reservations.create') }}
+                            <FontAwesomeIcon :icon="faArrowRight" />
+                        </Button>
+                        <Button v-else class="w-full" severity="secondary" @click="onLoginClick">
+                            {{ $t('pages.locations.sections.reservations.login') }}
+                            <FontAwesomeIcon :icon="faArrowRight" />
+                        </Button>
+                    </div>
+                    <div
+                        v-else-if="!isPending && location && !location.isReservable"
+                        class="location-page__no-reservation">
+                        {{ $t('pages.locations.sections.reservations.notNeeded') }}
+                    </div>
                 </div>
+            </Transition>
+        </div>
+
+        <!-- Mobile Sticky Banner -->
+        <Transition name="fade-slide-up">
+            <div
+                v-if="!isPending && location && showMobileBanner"
+                class="location-page__mobile-banner"
+                @click="scrollToOpenings">
+                <span>
+                    <template v-if="location.isReservable">
+                        {{ $t('pages.locations.sections.reservations.title') }}
+                    </template>
+                    <template v-else>
+                        {{ $t('domains.openings.name', 2) }}
+                    </template>
+                </span>
+                <FontAwesomeIcon :icon="faArrowRight" />
             </div>
         </Transition>
 
@@ -356,123 +351,65 @@ function onLoginClick(): void {
 
 .location-page {
     @apply max-w-[1280px] space-y-6;
-}
 
-.location-page__header {
-    @apply flex items-center justify-between gap-3;
-}
-
-.location-page__title {
-    @apply text-3xl font-extrabold text-gray-900;
-}
-
-.location-page__subtitle {
-    @apply text-slate-500;
-}
-
-.location-page__actions {
-    @apply flex space-x-3;
-}
-
-.location-page__content {
-    @apply space-y-6;
-}
-
-.location-page__grid {
-    @apply mt-8 grid gap-8 lg:grid-cols-3;
-}
-
-.location-page__gallery {
-    @apply h-[500px] overflow-hidden rounded-2xl;
-}
-
-.location-page__address {
-    @apply w-full;
-}
-
-.location-page__main {
-    @apply lg:col-span-2;
-}
-
-.location-page__divider {
-    @apply my-8 h-[2px] bg-slate-200;
-}
-
-.location-page__description {
-    @apply max-w-[850px];
-}
-
-.location-page__section-title {
-    @apply mt-0 mb-8 text-2xl font-semibold text-gray-900;
-}
-
-.location-page__content {
-    @apply space-y-4;
-}
-
-.location-page__map {
-    @apply mt-8 h-[400px] overflow-hidden rounded-xl shadow-sm;
-}
-
-.location-page__sidebar {
-    @apply pt-6 lg:col-span-1;
-}
-
-.location-page__sidebar-card {
-    @apply sticky top-8 rounded-xl bg-white p-6 shadow-md;
-}
-
-.location-page__sidebar-title {
-    @apply mb-6 text-2xl font-semibold text-gray-900;
-}
-
-.location-page__sidebar-content {
-    @apply space-y-4;
-}
-
-.location-page__cta {
-    @apply mt-6 w-full;
-}
-
-.location-page__no-reservation {
-    @apply mt-6 text-center text-sm text-slate-600;
-}
-
-/* Staggered transition delays for sections */
-.location-page__description {
-    transition-delay: 0.1s;
-}
-
-.location-page__features {
-    transition-delay: 0.2s;
-}
-
-.location-page__location {
-    transition-delay: 0.3s;
-}
-
-.location-page__sidebar {
-    transition-delay: 0.4s;
-}
-
-.mobile-banner {
-    @apply fixed right-0 bottom-0 left-0 z-50 px-4 py-3;
-    @apply bg-secondary-700 cursor-pointer shadow-lg transition-all duration-300 hover:bg-gray-900;
-
-    .mobile-banner-content {
-        @apply mx-auto flex max-w-[1280px] items-center justify-between;
+    .location-page__header {
+        @apply flex items-center justify-between gap-3;
     }
 
-    .mobile-banner-title {
-        @apply font-semibold text-white;
+    .location-page__title {
+        @apply text-3xl font-extrabold text-gray-900;
     }
 
-    .mobile-banner-icon {
-        @apply text-lg text-white transition-transform duration-300;
+    .location-page__subtitle {
+        @apply text-slate-500;
     }
 
-    &:active .mobile-banner-icon {
-        @apply translate-x-1;
+    .location-page__actions {
+        @apply flex space-x-3;
+    }
+
+    .location-page__gallery {
+        @apply h-[250px] overflow-hidden rounded-2xl md:h-[500px];
+    }
+
+    .location-page__grid {
+        @apply mt-8 grid items-start gap-8 lg:grid-cols-3;
+    }
+
+    .location-page__main {
+        @apply lg:col-span-2;
+    }
+
+    .location-page__divider {
+        @apply my-8 h-[2px] bg-slate-200;
+    }
+
+    .location-page__section-title {
+        @apply mt-0 mb-8 text-2xl font-semibold text-gray-900;
+    }
+
+    .location-page__map {
+        @apply mt-8 h-[400px] overflow-hidden rounded-xl shadow-sm;
+    }
+
+    .location-page__sidebar {
+        @apply sticky top-8 rounded-xl bg-white p-6 pt-6 shadow-md lg:col-span-1;
+    }
+
+    .location-page__sidebar-title {
+        @apply mb-6 text-2xl font-semibold text-gray-900;
+    }
+
+    .location-page__cta {
+        @apply mt-6 w-full;
+    }
+
+    .location-page__no-reservation {
+        @apply mt-6 text-center text-sm text-slate-600;
+    }
+
+    .location-page__mobile-banner {
+        @apply fixed bottom-3 left-1/2 z-50 -translate-x-1/2 rounded-full bg-slate-50 px-3 py-2 text-sm shadow-md lg:hidden;
     }
 }
 </style>

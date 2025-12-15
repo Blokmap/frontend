@@ -24,7 +24,11 @@ const filterStore = useLocationFilters();
 const { geoLocation, filters, config } = storeToRefs(filterStore);
 const { first, onPageChange } = usePagination(filters);
 
-const { data: locations, isPending: locationsIsPending } = useSearchLocations(filters, {
+const {
+    data: locations,
+    isPending,
+    fetchStatus,
+} = useSearchLocations(filters, {
     enabled: computed(() => !!filters.value.bounds),
 });
 
@@ -97,31 +101,28 @@ const debouncedConfigUpdate = useDebounceFn(() => {
 <template>
     <div class="page-container">
         <div class="locations-list">
-            <div v-if="locationsIsPending" class="mt-2">
+            <div v-if="isPending" class="mt-2">
                 <Skeleton height="2rem" />
                 <Skeleton class="mt-3" height="1rem" />
             </div>
 
             <div class="space-y-4" v-else>
                 <h2 class="flex items-center justify-between text-xl font-extrabold">
-                    <span>
-                        <template v-if="locations?.data?.length">
-                            <span v-if="locations.truncated">
-                                {{
-                                    $t(
-                                        'pages.locations.filters.foundResultsTruncated',
-                                        locations.total,
-                                    )
-                                }}
-                            </span>
-                            <span v-else>
-                                {{ $t('pages.locations.filters.foundResults', locations.total) }}
-                            </span>
-                        </template>
-                        <template v-else>
+                    <template v-if="locations?.data?.length">
+                        <span v-if="locations.truncated">
+                            {{
+                                $t('pages.locations.filters.foundResultsTruncated', locations.total)
+                            }}
+                        </span>
+                        <span v-else>
+                            {{ $t('pages.locations.filters.foundResults', locations.total) }}
+                        </span>
+                    </template>
+                    <template v-else>
+                        <span>
                             {{ $t('general.errors.noResultsExact') }}
-                        </template>
-                    </span>
+                        </span>
+                    </template>
 
                     <FontAwesomeIcon
                         class="cursor-pointer text-slate-600 hover:text-slate-700"
@@ -152,26 +153,27 @@ const debouncedConfigUpdate = useDebounceFn(() => {
                     </p>
                 </template>
             </div>
+            <template v-if="isPending">
+                <div class="locations-grid">
+                    <template v-for="n in previousLocationCount" :key="n">
+                        <div class="locations-grid__item">
+                            <LocationCardSkeleton></LocationCardSkeleton>
+                        </div>
+                    </template>
+                </div>
+            </template>
 
-            <div class="locations-grid">
-                <template v-if="locationsIsPending">
-                    <div
-                        v-for="n in previousLocationCount"
-                        :key="`skeleton-${n}`"
-                        class="locations-grid__item">
-                        <LocationCardSkeleton></LocationCardSkeleton>
-                    </div>
-                </template>
-
+            <Transition v-else name="fade" mode="out-in">
                 <TransitionGroup
-                    v-else-if="locations?.data?.length"
+                    :key="fetchStatus"
                     name="staggered-cards"
+                    class="locations-grid"
                     tag="div"
-                    class="locations-grid__transition-wrapper">
+                    appear>
                     <div
-                        v-for="(location, index) in locations.data"
-                        class="locations-grid__item"
+                        v-for="(location, index) in locations?.data"
                         :key="location.id"
+                        class="locations-grid__item"
                         :style="{ '--i': index }">
                         <RouterLink
                             class="locations-grid__link"
@@ -183,7 +185,7 @@ const debouncedConfigUpdate = useDebounceFn(() => {
                         </RouterLink>
                     </div>
                 </TransitionGroup>
-            </div>
+            </Transition>
 
             <Paginator
                 v-if="locations?.data.length"
@@ -201,7 +203,7 @@ const debouncedConfigUpdate = useDebounceFn(() => {
                 class="w-full shadow-md"
                 :style="{ height: 'calc(100vh - 2rem)' }"
                 :locations="locations?.data"
-                :loading="locationsIsPending">
+                :loading="isPending">
             </BlokMap>
         </div>
     </div>
@@ -233,10 +235,6 @@ const debouncedConfigUpdate = useDebounceFn(() => {
 
     .locations-grid__link {
         @apply block h-full;
-    }
-
-    .locations-grid__transition-wrapper {
-        @apply contents;
     }
 }
 </style>

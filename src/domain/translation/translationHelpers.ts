@@ -1,4 +1,4 @@
-import type { Translation, TranslationBody } from './translationTypes';
+import type { Translation, TranslationRequest } from './translationTypes';
 
 /**
  * Converts a Translation object to a TranslationBody object for updating.
@@ -6,7 +6,7 @@ import type { Translation, TranslationBody } from './translationTypes';
  * @param translation - The translation object to convert.
  * @returns
  */
-export function translationToBody(translation?: Translation): TranslationBody {
+export function translationToRequest(translation?: Translation): TranslationRequest {
     if (!translation) {
         return {};
     }

@@ -10,11 +10,11 @@ import { computed, ref, watchEffect } from 'vue';
 import { useCreateLocation, useCreateLocationImage } from '@/composables/data/useLocations';
 import { getImageBodyPreviewUrl, type ImageBody } from '@/domain/image';
 import type { SubmissionStep } from '.';
-import type { LocationBody } from '@/domain/location';
+import type { LocationRequest } from '@/domain/location';
 
 const props = defineProps<{
     canSubmit: boolean;
-    location: LocationBody;
+    location: LocationRequest;
     images: ImageBody[];
 }>();
 

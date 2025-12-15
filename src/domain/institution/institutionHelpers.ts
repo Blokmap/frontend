@@ -1,5 +1,5 @@
 import { SUPPORTED_LOCALES } from '@/config/i18nConfig';
-import { translationToBody } from '../translation/translationHelpers';
+import { translationToRequest } from '../translation/translationHelpers';
 import type { Institution, InstitutionBody } from './types';
 
 /**
@@ -8,10 +8,10 @@ import type { Institution, InstitutionBody } from './types';
  * @param institution - The institution object to convert.
  * @returns An InstitutionBody object suitable for forms.
  */
-export function institutionToBody(institution: Institution): InstitutionBody {
+export function institutionToRequest(institution: Institution): InstitutionBody {
     return {
         category: institution.category,
-        name: translationToBody(institution.name),
+        name: translationToRequest(institution.name),
         slug: institution.slug,
         aclType: institution.aclType,
         city: institution.city,

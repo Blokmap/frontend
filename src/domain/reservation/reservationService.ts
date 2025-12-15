@@ -4,7 +4,7 @@ import { formatFilters } from '@/utils/filter';
 import { formatRequest, transformResponseFactory } from '@/utils/serviceUtils';
 import { type Time } from '@/utils/time';
 import { parseReservationResponse } from './reservationParser';
-import type { Reservation, ReservationBody, ReservationFilter } from './types';
+import type { Reservation, ReservationRequest, ReservationFilter } from './types';
 
 // Defines which related data can be included when fetching reservations
 export type ReservationIncludes = 'profile' | 'updatedBy';
@@ -64,7 +64,7 @@ export async function deleteReservation(reservationId: string): Promise<void> {
  */
 export async function updateReservation(
     reservationId: string,
-    body: Partial<ReservationBody>,
+    body: Partial<ReservationRequest>,
 ): Promise<Reservation> {
     const endpoint = endpoints.reservations.update.replace('{id}', reservationId.toString());
 
@@ -110,7 +110,7 @@ export async function confirmReservation(
  */
 export async function createReservations(
     locationId: number,
-    requests: ReservationBody[],
+    requests: ReservationRequest[],
 ): Promise<Reservation[]> {
     const endpoint = endpoints.locations.reservations.create.replace('{id}', locationId.toString());
 

@@ -1,5 +1,5 @@
 import { doTimeRangesOverlap, minutesToTime, timeToMinutes } from '@/utils/time';
-import type { Reservation, ReservationBody } from '../types';
+import type { Reservation, ReservationRequest } from '../types';
 
 interface TimeRangeMinutes {
     start: number;
@@ -15,9 +15,9 @@ interface TimeRangeMinutes {
  * @returns The adjusted reservation request with non-overlapping times
  */
 export function adjustReservationForOverlaps(
-    request: ReservationBody,
-    existingReservations: (Reservation | ReservationBody)[],
-): ReservationBody {
+    request: ReservationRequest,
+    existingReservations: (Reservation | ReservationRequest)[],
+): ReservationRequest {
     const overlaps = getOverlappingReservations(request, existingReservations);
 
     if (overlaps.length === 0) {
@@ -43,8 +43,8 @@ export function adjustReservationForOverlaps(
  * Finds all reservations that overlap with the given request on the same day.
  */
 function getOverlappingReservations(
-    request: ReservationBody,
-    existingReservations: (Reservation | ReservationBody)[],
+    request: ReservationRequest,
+    existingReservations: (Reservation | ReservationRequest)[],
 ): TimeRangeMinutes[] {
     return existingReservations
         .filter((r) => {

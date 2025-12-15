@@ -105,6 +105,7 @@ const breadcrumbs = computed(() => [
 <template>
     <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
+
         <PageTitle title="Reservaties" />
 
         <!-- Filters -->

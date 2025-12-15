@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import OpeningTimeslot from '@/components/features/openings/timeslots/OpeningTimeslot.vue';
-import ReservationBodyTimeslot from '@/components/features/reservation/timeslots/ReservationBodyTimeslot.vue';
+import ReservationRequestTimeslot from '@/components/features/reservation/timeslots/ReservationRequestTimeslot.vue';
 import ReservationTimeslot from '@/components/features/reservation/timeslots/ReservationTimeslot.vue';
 import Calendar from '@/components/shared/molecules/calendar/Calendar.vue';
 import { computed } from 'vue';
@@ -9,7 +9,7 @@ import { canInteractWithOpening, canDeleteReservation } from '@/domain/reservati
 import OpeningHistogram from '../../openings/timeslots/OpeningHistogram.vue';
 import {
     isOpeningTimeSlot,
-    isReservationBodySlot,
+    isReservationRequestSlot,
     isReservationSlot,
     isHistogramSlot,
     type OpeningMetadata,
@@ -18,21 +18,23 @@ import {
     type HistogramMetadata,
     type SlotMetadata,
 } from './index';
+import type { Location } from '@/domain/location';
 import type { OpeningTime } from '@/domain/openings';
-import type { Reservation, ReservationBody } from '@/domain/reservation';
+import type { Reservation, ReservationRequest } from '@/domain/reservation';
 
 const props = defineProps<{
     currentWeek: Date;
+    location: Location;
     openingTimes: OpeningTime[];
     reservations: Reservation[];
     reservationsToDelete: Reservation[];
-    reservationsToCreate: ReservationBody[];
+    reservationsToCreate: ReservationRequest[];
     isSaving?: boolean;
 }>();
 
 const emit = defineEmits<{
     'click:opening': [slot: TimeSlot<OpeningTime>, event: Event];
-    'delete:request': [request: ReservationBody];
+    'delete:request': [request: ReservationRequest];
     'delete:reservation': [reservation: Reservation];
 }>();
 
@@ -119,8 +121,14 @@ function isPendingDeletion(reservation: Reservation): boolean {
 }
 
 function isOpeningDisabled(slot: TimeSlot<OpeningMetadata>): boolean {
-    if (!slot.metadata) return true;
-    return !canInteractWithOpening(slot.metadata.data);
+    if (!slot.metadata) {
+        return true;
+    }
+
+    const opening = slot.metadata.data;
+    const defaultSeatCount = props.location.seatCount;
+
+    return !canInteractWithOpening(opening, defaultSeatCount);
 }
 
 function onOpeningTimeClick(slot: TimeSlot<OpeningMetadata>, event: Event): void {
@@ -137,7 +145,7 @@ function onOpeningTimeClick(slot: TimeSlot<OpeningMetadata>, event: Event): void
 /**
  * Handles deletion of a reservation request.
  */
-function onRequestDelete(request: ReservationBody): void {
+function onRequestDelete(request: ReservationRequest): void {
     if (props.isSaving) return;
     emit('delete:request', request);
 }
@@ -158,7 +166,7 @@ function onReservationDelete(reservation: Reservation): void {
             <template v-if="isHistogramSlot(slot)">
                 <OpeningHistogram
                     :bin-count="100"
-                    :seat-count="slot.metadata.data.seatCount"
+                    :seat-count="slot.metadata.data.seatCount ?? location.seatCount"
                     :stats="slot.metadata.data.stats!">
                 </OpeningHistogram>
             </template>
@@ -187,14 +195,14 @@ function onReservationDelete(reservation: Reservation): void {
             </template>
 
             <!-- Reservation Request Slot -->
-            <template v-else-if="isReservationBodySlot(slot)">
-                <ReservationBodyTimeslot
+            <template v-else-if="isReservationRequestSlot(slot)">
+                <ReservationRequestTimeslot
                     :start-time="slot.startTime"
                     :end-time="slot.endTime"
                     :request="slot.metadata.data"
                     :is-saving="isSaving"
                     @delete="onRequestDelete">
-                </ReservationBodyTimeslot>
+                </ReservationRequestTimeslot>
             </template>
         </template>
     </Calendar>

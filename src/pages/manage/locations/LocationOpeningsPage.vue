@@ -9,7 +9,7 @@ import {
     useDeleteOpeningTime,
     useUpdateOpeningTime,
 } from '@/composables/data/useOpeningTimes';
-import { type OpeningTimeBody, openingToBody } from '@/domain/openings';
+import { type OpeningTimeBody, openingToRequest } from '@/domain/openings';
 import type { Location } from '@/domain/location';
 import type { Profile } from '@/domain/profile';
 
@@ -36,7 +36,7 @@ watchEffect(() => {
         return;
     }
 
-    openingsForm.value = props.location.openingTimes.map(openingToBody);
+    openingsForm.value = props.location.openingTimes.map(openingToRequest);
 });
 
 async function onCreateOpeningTime(openingTime: OpeningTimeBody): Promise<void> {

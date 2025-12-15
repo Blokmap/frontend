@@ -63,7 +63,7 @@ defineEmits<{
 
     .time-display {
         @apply text-secondary-800;
-        @apply flex items-center justify-center;
+        @apply hidden items-center justify-center md:flex;
     }
 
     .state-icon {

@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useLocalStorage } from '@/composables/useLocalStorage';
-import { DEFAULT_LOCATION_REQUEST, type LocationBody } from '@/domain/location';
+import { DEFAULT_LOCATION_REQUEST, type LocationRequest } from '@/domain/location';
 import type { ImageBody } from '@/domain/image';
 
 export enum BuilderStep {
@@ -21,7 +21,7 @@ export type BuilderSubstep = {
 export function useLocationBuilder() {
     const { t } = useI18n();
 
-    const locationForm = useLocalStorage<LocationBody>('location-form', {
+    const locationForm = useLocalStorage<LocationRequest>('location-form', {
         defaults: DEFAULT_LOCATION_REQUEST,
     });
 

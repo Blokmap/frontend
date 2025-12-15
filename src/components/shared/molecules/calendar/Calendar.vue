@@ -233,20 +233,20 @@ onMounted(() => {
     @apply sticky top-0 z-30;
     @apply grid bg-white;
     @apply min-w-max md:w-full md:min-w-0;
-    @apply grid-cols-[55px_repeat(7,minmax(120px,1fr))];
-}
+    @apply grid-cols-[55px_repeat(7,1fr)];
 
-.calendar__header-col {
-    @apply border-r border-b border-slate-100 last:border-r-0 first-of-type:border-b-0;
-}
+    .calendar__header-col {
+        @apply border-r border-b border-slate-100 last:border-r-0 first-of-type:border-b-0;
 
-.calendar__header-col:not(:first-child) {
-    @apply cursor-pointer p-3 text-center;
-    @apply transition-colors hover:bg-slate-100;
-}
+        &:not(:first-child) {
+            @apply cursor-pointer py-3 text-center;
+            @apply transition-colors hover:bg-slate-100;
+        }
+    }
 
-.calendar__header-col--today {
-    @apply bg-secondary-50 hover:!bg-secondary-100 text-secondary-500;
+    .calendar__header-col--today {
+        @apply bg-secondary-50 hover:!bg-secondary-100 text-secondary-500;
+    }
 }
 
 .calendar__today-badge {
@@ -258,25 +258,23 @@ onMounted(() => {
 
 .calendar__body {
     @apply relative flex-1 overflow-auto;
-}
 
-.calendar__body::-webkit-scrollbar {
-    @apply h-2 w-2;
-}
+    &::-webkit-scrollbar {
+        @apply h-2 w-2;
+    }
 
-.calendar__body::-webkit-scrollbar-track {
-    @apply bg-slate-100;
-}
+    &::-webkit-scrollbar-track {
+        @apply bg-slate-100;
+    }
 
-.calendar__body::-webkit-scrollbar-thumb {
-    @apply rounded bg-slate-300 hover:bg-slate-400;
+    &::-webkit-scrollbar-thumb {
+        @apply rounded bg-slate-300 hover:bg-slate-400;
+    }
 }
 
 .calendar__grid {
-    @apply relative grid;
-    @apply min-w-max md:min-w-0;
-    @apply w-full;
-    @apply grid-cols-[55px_repeat(7,minmax(120px,1fr))];
+    @apply relative grid grid-cols-[55px_repeat(7,1fr)];
+    @apply w-full min-w-max md:min-w-0;
 }
 
 .calendar__time-col {

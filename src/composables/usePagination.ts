@@ -31,7 +31,7 @@ export function usePagination(pagination: Ref<Pagination>) {
      *
      * @param scroll - Whether to scroll to top after resetting page (default: true)
      */
-    const resetPage = async (scroll: boolean = true): Promise<void> => {
+    const resetPage = (scroll: boolean = true): void => {
         pagination.value.page = 1;
 
         if (scroll) {

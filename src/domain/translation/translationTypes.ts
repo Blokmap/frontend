@@ -3,7 +3,7 @@ export type Translation = {
     [key: string]: string | null | undefined;
 };
 
-export type TranslationBody = {
+export type TranslationRequest = {
     id?: string;
     [key: string]: string | null | undefined;
 };

@@ -3,18 +3,18 @@ import Button from 'primevue/button';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { timeToString } from '@/utils/time';
-import type { ReservationBody } from '@/domain/reservation';
+import type { ReservationRequest } from '@/domain/reservation';
 import type { Time } from '@/utils/time';
 
 defineProps<{
     startTime: Time;
     endTime: Time;
-    request: ReservationBody;
+    request: ReservationRequest;
     isSaving?: boolean;
 }>();
 
 defineEmits<{
-    delete: [request: ReservationBody];
+    delete: [request: ReservationRequest];
 }>();
 </script>
 
@@ -68,7 +68,7 @@ defineEmits<{
 }
 
 .time-display {
-    @apply flex items-center justify-center text-center;
+    @apply hidden items-center justify-center text-center md:flex;
 
     .time-text {
         @apply text-xs font-medium;

@@ -4,7 +4,7 @@ import {
     getGoogleMapsDirectionsLink,
     getLocationFeatures,
     getLocationPlaceholderImage,
-    locationToBody,
+    locationToRequest,
 } from '@/domain/location';
 import { createMockLocation, createMockTranslation, createMockOpeningTime } from '../../mocks';
 
@@ -18,7 +18,7 @@ describe('location helpers', () => {
         });
     });
 
-    describe('locationToBody', () => {
+    describe('locationToRequest', () => {
         it('should convert Location to LocationBody', () => {
             const location = createMockLocation({
                 id: 1,
@@ -37,7 +37,7 @@ describe('location helpers', () => {
                 longitude: -0.1278,
             });
 
-            const result = locationToBody(location);
+            const result = locationToRequest(location);
 
             expect(result.name).toBe('Test Location');
             expect(result.description).toEqual(location.description);
@@ -65,7 +65,7 @@ describe('location helpers', () => {
                 longitude: 0,
             });
 
-            const result = locationToBody(location);
+            const result = locationToRequest(location);
 
             // Should not include id, createdAt, updatedAt
             expect('id' in result).toBe(false);

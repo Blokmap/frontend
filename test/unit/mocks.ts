@@ -1,5 +1,5 @@
 import type { Image, ImageBody } from '@/domain/image';
-import { LocationState, type Location, type LocationBody } from '@/domain/location';
+import { LocationState, type Location, type LocationRequest } from '@/domain/location';
 import type { OpeningTime, OpeningTimeBody } from '@/domain/openings';
 import { ProfileState, type Profile } from '@/domain/profile';
 import type { Reservation, ReservationState } from '@/domain/reservation';

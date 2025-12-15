@@ -9,7 +9,7 @@ import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { DEFAULT_AUTHORITY_REQUEST, authorityToBody } from '@/domain/authority';
+import { DEFAULT_AUTHORITY_REQUEST, authorityToRequest } from '@/domain/authority';
 import type { Authority, AuthorityBody } from '@/domain/authority';
 import type { InstitutionMembership } from '@/domain/member';
 
@@ -43,7 +43,7 @@ function handleFormSubmission(): void {
 
 watchEffect(() => {
     if (props.authority) {
-        form.value = authorityToBody(props.authority);
+        form.value = authorityToRequest(props.authority);
     }
 });
 </script>

@@ -12,7 +12,7 @@ export type OpeningTime = {
     startTime: Time;
     endTime: Time;
     day: Date;
-    seatCount: number;
+    seatCount: number | null;
     reservableFrom: Date | null;
     reservableUntil: Date | null;
     createdAt: Date;

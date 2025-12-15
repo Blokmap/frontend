@@ -6,7 +6,7 @@ import type { Authority, AuthorityBody } from './types';
  * @param authority - The authority object to convert.
  * @returns An AuthorityBody object suitable for forms.
  */
-export function authorityToBody(authority: Authority): AuthorityBody {
+export function authorityToRequest(authority: Authority): AuthorityBody {
     return {
         name: authority.name,
         description: authority.description,

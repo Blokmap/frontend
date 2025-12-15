@@ -113,7 +113,7 @@ export function isOverlapping(
  * @param opening - The opening time to convert.
  * @returns The corresponding opening time request.
  */
-export function openingToBody(opening: OpeningTime): OpeningTimeBody {
+export function openingToRequest(opening: OpeningTime): OpeningTimeBody {
     return {
         id: opening.id,
         day: opening.day,

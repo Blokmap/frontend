@@ -1,9 +1,9 @@
 import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import { isWeekend } from '@/utils/date';
 import { isEvening, isMorning, isNight } from '@/utils/time';
-import { translationToBody } from '../translation/translationHelpers';
+import { translationToRequest } from '../translation/translationHelpers';
 import { GOOGLE_MAPS_DIRECTIONS_BASE_URL } from './locationConstants';
-import type { Location, LocationAddress, LocationFeatures, LocationBody } from './types';
+import type { Location, LocationAddress, LocationFeatures, LocationRequest } from './types';
 
 /**
  * Returns a random placeholder image URL for locations.
@@ -37,7 +37,7 @@ export function getLocationImageUrl(location?: Location): string {
  * @param location - The location object to convert.
  * @returns A LocationBody object suitable for forms.
  */
-export function locationToBody(location: Location): LocationBody {
+export function locationToRequest(location: Location): LocationRequest {
     return {
         name: location.name,
         seatCount: location.seatCount,
@@ -50,8 +50,8 @@ export function locationToBody(location: Location): LocationBody {
         country: location.country,
         latitude: location.latitude,
         longitude: location.longitude,
-        description: translationToBody(location.description),
-        excerpt: translationToBody(location.excerpt),
+        description: translationToRequest(location.description),
+        excerpt: translationToRequest(location.excerpt),
         authorityId: location.authority?.id || null,
         institutionId: location.institution?.id || null,
     };

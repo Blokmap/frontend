@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { getImageBodyPreviewUrl, imageToBody } from '@/domain/image';
+import { getImageBodyPreviewUrl, imageToRequest } from '@/domain/image';
 import { createMockImage, createMockImageBody } from '../../mocks';
 
 describe('image helpers', () => {
-    describe('imageToBody', () => {
+    describe('imageToRequest', () => {
         it('should convert image to request with primary flag for first image', () => {
             const image = createMockImage({
                 id: 1,
@@ -11,7 +11,7 @@ describe('image helpers', () => {
                 url: 'https://example.com/image.jpg',
             });
 
-            const result = imageToBody(image, 0);
+            const result = imageToRequest(image, 0);
 
             expect(result).toEqual({
                 id: 1,
@@ -28,7 +28,7 @@ describe('image helpers', () => {
                 index: 1,
             });
 
-            const result = imageToBody(image, 1);
+            const result = imageToRequest(image, 1);
 
             expect(result).toEqual({
                 id: 2,
@@ -45,7 +45,7 @@ describe('image helpers', () => {
                 url: 'https://example.com/image5.jpg',
             });
 
-            const result = imageToBody(image, 4);
+            const result = imageToRequest(image, 4);
 
             expect(result.index).toBe(4);
         });

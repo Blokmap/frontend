@@ -24,10 +24,10 @@ import { useToast } from '@/composables/store/useToast';
 import { getOutputDataLength } from '@/domain/editor/editorHelpers';
 import { LOCATION_SETTINGS, formatLocationAddress } from '@/domain/location';
 import { DEFAULT_MAP_OPTIONS } from '@/domain/map';
-import type { LocationBody } from '@/domain/location';
+import type { LocationRequest } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 
-const form = defineModel<LocationBody>({ required: true });
+const form = defineModel<LocationRequest>({ required: true });
 
 const toast = useToast();
 

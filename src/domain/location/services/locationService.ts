@@ -10,7 +10,7 @@ import { parseLocationResponse } from '../locationParser';
 import {
     type Location,
     type LocationSearchFilter,
-    type LocationBody,
+    type LocationRequest,
     type NearestLocation,
     type LocationFilter,
     type LocationStateBody,
@@ -140,10 +140,10 @@ export async function readNearestLocation(center: LngLat): Promise<NearestLocati
 /**
  * Create a new location.
  *
- * @param {LocationBody} body - The location data to create.
+ * @param {LocationRequest} body - The location data to create.
  * @returns {Promise<Location>} A promise that resolves to the created location.
  */
-export async function createLocation(body: LocationBody): Promise<Location> {
+export async function createLocation(body: LocationRequest): Promise<Location> {
     const endpoint = endpoints.locations.create;
 
     const transformResponse = transformResponseFactory(parseLocationResponse);
@@ -186,10 +186,13 @@ export async function createLocationImage(
  * Update a location.
  *
  * @param {number} id - The ID of the location to update.
- * @param {LocationBody} body - The updated location data.
+ * @param {LocationRequest} body - The updated location data.
  * @returns {Promise<Location>} A promise that resolves to the updated location.
  */
-export async function updateLocation(id: number, body: Partial<LocationBody>): Promise<Location> {
+export async function updateLocation(
+    id: number,
+    body: Partial<LocationRequest>,
+): Promise<Location> {
     const endpoint = endpoints.locations.update.replace('{id}', id.toString());
 
     const transformResponse = transformResponseFactory(parseLocationResponse);

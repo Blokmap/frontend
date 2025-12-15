@@ -13,7 +13,7 @@ import {
     type Reservation,
     type ReservationFilter,
     type ReservationIncludes,
-    type ReservationBody,
+    type ReservationRequest,
     type ReservationState,
 } from '@/domain/reservation';
 import { invalidateQueries } from './queryCache';
@@ -72,7 +72,7 @@ export function useCreateReservation(
 
 export type CreateReservationsParams = {
     locationId: number;
-    requests: ReservationBody[];
+    requests: ReservationRequest[];
 };
 
 /**

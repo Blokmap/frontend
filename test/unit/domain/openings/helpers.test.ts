@@ -4,7 +4,7 @@ import {
     getOpeningsFromRepetition,
     groupOpeningTimesByDay,
     isOverlapping,
-    openingToBody,
+    openingToRequest,
 } from '@/domain/openings';
 import { createMockOpeningTime, createMockOpeningTimeBody } from '../../mocks';
 
@@ -254,7 +254,7 @@ describe('openings helpers', () => {
         });
     });
 
-    describe('openingToBody', () => {
+    describe('openingToRequest', () => {
         it('should convert OpeningTime to OpeningTimeBody', () => {
             const opening = createMockOpeningTime({
                 id: 42,
@@ -265,7 +265,7 @@ describe('openings helpers', () => {
                 sequenceId: 'seq-1',
             });
 
-            const result = openingToBody(opening);
+            const result = openingToRequest(opening);
 
             expect(result.id).toBe(42);
             expect(result.day).toEqual(new Date(2024, 0, 15));
@@ -286,7 +286,7 @@ describe('openings helpers', () => {
                 sequenceId: null,
             });
 
-            const result = openingToBody(opening);
+            const result = openingToRequest(opening);
 
             expect(result).toEqual({
                 id: 123,

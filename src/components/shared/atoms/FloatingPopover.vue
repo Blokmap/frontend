@@ -1,14 +1,23 @@
 <script lang="ts" setup>
-import { ref, watchEffect, onMounted, onUnmounted } from 'vue';
+import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
+import { ref, watchEffect, onMounted, onUnmounted, computed } from 'vue';
 import { useFloatingOverlayManager } from '@/composables/useFloatingOverlayManager';
 
 const VERTICAL_GAP = 16;
 const HORIZONTAL_MARGIN = 12;
 const VERTICAL_MARGIN = 8;
 
-const props = defineProps<{
-    targetRef: HTMLElement | null;
-}>();
+const props = withDefaults(
+    defineProps<{
+        targetRef: HTMLElement | null;
+        centered?: boolean;
+        fullscreenMobile?: boolean;
+    }>(),
+    {
+        centered: true,
+        fullscreenMobile: false,
+    },
+);
 
 const visible = defineModel<boolean>('visible', {
     default: false,
@@ -24,10 +33,17 @@ const previousTarget = ref<HTMLElement | null>(null);
 
 const { register, unregister, closeAll } = useFloatingOverlayManager();
 
-function position() {
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const isMobile = breakpoints.smaller('md');
+
+const isFullscreen = computed(() => {
+    return props.fullscreenMobile && isMobile.value;
+});
+
+const position = (): void => {
     const trigger = props.targetRef;
     const popover = popoverRef.value;
-    if (!trigger || !popover) return;
+    if (!trigger || !popover || isFullscreen.value) return;
 
     const triggerRect = trigger.getBoundingClientRect();
     const popoverRect = popover.getBoundingClientRect();
@@ -42,19 +58,11 @@ function position() {
         ? triggerRect.bottom + scrollY + VERTICAL_GAP
         : triggerRect.top + scrollY - popoverRect.height - VERTICAL_GAP;
 
-    // Horizontal: center on trigger
-    let left = triggerRect.left + scrollX + triggerRect.width / 2 - popoverRect.width / 2;
+    // Horizontal: center on trigger or align with right edge
+    let left = props.centered
+        ? triggerRect.left + scrollX + triggerRect.width / 2 - popoverRect.width / 2
+        : triggerRect.right + scrollX - popoverRect.width;
 
-    // Check if centering would overflow viewport
-    const wouldOverflowRight =
-        left + popoverRect.width > scrollX + window.innerWidth - HORIZONTAL_MARGIN;
-    const wouldOverflowLeft = left < scrollX + HORIZONTAL_MARGIN;
-
-    if (wouldOverflowRight || wouldOverflowLeft) {
-        left = scrollX + (window.innerWidth - popoverRect.width) / 2;
-    }
-
-    // Final horizontal constraint
     left = Math.max(
         scrollX + HORIZONTAL_MARGIN,
         Math.min(left, scrollX + window.innerWidth - popoverRect.width - HORIZONTAL_MARGIN),
@@ -83,26 +91,25 @@ function position() {
     styles.value = {
         top: `${Math.round(finalTop)}px`,
         left: `${Math.round(left)}px`,
-        transformOrigin: positionBelow ? 'center top' : 'center bottom',
     };
 
     arrowStyles.value = {
         left: `${Math.round(arrowLeft)}px`,
     };
-}
+};
 
-function closeMe() {
+const closeMe = () => {
     visible.value = false;
-}
+};
 
-function onClick(e: MouseEvent) {
+const onClick = (e: MouseEvent) => {
     if (
         !popoverRef.value?.contains(e.target as Node) &&
         !props.targetRef?.contains(e.target as Node)
     ) {
         visible.value = false;
     }
-}
+};
 
 watchEffect(() => {
     if (visible.value && props.targetRef && popoverRef.value) {
@@ -139,14 +146,26 @@ onUnmounted(() => {
 
 <template>
     <Teleport to="body">
-        <Transition name="slide-down">
+        <!-- Mobile Backdrop -->
+        <Transition name="fade">
+            <div
+                v-if="visible && isFullscreen"
+                class="popover-backdrop"
+                @click="visible = false"></div>
+        </Transition>
+
+        <!-- Popover Content -->
+        <Transition :name="isFullscreen ? 'slide-up' : 'slide-down'">
             <div
                 v-if="visible"
                 ref="popoverRef"
-                :style="styles"
-                :class="{ 'popover-animate': shouldAnimate }"
-                class="popover">
+                :style="!isFullscreen ? styles : {}"
+                :class="[
+                    { 'popover-animate': shouldAnimate && !isFullscreen },
+                    isFullscreen ? 'popover-fullscreen' : 'popover',
+                ]">
                 <div
+                    v-if="!isFullscreen"
                     class="popover-arrow"
                     :class="{ 'popover-arrow--below': isArrowBelow }"
                     :style="arrowStyles"></div>
@@ -159,8 +178,17 @@ onUnmounted(() => {
 <style scoped>
 @reference '@/assets/styles/main.css';
 
+.popover-backdrop {
+    @apply fixed inset-0 z-[1199] bg-black/50;
+}
+
 .popover {
-    @apply absolute z-[1500] rounded-lg shadow-lg;
+    @apply absolute z-[1200] rounded-lg shadow-lg;
+}
+
+.popover-fullscreen {
+    @apply fixed inset-x-0 bottom-0 z-[1200] rounded-t-xl bg-white shadow-lg;
+    @apply max-h-[90vh] overflow-y-auto;
 }
 
 .popover-animate {

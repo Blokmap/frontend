@@ -9,7 +9,7 @@ import { computed, watchEffect } from 'vue';
 import LocationBuilderCard from '../LocationBuilderCard.vue';
 import type { Authority } from '@/domain/authority';
 import type { Institution } from '@/domain/institution';
-import type { LocationBody } from '@/domain/location';
+import type { LocationRequest } from '@/domain/location';
 
 const props = withDefaults(
     defineProps<{
@@ -22,7 +22,7 @@ const props = withDefaults(
     },
 );
 
-const form = defineModel<Pick<LocationBody, 'authorityId' | 'institutionId'>>('form', {
+const form = defineModel<Pick<LocationRequest, 'authorityId' | 'institutionId'>>('form', {
     required: true,
 });
 

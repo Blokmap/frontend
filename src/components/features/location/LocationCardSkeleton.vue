@@ -17,7 +17,7 @@ import Skeleton from 'primevue/skeleton';
 @reference '@/assets/styles/main.css';
 
 .location-detail-skeleton {
-    @apply flex h-full w-full flex-col rounded-xl shadow-md;
+    @apply flex h-full w-full flex-col rounded-xl;
 }
 
 .location-detail-skeleton__image {
@@ -25,7 +25,7 @@ import Skeleton from 'primevue/skeleton';
 }
 
 .location-detail-skeleton__content {
-    @apply flex flex-1 flex-col gap-2 rounded-b-xl bg-white p-4;
+    @apply flex flex-1 flex-col gap-2 rounded-b-xl p-4;
 }
 
 .location-detail-skeleton__name {

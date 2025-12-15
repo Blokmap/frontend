@@ -6,9 +6,9 @@ import InputLabel from '@/components/shared/molecules/form/InputLabel.vue';
 import { faCircleQuestion, faClock, faCog } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import LocationBuilderCard from '../LocationBuilderCard.vue';
-import type { LocationBody } from '@/domain/location';
+import type { LocationRequest } from '@/domain/location';
 
-const form = defineModel<LocationBody>('form', {
+const form = defineModel<LocationRequest>('form', {
     required: true,
 });
 </script>

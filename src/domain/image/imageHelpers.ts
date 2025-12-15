@@ -45,7 +45,7 @@ export function getLocationImages(locations?: Location[]): Image[] {
  * @param index - The index of the image.
  * @returns An ImageBody object suitable for forms.
  */
-export function imageToBody(image: Image, index: number): ImageBody {
+export function imageToRequest(image: Image, index: number): ImageBody {
     return {
         id: image.id,
         imageUrl: image.url,

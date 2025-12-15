@@ -15,7 +15,7 @@ import { useReadProfileInstitutionMemberships } from '@/composables/data/useMemb
 import { useDirtyForm } from '@/composables/useDirtyForm';
 import { has, InstitutionPermission, type RecursivePermissions } from '@/domain/auth';
 import { type Authority, type AuthorityFilter } from '@/domain/authority';
-import { locationToBody, type Location, type LocationBody } from '@/domain/location';
+import { locationToRequest, type Location, type LocationRequest } from '@/domain/location';
 import type { Institution, InstitutionFilter } from '@/domain/institution';
 import type { Profile } from '@/domain/profile';
 
@@ -30,8 +30,8 @@ const { mutateAsync: updateLocation, isPending: isUpdatingLocation } = useUpdate
 const { form, hasChanges, isUpdating, saveChanges, cancelChanges } = useDirtyForm({
     isPending: isUpdatingLocation,
     source: () => props.location,
-    toForm: locationToBody,
-    onSave: (data: LocationBody) => {
+    toForm: locationToRequest,
+    onSave: (data: LocationRequest) => {
         updateLocation({ locationId: props.location.id, data });
     },
 });

@@ -26,7 +26,7 @@ defineEmits<{
     @apply relative w-full py-2 pr-2 pl-4 md:min-w-[320px];
     @apply flex items-center gap-3;
     @apply cursor-pointer rounded-full bg-white;
-    @apply shadow-lg hover:shadow-xl;
+    @apply shadow-md hover:shadow-xl;
     @apply transition-all duration-200 ease-out;
 }
 

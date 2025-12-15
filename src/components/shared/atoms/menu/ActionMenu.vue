@@ -46,7 +46,7 @@ function hideMenu(): void {
             </slot>
         </div>
 
-        <FloatingPopover :target-ref="triggerRef" v-model:visible="isVisible">
+        <FloatingPopover :target-ref="triggerRef" v-model:visible="isVisible" :centered="false">
             <div class="rounded-lg bg-white p-2 shadow-lg">
                 <p class="mb-3 text-sm font-medium text-slate-500">Acties</p>
                 <div class="space-y-3">

@@ -4,10 +4,9 @@ import Dialog from 'primevue/dialog';
 import ProgressSpinner from 'primevue/progressspinner';
 import ReservationBuilderCalendar from '@/components/features/reservation/builder/ReservationBuilderCalendar.vue';
 import ReservationBuilderLegend from '@/components/features/reservation/builder/ReservationBuilderLegend.vue';
+import ReservationBuilderPopover from '@/components/features/reservation/builder/ReservationBuilderPopover.vue';
 import ReservationBuilderSubmitDialog from '@/components/features/reservation/builder/ReservationBuilderSubmitDialog.vue';
-import FloatingPopover from '@/components/shared/atoms/FloatingPopover.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
-import TimeInput from '@/components/shared/molecules/form/TimeInput.vue';
 import { faCheck, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch, watchEffect } from 'vue';
@@ -22,7 +21,7 @@ import { useWebsocket } from '@/composables/data/useWebsocket';
 import {
     type ReservationFilter,
     type Reservation,
-    type ReservationBody,
+    type ReservationRequest,
     ReservationState,
     adjustReservationForOverlaps,
     canDeleteReservation,
@@ -128,14 +127,14 @@ watchEffect(() => {
 });
 
 // Builder state
-const reservationsToCreate = ref<ReservationBody[]>([]);
+const reservationsToCreate = ref<ReservationRequest[]>([]);
 const reservationsToDelete = ref<Reservation[]>([]);
 
 // Popover state
 const popoverTriggerRef = ref<HTMLElement | null>(null);
 const isPopoverVisible = ref(false);
 
-const activeRequest = ref<ReservationBody | null>(null);
+const activeRequest = ref<ReservationRequest | null>(null);
 const activeOpeningTimeSlot = ref<TimeSlot<OpeningTime> | null>(null);
 
 const showProgressDialog = computed<boolean>({
@@ -163,6 +162,15 @@ const onOpeningTimeClick = (slot: TimeSlot<OpeningTime>, event: Event): void => 
         return;
     }
 
+    // Toggle popover visibility
+    const shouldClosePopover =
+        isPopoverVisible.value && popoverTriggerRef.value === event.currentTarget;
+
+    if (shouldClosePopover) {
+        isPopoverVisible.value = false;
+        return;
+    }
+
     isPopoverVisible.value = true;
     activeOpeningTimeSlot.value = slot;
     popoverTriggerRef.value = event.currentTarget as HTMLElement;
@@ -175,7 +183,7 @@ const onOpeningTimeClick = (slot: TimeSlot<OpeningTime>, event: Event): void => 
     };
 };
 
-const onRequestDelete = (request: ReservationBody): void => {
+const onRequestDelete = (request: ReservationRequest): void => {
     if (isSaving.value) {
         return;
     }
@@ -311,6 +319,7 @@ watch(visible, (newVisible) => {
                     <ReservationBuilderCalendar
                         v-if="!isLoading && reservations"
                         :key="currentWeek.toISOString()"
+                        :location="location"
                         :current-week="currentWeek"
                         :opening-times="openings"
                         :reservations="reservations"
@@ -335,18 +344,19 @@ watch(visible, (newVisible) => {
                     <template v-if="hasPendingChanges">
                         <Button
                             severity="contrast"
-                            text
+                            size="small"
                             :disabled="isSaving"
-                            @click="cancelPendingChanges">
+                            @click="cancelPendingChanges"
+                            text>
                             <FontAwesomeIcon :icon="faX" />
                             <span>Annuleren</span>
                         </Button>
-                        <Button :loading="isSaving" @click="savePendingChanges">
+                        <Button :loading="isSaving" @click="savePendingChanges" size="small">
                             <FontAwesomeIcon :icon="faCheck" />
                             <span>Bevestigen</span>
                         </Button>
                     </template>
-                    <Button v-else severity="contrast" text @click="visible = false">
+                    <Button v-else severity="contrast" text @click="visible = false" size="small">
                         Sluiten
                     </Button>
                 </div>
@@ -364,40 +374,14 @@ watch(visible, (newVisible) => {
     </Teleport>
 
     <!-- Reservation Creation Popover -->
-    <FloatingPopover :target-ref="popoverTriggerRef" v-model:visible="isPopoverVisible">
-        <div class="reservation-popover">
-            <h3 class="text-base font-semibold text-gray-900">Nieuwe reservatie</h3>
-
-            <div class="space-y-3">
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-700">Starttijd</label>
-                    <TimeInput
-                        v-if="activeRequest && activeOpeningTimeSlot"
-                        v-model="activeRequest.startTime"
-                        :min-time="activeOpeningTimeSlot.startTime"
-                        :max-time="activeOpeningTimeSlot.endTime">
-                    </TimeInput>
-                </div>
-
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-700">Eindtijd</label>
-                    <TimeInput
-                        v-if="activeRequest && activeOpeningTimeSlot"
-                        v-model="activeRequest.endTime"
-                        :min-time="activeOpeningTimeSlot.startTime"
-                        :max-time="activeOpeningTimeSlot.endTime">
-                    </TimeInput>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-2">
-                <Button severity="contrast" text size="small" @click="isPopoverVisible = false">
-                    Annuleren
-                </Button>
-                <Button size="small" @click="onReservationCreate">Toevoegen</Button>
-            </div>
-        </div>
-    </FloatingPopover>
+    <ReservationBuilderPopover
+        :target-ref="popoverTriggerRef"
+        v-model:visible="isPopoverVisible"
+        :request="activeRequest"
+        :opening-time-slot="activeOpeningTimeSlot"
+        @create="onReservationCreate"
+        @cancel="isPopoverVisible = false">
+    </ReservationBuilderPopover>
 </template>
 
 <style>
@@ -413,8 +397,8 @@ watch(visible, (newVisible) => {
     }
 
     .dialog__footer {
-        @apply flex flex-shrink-0 items-center justify-between rounded-b-xl bg-gray-50 p-4;
-        @apply border-t-1 border-slate-200;
+        @apply flex flex-shrink-0 flex-col items-center justify-between gap-4 p-4 md:flex-row;
+        @apply rounded-b-xl border-t-1 border-slate-200 bg-gray-50;
     }
 
     .calendar-content {
@@ -426,9 +410,5 @@ watch(visible, (newVisible) => {
             @apply bg-white/80 backdrop-blur-sm;
         }
     }
-}
-
-.reservation-popover {
-    @apply w-80 max-w-[calc(100vw-16px)] space-y-4 rounded-lg bg-white p-4;
 }
 </style>

@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
-    institutionToBody,
+    institutionToRequest,
     type Institution,
     type InstitutionBody,
     INSTITUTION_CATEGORIES,
@@ -31,10 +31,10 @@ const editMode = defineModel<boolean>('editMode', { default: false });
 const { locale, t } = useI18n();
 
 const lang = ref<string>(locale.value);
-const form = ref<InstitutionBody>(institutionToBody(props.institution));
+const form = ref<InstitutionBody>(institutionToRequest(props.institution));
 
 watchEffect(() => {
-    form.value = institutionToBody(props.institution);
+    form.value = institutionToRequest(props.institution);
 });
 
 const categories = computed(() => {

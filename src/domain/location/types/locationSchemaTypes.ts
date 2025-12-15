@@ -3,7 +3,7 @@ import type { Image } from '@/domain/image';
 import type { Institution } from '@/domain/institution';
 import type { OpeningTime } from '@/domain/openings';
 import type { Profile } from '@/domain/profile';
-import type { TranslationBody, Translation } from '@/domain/translation';
+import type { TranslationRequest, Translation } from '@/domain/translation';
 
 export type LocationAddress = {
     street: string;
@@ -64,10 +64,15 @@ export type Location = {
     institution?: Institution | null;
 };
 
-export type LocationBody = {
+export enum LocationOwnerType {
+    Authority = 'Authority',
+    Institution = 'Institution',
+}
+
+export type LocationRequest = {
     name: string;
-    description: TranslationBody;
-    excerpt: TranslationBody;
+    description: TranslationRequest;
+    excerpt: TranslationRequest;
     seatCount: number;
     isReservable: boolean;
     isVisible: boolean;
@@ -78,7 +83,13 @@ export type LocationBody = {
     country: string;
     latitude: number;
     longitude: number;
+    parent?: {
+        id: number;
+        type: LocationOwnerType;
+    } | null;
+    /* @deprecated Use parent instead */
     authorityId?: number | null;
+    /* @deprecated Use parent instead */
     institutionId?: number | null;
 };
 

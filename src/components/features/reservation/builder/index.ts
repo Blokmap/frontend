@@ -1,10 +1,10 @@
 import type { TimeSlot } from '@/domain/calendar';
 import type { OpeningTime } from '@/domain/openings';
-import type { Reservation, ReservationBody } from '@/domain/reservation';
+import type { Reservation, ReservationRequest } from '@/domain/reservation';
 
 export type OpeningMetadata = { type: 'opening'; data: OpeningTime };
 export type ReservationMetadata = { type: 'reservation'; data: Reservation };
-export type RequestMetadata = { type: 'request'; data: ReservationBody };
+export type RequestMetadata = { type: 'request'; data: ReservationRequest };
 export type HistogramMetadata = { type: 'histogram'; data: OpeningTime };
 
 export type SlotMetadata =
@@ -25,7 +25,7 @@ export function isReservationSlot(
     return slot.metadata?.type === 'reservation';
 }
 
-export function isReservationBodySlot(
+export function isReservationRequestSlot(
     slot: TimeSlot<SlotMetadata>,
 ): slot is TimeSlot<RequestMetadata> & { metadata: RequestMetadata } {
     return slot.metadata?.type === 'request';

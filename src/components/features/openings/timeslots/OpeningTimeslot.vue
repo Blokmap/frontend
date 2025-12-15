@@ -57,8 +57,7 @@ const onTimeslotClick = (event: Event) => {
     }
 
     .time-display {
-        @apply relative;
-        @apply flex items-center justify-center text-center;
+        @apply relative hidden items-center justify-center text-center md:flex;
         @apply text-slate-600;
         @apply z-10;
 

@@ -5,7 +5,7 @@ import CardValue from '@/components/shared/molecules/CardValue.vue';
 import EditableCard from '@/components/shared/organisms/EditableCard.vue';
 import { faPhone } from '@fortawesome/free-solid-svg-icons';
 import { ref, watchEffect } from 'vue';
-import { institutionToBody, type Institution, type InstitutionBody } from '@/domain/institution';
+import { institutionToRequest, type Institution, type InstitutionBody } from '@/domain/institution';
 
 const props = defineProps<{
     institution: Institution;
@@ -18,10 +18,10 @@ const emit = defineEmits<{
 
 const editMode = defineModel<boolean>('editMode', { default: false });
 
-const form = ref<InstitutionBody>(institutionToBody(props.institution));
+const form = ref<InstitutionBody>(institutionToRequest(props.institution));
 
 watchEffect(() => {
-    form.value = institutionToBody(props.institution);
+    form.value = institutionToRequest(props.institution);
 });
 
 function onSaveClick() {

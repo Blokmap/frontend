@@ -7,7 +7,7 @@ import PageTitle from '@/layouts/PageTitle.vue';
 import { computed } from 'vue';
 import { useUpdateLocationImages } from '@/composables/data/useLocations';
 import { useDirtyForm } from '@/composables/useDirtyForm';
-import { imageToBody, type ImageBody } from '@/domain/image';
+import { imageToRequest, type ImageBody } from '@/domain/image';
 import type { Location } from '@/domain/location';
 
 const props = defineProps<{
@@ -24,10 +24,10 @@ const {
     cancelChanges,
 } = useDirtyForm({
     source: () => props.location,
-    toForm: (location) => (location.images || []).map(imageToBody),
+    toForm: (location) => (location.images || []).map(imageToRequest),
     onSave: async (currentImages) => {
         const originalImages: ImageBody[] = (props.location.images || []).map((img) => {
-            const body = imageToBody(img, img.index);
+            const body = imageToRequest(img, img.index);
             return { ...body, locationId: props.location.id };
         });
 

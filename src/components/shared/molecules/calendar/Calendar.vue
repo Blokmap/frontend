@@ -165,7 +165,7 @@ onMounted(() => {
                         {{ formatDayName(day, 'short', locale) }}
                     </div>
                     <div
-                        class="mt-1 text-lg font-semibold md:text-base"
+                        class="mt-1 text-sm font-semibold md:text-base"
                         :class="{ 'calendar__today-badge': isToday(day) }">
                         {{ day.getDate() }}
                     </div>
@@ -233,10 +233,11 @@ onMounted(() => {
     @apply sticky top-0 z-30;
     @apply grid bg-white;
     @apply min-w-max md:w-full md:min-w-0;
-    @apply grid-cols-[55px_repeat(7,1fr)];
+    @apply grid-cols-[50px_repeat(7,1fr)];
 
     .calendar__header-col {
         @apply border-r border-b border-slate-100 last:border-r-0 first-of-type:border-b-0;
+        @apply text-xs;
 
         &:not(:first-child) {
             @apply cursor-pointer py-3 text-center;
@@ -247,13 +248,12 @@ onMounted(() => {
     .calendar__header-col--today {
         @apply bg-secondary-50 hover:!bg-secondary-100 text-secondary-500;
     }
-}
 
-.calendar__today-badge {
-    @apply mx-auto flex h-6 w-6 md:h-5 md:w-5;
-    @apply items-center justify-center;
-    @apply bg-secondary-500 rounded-full text-white;
-    @apply text-sm md:text-xs;
+    .calendar__today-badge {
+        @apply mx-auto flex h-6 w-6 md:h-5 md:w-5;
+        @apply items-center justify-center;
+        @apply bg-secondary-500 rounded-full text-white;
+    }
 }
 
 .calendar__body {
@@ -273,7 +273,7 @@ onMounted(() => {
 }
 
 .calendar__grid {
-    @apply relative grid grid-cols-[55px_repeat(7,1fr)];
+    @apply relative grid grid-cols-[50px_repeat(7,1fr)];
     @apply w-full min-w-max md:min-w-0;
 }
 

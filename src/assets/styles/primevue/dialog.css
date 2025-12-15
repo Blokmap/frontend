@@ -1,7 +1,6 @@
 @import './button';
 
 .p-dialog {
-    @apply min-w-[400px];
     @apply border-surface-200 bg-surface-0 rounded-xl border text-slate-800;
     @apply scale-100;
 }

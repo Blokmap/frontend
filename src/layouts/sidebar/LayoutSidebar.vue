@@ -44,7 +44,7 @@ const emit = defineEmits<{
 @reference '@/assets/styles/main.css';
 
 .sidebar {
-    @apply flex flex-col space-y-6 lg:h-full lg:pr-12;
+    @apply flex flex-col space-y-6 px-1 lg:h-full lg:pr-12;
     @apply lg:border-r-2 lg:border-slate-200;
 
     .sidebar__back-button {
@@ -52,7 +52,7 @@ const emit = defineEmits<{
     }
 
     .sidebar__header {
-        @apply flex items-center gap-2 lg:gap-3;
+        @apply flex items-center gap-2 px-2 lg:gap-3;
 
         .sidebar__title-group {
             @apply flex items-center gap-3;
@@ -68,7 +68,7 @@ const emit = defineEmits<{
     }
 
     .sidebar__nav {
-        @apply flex flex-col space-y-3 overflow-y-auto;
+        @apply flex flex-col space-y-3 overflow-y-auto p-2;
         @apply lg:sticky lg:top-6 lg:max-h-[calc(100vh-180px)];
     }
 }

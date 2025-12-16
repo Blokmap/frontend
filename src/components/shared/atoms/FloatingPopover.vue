@@ -179,11 +179,11 @@ onUnmounted(() => {
 @reference '@/assets/styles/main.css';
 
 .popover-backdrop {
-    @apply fixed inset-0 z-[500] bg-black/50;
+    @apply fixed inset-0 z-[1102] bg-black/50;
 }
 
 .popover {
-    @apply absolute z-[600] rounded-lg shadow-lg;
+    @apply absolute z-[1103] rounded-lg shadow-lg;
 }
 
 .popover-fullscreen {

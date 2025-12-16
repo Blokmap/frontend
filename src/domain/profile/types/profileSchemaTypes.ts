@@ -38,7 +38,7 @@ export type ProfileStats = {
     totalReservationHours: number;
 };
 
-export type ProfileBody = {
+export type ProfileRequest = {
     firstName: string | null;
     lastName: string | null;
     username: string;

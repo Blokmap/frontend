@@ -78,23 +78,23 @@ input.p-select-label {
 }
 
 .p-select-list {
-    @apply m-0 flex list-none flex-col gap-[2px];
+    @apply m-0 flex list-none flex-col;
 }
 
 .p-select-option {
-    @apply text-surface-700 relative flex cursor-pointer items-center overflow-hidden rounded-sm border-none bg-transparent px-3 py-2 font-normal whitespace-nowrap transition-colors duration-200;
+    @apply text-surface-700 relative flex cursor-pointer items-center gap-2 overflow-hidden rounded-sm border-none bg-transparent px-3 py-2 font-normal whitespace-nowrap transition-colors duration-200;
 }
 
 .p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus {
-    @apply bg-surface-100 text-surface-800;
+    @apply bg-slate-100 text-slate-800;
 }
 
 .p-select-option.p-select-option-selected {
-    @apply bg-highlight;
+    @apply bg-slate-50;
 }
 
 .p-select-option.p-select-option-selected.p-focus {
-    @apply bg-highlight-emphasis;
+    @apply bg-slate-100;
 }
 
 .p-select-option-check-icon {

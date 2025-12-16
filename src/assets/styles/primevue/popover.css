@@ -1,7 +1,7 @@
 .p-popover {
     /* Base styles */
     @apply bg-surface-0 text-surface-700;
-    @apply rounded-md shadow-lg;
+    @apply z-2000 rounded-md shadow-lg;
     @apply mt-[12px];
 
     &:after,

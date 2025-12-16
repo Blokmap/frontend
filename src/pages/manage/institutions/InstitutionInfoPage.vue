@@ -4,7 +4,7 @@ import InstitutionCard from '@/components/features/institution/InstitutionCard.v
 import InstitutionContactCard from '@/components/features/institution/InstitutionContactCard.vue';
 import InstitutionInfoCard from '@/components/features/institution/InstitutionInfoCard.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
-import PageContent from '@/layouts/PageContent.vue';
+import PageContent from '@/pages/PageContent.vue';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {

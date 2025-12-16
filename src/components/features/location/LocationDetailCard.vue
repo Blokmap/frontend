@@ -48,6 +48,7 @@ function navigate() {
             <LocationStateBadge
                 v-if="location.state !== LocationState.Approved"
                 :location="location"
+                :state="location.state"
                 class="location-detail__badge">
             </LocationStateBadge>
         </div>

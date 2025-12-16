@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import PageContent from '@/layouts/PageContent.vue';
-import PageTitle from '@/layouts/PageTitle.vue';
+import PageContent from '@/pages/PageContent.vue';
+import PageTitle from '@/pages/PageTitle.vue';
 import { computed } from 'vue';
 import {
     useReadProfileLocationMemberships,

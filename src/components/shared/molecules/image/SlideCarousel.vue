@@ -3,12 +3,19 @@ import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 
-const props = defineProps<{
-    items: T[];
-    showNavigationButtons?: boolean;
-    showDots?: boolean;
-    disabled?: boolean;
-}>();
+const props = withDefaults(
+    defineProps<{
+        items: T[];
+        showNavigationButtons?: boolean;
+        showDots?: boolean;
+        disabled?: boolean;
+    }>(),
+    {
+        showNavigationButtons: true,
+        showDots: true,
+        disabled: false,
+    },
+);
 
 const emit = defineEmits<{
     (e: 'change', index: number): void;

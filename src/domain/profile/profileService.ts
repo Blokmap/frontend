@@ -198,16 +198,9 @@ export async function addInstitutionProfile(
  * @param profileId - The ID of the profile to block.
  * @returns A promise that resolves to the blocked profile.
  */
-export async function blockProfile(profileId: string): Promise<Profile> {
+export async function blockProfile(profileId: string): Promise<void> {
     const endpoint = endpoints.profiles.block.replace('{id}', profileId.toString());
-
-    const transformResponse = transformResponseFactory(parseProfileResponse);
-
-    const { data } = await client.post(endpoint, null, {
-        transformResponse,
-    });
-
-    return data;
+    await client.post(endpoint);
 }
 
 /**
@@ -216,16 +209,10 @@ export async function blockProfile(profileId: string): Promise<Profile> {
  * @param profileId - The ID of the profile to unblock.
  * @returns A promise that resolves to the unblocked profile.
  */
-export async function unblockProfile(profileId: string): Promise<Profile> {
+export async function unblockProfile(profileId: string): Promise<void> {
     const endpoint = endpoints.profiles.unblock.replace('{id}', profileId.toString());
 
-    const transformResponse = transformResponseFactory(parseProfileResponse);
-
-    const { data } = await client.post(endpoint, null, {
-        transformResponse,
-    });
-
-    return data;
+    await client.post(endpoint);
 }
 
 /**

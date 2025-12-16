@@ -5,8 +5,8 @@ import ManageBreadcrumb, {
     type BreadcrumbItem,
 } from '@/components/shared/molecules/Breadcrumb.vue';
 import SaveBar from '@/components/shared/molecules/SaveBar.vue';
-import PageContent from '@/layouts/PageContent.vue';
-import PageTitle from '@/layouts/PageTitle.vue';
+import PageContent from '@/pages/PageContent.vue';
+import PageTitle from '@/pages/PageTitle.vue';
 import { computed, ref } from 'vue';
 import { useReadInstitutionAuthorities } from '@/composables/data/useAuthorities';
 import { useReadInstitutions } from '@/composables/data/useInstitutions';

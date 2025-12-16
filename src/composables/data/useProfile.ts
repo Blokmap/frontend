@@ -250,7 +250,7 @@ type ProfileStateParams = {
  */
 export function useUpdateProfileState(
     options: CompMutationOptions = {},
-): CompMutation<ProfileStateParams, Profile> {
+): CompMutation<ProfileStateParams, void> {
     const queryClient = useQueryClient();
     const toast = useToast();
     const i18n = useI18n();

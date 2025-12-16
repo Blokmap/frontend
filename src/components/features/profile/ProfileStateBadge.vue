@@ -7,10 +7,10 @@ import {
     type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { ProfileState, type Profile } from '@/domain/profile';
+import { ProfileState } from '@/domain/profile';
 
 defineProps<{
-    profile: Profile;
+    state: ProfileState;
 }>();
 
 const severities: Record<ProfileState, string> = {
@@ -33,10 +33,10 @@ const labels: Record<ProfileState, string> = {
 </script>
 
 <template>
-    <Badge :severity="severities[profile.state]" class="w-[90px]">
+    <Badge :severity="severities[state]" class="w-[90px]">
         <div class="flex w-full items-center justify-center gap-2">
-            <FontAwesomeIcon :icon="icons[profile.state]" />
-            <span>{{ labels[profile.state] }}</span>
+            <FontAwesomeIcon :icon="icons[state]" />
+            <span>{{ labels[state] }}</span>
         </div>
     </Badge>
 </template>

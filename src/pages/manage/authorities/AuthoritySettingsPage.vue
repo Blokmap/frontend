@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import ConfirmDialog from '@/components/shared/molecules/ConfirmDialog.vue';
-import PageContent from '@/layouts/PageContent.vue';
-import PageTitle from '@/layouts/PageTitle.vue';
+import PageContent from '@/pages/PageContent.vue';
+import PageTitle from '@/pages/PageTitle.vue';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useDeleteAuthority } from '@/composables/data/useAuthorities';

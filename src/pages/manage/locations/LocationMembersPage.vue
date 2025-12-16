@@ -9,10 +9,10 @@ import MembersTable from '@/components/features/member/MembersTable.vue';
 import ManageBreadcrumb, {
     type BreadcrumbItem,
 } from '@/components/shared/molecules/Breadcrumb.vue';
-import PageContent from '@/layouts/PageContent.vue';
-import PageTitle from '@/layouts/PageTitle.vue';
 import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
-import PageHeaderButton from '@/layouts/manage/PageHeaderButton.vue';
+import PageContent from '@/pages/PageContent.vue';
+import PageHeaderButton from '@/pages/PageHeaderButton.vue';
+import PageTitle from '@/pages/PageTitle.vue';
 import { faCity, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';

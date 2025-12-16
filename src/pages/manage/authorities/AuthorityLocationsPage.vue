@@ -4,8 +4,8 @@ import LocationDetailCard from '@/components/features/location/LocationDetailCar
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
 import EmptyState from '@/components/shared/molecules/EmptyState.vue';
-import PageContent from '@/layouts/PageContent.vue';
-import PageTitle from '@/layouts/PageTitle.vue';
+import PageContent from '@/pages/PageContent.vue';
+import PageTitle from '@/pages/PageTitle.vue';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';

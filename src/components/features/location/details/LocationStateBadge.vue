@@ -7,8 +7,9 @@ import { computed } from 'vue';
 import { LocationState, type Location } from '@/domain/location';
 import type { IconDefinition } from '@fortawesome/fontawesome-common-types';
 
-const { location } = defineProps<{
-    location: Location;
+const props = defineProps<{
+    location?: Location;
+    state: LocationState;
 }>();
 
 const severities: Record<LocationState, string> = {
@@ -23,19 +24,19 @@ const icons: Record<LocationState, IconDefinition> = {
     [LocationState.Rejected]: faTimes,
 };
 
-const state = computed<string>(() => {
-    return location.state;
+const state = computed<LocationState>(() => {
+    return props.location ? props.location.state : props.state;
 });
 </script>
 
 <template>
     <Badge
-        :severity="severities[location.state]"
+        :severity="severities[state]"
         v-tooltip.top="$t('domains.locations.state.' + state + '.description')">
         <div
             class="flex w-full items-center justify-around gap-1"
-            v-tooltip.top="location.rejectedReason">
-            <FontAwesomeIcon :icon="icons[location.state]" />
+            v-tooltip.top="location?.rejectedReason">
+            <FontAwesomeIcon :icon="icons[state]" />
             <span>{{ $t('domains.locations.state.' + state + '.label') }}</span>
         </div>
     </Badge>

@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import Skeleton from 'primevue/skeleton';
 import { computed } from 'vue';
-import { RouterLink, type RouteLocationRaw } from 'vue-router';
+import { RouterLink, useRoute, type RouteLocationAsRelativeGeneric } from 'vue-router';
 
 const props = withDefaults(
     defineProps<{
-        to?: RouteLocationRaw;
+        to?: RouteLocationAsRelativeGeneric;
         active?: boolean;
         compact?: boolean;
         loading?: boolean;
@@ -13,14 +13,27 @@ const props = withDefaults(
     }>(),
     {
         compact: true,
+        active: undefined,
     },
 );
 
 defineEmits<{
-    click: void;
+    click: [];
 }>();
 
-const component = computed(() => (props.to && !props.disabled ? RouterLink : 'div'));
+const route = useRoute();
+
+const component = computed(() => {
+    return props.to && !props.disabled ? RouterLink : 'div';
+});
+
+const active = computed<boolean>(() => {
+    if (props.active !== undefined) {
+        return props.active;
+    }
+
+    return !!(route.name && route.name === props.to?.name);
+});
 </script>
 
 <template>

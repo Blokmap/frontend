@@ -10,6 +10,7 @@ import {
     faBars,
     faCalendarAlt,
     faGlobe,
+    faLock,
     faQuestionCircle,
     faSignOut,
     faSliders,
@@ -113,6 +114,15 @@ function closeMenu(): void {
                 <RouterLink :to="{ name: 'manage' }" class="menu-popover__item" @click="closeMenu">
                     <FontAwesomeIcon :icon="faSliders" class="w-4" />
                     <span>Beheermodus</span>
+                </RouterLink>
+
+                <RouterLink
+                    v-if="profile.isAdmin"
+                    :to="{ name: 'admin' }"
+                    class="menu-popover__item"
+                    @click="closeMenu">
+                    <FontAwesomeIcon :icon="faLock" class="w-4" />
+                    <span>Adminmodus</span>
                 </RouterLink>
             </nav>
 

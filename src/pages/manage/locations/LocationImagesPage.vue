@@ -2,8 +2,8 @@
 import LocationImagesBuilder from '@/components/features/location/builder/builders/LocationImagesBuilder.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import SaveBar from '@/components/shared/molecules/SaveBar.vue';
-import PageContent from '@/layouts/PageContent.vue';
-import PageTitle from '@/layouts/PageTitle.vue';
+import PageContent from '@/pages/PageContent.vue';
+import PageTitle from '@/pages/PageTitle.vue';
 import { computed } from 'vue';
 import { useUpdateLocationImages } from '@/composables/data/useLocations';
 import { useDirtyForm } from '@/composables/useDirtyForm';

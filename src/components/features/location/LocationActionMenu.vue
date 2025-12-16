@@ -1,125 +1,117 @@
 <script lang="ts" setup>
 import ActionMenu from '@/components/shared/atoms/menu/ActionMenu.vue';
 import ActionMenuButton from '@/components/shared/atoms/menu/ActionMenuButton.vue';
-import ActionMenuSelect from '@/components/shared/atoms/menu/ActionMenuSelect.vue';
 import ConfirmDialog from '@/components/shared/molecules/ConfirmDialog.vue';
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import { faEdit, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { computed, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-import {
-    LOCATION_STATE_ICONS,
-    LOCATION_STATES,
-    LocationState,
-    type Location,
-} from '@/domain/location';
+import { LocationState, type Location } from '@/domain/location';
 import LocationConfirmationDialog from './LocationConfirmationDialog.vue';
+import LocationStateSelect from './forms/LocationStateSelect.vue';
 
-const props = withDefaults(
-    defineProps<{
-        location: Location;
-        pending?: boolean;
-        showStateSelect?: boolean;
-        showEdit?: boolean;
-        showReservations?: boolean;
-        showDelete?: boolean;
-    }>(),
-    {
-        showStateSelect: true,
-        showEdit: true,
-        showReservations: true,
-        showDelete: true,
-    },
-);
-
-const emit = defineEmits<{
+type LocationActionMenuEmits = {
     'select:state': [id: number, status: LocationState, reason?: string];
-    'click:delete': [id: number, hideDeleteDialog: () => void];
-}>();
+    'click:delete': [id: number];
+    'click:reservations': [id: number];
+    'click:edit': [id: number];
+};
 
-const { t } = useI18n();
+type LocationAction = keyof LocationActionMenuEmits;
 
-const showRejectionDialog = ref(false);
-const showDeleteDialog = ref(false);
+type LocationActionMenuProps = {
+    location: Location;
+    actions?: LocationAction[];
+    pendingActions?: Partial<Record<LocationAction, boolean>>;
+};
 
-const statusOptions = computed(() => {
-    return LOCATION_STATES.map((state) => ({
-        label: t(`domains.locations.state.${state}`),
-        value: state,
-        icon: LOCATION_STATE_ICONS[state],
-    }));
+const props = withDefaults(defineProps<LocationActionMenuProps>(), {
+    actions: () => {
+        return ['select:state', 'click:delete', 'click:reservations', 'click:edit'];
+    },
 });
 
-/**
- * Handle state selection change.
- *
- * @param state - The selected location state
- */
-function onStateSelect(state: LocationState): void {
+const emit = defineEmits<LocationActionMenuEmits>();
+
+const visible = ref<boolean>(false);
+const showRejectionDialog = ref<boolean>(false);
+const showDeleteDialog = ref<boolean>(false);
+
+const onStateSelect = (state: LocationState | null): void => {
+    if (state === null) {
+        return;
+    }
+
     if (state === LocationState.Rejected) {
         showRejectionDialog.value = true;
         return;
     }
 
     emit('select:state', props.location.id, state);
-}
+};
 
 /**
  * Confirm location rejection and emit status change.
  */
-function onConfirmRejection(reason: string): void {
+const onConfirmRejection = (reason: string): void => {
     if (props.location.state !== LocationState.Rejected) {
         emit('select:state', props.location.id, LocationState.Rejected, reason);
     }
 
     showRejectionDialog.value = false;
-}
+};
 
 /**
  * Cancel location rejection dialog.
  */
-function onCancelRejection(): void {
+const onCancelRejection = (): void => {
     showRejectionDialog.value = false;
-}
+};
 
 /**
  * Confirm location deletion and emit delete event.
  */
-function onConfirmDeletion(): void {
-    emit('click:delete', props.location.id, () => {
-        showDeleteDialog.value = false;
-    });
-}
+const onConfirmDeletion = (): void => {
+    emit('click:delete', props.location.id);
+};
 
 /**
  * Cancel location deletion dialog.
  */
-function onCancelDeletion(): void {
+const onCancelDeletion = (): void => {
     showDeleteDialog.value = false;
-}
+};
 
 /**
  * Handle delete location click.
  */
-function onDeleteClick(): void {
+const onDeleteClick = (): void => {
     showDeleteDialog.value = true;
-}
+};
 
 /**
- * Close dialog when deletion completes successfully.
+ * Check if a specific action is pending.
+ *
+ * @param action - The action to check
  */
-watch(
-    () => props.pending,
-    (isPending, wasPending) => {
-        if (wasPending && !isPending && showDeleteDialog.value) {
-            showDeleteDialog.value = false;
-        }
-    },
-);
+const isPending = (action: LocationAction): boolean => {
+    return props.pendingActions?.[action] ?? false;
+};
+
+const pending = computed<boolean>(() => {
+    return Object.values(props.pendingActions ?? {}).some((isPending) => isPending);
+});
+
+watch(pending, (isPending, wasPending) => {
+    if (wasPending && !isPending) {
+        visible.value = false;
+        showRejectionDialog.value = false;
+        showDeleteDialog.value = false;
+    }
+});
 </script>
 
 <template>
-    <ActionMenu :pending="pending">
+    <ActionMenu :pending="pending" v-model:visible="visible">
         <template #trigger="{ toggle }">
             <slot name="trigger" :toggle="toggle">
                 <!-- Default trigger is provided by ActionMenu -->
@@ -127,42 +119,40 @@ watch(
         </template>
 
         <template #content>
-            <ActionMenuSelect
-                v-if="showStateSelect"
-                :value="props.location.state"
-                :options="statusOptions"
-                :loading="pending"
-                label="Status wijzigen"
-                placeholder="Selecteer nieuwe status"
-                @change="onStateSelect">
-            </ActionMenuSelect>
+            <LocationStateSelect
+                :state="location.state"
+                :clearable="false"
+                :loading="isPending('select:state')"
+                @update:state="onStateSelect">
+            </LocationStateSelect>
         </template>
 
         <template #navigation>
             <ActionMenuButton
-                v-if="showEdit"
+                v-if="actions.includes('click:edit')"
                 label="Beheren"
                 :icon="faEdit"
                 :to="{
-                    name: 'dashboard.locations.detail.info',
+                    name: 'manage.location.info',
                     params: { locationId: props.location.id },
                 }">
             </ActionMenuButton>
 
             <ActionMenuButton
-                v-if="showReservations"
+                v-if="actions.includes('click:reservations')"
                 label="Reservaties"
                 :icon="faCalendarAlt"
                 :to="{
-                    name: 'dashboard.locations.detail.reservations',
+                    name: 'manage.location.reservations',
                     params: { locationId: props.location.id },
                 }">
             </ActionMenuButton>
 
             <ActionMenuButton
-                v-if="showDelete"
+                v-if="actions.includes('click:delete')"
                 label="Verwijderen"
                 :icon="faTrashCan"
+                :loading="isPending('click:delete')"
                 @click="onDeleteClick"
                 destructive>
             </ActionMenuButton>
@@ -171,7 +161,7 @@ watch(
 
     <Teleport to="body">
         <LocationConfirmationDialog
-            v-if="showStateSelect"
+            v-if="actions.includes('select:state')"
             v-model:visible="showRejectionDialog"
             :location="location"
             @click:confirm="onConfirmRejection"

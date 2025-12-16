@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import Callout from '@/components/shared/molecules/Callout.vue';
-import PageContent from '@/layouts/PageContent.vue';
-import PageTitle from '@/layouts/PageTitle.vue';
+import PageContent from '@/pages/PageContent.vue';
+import PageTitle from '@/pages/PageTitle.vue';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { Institution } from '@/domain/institution';

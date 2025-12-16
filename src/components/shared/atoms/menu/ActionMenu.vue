@@ -11,19 +11,22 @@ const props = defineProps<{
     disabledTooltip?: string;
 }>();
 
+const visible = defineModel<boolean>('visible', {
+    default: false,
+});
+
 const triggerRef = ref<HTMLElement | null>(null);
-const isVisible = ref<boolean>(false);
 
 function onToggleActionMenu(): void {
     if (props.disabled) {
         return;
     }
 
-    isVisible.value = !isVisible.value;
+    visible.value = !visible.value;
 }
 
 function hideMenu(): void {
-    isVisible.value = false;
+    visible.value = false;
 }
 </script>
 
@@ -46,7 +49,7 @@ function hideMenu(): void {
             </slot>
         </div>
 
-        <FloatingPopover :target-ref="triggerRef" v-model:visible="isVisible" :centered="false">
+        <FloatingPopover :target-ref="triggerRef" v-model:visible="visible" :centered="false">
             <div class="rounded-lg bg-white p-2 shadow-lg">
                 <p class="mb-3 text-sm font-medium text-slate-500">Acties</p>
                 <div class="space-y-3">

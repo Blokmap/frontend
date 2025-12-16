@@ -5,24 +5,24 @@ import ProfileStateBadge from '../ProfileStateBadge.vue';
 import ProfileTableCell from './ProfileTableCell.vue';
 import type { Profile } from '@/domain/profile';
 
-defineProps<{
-    profiles: Profile[] | undefined;
-    loading: boolean;
-    hideInstitution?: boolean;
-}>();
+withDefaults(
+    defineProps<{
+        profiles: Profile[] | undefined;
+        loading: boolean;
+        showInstitution?: boolean;
+    }>(),
+    {
+        showInstitution: true,
+    },
+);
 
 const emit = defineEmits<{
     'click:profile': [profile: Profile];
 }>();
 
-/**
- * Handle selecting a profile.
- *
- * @param profile - The selected profile
- */
-function onProfileClick(profile: Profile): void {
+const onProfileClick = (profile: Profile): void => {
     emit('click:profile', profile);
-}
+};
 </script>
 
 <template>
@@ -36,12 +36,12 @@ function onProfileClick(profile: Profile): void {
                 {{ profile.email }}
             </TableCell>
 
-            <TableCell v-if="!hideInstitution" column="Institutie">
+            <TableCell column="Institutie" v-if="showInstitution">
                 {{ profile.institution?.name || '-' }}
             </TableCell>
 
             <TableCell column="Status">
-                <ProfileStateBadge :profile="profile" />
+                <ProfileStateBadge :state="profile.state" />
             </TableCell>
 
             <TableCell v-if="$slots.actions" column="Acties">

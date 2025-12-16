@@ -4,9 +4,9 @@ import AuthorityTable from '@/components/features/authority/AuthorityTable.vue';
 import ManageBreadcrumb, {
     type BreadcrumbItem,
 } from '@/components/shared/molecules/Breadcrumb.vue';
-import PageContent from '@/layouts/PageContent.vue';
-import PageTitle from '@/layouts/PageTitle.vue';
 import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
+import PageContent from '@/pages/PageContent.vue';
+import PageTitle from '@/pages/PageTitle.vue';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';

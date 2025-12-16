@@ -48,12 +48,7 @@ const closeSidebar = () => {
 
         <!-- Main content -->
         <main class="layout-container__main">
-            <Transition v-if="!loading" name="fade-slide-up" appear>
-                <slot name="main"></slot>
-            </Transition>
-            <div v-else>
-                <slot name="main"></slot>
-            </div>
+            <slot name="main"></slot>
         </main>
     </div>
 </template>

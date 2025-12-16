@@ -1,24 +1,44 @@
 <script lang="ts" setup>
 import Select from 'primevue/select';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { faChartBar, faCheck, faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faChartBar, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
-import { LocationState } from '@/domain/location';
+import { LOCATION_STATE_ICONS, LocationState } from '@/domain/location';
+import LocationStateBadge from '../details/LocationStateBadge.vue';
 import type { FilterOption } from '@/utils/filter';
 
-defineProps<{
-    loading?: boolean;
-}>();
+withDefaults(
+    defineProps<{
+        clearable?: boolean;
+        loading?: boolean;
+        placeholder?: string;
+    }>(),
+    {
+        clearable: true,
+        loading: false,
+    },
+);
 
-const status = defineModel<LocationState | null>('status', {
+const status = defineModel<LocationState | null>('state', {
     default: null,
 });
 
 const options: FilterOption[] = [
-    { label: 'In Afwachting', value: LocationState.Pending, icon: faClock },
-    { label: 'Goedgekeurd', value: LocationState.Approved, icon: faCheck },
-    { label: 'Afgekeurd', value: LocationState.Rejected, icon: faTimes },
+    {
+        label: 'In Afwachting',
+        value: LocationState.Pending,
+        icon: LOCATION_STATE_ICONS[LocationState.Pending],
+    },
+    {
+        label: 'Goedgekeurd',
+        value: LocationState.Approved,
+        icon: LOCATION_STATE_ICONS[LocationState.Approved],
+    },
+    {
+        label: 'Afgekeurd',
+        value: LocationState.Rejected,
+        icon: LOCATION_STATE_ICONS[LocationState.Rejected],
+    },
 ];
 
 const selectedOption = computed(() => {
@@ -29,27 +49,23 @@ const selectedOption = computed(() => {
 <template>
     <Select
         class="w-auto min-w-[275px]"
-        v-model="status"
         :options="options"
+        :show-clear="clearable"
+        v-model="status"
         option-label="label"
-        option-value="value"
-        show-clear>
+        option-value="value">
         <template #option="{ option }">
-            <div class="flex items-center gap-2">
-                <FontAwesomeIcon :icon="option.icon" />
-                <span>{{ option.label }}</span>
-            </div>
+            <LocationStateBadge :state="option.value" />
         </template>
         <template #value="{ value }">
             <div class="flex items-center gap-3">
                 <template v-if="value && selectedOption">
                     <FontAwesomeIcon class="text-slate-400" v-if="loading" :icon="faSpinner" spin />
-                    <FontAwesomeIcon v-else :icon="selectedOption.icon || faChartBar" />
-                    <span>{{ selectedOption.label }}</span>
+                    <span>Status</span> <LocationStateBadge :state="value" />
                 </template>
                 <template v-else>
                     <FontAwesomeIcon class="text-gray-400" :icon="faChartBar" />
-                    <span class="text-slate-500">Filter op status</span>
+                    <span class="text-slate-500">{{ placeholder ?? 'Selecteer een status' }}</span>
                 </template>
             </div>
         </template>

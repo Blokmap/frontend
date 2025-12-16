@@ -5,8 +5,8 @@ import ReservationScanner from '@/components/features/reservation/ReservationSca
 import LocationReservationsTable from '@/components/features/reservation/table/LocationReservationsTable.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import DateInput from '@/components/shared/molecules/form/DateInput.vue';
-import PageContent from '@/layouts/PageContent.vue';
-import PageTitle from '@/layouts/PageTitle.vue';
+import PageContent from '@/pages/PageContent.vue';
+import PageTitle from '@/pages/PageTitle.vue';
 import { faQrcode, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { debouncedWatch } from '@vueuse/core';

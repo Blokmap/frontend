@@ -1,3 +1,4 @@
+import ManageAdminLayout from '@/layouts/manage/ManageAdminLayout.vue';
 import ManageAuthorityLayout from '@/layouts/manage/ManageAuthorityLayout.vue';
 import ManageDashboardLayout from '@/layouts/manage/ManageDashboardLayout.vue';
 import ManageInstitutionLayout from '@/layouts/manage/ManageInstitutionLayout.vue';
@@ -40,6 +41,10 @@ import {
     InstitutionMembersPage,
     InstitutionProfilesPage,
     InstitutionRolesPage,
+    LocationIndexPage,
+    ProfileIndexPage,
+    AuthorityIndexPage,
+    InstitutionIndexPage,
 } from './routerPages';
 
 const routes: RouteRecordRaw[] = [
@@ -102,6 +107,46 @@ const routes: RouteRecordRaw[] = [
                         path: 'reservations',
                         name: 'profile.reservations',
                         redirect: { name: 'profile', hash: '#reservations' },
+                    },
+                ],
+            },
+            // Management for admins
+            {
+                path: '/admin',
+                component: ManageLayout,
+                meta: {
+                    auth: {
+                        admin: true,
+                    },
+                },
+                children: [
+                    {
+                        path: '',
+                        name: 'admin',
+                        component: ManageAdminLayout,
+                        redirect: { name: 'admin.locations' },
+                        children: [
+                            {
+                                path: 'locations',
+                                name: 'admin.locations',
+                                component: LocationIndexPage,
+                            },
+                            {
+                                path: 'profiles',
+                                name: 'admin.profiles',
+                                component: ProfileIndexPage,
+                            },
+                            {
+                                path: 'authorities',
+                                name: 'admin.authorities',
+                                component: AuthorityIndexPage,
+                            },
+                            {
+                                path: 'institutions',
+                                name: 'admin.institutions',
+                                component: InstitutionIndexPage,
+                            },
+                        ],
                     },
                 ],
             },
@@ -276,12 +321,6 @@ const routes: RouteRecordRaw[] = [
                         ],
                     },
                 ],
-            },
-            {
-                path: '/admin',
-                name: 'admin',
-                redirect: { name: 'manage.profile.locations' },
-                meta: { auth: { admin: true } },
             },
             {
                 path: '404',

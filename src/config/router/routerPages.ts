@@ -48,6 +48,12 @@ export const InstitutionProfilesPage = () =>
 export const InstitutionRolesPage = () =>
     import('@/pages/manage/institutions/InstitutionRolesPage.vue');
 
+// Admin pages
+export const LocationIndexPage = () => import('@/pages/admin/LocationIndexPage.vue');
+export const AuthorityIndexPage = () => import('@/pages/admin/AuthorityIndexPage.vue');
+export const InstitutionIndexPage = () => import('@/pages/admin/InstitutionIndexPage.vue');
+export const ProfileIndexPage = () => import('@/pages/admin/ProfileIndexPage.vue');
+
 // Error Pages
 export const Error404Page = () => import('@/pages/errors/Error404Page.vue');
 export const Error405Page = () => import('@/pages/errors/Error405Page.vue');

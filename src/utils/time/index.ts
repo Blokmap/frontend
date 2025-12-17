@@ -82,3 +82,12 @@ export function isNight(time: Time): boolean {
 export function isMorning(time: Time): boolean {
     return time.hours >= 6 && time.hours < 12;
 }
+
+/**
+ * Gets the current time.
+ * @returns {Time} The current time as a Time object.
+ */
+export function getCurrentTime(): Time {
+    const date = new Date();
+    return createTime(date.getHours(), date.getMinutes());
+}

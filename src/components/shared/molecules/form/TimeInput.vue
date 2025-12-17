@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import DatePicker from 'primevue/datepicker';
 import { computed } from 'vue';
-import { RESERVATION_BLOCK_SIZE_MINUTES } from '@/domain/reservation/reservationConstants';
 import { dateToTime, timeToDate } from '@/utils/time';
 import type { Time } from '@/utils/time';
 
@@ -14,7 +13,6 @@ const props = withDefaults(
     }>(),
     {
         hourFormat: '24',
-        stepMinutes: RESERVATION_BLOCK_SIZE_MINUTES,
     },
 );
 

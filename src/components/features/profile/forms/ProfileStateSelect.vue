@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import FloatLabel from 'primevue/floatlabel';
 import Select from 'primevue/select';
 import {
     faUser,
@@ -41,27 +42,38 @@ const selectedOption = computed(() => {
 </script>
 
 <template>
-    <Select
-        class="w-auto min-w-[275px]"
-        v-model="status"
-        :options="options"
-        option-label="label"
-        option-value="value"
-        show-clear>
-        <template #option="{ option }">
-            <ProfileStateBadge :state="option.value" />
-        </template>
-        <template #value="{ value }">
-            <div class="flex items-center gap-3">
-                <template v-if="value && selectedOption">
-                    <FontAwesomeIcon class="text-slate-400" v-if="loading" :icon="faSpinner" spin />
-                    <span>Status</span> <ProfileStateBadge :state="value" />
-                </template>
-                <template v-else>
-                    <FontAwesomeIcon class="text-gray-400" :icon="faChartBar" />
-                    <span class="text-slate-500">{{ placeholder ?? 'Selecteer een status' }}</span>
-                </template>
-            </div>
-        </template>
-    </Select>
+    <FloatLabel variant="on">
+        <Select
+            class="w-auto min-w-[275px]"
+            v-model="status"
+            :options="options"
+            label-id="state"
+            option-label="label"
+            option-value="value"
+            show-clear>
+            <template #option="{ option }">
+                <ProfileStateBadge :state="option.value" />
+            </template>
+            <template #value="{ value }">
+                <div class="flex items-center gap-3">
+                    <template v-if="value && selectedOption">
+                        <FontAwesomeIcon
+                            class="text-slate-400"
+                            v-if="loading"
+                            :icon="faSpinner"
+                            spin>
+                        </FontAwesomeIcon>
+                        <ProfileStateBadge :state="value" />
+                    </template>
+                    <template v-else>
+                        <FontAwesomeIcon class="text-gray-400" :icon="faChartBar" />
+                        <span class="text-slate-500">
+                            {{ placeholder ?? 'Selecteer een status' }}
+                        </span>
+                    </template>
+                </div>
+            </template>
+        </Select>
+        <label for="state">Status</label>
+    </FloatLabel>
 </template>

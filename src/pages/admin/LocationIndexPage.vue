@@ -12,7 +12,8 @@ import {
     useUpdateLocationState,
 } from '@/composables/data/useLocations';
 import { usePagination } from '@/composables/usePagination';
-import { LocationState, type LocationFilter } from '@/domain/location';
+import { router } from '@/config/router';
+import { LocationState, type Location, type LocationFilter } from '@/domain/location';
 import PageContent from '../PageContent.vue';
 import PageFilters from '../PageFilters.vue';
 import PageTitle from '../PageTitle.vue';
@@ -52,6 +53,13 @@ const { mutate: deleteLocation, isPending: isPendingDelete } = useDeleteLocation
 const onDeleteClick = (locationId: number): void => {
     deleteLocation(locationId);
 };
+
+const onLocationClick = (location: Location) => {
+    router.push({
+        name: 'manage.location.info',
+        params: { locationId: location.id },
+    });
+};
 </script>
 
 <template>
@@ -63,7 +71,10 @@ const onDeleteClick = (locationId: number): void => {
             <LocationStateSelect v-model:state="filters.state" />
         </PageFilters>
 
-        <LocationsTable :locations="locations?.data" :loading="isLoading">
+        <LocationsTable
+            :locations="locations?.data"
+            :loading="isLoading"
+            @click:location="onLocationClick">
             <template #actions="{ location }">
                 <LocationActionMenu
                     :location="location"

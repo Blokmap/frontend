@@ -35,24 +35,6 @@
 .ce-paragraph,
 .cdx-list {
     @apply mb-2 text-slate-800;
-
-    a {
-        @apply inline-flex items-center px-1 py-0.5;
-        @apply rounded-t-sm font-semibold no-underline;
-        @apply border-glacier-500 text-glacier-500 border-b;
-        @apply bg-[length:1px_0] bg-bottom bg-repeat-x;
-        @apply transition-[background-size] duration-200;
-
-        background-image: linear-gradient(
-            to bottom,
-            var(--color-glacier-50) 0%,
-            var(--color-glacier-50) 100%
-        );
-
-        &:hover {
-            @apply bg-[length:1px_100%];
-        }
-    }
 }
 
 .cdx-list {

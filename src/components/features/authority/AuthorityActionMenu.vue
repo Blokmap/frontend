@@ -4,32 +4,30 @@ import ActionMenuButton from '@/components/shared/atoms/menu/ActionMenuButton.vu
 import { faUsers, faMapLocationDot, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import type { Authority } from '@/domain/authority';
 
+type AuthorityAction = 'members' | 'locations' | 'edit' | 'delete';
+
 const props = withDefaults(
     defineProps<{
         authority: Authority;
         pending?: boolean;
-        showMembers?: boolean;
-        showLocations?: boolean;
-        showEdit?: boolean;
-        showDelete?: boolean;
+        actions?: AuthorityAction[];
     }>(),
     {
-        showMembers: true,
-        showLocations: true,
-        showEdit: true,
-        showDelete: true,
+        actions: () => {
+            return ['members', 'locations', 'edit'];
+        },
     },
 );
 
 const emit = defineEmits<{
-    'click:delete': [authorityId: number];
+    'click:delete': [];
 }>();
 
 /**
  * Handle delete button click.
  */
 function onDeleteClick(): void {
-    emit('click:delete', props.authority.id);
+    emit('click:delete');
 }
 </script>
 
@@ -41,34 +39,34 @@ function onDeleteClick(): void {
 
         <template #navigation>
             <ActionMenuButton
-                v-if="showMembers"
+                v-if="actions.includes('members')"
                 :icon="faUsers"
                 label="Leden bekijken"
                 :to="{
-                    name: 'dashboard.authorities.detail.members',
+                    name: 'manage.authority.members',
                     params: { authorityId: props.authority.id },
                 }">
             </ActionMenuButton>
             <ActionMenuButton
-                v-if="showLocations"
+                v-if="actions.includes('locations')"
                 :icon="faMapLocationDot"
                 label="Locaties bekijken"
                 :to="{
-                    name: 'dashboard.authorities.detail.locations',
+                    name: 'manage.authority.locations',
                     params: { authorityId: props.authority.id },
                 }">
             </ActionMenuButton>
             <ActionMenuButton
-                v-if="showEdit"
+                v-if="actions.includes('edit')"
                 :icon="faEdit"
                 label="Bewerken"
                 :to="{
-                    name: 'dashboard.authorities.detail.overview',
+                    name: 'manage.authority.info',
                     params: { authorityId: props.authority.id },
                 }">
             </ActionMenuButton>
             <ActionMenuButton
-                v-if="showDelete"
+                v-if="actions.includes('delete')"
                 :icon="faTrash"
                 label="Verwijderen"
                 destructive

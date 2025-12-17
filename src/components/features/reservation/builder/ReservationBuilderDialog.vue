@@ -324,7 +324,7 @@ watch(visible, (newVisible) => {
                     @delete:request="onRequestDelete"
                     @delete:reservation="onReservationDelete">
                 </ReservationBuilderCalendar>
-                
+
                 <!-- Loading Overlay -->
                 <Transition name="fade">
                     <div v-if="isLoading" class="loading-overlay">
@@ -404,7 +404,7 @@ watch(visible, (newVisible) => {
     .calendar-content {
         @apply relative flex flex-1 border-t border-slate-100;
         @apply min-h-0;
-        
+
         .loading-overlay {
             @apply absolute inset-0 z-50;
             @apply flex items-center justify-center;

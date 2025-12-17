@@ -123,11 +123,13 @@ function onDeleteClick(): void {
                 </div>
                 <div>
                     <label class="mb-1 block text-xs font-medium text-gray-600">Van</label>
-                    <TimeInput v-model="openingTime.startTime" />
+                    <TimeInput v-model="openingTime.startTime" :min-time="{ hours: 0, minutes: 0 }">
+                    </TimeInput>
                 </div>
                 <div>
                     <label class="mb-1 block text-xs font-medium text-gray-600">Tot</label>
-                    <TimeInput v-model="openingTime.endTime" />
+                    <TimeInput v-model="openingTime.endTime" :max-time="{ hours: 23, minutes: 59 }">
+                    </TimeInput>
                 </div>
             </div>
 

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import PulsingIndicator from '@/components/shared/atoms/PulsingIndicator.vue';
 import LayoutContainer from '@/layouts/LayoutContainer.vue';
 import LayoutSidebar from '@/layouts/sidebar/LayoutSidebar.vue';
 import LayoutSidebarItem from '@/layouts/sidebar/LayoutSidebarItem.vue';
@@ -19,7 +20,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useReadLocation } from '@/composables/data/useLocations';
 import { useReadLocationMemberPermissions } from '@/composables/data/useMembers';
 import { getInstitutionName } from '@/domain/institution';
-import { getLocationImageUrl } from '@/domain/location';
+import { getLocationImageUrl, isLocationCurrentlyOpen } from '@/domain/location';
 import LayoutSidebarSection from '../sidebar/LayoutSidebarSection.vue';
 import ManagementLoader from './ManagementLoader.vue';
 import ManagementLoaderError from './ManagementLoaderError.vue';
@@ -146,27 +147,47 @@ function goBack(): void {
                 </LayoutSidebarSection>
 
                 <LayoutSidebarSection title="Reservaties">
-                    <LayoutSidebarItem
-                        v-if="isLoading || location?.isReservable"
-                        :loading="isLoading"
-                        :to="{ name: 'manage.location.reservations', params: { locationId } }"
-                        :active="route.name === 'manage.location.reservations'">
-                        <template #img>
-                            <FontAwesomeIcon :icon="faCalendarDays" />
-                        </template>
-                        <template #text>Reservaties</template>
-                    </LayoutSidebarItem>
+                    <template v-if="isLoading || location?.isReservable">
+                        <LayoutSidebarItem
+                            :loading="isLoading"
+                            :to="{ name: 'manage.location.reservations', params: { locationId } }"
+                            :active="route.name === 'manage.location.reservations'">
+                            <template #img>
+                                <FontAwesomeIcon :icon="faCalendarDays" />
+                            </template>
+                            <template #text>
+                                <div class="flex items-center justify-between gap-2 pr-3">
+                                    <span>Reservaties</span>
+                                    <PulsingIndicator
+                                        v-if="location && isLocationCurrentlyOpen(location)">
+                                    </PulsingIndicator>
+                                </div>
+                            </template>
+                        </LayoutSidebarItem>
 
-                    <LayoutSidebarItem
-                        v-if="isLoading || location?.isReservable"
-                        :loading="isLoading"
-                        :to="{ name: 'manage.location.scan', params: { locationId } }"
-                        :active="route.name === 'manage.location.scan'">
-                        <template #img>
-                            <FontAwesomeIcon :icon="faQrcode" />
-                        </template>
-                        <template #text>Scanner</template>
-                    </LayoutSidebarItem>
+                        <LayoutSidebarItem
+                            :loading="isLoading"
+                            :to="{ name: 'manage.location.scan', params: { locationId } }"
+                            :active="route.name === 'manage.location.scan'">
+                            <template #img>
+                                <FontAwesomeIcon :icon="faQrcode" />
+                            </template>
+                            <template #text>Scanner</template>
+                        </LayoutSidebarItem>
+                    </template>
+                    <template v-else-if="location">
+                        <span class="text-sm">
+                            Deze locatie werkt niet met reservaties. Je kan dit instellen op
+                            <RouterLink
+                                class="styled"
+                                :to="{
+                                    name: 'manage.location.settings',
+                                    params: { locationId: location.id },
+                                }">
+                                deze pagina </RouterLink
+                            >.
+                        </span>
+                    </template>
                 </LayoutSidebarSection>
 
                 <LayoutSidebarSection title="Toegangscontrole">

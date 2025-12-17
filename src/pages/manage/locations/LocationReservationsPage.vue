@@ -1,13 +1,14 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
 import ReservationScanner from '@/components/features/reservation/ReservationScanner.vue';
 import LocationReservationsTable from '@/components/features/reservation/table/LocationReservationsTable.vue';
+import SearchField from '@/components/shared/atoms/SearchField.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
 import DateInput from '@/components/shared/molecules/form/DateInput.vue';
 import PageContent from '@/pages/PageContent.vue';
+import PageFilters from '@/pages/PageFilters.vue';
 import PageTitle from '@/pages/PageTitle.vue';
-import { faQrcode, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { debouncedWatch } from '@vueuse/core';
 import { computed, ref, watchEffect } from 'vue';
@@ -62,6 +63,7 @@ const searchQuery = ref<string>('');
 const filters = ref<ReservationFilter>({
     day: selectedDay.value,
     query: searchQuery.value,
+    state: null,
 });
 
 debouncedWatch(
@@ -106,45 +108,38 @@ const breadcrumbs = computed(() => [
     <PageContent>
         <ManageBreadcrumb :items="breadcrumbs" />
 
-        <PageTitle title="Reservaties" />
+        <PageTitle title="Reservaties">
+            <template #actions>
+                <!-- Toggle Scanner -->
+                <RouterLink
+                    :to="{
+                        name: 'manage.location.reservations',
+                        params: { locationId: props.location.id },
+                        hash: '#scan',
+                    }">
+                    <Button>
+                        <FontAwesomeIcon :icon="faQrcode" />
+                        <span class="hidden sm:inline">Open Scanner</span>
+                        <span class="sm:hidden">Scanner</span>
+                    </Button>
+                </RouterLink>
+            </template>
+        </PageTitle>
 
         <!-- Filters -->
-        <div class="flex flex-wrap items-end gap-3 md:gap-4">
+        <PageFilters>
             <!-- Date Selector -->
             <div class="min-w-[200px] flex-1">
                 <label class="mb-2 block text-sm font-medium text-slate-700">Datum</label>
                 <DateInput v-model:date="selectedDay" />
             </div>
-
             <!-- Search -->
-            <div class="min-w-[250px] flex-1 md:min-w-[300px]">
-                <label class="mb-2 block text-sm font-medium text-slate-700">Zoeken</label>
-                <div class="relative">
-                    <InputText
-                        v-model="searchQuery"
-                        placeholder="Zoek op naam, gebruikersnaam of e-mail..."
-                        class="w-full pl-10">
-                    </InputText>
-                    <FontAwesomeIcon
-                        :icon="faSearch"
-                        class="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400">
-                    </FontAwesomeIcon>
-                </div>
-            </div>
-            <!-- Toggle Scanner -->
-            <RouterLink
-                :to="{
-                    name: 'manage.location.reservations',
-                    params: { locationId: props.location.id },
-                    hash: '#scan',
-                }">
-                <Button>
-                    <FontAwesomeIcon :icon="faQrcode" />
-                    <span class="hidden sm:inline">Open Scanner</span>
-                    <span class="sm:hidden">Scanner</span>
-                </Button>
-            </RouterLink>
-        </div>
+            <SearchField
+                v-model="searchQuery"
+                placeholder="Zoek op naam, gebruikersnaam of e-mail...">
+            </SearchField>
+            <!-- State -->
+        </PageFilters>
 
         <!-- Reservation Scanner -->
         <ReservationScanner v-model:visible="showScanner" :location="location" />

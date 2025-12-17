@@ -7,9 +7,9 @@ import SearchField from '@/components/shared/atoms/SearchField.vue';
 import ManageBreadcrumb, {
     type BreadcrumbItem,
 } from '@/components/shared/molecules/Breadcrumb.vue';
-import PageFilters from '@/components/shared/organisms/PageFilters.vue';
 import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
 import PageContent from '@/pages/PageContent.vue';
+import PageFilters from '@/pages/PageFilters.vue';
 import PageHeaderButton from '@/pages/PageHeaderButton.vue';
 import PageTitle from '@/pages/PageTitle.vue';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';

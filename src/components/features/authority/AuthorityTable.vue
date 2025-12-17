@@ -43,6 +43,10 @@ const onAuthorityClick = (authority: Authority) => {
                     })
                 }}
             </TableCell>
+
+            <TableCell column="Acties" v-if="$slots.actions">
+                <slot name="actions" :authority="authority"></slot>
+            </TableCell>
         </template>
     </Table>
 </template>

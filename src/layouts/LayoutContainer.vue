@@ -59,6 +59,25 @@ const closeSidebar = () => {
 .layout-container {
     @apply relative mx-auto grid w-full flex-1 grid-cols-1;
     @apply my-4 lg:max-w-[1420px] lg:grid-cols-4 lg:px-0;
+
+    .sidebar-backdrop {
+        @apply fixed inset-0 z-50 bg-black/50;
+    }
+
+    .layout-container__sidebar {
+        @apply fixed inset-y-0 left-0 z-50 w-80 -translate-x-full bg-white py-20 shadow-2xl lg:pr-4 xl:pr-10;
+        @apply lg:border-r-2 lg:border-slate-200;
+        @apply overflow-y-auto transition-transform duration-300;
+        @apply lg:relative lg:col-span-1 lg:w-auto lg:translate-x-0 lg:overflow-y-visible lg:bg-transparent lg:py-0 lg:shadow-none;
+    }
+
+    .layout-container__sidebar--open {
+        @apply translate-x-0;
+    }
+
+    .layout-container__main {
+        @apply col-span-3 lg:pl-6 xl:pl-12;
+    }
 }
 
 .mobile-menu-toggle {
@@ -66,28 +85,5 @@ const closeSidebar = () => {
     @apply bg-primary rounded-full text-lg text-white shadow-xl;
     @apply transition-all hover:opacity-90 active:scale-95;
     @apply lg:!hidden;
-}
-
-.sidebar-backdrop {
-    @apply fixed inset-0 z-50 bg-black/50;
-}
-
-.layout-container__sidebar {
-    @apply fixed inset-y-0 left-0 z-50 w-80 -translate-x-full bg-white px-6 py-20 shadow-2xl;
-    @apply transition-transform duration-300;
-    @apply overflow-y-auto;
-    @apply lg:relative lg:col-span-1 lg:w-auto lg:translate-x-0 lg:overflow-y-visible lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none;
-}
-
-.layout-container__sidebar--open {
-    @apply translate-x-0;
-}
-
-.layout-container__sidebar > div {
-    @apply h-full;
-}
-
-.layout-container__main {
-    @apply col-span-3 lg:pl-12;
 }
 </style>

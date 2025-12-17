@@ -179,11 +179,11 @@ provide('registerColumn', (column: string) => {
 
 /* Desktop Table View */
 .table {
-    @apply w-full overflow-hidden rounded-lg bg-white shadow-md;
+    @apply block max-w-full overflow-x-auto rounded-lg bg-white shadow-md;
 }
 
 .table__inner {
-    @apply min-w-full;
+    @apply table w-full;
 }
 
 .table__header {

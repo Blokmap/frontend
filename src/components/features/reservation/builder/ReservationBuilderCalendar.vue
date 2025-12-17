@@ -33,7 +33,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    'click:opening': [slot: TimeSlot<OpeningTime>, event: Event];
+    'click:opening': [slot: TimeSlot<OpeningTime>, event: Event, timeRef: HTMLElement];
     'delete:request': [request: ReservationRequest];
     'delete:reservation': [reservation: Reservation];
 }>();
@@ -131,7 +131,11 @@ function isOpeningDisabled(slot: TimeSlot<OpeningMetadata>): boolean {
     return !canInteractWithOpening(opening, defaultSeatCount);
 }
 
-function onOpeningTimeClick(slot: TimeSlot<OpeningMetadata>, event: Event): void {
+function onOpeningTimeClick(
+    slot: TimeSlot<OpeningMetadata>,
+    event: Event,
+    timeRef: HTMLElement,
+): void {
     if (props.isSaving || !slot.metadata || isOpeningDisabled(slot)) return;
 
     const data: TimeSlot<OpeningTime> = {
@@ -139,7 +143,7 @@ function onOpeningTimeClick(slot: TimeSlot<OpeningMetadata>, event: Event): void
         metadata: slot.metadata.data,
     };
 
-    emit('click:opening', data, event);
+    emit('click:opening', data, event, timeRef);
 }
 
 /**
@@ -177,7 +181,7 @@ function onReservationDelete(reservation: Reservation): void {
                     :start-time="slot.startTime"
                     :end-time="slot.endTime"
                     :disabled="isOpeningDisabled(slot)"
-                    @click="onOpeningTimeClick(slot, $event)">
+                    @click="(event, ref) => onOpeningTimeClick(slot, event, ref)">
                 </OpeningTimeslot>
             </template>
 

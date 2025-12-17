@@ -157,14 +157,19 @@ const isLoading = computed<boolean>(() => {
     return isFetchingReservations.value || props.openingsLoading || false;
 });
 
-const onOpeningTimeClick = (slot: TimeSlot<OpeningTime>, event: Event): void => {
+const onOpeningTimeClick = (
+    slot: TimeSlot<OpeningTime>,
+    event: Event,
+    timeRef: HTMLElement,
+): void => {
     if (isSaving.value || !slot.metadata) {
         return;
     }
 
+    event.stopPropagation();
+
     // Toggle popover visibility
-    const shouldClosePopover =
-        isPopoverVisible.value && popoverTriggerRef.value === event.currentTarget;
+    const shouldClosePopover = isPopoverVisible.value && popoverTriggerRef.value === timeRef;
 
     if (shouldClosePopover) {
         isPopoverVisible.value = false;
@@ -173,7 +178,7 @@ const onOpeningTimeClick = (slot: TimeSlot<OpeningTime>, event: Event): void => 
 
     isPopoverVisible.value = true;
     activeOpeningTimeSlot.value = slot;
-    popoverTriggerRef.value = event.currentTarget as HTMLElement;
+    popoverTriggerRef.value = timeRef;
 
     activeRequest.value = {
         day: slot.metadata.day,
@@ -307,29 +312,24 @@ watch(visible, (newVisible) => {
 
             <!-- Calendar Content -->
             <div class="calendar-content">
+                <ReservationBuilderCalendar
+                    :location="location"
+                    :current-week="currentWeek"
+                    :opening-times="openings"
+                    :reservations="reservations ?? []"
+                    :reservations-to-create="reservationsToCreate"
+                    :reservations-to-delete="reservationsToDelete"
+                    :is-saving="isSaving"
+                    @click:opening="onOpeningTimeClick"
+                    @delete:request="onRequestDelete"
+                    @delete:reservation="onReservationDelete">
+                </ReservationBuilderCalendar>
+                
                 <!-- Loading Overlay -->
                 <Transition name="fade">
                     <div v-if="isLoading" class="loading-overlay">
                         <ProgressSpinner style="width: 50px; height: 50px" />
                     </div>
-                </Transition>
-
-                <!-- Calendar -->
-                <Transition name="fade-in" mode="out-in">
-                    <ReservationBuilderCalendar
-                        v-if="!isLoading && reservations"
-                        :key="currentWeek.toISOString()"
-                        :location="location"
-                        :current-week="currentWeek"
-                        :opening-times="openings"
-                        :reservations="reservations"
-                        :reservations-to-create="reservationsToCreate"
-                        :reservations-to-delete="reservationsToDelete"
-                        :is-saving="isSaving"
-                        @click:opening="onOpeningTimeClick"
-                        @delete:request="onRequestDelete"
-                        @delete:reservation="onReservationDelete">
-                    </ReservationBuilderCalendar>
                 </Transition>
             </div>
 
@@ -404,7 +404,7 @@ watch(visible, (newVisible) => {
     .calendar-content {
         @apply relative flex flex-1 border-t border-slate-100;
         @apply min-h-0;
-
+        
         .loading-overlay {
             @apply absolute inset-0 z-50;
             @apply flex items-center justify-center;

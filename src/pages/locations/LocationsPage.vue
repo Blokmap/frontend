@@ -70,18 +70,17 @@ watch(
             console.error('Error flying to geo location:', error);
         }
     },
-    { deep: true, immediate: true },
+    {
+        deep: true,
+        immediate: true,
+    },
 );
 
 // Watch for changes in map bounds to update filters
-watch(
-    map.bounds,
-    () => {
-        debouncedConfigUpdate();
-        debouncedFilterUpdate();
-    },
-    { deep: true },
-);
+watch(map.bounds, () => {
+    debouncedConfigUpdate();
+    debouncedFilterUpdate();
+});
 
 const debouncedFilterUpdate = useDebounceFn(() => {
     filterStore.updateFilters({
@@ -199,8 +198,8 @@ const debouncedConfigUpdate = useDebounceFn(() => {
         <div class="map-container sticky top-4">
             <BlokMap
                 ref="blokMapRef"
+                class="shadow-lg"
                 :map="map"
-                class="w-full shadow-md"
                 :style="{ height: 'calc(100vh - 2rem)' }"
                 :locations="locations?.data"
                 :loading="isPending">

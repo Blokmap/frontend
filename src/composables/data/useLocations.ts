@@ -56,15 +56,16 @@ export function useSearchLocations(
     filters: MaybeRef<LocationSearchFilter> = {},
     options: CompQueryOptions<LocationIncludes> = {},
 ): CompQuery<Paginated<Location>> {
-    const { locale } = useI18n();
-
     const query = useQuery<Paginated<Location>, AxiosError>({
         ...options,
         queryKey: ['locations', 'list', filters],
         placeholderData: keepPreviousData,
         queryFn: async () => {
-            const params = { ...toValue(filters), locale: toValue(locale) };
-            return await searchLocations(params);
+            const filtersValue = toValue(filters);
+
+            return await searchLocations({
+                ...filtersValue,
+            });
         },
     });
 

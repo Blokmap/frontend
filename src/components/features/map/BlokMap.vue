@@ -10,7 +10,7 @@ import { type Location } from '@/domain/location';
 import { isLngLat } from '@/domain/map/mapHelpers';
 import Cluster from './Cluster.vue';
 import Marker from './Marker.vue';
-import type { LngLat, MapAdapter } from '@/domain/map';
+import type { ClusterData, LngLat, MapAdapter } from '@/domain/map';
 
 const { map, locations } = defineProps<{
     map: MapAdapter;
@@ -33,7 +33,7 @@ const router = useRouter();
 
 const hasFlownToUserLocation = ref<boolean>(false);
 
-const clusters = computed(() => map.getClusters?.() || []);
+const clusters = computed<ClusterData[]>(() => map.getClusters?.() || []);
 
 const clusteredMarkerIds = computed(() => {
     const ids = new Set<number>();

@@ -44,8 +44,7 @@ const emit = defineEmits<{
 @reference '@/assets/styles/main.css';
 
 .sidebar {
-    @apply flex flex-col space-y-6 px-1 lg:h-full lg:pr-12;
-    @apply lg:border-r-2 lg:border-slate-200;
+    @apply flex flex-col space-y-6 lg:h-full;
 
     .sidebar__back-button {
         @apply flex w-fit items-center gap-2 text-sm text-slate-600 transition-colors hover:text-slate-900;

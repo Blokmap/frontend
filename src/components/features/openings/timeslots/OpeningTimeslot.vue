@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTemplateRef } from 'vue';
 import { timeToString } from '@/utils/time';
 import type { Time } from '@/utils/time';
 
@@ -9,12 +10,14 @@ const { disabled } = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    click: [event: Event];
+    click: [event: Event, timeRef: HTMLElement];
 }>();
+
+const timeRef = useTemplateRef<HTMLElement>('time');
 
 const onTimeslotClick = (event: Event) => {
     if (!disabled) {
-        emit('click', event);
+        emit('click', event, timeRef.value!);
     }
 };
 </script>
@@ -23,7 +26,7 @@ const onTimeslotClick = (event: Event) => {
     <div class="opening-time-card" :class="{ disabled }" @click="onTimeslotClick">
         <!-- Time display (centered) -->
         <div class="time-display">
-            <span class="time-text">
+            <span class="time-text" ref="time">
                 {{ timeToString(startTime) }}-{{ timeToString(endTime) }}
             </span>
         </div>

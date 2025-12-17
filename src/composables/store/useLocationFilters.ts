@@ -17,6 +17,7 @@ export const useLocationFilters = defineStore('locationFilters', () => {
         bounds: config.value.bounds,
         center: null,
         perPage: 36,
+        page: 1,
     });
 
     /**

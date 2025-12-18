@@ -306,16 +306,6 @@ onMounted(() => {
             @apply hover:bg-slate-100;
         }
     }
-
-    .calendar__slot {
-        @apply absolute right-0 left-0 z-10 min-h-[20px];
-        @apply p-1;
-        @apply pointer-events-none overflow-visible select-none;
-
-        :deep(> *) {
-            @apply pointer-events-auto;
-        }
-    }
 }
 
 .calendar__now-indicator {
@@ -331,6 +321,16 @@ onMounted(() => {
         &::after {
             @apply h-0.5 flex-1 bg-red-500 content-[''];
         }
+    }
+}
+
+.calendar__slot {
+    @apply absolute right-0 left-0 z-10 min-h-[20px];
+    @apply p-1;
+    @apply pointer-events-none overflow-visible select-none;
+
+    :deep(> *) {
+        @apply pointer-events-auto;
     }
 }
 </style>

@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import LayoutContainer from '@/layouts/LayoutContainer.vue';
+import Loader from '@/layouts/Loader.vue';
+import LoaderError from '@/layouts/LoaderError.vue';
 import LayoutSidebar from '@/layouts/sidebar/LayoutSidebar.vue';
 import LayoutSidebarItem from '@/layouts/sidebar/LayoutSidebarItem.vue';
 import LayoutSidebarSection from '@/layouts/sidebar/LayoutSidebarSection.vue';
@@ -17,8 +19,6 @@ import { useRoute, useRouter } from 'vue-router';
 import { useReadAuthority } from '@/composables/data/useAuthorities';
 import { useReadAuthorityMemberPermissions } from '@/composables/data/useMembers';
 import { getInstitutionName } from '@/domain/institution';
-import Loader from '@/layouts/Loader.vue';
-import LoaderError from '@/layouts/LoaderError.vue';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{

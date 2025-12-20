@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import Badge from 'primevue/badge';
 import LayoutContainer from '@/layouts/LayoutContainer.vue';
+import Loader from '@/layouts/Loader.vue';
+import LoaderError from '@/layouts/LoaderError.vue';
 import LayoutSidebar from '@/layouts/sidebar/LayoutSidebar.vue';
 import { faBuilding, faCity, faMapLocationDot, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -8,8 +10,6 @@ import { computed } from 'vue';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import LayoutSidebarItem from '../sidebar/LayoutSidebarItem.vue';
 import LayoutSidebarSection from '../sidebar/LayoutSidebarSection.vue';
-import Loader from '@/layouts/Loader.vue';
-import LoaderError from '@/layouts/LoaderError.vue';
 import type { Profile } from '@/domain/profile';
 
 defineProps<{

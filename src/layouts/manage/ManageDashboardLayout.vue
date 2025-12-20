@@ -4,6 +4,8 @@ import Callout from '@/components/shared/molecules/Callout.vue';
 import ImageStack from '@/components/shared/molecules/ImageStack.vue';
 import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
 import LayoutContainer from '@/layouts/LayoutContainer.vue';
+import Loader from '@/layouts/Loader.vue';
+import LoaderError from '@/layouts/LoaderError.vue';
 import LayoutSidebar from '@/layouts/sidebar/LayoutSidebar.vue';
 import LayoutSidebarItem from '@/layouts/sidebar/LayoutSidebarItem.vue';
 import LayoutSidebarSection from '@/layouts/sidebar/LayoutSidebarSection.vue';
@@ -19,8 +21,6 @@ import {
 } from '@/composables/data/useMembers';
 import { useReadProfile } from '@/composables/data/useProfile';
 import { getLocationImages } from '@/domain/image';
-import Loader from '@/layouts/Loader.vue';
-import LoaderError from '@/layouts/LoaderError.vue';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{

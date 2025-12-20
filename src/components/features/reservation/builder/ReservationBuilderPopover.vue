@@ -28,13 +28,13 @@ const onCancel = () => {
 </script>
 
 <template>
-    <FloatingPopover :target-ref="targetRef" v-model:visible="visible" fullscreen-mobile>
+    <FloatingPopover :target-ref="targetRef" v-model:visible="visible">
         <div class="reservation-popover">
             <h3 class="text-base font-semibold text-gray-900">Nieuwe reservatie</h3>
 
             <div class="space-y-3">
                 <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-700">Starttijd</label>
+                    <label class="mb-1 block text-sm font-medium text-gray-700"> Starttijd </label>
                     <TimeInput
                         v-if="request && openingTimeSlot"
                         v-model="request.startTime"

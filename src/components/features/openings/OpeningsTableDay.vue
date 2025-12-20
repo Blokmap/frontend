@@ -48,19 +48,21 @@ const times = computed<string>(() => {
 
 .openings-day {
     @apply flex items-center justify-between px-4 py-2.5;
-    @apply rounded-lg transition-colors last:border-b-0;
+    @apply border-b border-slate-200 transition-colors;
 
     &.openings-day--today {
-        @apply border-b-0 bg-slate-100;
-        @apply bg-primary-50 hover:bg-primary-100;
+        @apply border-l-primary border-l-4;
 
-        .openings-day__label,
+        .openings-day__label {
+            @apply text-primary font-bold;
+        }
+
         .openings-day__time {
-            @apply text-primary-800;
+            @apply text-primary font-semibold;
         }
 
         .openings-day__closed {
-            @apply text-primary-800 text-sm italic;
+            @apply text-primary font-semibold;
         }
     }
 

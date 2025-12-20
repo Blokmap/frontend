@@ -25,7 +25,7 @@ import Skeleton from 'primevue/skeleton';
 }
 
 .location-detail-skeleton__content {
-    @apply flex flex-1 flex-col gap-2 rounded-b-xl p-4;
+    @apply flex flex-1 flex-col gap-2 rounded-b-xl bg-white p-4 shadow-md;
 }
 
 .location-detail-skeleton__name {

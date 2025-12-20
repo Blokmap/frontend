@@ -4,7 +4,7 @@ import AuthorityTable from '@/components/features/authority/AuthorityTable.vue';
 import ManageBreadcrumb, {
     type BreadcrumbItem,
 } from '@/components/shared/molecules/Breadcrumb.vue';
-import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
+import LoaderError from '@/layouts/LoaderError.vue';
 import PageContent from '@/pages/PageContent.vue';
 import PageTitle from '@/pages/PageTitle.vue';
 import { computed, ref } from 'vue';
@@ -79,7 +79,7 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
 
         <p class="text-slate-600">Groepen die onder deze instelling vallen.</p>
 
-        <ManagementLoaderError v-if="isError" :errors="[authoritiesError]" />
+        <LoaderError v-if="isError" :errors="[authoritiesError]" />
 
         <AuthorityTable
             v-else

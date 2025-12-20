@@ -7,7 +7,7 @@ import AccessCardLink from '@/components/features/member/AccessCardLink.vue';
 import MemberAddDialog from '@/components/features/member/MemberAddDialog.vue';
 import MembersTable from '@/components/features/member/MembersTable.vue';
 import Breadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
-import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
+import LoaderError from '@/layouts/LoaderError.vue';
 import PageContent from '@/pages/PageContent.vue';
 import PageHeaderButton from '@/pages/PageHeaderButton.vue';
 import PageTitle from '@/pages/PageTitle.vue';
@@ -170,7 +170,7 @@ const breadcrumbs = computed(() => {
         </AccessCard>
 
         <!-- Error State -->
-        <ManagementLoaderError v-if="isError" :errors="[membersError, rolesError]" />
+        <LoaderError v-if="isError" :errors="[membersError, rolesError]" />
 
         <!-- Data / Loading State -->
         <MembersTable :members="members?.data" :is-loading="isLoading">

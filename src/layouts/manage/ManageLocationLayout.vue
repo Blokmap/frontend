@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import PulsingIndicator from '@/components/shared/atoms/PulsingIndicator.vue';
 import LayoutContainer from '@/layouts/LayoutContainer.vue';
+import Loader from '@/layouts/Loader.vue';
+import LoaderError from '@/layouts/LoaderError.vue';
 import LayoutSidebar from '@/layouts/sidebar/LayoutSidebar.vue';
 import LayoutSidebarItem from '@/layouts/sidebar/LayoutSidebarItem.vue';
 import {
@@ -22,8 +24,6 @@ import { useReadLocationMemberPermissions } from '@/composables/data/useMembers'
 import { getInstitutionName } from '@/domain/institution';
 import { getLocationImageUrl, isLocationCurrentlyOpen } from '@/domain/location';
 import LayoutSidebarSection from '../sidebar/LayoutSidebarSection.vue';
-import ManagementLoader from './ManagementLoader.vue';
-import ManagementLoaderError from './ManagementLoaderError.vue';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -214,7 +214,7 @@ function goBack(): void {
         </template>
 
         <template #main>
-            <ManagementLoader v-if="isLoading" />
+            <Loader v-if="isLoading" />
 
             <RouterView
                 v-else-if="location"
@@ -222,12 +222,12 @@ function goBack(): void {
                 :location="location"
                 :permissions="permissions"
                 :auth-profile="authProfile">
-                <Transition name="fade-slide-up" mode="out-in">
+                <Transition name="fade-slide-up" mode="out-in" appear>
                     <component :is="Component" :key="route.path" />
                 </Transition>
             </RouterView>
 
-            <ManagementLoaderError v-else :errors="[locationError, permissionsError]" />
+            <LoaderError v-else :errors="[locationError, permissionsError]" />
         </template>
     </LayoutContainer>
 </template>

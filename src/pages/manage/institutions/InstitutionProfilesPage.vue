@@ -7,7 +7,7 @@ import SearchField from '@/components/shared/atoms/SearchField.vue';
 import ManageBreadcrumb, {
     type BreadcrumbItem,
 } from '@/components/shared/molecules/Breadcrumb.vue';
-import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
+import LoaderError from '@/layouts/LoaderError.vue';
 import PageContent from '@/pages/PageContent.vue';
 import PageFilters from '@/pages/PageFilters.vue';
 import PageHeaderButton from '@/pages/PageHeaderButton.vue';
@@ -131,7 +131,7 @@ const isFiltering = computed(() => {
             Blokmap.
         </p>
 
-        <ManagementLoaderError v-if="isError" :errors="[profilesError]" />
+        <LoaderError v-if="isError" :errors="[profilesError]" />
 
         <ProfileTable v-else :profiles="profiles?.data" :loading="isLoading" hide-institution>
         </ProfileTable>

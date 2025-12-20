@@ -19,8 +19,8 @@ import {
 } from '@/composables/data/useMembers';
 import { useReadProfile } from '@/composables/data/useProfile';
 import { getLocationImages } from '@/domain/image';
-import ManagementLoader from './ManagementLoader.vue';
-import ManagementLoaderError from './ManagementLoaderError.vue';
+import Loader from '@/layouts/Loader.vue';
+import LoaderError from '@/layouts/LoaderError.vue';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -209,7 +209,7 @@ function goBack() {
         </template>
 
         <template #main>
-            <ManagementLoader v-if="isLoading" />
+            <Loader v-if="isLoading" />
             <RouterView
                 v-else-if="profile"
                 v-slot="{ Component, route }"
@@ -239,7 +239,7 @@ function goBack() {
                     </div>
                 </Transition>
             </RouterView>
-            <ManagementLoaderError v-else :errors="[error]" />
+            <LoaderError v-else :errors="[error]" />
         </template>
     </LayoutContainer>
 </template>

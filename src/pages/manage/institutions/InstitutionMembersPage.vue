@@ -4,7 +4,7 @@ import RoleBadge from '@/components/features/auth/roles/RoleBadge.vue';
 import MemberAddDialog from '@/components/features/member/MemberAddDialog.vue';
 import MembersTable from '@/components/features/member/MembersTable.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
-import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
+import LoaderError from '@/layouts/LoaderError.vue';
 import PageContent from '@/pages/PageContent.vue';
 import PageHeaderButton from '@/pages/PageHeaderButton.vue';
 import PageTitle from '@/pages/PageTitle.vue';
@@ -128,7 +128,7 @@ const breadcrumbs = computed(() => {
 
         <p class="text-slate-600">Beheer wie toegang heeft tot deze instelling en hun rollen.</p>
 
-        <ManagementLoaderError v-if="isError" :errors="[membersError, rolesError]" />
+        <LoaderError v-if="isError" :errors="[membersError, rolesError]" />
 
         <MembersTable :members="members?.data" :is-loading="isLoading">
             <template #role="{ member }">

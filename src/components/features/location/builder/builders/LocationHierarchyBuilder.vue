@@ -78,7 +78,7 @@ const isAuthorityDisabled = computed(() => {
                             Selecteer de autoriteit waaronder deze locatie wordt aangemaakt
                         </InputHint>
                     </template>
-                    <template v-else>
+                    <template v-else-if="form.institutionId">
                         <Skeleton height="42px" />
                         <Skeleton height="18px" class="mt-1" />
                     </template>

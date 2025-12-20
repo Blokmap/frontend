@@ -19,6 +19,7 @@ import { useReadInstitutions } from '@/composables/data/useInstitutions';
 import { useToast } from '@/composables/store/useToast';
 import { endpoints } from '@/config/endpoints';
 import { AUTH_IDPS, pullRedirectUrl } from '@/domain/auth';
+import type { Institution } from '@/domain/institution';
 
 const { locale, t } = useI18n();
 const toast = useToast();
@@ -83,9 +84,11 @@ const {
 });
 
 const institutionFilter = ref<string>('');
+const clickedExternalIdp = ref<string | null>(null);
+
 const isDialogVisible = computed<boolean>(() => !!route.params.action);
 
-const filteredInstitutions = computed(() => {
+const filteredInstitutions = computed<Institution[]>(() => {
     if (!institutions.value) {
         return [];
     }
@@ -98,23 +101,23 @@ const filteredInstitutions = computed(() => {
     });
 });
 
-function onSelectInstitution(institution: { value: string }): void {
+const onSelectInstitution = (institution: { value: string }): void => {
     if (!institution.value) {
         return;
     }
-}
+};
 
-function closeDialog(): void {
+const closeDialog = (): void => {
     router.push({ name: 'auth' });
-}
+};
 
-function switchToLogin(): void {
+const switchToLogin = (): void => {
     router.push({ name: 'auth', params: { action: 'login' } });
-}
+};
 
-function switchToRegister(): void {
+const switchToRegister = (): void => {
     router.push({ name: 'auth', params: { action: 'register' } });
-}
+};
 </script>
 
 <template>
@@ -175,7 +178,9 @@ function switchToRegister(): void {
                 class="w-[300px]"
                 severity="contrast"
                 size="small"
-                :label="$t('pages.auth.actions.loginWith', [idp.name])">
+                :label="$t('pages.auth.actions.loginWith', [idp.name])"
+                :loading="clickedExternalIdp === idp.name"
+                @click="clickedExternalIdp = idp.name">
                 <template #icon>
                     <img :src="idp.logo!" :alt="idp.name" class="h-5 w-5 object-contain" />
                 </template>

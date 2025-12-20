@@ -11,11 +11,9 @@ const props = withDefaults(
     defineProps<{
         targetRef: HTMLElement | null;
         centered?: boolean;
-        fullscreenMobile?: boolean;
     }>(),
     {
         centered: true,
-        fullscreenMobile: false,
     },
 );
 
@@ -37,13 +35,16 @@ const breakpoints = useBreakpoints(breakpointsTailwind);
 const isMobile = breakpoints.smaller('md');
 
 const isFullscreen = computed(() => {
-    return props.fullscreenMobile && isMobile.value;
+    return isMobile.value;
 });
 
 const position = (): void => {
     const trigger = props.targetRef;
     const popover = popoverRef.value;
-    if (!trigger || !popover || isFullscreen.value) return;
+
+    if (!trigger || !popover || isFullscreen.value) {
+        return;
+    }
 
     const triggerRect = trigger.getBoundingClientRect();
     const popoverRect = popover.getBoundingClientRect();
@@ -102,6 +103,10 @@ const closeMe = () => {
     visible.value = false;
 };
 
+const zIndex = computed(() => {
+    return props.targetRef?.closest('.p-dialog') ? 1200 : 1000;
+});
+
 const onClick = (e: MouseEvent) => {
     if (
         !popoverRef.value?.contains(e.target as Node) &&
@@ -159,7 +164,7 @@ onUnmounted(() => {
             <div
                 v-if="visible"
                 ref="popoverRef"
-                :style="!isFullscreen ? styles : {}"
+                :style="!isFullscreen ? { ...styles, zIndex } : {}"
                 :class="[
                     { 'popover-animate': shouldAnimate && !isFullscreen },
                     isFullscreen ? 'popover-fullscreen' : 'popover',
@@ -183,7 +188,7 @@ onUnmounted(() => {
 }
 
 .popover {
-    @apply absolute z-[1103] rounded-lg shadow-lg;
+    @apply absolute rounded-lg shadow-lg;
 }
 
 .popover-fullscreen {

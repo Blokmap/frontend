@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import Paginator from 'primevue/paginator';
 import Skeleton from 'primevue/skeleton';
-import LocationCard from '@/components/features/location/LocationCard.vue';
 import LocationCardSkeleton from '@/components/features/location/LocationCardSkeleton.vue';
+import LocationDetailCard from '@/components/features/location/LocationDetailCard.vue';
 import BlokMap from '@/components/features/map/BlokMap.vue';
 import { faArrowRight, faFilter, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -174,14 +174,14 @@ const debouncedConfigUpdate = useDebounceFn(() => {
                         :key="location.id"
                         class="locations-grid__item"
                         :style="{ '--i': index }">
-                        <RouterLink
-                            class="locations-grid__link"
+                        <LocationDetailCard
                             :to="{
                                 name: 'locations.detail',
                                 params: { locationId: location.id },
-                            }">
-                            <LocationCard :location="location" />
-                        </RouterLink>
+                            }"
+                            :location="location"
+                            :show-navigation-buttons="false">
+                        </LocationDetailCard>
                     </div>
                 </TransitionGroup>
             </Transition>

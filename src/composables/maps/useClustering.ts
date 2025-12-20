@@ -16,8 +16,8 @@ import type {
  */
 export function useClustering<T = number>(options: MapOptions): ClusteringAdapter<T> {
     const clusterIndex = new Supercluster({
-        radius: options.clusterRadius || 50,
-        maxZoom: options.clusterMaxZoom || 14,
+        radius: options.clusterRadius || 25,
+        maxZoom: options.clusterMaxZoom || 12,
     });
 
     // Maps stable composite IDs to Supercluster numeric IDs

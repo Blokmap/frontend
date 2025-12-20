@@ -3,7 +3,7 @@ import RoleActionsMenu from '@/components/features/auth/RoleActionsMenu.vue';
 import RoleBuilderDialog from '@/components/features/auth/forms/RoleBuilderDialog.vue';
 import RoleTable from '@/components/features/auth/roles/RoleTable.vue';
 import ManageBreadcrumb from '@/components/shared/molecules/Breadcrumb.vue';
-import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
+import LoaderError from '@/layouts/LoaderError.vue';
 import PageContent from '@/pages/PageContent.vue';
 import PageHeaderButton from '@/pages/PageHeaderButton.vue';
 import PageTitle from '@/pages/PageTitle.vue';
@@ -141,7 +141,7 @@ function onEditRole(role: Role): void {
         <p class="text-slate-600">Beheer de rollen die gebruikers toegang geven tot de groep.</p>
 
         <!-- Error State -->
-        <ManagementLoaderError v-if="isError" :errors="[rolesError]" />
+        <LoaderError v-if="isError" :errors="[rolesError]" />
 
         <!-- Data / Loading State -->
         <RoleTable :roles="roles" :is-loading="isLoading" type="authority">

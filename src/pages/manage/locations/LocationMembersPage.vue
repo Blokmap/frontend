@@ -9,7 +9,7 @@ import MembersTable from '@/components/features/member/MembersTable.vue';
 import ManageBreadcrumb, {
     type BreadcrumbItem,
 } from '@/components/shared/molecules/Breadcrumb.vue';
-import ManagementLoaderError from '@/layouts/manage/ManagementLoaderError.vue';
+import LoaderError from '@/layouts/LoaderError.vue';
 import PageContent from '@/pages/PageContent.vue';
 import PageHeaderButton from '@/pages/PageHeaderButton.vue';
 import PageTitle from '@/pages/PageTitle.vue';
@@ -161,7 +161,7 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => [
         <p class="text-slate-600">Beheer wie toegang heeft tot deze locatie en hun rollen.</p>
 
         <!-- Error State -->
-        <ManagementLoaderError v-if="isError" :errors="[membersError]" />
+        <LoaderError v-if="isError" :errors="[membersError]" />
 
         <AccessCard v-if="showAccessCard">
             <template #header>

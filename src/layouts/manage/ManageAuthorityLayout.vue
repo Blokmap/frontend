@@ -17,8 +17,8 @@ import { useRoute, useRouter } from 'vue-router';
 import { useReadAuthority } from '@/composables/data/useAuthorities';
 import { useReadAuthorityMemberPermissions } from '@/composables/data/useMembers';
 import { getInstitutionName } from '@/domain/institution';
-import ManagementLoader from './ManagementLoader.vue';
-import ManagementLoaderError from './ManagementLoaderError.vue';
+import Loader from '@/layouts/Loader.vue';
+import LoaderError from '@/layouts/LoaderError.vue';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -142,10 +142,8 @@ function goBack() {
         </template>
 
         <template #main>
-            <ManagementLoader v-if="isLoading" />
-            <ManagementLoaderError
-                v-else-if="isError"
-                :errors="[authorityError, permissionsError]" />
+            <Loader v-if="isLoading" />
+            <LoaderError v-else-if="isError" :errors="[authorityError, permissionsError]" />
             <RouterView
                 v-else-if="authority && permissions"
                 v-slot="{ Component, route }"

@@ -153,8 +153,7 @@ export const endpoints = {
             delete: 'locations/{id}/reviews/{reviewId}',
         },
         tags: {
-            list: '/locations/{id}/tags',
-            update: '/locations/{id}/tags',
+            set: '/locations/{id}/tags',
         },
         images: {
             createOne: '/locations/{id}/images',

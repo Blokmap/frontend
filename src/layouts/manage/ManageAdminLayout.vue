@@ -8,8 +8,8 @@ import { computed } from 'vue';
 import { useAdminCounts } from '@/composables/data/useAdmin';
 import LayoutSidebarItem from '../sidebar/LayoutSidebarItem.vue';
 import LayoutSidebarSection from '../sidebar/LayoutSidebarSection.vue';
-import ManagementLoader from './ManagementLoader.vue';
-import ManagementLoaderError from './ManagementLoaderError.vue';
+import Loader from '@/layouts/Loader.vue';
+import LoaderError from '@/layouts/LoaderError.vue';
 import type { Profile } from '@/domain/profile';
 
 defineProps<{
@@ -106,7 +106,7 @@ const isPending = computed<boolean>(() => {
         </template>
 
         <template #main>
-            <ManagementLoader v-if="isPending" />
+            <Loader v-if="isPending" />
             <RouterView
                 v-else-if="!isError && counts"
                 v-slot="{ Component, route }"
@@ -115,7 +115,7 @@ const isPending = computed<boolean>(() => {
                     <component :is="Component" :key="route.path" />
                 </Transition>
             </RouterView>
-            <ManagementLoaderError v-else :errors="[countsError]" />
+            <LoaderError v-else :errors="[countsError]" />
         </template>
     </LayoutContainer>
 </template>

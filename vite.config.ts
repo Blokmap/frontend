@@ -16,10 +16,36 @@ export default defineConfig({
         outDir: 'public',
         rollupOptions: {
             output: {
-                manualChunks: {
-                    vue: ['vue', '@vueuse/core', '@vueuse/shared'],
-                    primevue: ['primevue'],
-                    mapbox: ['mapbox-gl'],
+                manualChunks(id) {
+                    // Split FontAwesome icon packages
+                    if (id.includes('@fortawesome/free-solid-svg-icons')) {
+                        return 'fontawesome-solid';
+                    }
+                    if (id.includes('@fortawesome/free-regular-svg-icons')) {
+                        return 'fontawesome-regular';
+                    }
+                    if (id.includes('@fortawesome/free-brands-svg-icons')) {
+                        return 'fontawesome-brands';
+                    }
+                    if (id.includes('@fortawesome/fontawesome-svg-core')) {
+                        return 'fontawesome-svg-core';
+                    }
+                    if (id.includes('@fortawesome/vue-fontawesome')) {
+                        return 'fontawesome-vue';
+                    }
+
+                    // Core libraries
+                    if (id.includes('node_modules')) {
+                        if (id.includes('primevue')) {
+                            return 'primevue';
+                        }
+                        if (id.includes('vue') || id.includes('@vueuse')) {
+                            return 'vue';
+                        }
+                        if (id.includes('mapbox-gl')) {
+                            return 'mapbox';
+                        }
+                    }
                 },
             },
         },

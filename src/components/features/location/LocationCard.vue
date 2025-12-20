@@ -32,15 +32,17 @@ const imageUrl = computed(() => {
         <div class="location__image" :class="{ active }">
             <img :src="imageUrl" />
         </div>
-        <h2 class="mt-1 truncate font-semibold">
-            {{ location.name }}
-        </h2>
-        <p class="line-clamp-2 text-xs text-gray-600">
-            <FontAwesomeIcon :icon="faLocationDot" /> {{ location.city }}, {{ location.street }}
-        </p>
-        <p class="line-clamp-2 text-xs text-gray-600">
-            {{ location.excerpt?.[locale] }}
-        </p>
+        <div class="bg-white p-3 shadow-md">
+            <h2 class="mt-1 truncate font-semibold">
+                {{ location.name }}
+            </h2>
+            <p class="line-clamp-2 text-xs text-gray-600">
+                <FontAwesomeIcon :icon="faLocationDot" /> {{ location.city }}, {{ location.street }}
+            </p>
+            <p class="line-clamp-2 text-xs text-gray-600">
+                {{ location.excerpt?.[locale] }}
+            </p>
+        </div>
     </div>
 </template>
 

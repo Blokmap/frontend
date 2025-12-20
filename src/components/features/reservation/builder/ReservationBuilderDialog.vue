@@ -7,7 +7,7 @@ import ReservationBuilderLegend from '@/components/features/reservation/builder/
 import ReservationBuilderPopover from '@/components/features/reservation/builder/ReservationBuilderPopover.vue';
 import ReservationBuilderSubmitDialog from '@/components/features/reservation/builder/ReservationBuilderSubmitDialog.vue';
 import CalendarControls from '@/components/shared/molecules/calendar/CalendarControls.vue';
-import { faCheck, faX } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faSpinner, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
@@ -352,7 +352,8 @@ watch(visible, (newVisible) => {
                             <span>Annuleren</span>
                         </Button>
                         <Button :loading="isSaving" @click="savePendingChanges" size="small">
-                            <FontAwesomeIcon :icon="faCheck" />
+                            <FontAwesomeIcon v-if="isSaving" :icon="faSpinner" spin />
+                            <FontAwesomeIcon v-else :icon="faCheck" />
                             <span>Bevestigen</span>
                         </Button>
                     </template>

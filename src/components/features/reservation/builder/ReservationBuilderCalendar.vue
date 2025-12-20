@@ -116,11 +116,11 @@ const allTimeSlots = computed<TimeSlot<SlotMetadata>[]>(() => {
     ];
 });
 
-function isPendingDeletion(reservation: Reservation): boolean {
+const isPendingDeletion = (reservation: Reservation): boolean => {
     return props.reservationsToDelete.some((pd) => pd.id === reservation.id);
-}
+};
 
-function isOpeningDisabled(slot: TimeSlot<OpeningMetadata>): boolean {
+const isOpeningDisabled = (slot: TimeSlot<OpeningMetadata>): boolean => {
     if (!slot.metadata) {
         return true;
     }
@@ -129,13 +129,13 @@ function isOpeningDisabled(slot: TimeSlot<OpeningMetadata>): boolean {
     const defaultSeatCount = props.location.seatCount;
 
     return !canInteractWithOpening(opening, defaultSeatCount);
-}
+};
 
-function onOpeningTimeClick(
+const onOpeningTimeClick = (
     slot: TimeSlot<OpeningMetadata>,
     event: Event,
     timeRef: HTMLElement,
-): void {
+): void => {
     if (props.isSaving || !slot.metadata || isOpeningDisabled(slot)) return;
 
     const data: TimeSlot<OpeningTime> = {
@@ -144,23 +144,17 @@ function onOpeningTimeClick(
     };
 
     emit('click:opening', data, event, timeRef);
-}
+};
 
-/**
- * Handles deletion of a reservation request.
- */
-function onRequestDelete(request: ReservationRequest): void {
+const onRequestDelete = (request: ReservationRequest): void => {
     if (props.isSaving) return;
     emit('delete:request', request);
-}
+};
 
-/**
- * Handles deletion of a reservation.
- */
-function onReservationDelete(reservation: Reservation): void {
+const onReservationDelete = (reservation: Reservation): void => {
     if (props.isSaving || !canDeleteReservation(reservation)) return;
     emit('delete:reservation', reservation);
-}
+};
 </script>
 
 <template>

@@ -16,8 +16,8 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import { useReadInstitution } from '@/composables/data/useInstitutions';
-import ManagementLoader from './ManagementLoader.vue';
-import ManagementLoaderError from './ManagementLoaderError.vue';
+import Loader from '../Loader.vue';
+import LoaderError from '../LoaderError.vue';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -128,7 +128,7 @@ function goBack() {
         </template>
 
         <template #main>
-            <ManagementLoader v-if="isLoading" />
+            <Loader v-if="isLoading" />
             <RouterView
                 v-else-if="institution"
                 v-slot="{ Component, route }"
@@ -138,7 +138,7 @@ function goBack() {
                     <component :is="Component" :key="route.path" />
                 </Transition>
             </RouterView>
-            <ManagementLoaderError v-else :errors="[error]" />
+            <LoaderError v-else :errors="[error]" />
         </template>
     </LayoutContainer>
 </template>

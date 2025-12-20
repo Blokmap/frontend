@@ -3,6 +3,7 @@ import type { Image } from '@/domain/image';
 import type { Institution } from '@/domain/institution';
 import type { OpeningTime } from '@/domain/openings';
 import type { Profile } from '@/domain/profile';
+import type { Tag } from '@/domain/tag';
 import type { TranslationRequest, Translation } from '@/domain/translation';
 
 export type LocationAddress = {
@@ -35,6 +36,7 @@ export type Location = {
     name: string;
     state: LocationState;
     excerpt: Translation;
+    tags?: Tag[];
     description?: Translation;
     seatCount: number;
     minReservationLength: number | null;
@@ -97,11 +99,6 @@ export type NearestLocation = {
     id: number;
     latitude: number;
     longitude: number;
-};
-
-export type Tag = {
-    id: string;
-    name: Translation;
 };
 
 export type Review = {

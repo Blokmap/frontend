@@ -19,7 +19,7 @@
 
 @theme {
     --text-base: 16px;
-    --font-serif: 'Merriweather', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: ui-sans-serif, system-ui, sans-serif;
 
     --color-ocean-mist-50: oklch(0.962 0.039 160.76);
     --color-ocean-mist-100: oklch(0.922 0.081 165.11);

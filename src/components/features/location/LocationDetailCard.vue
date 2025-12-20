@@ -10,6 +10,7 @@ import type { RouteLocationRaw } from 'vue-router';
 
 const props = defineProps<{
     location: Location;
+    showNavigationButtons?: boolean;
     to?: RouteLocationRaw;
 }>();
 
@@ -20,11 +21,11 @@ const isApproved = computed<boolean>(() => {
     return props.location.state === LocationState.Approved;
 });
 
-function navigate() {
+const navigate = (): void => {
     if (props.to) {
         router.push(props.to);
     }
-}
+};
 </script>
 
 <template>
@@ -34,7 +35,7 @@ function navigate() {
                 class="location-detail__carousel"
                 :items="location.images ?? []"
                 :disabled="!isApproved"
-                :show-navigation-buttons="isApproved"
+                :show-navigation-buttons="showNavigationButtons"
                 :show-dots="isApproved"
                 @click.stop>
                 <template #default="{ item }">

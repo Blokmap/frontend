@@ -1,7 +1,7 @@
 import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
 import { transformResponseFactory } from '@/utils/serviceUtils';
-import { parseLocationResponse } from '../location';
+import { parseLocationResponse, type Location } from '../location';
 import { parseTagResponse } from './tagParser';
 import type { Tag, TagRequest } from './tagSchemaTypes';
 
@@ -25,7 +25,9 @@ export async function createTag(body: TagRequest): Promise<Tag> {
     return data;
 }
 
-export async function updateTag(tagId: number, body: Partial<TagRequest>): Promise<Tag> {
+export type UpdateTagParams = { tagId: number; body: Partial<TagRequest> };
+
+export async function updateTag({ tagId, body }: UpdateTagParams): Promise<Tag> {
     const endpoint = endpoints.tags.update.replace('{id}', tagId.toString());
 
     const transformResponse = parseTagResponse;
@@ -41,7 +43,12 @@ export async function deleteTag(tagId: number): Promise<void> {
     await client.delete(endpoint);
 }
 
-export async function setLocationTags(locationId: number, tagIds: number[]): Promise<Location> {
+export type SetLocationTagParams = { locationId: number; tagIds: number[] };
+
+export async function setLocationTags({
+    locationId,
+    tagIds,
+}: SetLocationTagParams): Promise<Location> {
     const endpoint = endpoints.locations.tags.set.replace('{id}', locationId.toString());
 
     const transformResponse = parseLocationResponse;

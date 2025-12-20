@@ -23,9 +23,4 @@ export type CompQueryOptions<I = string, D = any> = Partial<
 
 export type CompQuery<T = unknown> = UseQueryReturnType<T, AxiosError>;
 
-export type CompMutation<T = any, V = any> = UseMutationReturnType<
-    V,
-    AxiosError | Error,
-    T,
-    unknown
->;
+export type CompMutation<T = any, V = any> = UseMutationReturnType<V, AxiosError, T, unknown>;

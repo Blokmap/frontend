@@ -2,7 +2,6 @@
 import InstitutionTableCell from '@/components/features/institution/table/InstitutionTableCell.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
-import { useI18n } from 'vue-i18n';
 import { type Institution } from '@/domain/institution';
 
 defineProps<{

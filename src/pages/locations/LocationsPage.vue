@@ -47,7 +47,7 @@ function onNearestClick(): void {
 }
 
 const blokMapRef = useTemplateRef('blokMapRef');
-const mapContainerRef = computed(() => blokMapRef.value?.mapContainer ?? null);
+const mapContainerRef = computed(() => blokMapRef.value?.$el ?? null);
 const map = useMapBox(mapContainerRef, config.value);
 
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
@@ -164,6 +164,7 @@ const debouncedConfigUpdate = useDebounceFn(() => {
 
             <Transition v-else name="fade" mode="out-in">
                 <TransitionGroup
+                    v-if="!isPending"
                     :key="fetchStatus"
                     name="staggered-cards"
                     class="locations-grid"

@@ -14,8 +14,6 @@ const emit = defineEmits<{
     'click:institution': [institution: Institution];
 }>();
 
-const { locale } = useI18n();
-
 const onInstitutionClick = (institution: Institution) => {
     emit('click:institution', institution);
 };

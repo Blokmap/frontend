@@ -85,7 +85,8 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
             v-else
             :authorities="authorities?.data"
             :loading="isLoading"
-            @click:authority="onAuthorityClick">
+            @click:authority="onAuthorityClick"
+            hide-institution-column>
         </AuthorityTable>
 
         <Paginator

@@ -72,7 +72,7 @@ const {
 
         <!-- Loading State -->
         <div v-else-if="isLoading" class="locations-grid">
-            <LocationCardSkeleton v-for="i in 6" :key="i" />
+            <LocationCardSkeleton v-for="i in 3" :key="i" />
         </div>
 
         <!-- Data State -->

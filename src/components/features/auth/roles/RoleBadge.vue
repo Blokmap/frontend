@@ -4,6 +4,7 @@ import { faTag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { type Role } from '@/domain/member';
+import { getContrastColor } from '@/utils/colorUtils';
 import RolePermissionsPopover from './RolePermissionsPopover.vue';
 import type { PermissionType } from '@/domain/auth';
 
@@ -21,10 +22,14 @@ const triggerRef = ref<HTMLElement | null>(null);
 const isPopoverVisible = ref(false);
 
 const bgColor = computed<string>(() => {
-    return 'var(--color-slate-100)';
+    return role?.colour ?? 'var(--color-slate-100)';
 });
 
 const textColor = computed<string>(() => {
+    if (role?.colour) {
+        return getContrastColor(role.colour);
+    }
+
     return 'var(--color-secondary-700)';
 });
 

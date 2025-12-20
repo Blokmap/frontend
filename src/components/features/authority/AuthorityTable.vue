@@ -8,6 +8,7 @@ import type { Authority } from '@/domain/authority';
 
 const props = defineProps<{
     authorities?: Authority[];
+    hideInstitutionColumn?: boolean;
     loading?: boolean;
     emptyMessage?: string;
     emptyTitle?: string;
@@ -36,7 +37,7 @@ const onAuthorityClick = (authority: Authority) => {
                 <AuthorityTableCell :authority="authority" />
             </TableCell>
 
-            <TableCell column="Organisatie">
+            <TableCell column="Organisatie" v-if="!hideInstitutionColumn">
                 <InstitutionTableCell
                     v-if="authority.institution"
                     :institution="authority.institution" />

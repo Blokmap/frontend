@@ -29,12 +29,7 @@ const closeSidebar = () => {
         </button>
 
         <!-- Backdrop for mobile -->
-        <Transition name="fade">
-            <div
-                v-if="isSidebarOpen"
-                class="sidebar-backdrop lg:hidden"
-                @click="closeSidebar"></div>
-        </Transition>
+        <div v-if="isSidebarOpen" class="sidebar-backdrop lg:hidden" @click="closeSidebar"></div>
 
         <!-- Sidebar -->
         <aside

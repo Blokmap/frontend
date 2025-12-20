@@ -3,7 +3,7 @@ import SlideCarousel from '@/components/shared/molecules/image/SlideCarousel.vue
 import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useGeolocation } from '@vueuse/core';
-import { computed, ref, useTemplateRef, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { type Location } from '@/domain/location';
@@ -103,9 +103,6 @@ watch([map.isLoaded, coords], async ([isLoaded, coords]) => {
         hasFlownToUserLocation.value = true;
     }
 });
-
-const mapContainer = useTemplateRef('mapContainer');
-defineExpose({ mapContainer });
 </script>
 
 <template>

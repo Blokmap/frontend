@@ -11,21 +11,23 @@ import type { Paginated } from '@/utils/pagination';
 
 export type AuthorityIncludes = 'institution' | 'createdBy' | 'updatedBy';
 
-/**
- * Read authorities with optional filters (returns paginated list).
- *
- * @param filters - The filters to apply when reading authorities.
- * @returns A promise that resolves to a list of authorities.
- */
-export async function readAuthorities(
-    filters: Partial<AuthorityFilter> = {},
-): Promise<Paginated<Authority>> {
+export type ReadAuthoritiesParams = {
+    authorityFilter?: Partial<AuthorityFilter>;
+    authorityIncludes?: AuthorityIncludes[];
+};
+
+export async function readAuthorities({
+    authorityFilter = {},
+    authorityIncludes = [],
+}: ReadAuthoritiesParams): Promise<Paginated<Authority>> {
     const endpoint = endpoints.authorities.list;
 
     const transformResponse = transformPaginatedResponseFactory(parseAuthorityResponse);
 
+    const params = { ...authorityFilter, authorityIncludes };
+
     const { data } = await client.get<Paginated<Authority>>(endpoint, {
-        params: filters,
+        params,
         transformResponse,
     });
 

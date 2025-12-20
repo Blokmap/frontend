@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import AuthorityTableCell from '@/components/features/authority/table/AuthorityTableCell.vue';
+import InstitutionTableCell from '@/components/features/institution/table/InstitutionTableCell.vue';
 import Table from '@/components/shared/molecules/table/Table.vue';
 import TableCell from '@/components/shared/molecules/table/TableCell.vue';
 import { useI18n } from 'vue-i18n';
@@ -34,6 +35,14 @@ const onAuthorityClick = (authority: Authority) => {
             <TableCell column="Autoriteit">
                 <AuthorityTableCell :authority="authority" />
             </TableCell>
+
+            <TableCell column="Organisatie">
+                <InstitutionTableCell
+                    v-if="authority.institution"
+                    :institution="authority.institution" />
+                <span v-else> - </span>
+            </TableCell>
+
             <TableCell column="Gemaakt op">
                 {{
                     authority.createdAt.toLocaleString(locale, {

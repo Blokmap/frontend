@@ -30,12 +30,15 @@ debouncedWatch(
 );
 
 const { first, onPageChange, resetPage } = usePagination(filters);
-const { data: authorities, isPending: isPendingAuthorities } = useReadAuthorities(filters);
+
+const { data: authorities, isPending: isPendingAuthorities } = useReadAuthorities(filters, {
+    includes: ['institution'],
+});
 </script>
 
 <template>
     <PageContent>
-        <PageTitle title="Autoriteiten beheren" />
+        <PageTitle title="Autoriteiten" />
 
         <PageFilters>
             <SearchField v-model="query" placeholder="Zoek autoriteiten..." />

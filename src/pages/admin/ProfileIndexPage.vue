@@ -57,7 +57,7 @@ const onLocationsClick = (profileId: string): void => {
 
 <template>
     <PageContent>
-        <PageTitle title="Profielen beheren" />
+        <PageTitle title="Profielen" />
 
         <PageFilters>
             <SearchField v-model="query" placeholder="Zoek profielen..." />

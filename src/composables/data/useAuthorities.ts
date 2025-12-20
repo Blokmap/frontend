@@ -43,12 +43,17 @@ export type UpdateAuthorityLogoParams = {
  */
 export function useReadAuthorities(
     filters: MaybeRefOrGetter<Partial<AuthorityFilter>>,
-    options: CompQueryOptions = {},
+    options: CompQueryOptions<AuthorityIncludes> = {},
 ): CompQuery<Paginated<Authority>> {
     const authorities = useQuery<Paginated<Authority>, AxiosError>({
         ...options,
         queryKey: ['authorities', 'list'],
-        queryFn: () => readAuthorities(toValue(filters)),
+        queryFn: () => {
+            return readAuthorities({
+                authorityFilter: toValue(filters),
+                authorityIncludes: toValue(options.includes),
+            });
+        },
     });
 
     return authorities;

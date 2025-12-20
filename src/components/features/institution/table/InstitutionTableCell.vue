@@ -1,27 +1,30 @@
 <script lang="ts" setup>
 import EntityAvatar from '@/components/shared/molecules/avatar/EntityAvatar.vue';
-import { faBuilding } from '@fortawesome/free-solid-svg-icons';
-import type { Authority } from '@/domain/authority';
+import { faCity } from '@fortawesome/free-solid-svg-icons';
+import { useI18n } from 'vue-i18n';
+import type { Institution } from '@/domain/institution';
 
 defineProps<{
-    authority: Authority;
+    institution: Institution;
 }>();
+
+const { locale } = useI18n();
 </script>
 
 <template>
     <div class="flex items-center space-x-3">
         <EntityAvatar
             class="h-12 w-12 flex-shrink-0"
-            :image="authority.logo?.url"
-            :icon="faBuilding"
+            :image="institution.logo?.url"
+            :icon="faCity"
             :circle="false">
         </EntityAvatar>
         <div class="min-w-0 flex-1">
             <div class="truncate text-sm font-medium text-slate-900">
-                {{ authority.name }}
+                {{ institution.name[locale] }}
             </div>
             <div class="truncate text-xs text-slate-500">
-                {{ authority.description || 'Geen beschrijving' }}
+                {{ institution.slug }}
             </div>
         </div>
     </div>

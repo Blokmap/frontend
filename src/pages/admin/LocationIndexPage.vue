@@ -64,7 +64,7 @@ const onLocationClick = (location: Location) => {
 
 <template>
     <PageContent>
-        <PageTitle title="Locaties beheren" />
+        <PageTitle title="Locaties" />
 
         <PageFilters>
             <SearchField v-model="query" placeholder="Zoek locaties..." />

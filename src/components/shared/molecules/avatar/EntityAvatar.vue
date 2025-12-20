@@ -58,7 +58,7 @@ defineEmits<{
 @reference '@/assets/styles/main.css';
 
 .entity-avatar {
-    @apply relative flex aspect-auto items-center justify-center;
+    @apply relative flex aspect-auto items-center justify-center rounded-md;
 
     &.circle {
         @apply rounded-full;
@@ -66,7 +66,7 @@ defineEmits<{
 }
 
 .entity-avatar__placeholder {
-    @apply flex h-full w-full items-center justify-center bg-slate-200;
+    @apply flex h-full w-full items-center justify-center rounded-md bg-slate-200;
 
     &.circle {
         @apply shadow-playful rounded-full;

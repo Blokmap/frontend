@@ -35,7 +35,7 @@ const { data: institutions, isPending: isPendingInstitutions } = useReadInstitut
 
 <template>
     <PageContent>
-        <PageTitle title="Organisaties beheren" />
+        <PageTitle title="Organisaties" />
 
         <PageFilters>
             <SearchField v-model="query" placeholder="Zoek organisaties..." />

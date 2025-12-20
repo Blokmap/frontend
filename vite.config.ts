@@ -49,6 +49,7 @@ export default defineConfig({
                 },
             },
         },
+        chunkSizeWarningLimit: 2048,
     },
     test: {
         include: ['test/unit/**/*.{test,spec}.ts'],

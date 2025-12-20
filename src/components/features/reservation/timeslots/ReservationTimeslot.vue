@@ -112,7 +112,7 @@ defineEmits<{
     }
 
     &.disabled {
-        @apply cursor-not-allowed opacity-40;
+        @apply bg-timber-green-50 cursor-not-allowed;
 
         .time-display {
             @apply text-gray-400;

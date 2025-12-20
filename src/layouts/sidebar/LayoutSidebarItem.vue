@@ -95,11 +95,11 @@ const active = computed<boolean>(() => {
     }
 
     .item__img {
-        @apply text-primary-600 flex h-10 w-10 shrink-0 items-center justify-center text-xl;
+        @apply flex h-10 w-10 shrink-0 items-center justify-center text-xl text-slate-600;
     }
 
     .item__text {
-        @apply text-primary-950 w-full truncate font-bold;
+        @apply w-full truncate font-bold text-slate-800;
     }
 }
 </style>

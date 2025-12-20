@@ -8,6 +8,8 @@ import AuthLayout from '@/layouts/profile/AuthLayout.vue';
 import ProfileLayout from '@/layouts/profile/ProfileLayout.vue';
 import PublicLayout from '@/layouts/public/PublicLayout.vue';
 import TestPage from '@/pages/TestPage.vue';
+import PrivacyPolicyPage from '@/pages/legal/PrivacyPolicyPage.vue';
+import TermsConditionsPage from '@/pages/legal/TermsConditionsPage.vue';
 import InstitutionLocationsPage from '@/pages/manage/institutions/InstitutionLocationsPage.vue';
 import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
@@ -319,6 +321,22 @@ const routes: RouteRecordRaw[] = [
                                 component: InstitutionRolesPage,
                             },
                         ],
+                    },
+                ],
+            },
+
+            {
+                path: '/legal',
+                children: [
+                    {
+                        path: 'privacy-policy',
+                        name: 'legal.privacy',
+                        component: PrivacyPolicyPage,
+                    },
+                    {
+                        path: 'terms-and-conditions',
+                        name: 'legal.terms',
+                        component: TermsConditionsPage,
                     },
                 ],
             },

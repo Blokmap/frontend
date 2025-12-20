@@ -44,7 +44,6 @@ const onTimeslotClick = (event: Event) => {
     &.disabled {
         @apply cursor-not-allowed;
         @apply bg-gray-100 hover:bg-gray-100;
-        @apply opacity-40;
 
         background-image: repeating-linear-gradient(
             45deg,

@@ -6,8 +6,8 @@
             &copy; {{ new Date().getFullYear() }} Blokmap. Alle rechten voorbehouden.
         </div>
         <div class="flex space-x-4 text-xs">
-            <a href="#"> Privacybeleid </a>
-            <a href="#"> Algemene Voorwaarden </a>
+            <RouterLink :to="{ name: 'legal.privacy' }"> Privacybeleid </RouterLink>
+            <RouterLink :to="{ name: 'legal.terms' }"> Algemene Voorwaarden </RouterLink>
         </div>
     </div>
 </template>

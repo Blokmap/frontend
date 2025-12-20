@@ -1,6 +1,7 @@
-@plugin 'tailwindcss-primeui';
-
 @import 'tailwindcss';
+
+@plugin '@tailwindcss/typography';
+@plugin 'tailwindcss-primeui';
 
 @import './primevue/tailwind.css' layer(components);
 @import './editor.css';

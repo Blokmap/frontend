@@ -12,6 +12,6 @@ export const DEFAULT_MAP_OPTIONS = {
     geoLocationControl: true,
     interactive: true,
     clustering: true,
-    clusterRadius: 50,
-    clusterMaxZoom: 14,
+    clusterRadius: 25,
+    clusterMaxZoom: 13,
 } satisfies MapOptions;

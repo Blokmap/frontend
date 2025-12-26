@@ -1,16 +1,15 @@
-import ManageAdminLayout from '@/layouts/manage/ManageAdminLayout.vue';
-import ManageAuthorityLayout from '@/layouts/manage/ManageAuthorityLayout.vue';
-import ManageDashboardLayout from '@/layouts/manage/ManageDashboardLayout.vue';
-import ManageInstitutionLayout from '@/layouts/manage/ManageInstitutionLayout.vue';
-import ManageLayout from '@/layouts/manage/ManageLayout.vue';
-import ManageLocationLayout from '@/layouts/manage/ManageLocationLayout.vue';
-import AuthLayout from '@/layouts/profile/AuthLayout.vue';
-import ProfileLayout from '@/layouts/profile/ProfileLayout.vue';
-import PublicLayout from '@/layouts/public/PublicLayout.vue';
-import TestPage from '@/pages/TestPage.vue';
-import PrivacyPolicyPage from '@/pages/legal/PrivacyPolicyPage.vue';
-import TermsConditionsPage from '@/pages/legal/TermsConditionsPage.vue';
-import InstitutionLocationsPage from '@/pages/manage/institutions/InstitutionLocationsPage.vue';
+import ManageAdminLayout from '@/components/organisms/layouts/manage/ManageAdminLayout.vue';
+import ManageAuthorityLayout from '@/components/organisms/layouts/manage/ManageAuthorityLayout.vue';
+import ManageDashboardLayout from '@/components/organisms/layouts/manage/ManageDashboardLayout.vue';
+import ManageInstitutionLayout from '@/components/organisms/layouts/manage/ManageInstitutionLayout.vue';
+import ManageLayout from '@/components/organisms/layouts/manage/ManageLayout.vue';
+import ManageLocationLayout from '@/components/organisms/layouts/manage/ManageLocationLayout.vue';
+import PublicLayout from '@/components/organisms/layouts/public/PublicLayout.vue';
+import AuthLayout from '@/components/organisms/layouts/public/auth/AuthLayout.vue';
+import ProfileLayout from '@/components/organisms/layouts/public/profile/ProfileLayout.vue';
+import TestPage from '@/components/organisms/pages/TestPage.vue';
+import PrivacyPolicyPage from '@/components/organisms/pages/legal/PrivacyPolicyPage.vue';
+import TermsConditionsPage from '@/components/organisms/pages/legal/TermsConditionsPage.vue';
 import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 import { useToast } from '@/composables/store/useToast';
@@ -23,7 +22,6 @@ import {
     LocationsPage,
     Error404Page,
     Error405Page,
-    // Manage pages
     DashboardLocationsPage,
     LocationInfoPage,
     LocationImagesPage,
@@ -42,18 +40,24 @@ import {
     InstitutionAuthoritiesPage,
     InstitutionMembersPage,
     InstitutionProfilesPage,
+    InstitutionLocationsPage,
     InstitutionRolesPage,
     LocationIndexPage,
     ProfileIndexPage,
     AuthorityIndexPage,
     InstitutionIndexPage,
+    TagIndexPage,
 } from './routerPages';
 
 const routes: RouteRecordRaw[] = [
     {
         path: '/test',
         component: TestPage,
-        meta: { auth: { admin: true } },
+        meta: {
+            auth: {
+                admin: true,
+            },
+        },
     },
     {
         path: '/',
@@ -134,6 +138,11 @@ const routes: RouteRecordRaw[] = [
                                 component: LocationIndexPage,
                             },
                             {
+                                path: 'tags',
+                                name: 'admin.tags',
+                                component: TagIndexPage,
+                            },
+                            {
                                 path: 'profiles',
                                 name: 'admin.profiles',
                                 component: ProfileIndexPage,
@@ -156,7 +165,9 @@ const routes: RouteRecordRaw[] = [
                 path: 'manage',
                 component: ManageLayout,
                 meta: {
-                    auth: { required: true },
+                    auth: {
+                        required: true,
+                    },
                 },
                 children: [
                     // Profile-specific routes (with optional profileId for admins)
@@ -194,7 +205,9 @@ const routes: RouteRecordRaw[] = [
                                 location: blank(),
                             },
                         },
-                        redirect: { name: 'manage.location.info' },
+                        redirect: {
+                            name: 'manage.location.info',
+                        },
                         children: [
                             {
                                 path: 'info',

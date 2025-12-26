@@ -1,0 +1,156 @@
+<script lang="ts" setup>
+import Paginator from 'primevue/paginator';
+import SearchField from '@/components/atoms/SearchField.vue';
+import ManageBreadcrumb, { type BreadcrumbItem } from '@/components/molecules/Breadcrumb.vue';
+import ProfileAddDialog from '@/components/molecules/profile/ProfileAddDialog.vue';
+import ProfileStateSelect from '@/components/molecules/profile/forms/ProfileStateSelect.vue';
+import ProfileTable from '@/components/molecules/profile/table/ProfileTable.vue';
+import LoaderError from '@/components/organisms/layouts/LoaderError.vue';
+import PageContent from '@/components/organisms/pages/PageContent.vue';
+import PageFilters from '@/components/organisms/pages/PageFilters.vue';
+import PageHeaderButton from '@/components/organisms/pages/PageHeaderButton.vue';
+import PageTitle from '@/components/organisms/pages/PageTitle.vue';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useDebounceFn } from '@vueuse/core';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import {
+    useAddInstitutionProfile,
+    useReadInstitutionProfiles,
+} from '@/composables/data/useProfile';
+import { usePagination } from '@/composables/usePagination';
+import { getInstitutionName, type Institution } from '@/domain/institution';
+import { type Profile, type ProfileFilter } from '@/domain/profile';
+
+const props = defineProps<{
+    authProfile: Profile;
+    institution: Institution;
+}>();
+
+const institutionId = computed(() => props.institution.id);
+
+const searchQuery = ref<string>('');
+
+const filters = ref<ProfileFilter>({
+    page: 1,
+    perPage: 10,
+    query: null,
+    state: null,
+});
+
+const { locale } = useI18n();
+const { first, onPageChange, resetPage } = usePagination(filters);
+
+const {
+    data: profiles,
+    isFetching: isFetchingProfiles,
+    isLoading: isLoadingProfiles,
+    isError: isProfilesError,
+    error: profilesError,
+} = useReadInstitutionProfiles(institutionId, filters);
+
+const showProfileAddDialog = ref<boolean>(false);
+
+const { mutate: addInstitutionProfile, isPending: isAddingProfile } = useAddInstitutionProfile(
+    institutionId,
+    {
+        onSuccess: () => {
+            showProfileAddDialog.value = false;
+        },
+    },
+);
+
+const onSearchChange = useDebounceFn(() => {
+    filters.value.query = searchQuery.value;
+    resetPage();
+}, 300);
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => {
+    const institutionName = getInstitutionName(props.institution, locale.value);
+
+    return [
+        {
+            label: institutionName,
+            to: {
+                name: 'manage.institution.info',
+            },
+        },
+        {
+            label: 'Leden',
+        },
+    ];
+});
+
+const isFetching = computed(() => {
+    return isFetchingProfiles.value;
+});
+
+const isError = computed(() => {
+    return isProfilesError.value;
+});
+
+const isLoading = computed(() => {
+    return isLoadingProfiles.value;
+});
+
+const isFiltering = computed(() => {
+    return filters.value.query != null || filters.value.state != null;
+});
+</script>
+
+<template>
+    <PageContent>
+        <ManageBreadcrumb :items="breadcrumbs" />
+
+        <PageTitle title="Leden">
+            <template #actions>
+                <PageHeaderButton
+                    severity="primary"
+                    label="Lid Toevoegen"
+                    @click="showProfileAddDialog = true">
+                    <FontAwesomeIcon :icon="faPlus" />
+                </PageHeaderButton>
+            </template>
+        </PageTitle>
+
+        <PageFilters :is-filtering="isFiltering">
+            <SearchField
+                v-model="searchQuery"
+                :placeholder="$t('pages.manage.institution.profiles.search')"
+                :loading="isFetching"
+                @input="onSearchChange">
+            </SearchField>
+            <ProfileStateSelect v-model:status="filters.state" />
+        </PageFilters>
+
+        <p class="text-slate-600">
+            Profielen die met een account verbonden zijn aan deze instelling en hebben ingelogd op
+            Blokmap.
+        </p>
+
+        <LoaderError v-if="isError" :errors="[profilesError]" />
+
+        <ProfileTable v-else :profiles="profiles?.data" :loading="isLoading" hide-institution>
+        </ProfileTable>
+
+        <Paginator
+            :first="first(profiles)"
+            :rows="profiles?.perPage"
+            :total-records="profiles?.total"
+            @page="onPageChange">
+        </Paginator>
+
+        <Teleport to="body">
+            <ProfileAddDialog
+                v-model:visible="showProfileAddDialog"
+                :pending="isAddingProfile"
+                @click:submit="addInstitutionProfile">
+            </ProfileAddDialog>
+        </Teleport>
+    </PageContent>
+</template>
+
+<style scoped>
+@reference '@/assets/styles/main.css';
+</style>

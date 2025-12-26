@@ -137,6 +137,8 @@ export function useReadLocationReservations(
 ): CompQuery<Reservation[]> {
     const enabled = computed(() => toValue(locationId) !== null);
 
+    console.log(['reservations', 'list', 'byLocation', locationId, filters]);
+
     const query = useQuery<Reservation[], AxiosError>({
         ...options,
         enabled,

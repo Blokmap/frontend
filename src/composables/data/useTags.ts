@@ -19,7 +19,7 @@ import type {
 } from '@/utils/composable';
 import type { AxiosError } from 'axios';
 
-export function useReadTags(options: CompQueryOptions): CompQuery<Tag[]> {
+export function useReadTags(options: CompQueryOptions = {}): CompQuery<Tag[]> {
     const query = useQuery<Tag[], AxiosError>({
         ...options,
         queryKey: ['tags', 'list'],
@@ -29,7 +29,7 @@ export function useReadTags(options: CompQueryOptions): CompQuery<Tag[]> {
     return query;
 }
 
-export function useCreateTag(options: CompMutationOptions): CompMutation<TagRequest, Tag> {
+export function useCreateTag(options: CompMutationOptions = {}): CompMutation<TagRequest, Tag> {
     const mutation = useMutation({
         ...options,
         mutationFn: createTag,
@@ -38,7 +38,9 @@ export function useCreateTag(options: CompMutationOptions): CompMutation<TagRequ
     return mutation;
 }
 
-export function useUpdateTag(options: CompMutationOptions): CompMutation<UpdateTagParams, Tag> {
+export function useUpdateTag(
+    options: CompMutationOptions = {},
+): CompMutation<UpdateTagParams, Tag> {
     const mutation = useMutation({
         ...options,
         mutationFn: updateTag,
@@ -47,7 +49,7 @@ export function useUpdateTag(options: CompMutationOptions): CompMutation<UpdateT
     return mutation;
 }
 
-export function useDeleteTag(options: CompMutationOptions): CompMutation<number, void> {
+export function useDeleteTag(options: CompMutationOptions = {}): CompMutation<number, void> {
     const mutation = useMutation({
         ...options,
         mutationFn: deleteTag,
@@ -57,7 +59,7 @@ export function useDeleteTag(options: CompMutationOptions): CompMutation<number,
 }
 
 export function useSetLocationTags(
-    options: CompMutationOptions,
+    options: CompMutationOptions = {},
 ): CompMutation<SetLocationTagParams, Location> {
     const mutation = useMutation({
         ...options,

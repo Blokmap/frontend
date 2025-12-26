@@ -1,5 +1,5 @@
 import type { Profile } from '../profile';
-import type { Translation } from '../translation';
+import type { Translation, TranslationRequest } from '../translation';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 export type Tag = {
@@ -14,7 +14,7 @@ export type Tag = {
 };
 
 export type TagRequest = {
-    name: Translation;
+    name: TranslationRequest;
     key: string;
-    icon: string | null;
+    icon: string | null | undefined;
 };

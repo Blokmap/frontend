@@ -1,6 +1,6 @@
 import { startOfDay, datesInRange } from '@/utils/date';
 import type { TimeSlot, TimeSlottable } from '../calendarTypes';
-import type { OpeningTimeBody } from '@/domain/openings';
+import type { OpeningTimeRequest } from '@/domain/openings';
 
 /**
  * Convert a TimeSlottable object to a TimeSlot, optionally attaching metadata.
@@ -34,11 +34,11 @@ export function toTimeslots<T extends TimeSlottable = TimeSlottable>(
  * @param openingRequests - An array of OpeningTimeBody objects.
  */
 export function openingRequestsToTimeSlots(
-    openingRequests: OpeningTimeBody[],
-): TimeSlot<OpeningTimeBody>[] {
+    openingRequests: OpeningTimeRequest[],
+): TimeSlot<OpeningTimeRequest>[] {
     const repetitions = openingRequests.filter((t) => !!t.repetition);
 
-    const timeslots: TimeSlot<OpeningTimeBody>[] = openingRequests
+    const timeslots: TimeSlot<OpeningTimeRequest>[] = openingRequests
         .filter((t) => !t.repetition)
         .map((t) => toTimeslot(t));
 

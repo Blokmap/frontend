@@ -24,7 +24,7 @@ export type Institution = {
     aclType: 'Blacklist' | 'Whitelist';
 };
 
-export type InstitutionBody = {
+export type InstitutionRequest = {
     category: InstitutionCategory;
     name: TranslationRequest;
     slug: string;

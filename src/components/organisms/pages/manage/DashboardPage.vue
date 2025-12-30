@@ -15,7 +15,6 @@ const props = defineProps<{
 
 const profileId = computed(() => props.profile.id);
 
-// Fetch all memberships for overview
 const { data: locationMemberships, isLoading: locationsLoading } =
     useReadProfileLocationMemberships(profileId);
 
@@ -25,9 +24,9 @@ const { data: authorityMemberships, isLoading: authoritiesLoading } =
 const { data: institutionMemberships, isLoading: institutionsLoading } =
     useReadProfileInstitutionMemberships(profileId);
 
-const isLoading = computed(
-    () => locationsLoading.value || authoritiesLoading.value || institutionsLoading.value,
-);
+const isLoading = computed(() => {
+    return locationsLoading.value || authoritiesLoading.value || institutionsLoading.value;
+});
 </script>
 
 <template>

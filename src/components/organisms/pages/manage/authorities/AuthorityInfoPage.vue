@@ -11,7 +11,7 @@ import {
     useUpdateAuthorityLogo,
     useDeleteAuthorityLogo,
 } from '@/composables/data/useAuthorities';
-import { type Authority, type AuthorityBody } from '@/domain/authority';
+import { type Authority, type AuthorityRequest } from '@/domain/authority';
 import { getInstitutionName } from '@/domain/institution';
 import type { Profile } from '@/domain/profile';
 
@@ -26,7 +26,7 @@ const { mutateAsync: updateAuthority, isPending: isUpdatingAuthority } = useUpda
 
 const infoEditMode = ref(false);
 
-async function saveAuthority(data: AuthorityBody) {
+async function saveAuthority(data: AuthorityRequest) {
     await updateAuthority({ id: props.authority.id, data });
     infoEditMode.value = false;
 }

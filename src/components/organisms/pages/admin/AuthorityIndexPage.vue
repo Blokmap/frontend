@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Paginator from 'primevue/paginator';
-import SearchField from '@/components/atoms/SearchField.vue';
+import SearchInput from '@/components/atoms/SearchInput.vue';
 import AuthorityActionMenu from '@/components/molecules/authority/AuthorityActionMenu.vue';
 import AuthorityTable from '@/components/molecules/authority/AuthorityTable.vue';
 import { debouncedWatch } from '@vueuse/core';
@@ -41,7 +41,7 @@ const { data: authorities, isPending: isPendingAuthorities } = useReadAuthoritie
         <PageTitle title="Autoriteiten" />
 
         <PageFilters>
-            <SearchField v-model="query" placeholder="Zoek autoriteiten..." />
+            <SearchInput v-model="query" placeholder="Zoek autoriteiten..." />
         </PageFilters>
 
         <AuthorityTable :authorities="authorities?.data" :loading="isPendingAuthorities">

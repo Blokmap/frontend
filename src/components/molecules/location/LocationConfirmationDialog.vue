@@ -41,17 +41,12 @@ function onCancel() {
 </script>
 
 <template>
-    <Dialog
-        v-model:visible="visible"
-        modal
-        :closable="!isLoading"
-        :dismissable-mask="!isLoading"
-        content-class="rounded-lg">
+    <Dialog v-model:visible="visible" :closable="!isLoading" :dismissable-mask="!isLoading" modal>
         <template #header>
             <h3 class="text-lg font-semibold text-gray-900">Locatie afkeuren</h3>
         </template>
 
-        <div class="space-y-4">
+        <div class="max-w-[500px] space-y-4">
             <p class="text-gray-600">
                 Weet je zeker dat je <strong>"{{ props.location?.name }}"</strong> wilt afkeuren?
                 Als je een reden opgeeft wordt deze getoond aan de gebruiker die de locatie heeft

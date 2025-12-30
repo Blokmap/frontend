@@ -23,7 +23,7 @@ export type OpeningTime = {
     updatedBy?: Profile | null;
 };
 
-export type OpeningTimeBody = {
+export type OpeningTimeRequest = {
     id?: number;
     sequenceId?: string | null;
     day: Date;

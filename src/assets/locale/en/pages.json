@@ -37,7 +37,8 @@
         "filters": {
             "foundResultsTruncated": "More than {count} results found.",
             "foundResults": "One study location found | {count} study locations found",
-            "showingLocations": "{perPage} location out of {total} shown. Use the filters to refine your search. | {perPage} locations out of {total} shown. Use the filters to refine your search.",
+            "subtitleNoFilters": "No filters active. Use filters to refine results.",
+            "showingLocations": "{shown} location out of {total} shown. Use the filters to refine your search. | {shown} locations out of {total} shown. Use the filters to refine your search.",
             "adjustCriteria": "Try adjusting your search criteria or filters.",
             "flyToNearest": "Fly to nearest Blokspot"
         },

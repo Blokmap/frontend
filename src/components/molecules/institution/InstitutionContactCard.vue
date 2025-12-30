@@ -5,7 +5,11 @@ import CardValue from '@/components/molecules/CardValue.vue';
 import EditableCard from '@/components/organisms/EditableCard.vue';
 import { faPhone } from '@fortawesome/free-solid-svg-icons';
 import { ref, watchEffect } from 'vue';
-import { institutionToRequest, type Institution, type InstitutionBody } from '@/domain/institution';
+import {
+    institutionToRequest,
+    type Institution,
+    type InstitutionRequest,
+} from '@/domain/institution';
 
 const props = defineProps<{
     institution: Institution;
@@ -13,12 +17,12 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    save: [data: InstitutionBody];
+    save: [data: InstitutionRequest];
 }>();
 
 const editMode = defineModel<boolean>('editMode', { default: false });
 
-const form = ref<InstitutionBody>(institutionToRequest(props.institution));
+const form = ref<InstitutionRequest>(institutionToRequest(props.institution));
 
 watchEffect(() => {
     form.value = institutionToRequest(props.institution);

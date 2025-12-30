@@ -12,7 +12,7 @@ import {
     updateAuthorityMember,
     updateInstitutionMember,
     updateLocationMember,
-    type UpdateMemberBody,
+    type UpdateMemberRequest,
     type Member,
     type LocationMembership,
     readProfileLocationMemberships,
@@ -20,13 +20,13 @@ import {
     readProfileAuthorityMemberships,
     type InstitutionMembership,
     readProfileInstitutionMemberships,
-    type CreateMemberBody,
+    type CreateMemberRequest,
     addLocationMember,
     createLocationRole,
     updateLocationRole,
     deleteLocationRole,
-    type CreateRoleBody,
-    type UpdateRoleBody,
+    type CreateRoleRequest,
+    type UpdateRoleRequest,
     readAuthorityRoles,
     readInstitutionRoles,
     readLocationRoles,
@@ -37,7 +37,6 @@ import {
     createInstitutionRole,
     updateInstitutionRole,
     deleteInstitutionRole,
-    type RecursivePermissions,
     readLocationMemberPermissions,
     readAuthorityMemberPermissions,
     readInstitutionMemberPermissions,
@@ -45,6 +44,7 @@ import {
 } from '@/domain/member';
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
+import type { RecursivePermissions } from '@/domain/auth';
 import type { AuthorityIncludes } from '@/domain/authority';
 import type { LocationFilter, LocationIncludes } from '@/domain/location';
 import type {
@@ -113,7 +113,7 @@ export function useReadInstitutionMembers(
 
 export type AddMemberParams = {
     id: number;
-    body: CreateMemberBody;
+    body: CreateMemberRequest;
 };
 
 /**
@@ -150,7 +150,7 @@ export function useAddAuthorityMember(
 export type UpdateMemberParams = {
     id: number;
     memberId: string;
-    body: UpdateMemberBody;
+    body: UpdateMemberRequest;
 };
 
 /**
@@ -285,7 +285,7 @@ export type DeleteMemberParams = {
     memberId: string;
 };
 
-export function useDeleteMemberFromInstitution(
+export function useDeleteInstitutionMember(
     options: CompMutationOptions = {},
 ): CompMutation<DeleteMemberParams> {
     const queryClient = useQueryClient();
@@ -492,13 +492,13 @@ export function useReadProfileInstitutionMemberships(
 
 export type CreateRoleParams = {
     id: number;
-    body: CreateRoleBody;
+    body: CreateRoleRequest;
 };
 
 export type UpdateRoleParams = {
     id: number;
     roleId: number;
-    body: UpdateRoleBody;
+    body: UpdateRoleRequest;
 };
 
 export type DeleteRoleParams = {
@@ -910,6 +910,3 @@ export function useReadInstitutionMemberPermissions(
 
     return query;
 }
-
-// Alias for consistency with naming convention
-export const useDeleteInstitutionMember = useDeleteMemberFromInstitution;

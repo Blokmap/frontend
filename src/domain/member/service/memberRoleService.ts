@@ -2,7 +2,7 @@ import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
 import { transformResponseFactory } from '@/utils/serviceUtils';
 import { parseRoleResponse } from '../memberParser';
-import type { CreateRoleBody, Role, UpdateRoleBody } from '../types';
+import type { CreateRoleRequest, Role, UpdateRoleRequest } from '../types';
 
 /**
  * Fetches the roles for a specific location.
@@ -65,7 +65,10 @@ export async function readInstitutionRoles(institutionId: number): Promise<Role[
  * @param body - The role data to create.
  * @returns A promise that resolves to the created role.
  */
-export async function createLocationRole(locationId: number, body: CreateRoleBody): Promise<Role> {
+export async function createLocationRole(
+    locationId: number,
+    body: CreateRoleRequest,
+): Promise<Role> {
     const endpoint = endpoints.locations.roles.create.replace('{id}', locationId.toString());
 
     const transformResponse = transformResponseFactory(parseRoleResponse);
@@ -88,7 +91,7 @@ export async function createLocationRole(locationId: number, body: CreateRoleBod
 export async function updateLocationRole(
     locationId: number,
     roleId: number,
-    body: UpdateRoleBody,
+    body: UpdateRoleRequest,
 ): Promise<Role> {
     const endpoint = endpoints.locations.roles.update
         .replace('{id}', locationId.toString())
@@ -127,7 +130,7 @@ export async function deleteLocationRole(locationId: number, roleId: number): Pr
  */
 export async function createAuthorityRole(
     authorityId: number,
-    body: CreateRoleBody,
+    body: CreateRoleRequest,
 ): Promise<Role> {
     const endpoint = endpoints.authorities.roles.create.replace('{id}', authorityId.toString());
 
@@ -151,7 +154,7 @@ export async function createAuthorityRole(
 export async function updateAuthorityRole(
     authorityId: number,
     roleId: number,
-    body: UpdateRoleBody,
+    body: UpdateRoleRequest,
 ): Promise<Role> {
     const endpoint = endpoints.authorities.roles.update
         .replace('{id}', authorityId.toString())
@@ -190,7 +193,7 @@ export async function deleteAuthorityRole(authorityId: number, roleId: number): 
  */
 export async function createInstitutionRole(
     institutionId: number,
-    body: CreateRoleBody,
+    body: CreateRoleRequest,
 ): Promise<Role> {
     const endpoint = endpoints.institutions.roles.create.replace('{id}', institutionId.toString());
 
@@ -214,7 +217,7 @@ export async function createInstitutionRole(
 export async function updateInstitutionRole(
     institutionId: number,
     roleId: number,
-    body: UpdateRoleBody,
+    body: UpdateRoleRequest,
 ): Promise<Role> {
     const endpoint = endpoints.institutions.roles.update
         .replace('{id}', institutionId.toString())

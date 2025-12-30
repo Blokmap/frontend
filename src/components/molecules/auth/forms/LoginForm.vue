@@ -6,7 +6,7 @@ import InputText from 'primevue/inputtext';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ref } from 'vue';
-import type { LoginBody } from '@/domain/auth';
+import type { LoginRequest } from '@/domain/auth';
 
 defineProps<{
     error?: Error | null;
@@ -14,10 +14,10 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'submit', form: LoginBody): Promise<unknown>;
+    (e: 'submit', form: LoginRequest): Promise<unknown>;
 }>();
 
-const form = ref<LoginBody>({
+const form = ref<LoginRequest>({
     username: '',
     password: '',
     remember: false,

@@ -18,7 +18,7 @@ import {
     useUpdateAuthorityRole,
 } from '@/composables/data/useMembers';
 import { getInstitutionName } from '@/domain/institution';
-import { type CreateRoleBody, type Role } from '@/domain/member';
+import { type CreateRoleRequest, type Role } from '@/domain/member';
 import type { Authority } from '@/domain/authority';
 import type { Profile } from '@/domain/profile';
 
@@ -52,7 +52,7 @@ const { mutate: updateRole, isPending: updateIsPending } = useUpdateAuthorityRol
     },
 });
 
-function onSubmitRole(form: CreateRoleBody): void {
+function onSubmitRole(form: CreateRoleRequest): void {
     if (selectedRole.value) {
         // Update existing role
         updateRole({

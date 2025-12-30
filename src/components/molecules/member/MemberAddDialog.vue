@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';
 import { computed, ref } from 'vue';
 import { useFindProfiles } from '@/composables/data/useProfile';
-import type { CreateMemberBody, Role } from '@/domain/member';
+import type { CreateMemberRequest, Role } from '@/domain/member';
 import type { FoundProfile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -20,7 +20,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    'click:submit': [form: CreateMemberBody];
+    'click:submit': [form: CreateMemberRequest];
 }>();
 
 const isVisible = defineModel<boolean>('isVisible', {
@@ -29,7 +29,7 @@ const isVisible = defineModel<boolean>('isVisible', {
 
 const selectedProfile = ref<FoundProfile | null>(null);
 
-const form = ref<CreateMemberBody>({
+const form = ref<CreateMemberRequest>({
     username: '',
     roleId: null,
 });

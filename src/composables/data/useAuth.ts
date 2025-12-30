@@ -3,7 +3,7 @@ import { type Ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { readAuthProfile, login, logout, register } from '@/domain/auth';
 import { invalidateQueries } from './queryCache';
-import type { LoginBody, RegisterBody } from '@/domain/auth';
+import type { LoginRequest, RegisterRequest } from '@/domain/auth';
 import type { Profile } from '@/domain/profile';
 import type {
     CompMutation,
@@ -64,7 +64,7 @@ export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<v
  *
  * @returns The mutation object for logging in.
  */
-export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<LoginBody> {
+export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<LoginRequest> {
     const client = useQueryClient();
     const router = useRouter();
 
@@ -95,7 +95,7 @@ export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<Lo
  *
  * @returns The mutation object for registering a new user.
  */
-export function useAuthRegister(options: CompMutationOptions = {}): CompMutation<RegisterBody> {
+export function useAuthRegister(options: CompMutationOptions = {}): CompMutation<RegisterRequest> {
     const client = useQueryClient();
 
     const mutation = useMutation({

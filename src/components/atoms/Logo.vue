@@ -1,21 +1,18 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-
-const variantClasses = computed(() => {
-    return 'bg-primary text-primary-contrast shadow-playful';
-});
+import Stroke from '@/components/atoms/Stroke.vue';
 </script>
 
 <template>
     <div class="relative">
-        <div class="logo" :class="variantClasses">
+        <div class="logo">
+            <Stroke class="stroke" />
             <span class="letters">
                 <span
                     v-for="(char, i) in 'Blokmap'"
                     :key="i"
-                    :style="{ animationDelay: `${0.6 + i * 0.04}s` }"
-                    >{{ char }}</span
-                >
+                    :style="{ animationDelay: `${0.6 + i * 0.04}s` }">
+                    {{ char }}
+                </span>
             </span>
         </div>
     </div>
@@ -25,28 +22,23 @@ const variantClasses = computed(() => {
 @reference '@/assets/styles/main.css';
 
 .logo {
-    @apply flex w-fit items-center rounded-lg px-2 py-1;
-    @apply cursor-pointer font-black tracking-tight uppercase select-none;
-    @apply text-2xl md:text-3xl;
-    @apply transition-all duration-300;
-
-    --shadow-color: var(--color-primary-600);
-
-    animation: logo-entrance 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-
-    @apply opacity-0;
-
-    &:hover {
-        @apply scale-110;
-    }
+    @apply relative flex w-fit items-center px-4 py-2;
+    @apply cursor-pointer font-black tracking-tight select-none;
+    @apply text-2xl;
 
     .letters {
-        @apply flex items-center;
+        @apply text-primary-contrast relative z-10 flex items-center;
 
         span {
             @apply flex opacity-0;
             animation: letter-entrance 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
         }
+    }
+
+    .stroke {
+        @apply absolute top-1/2 left-1/2 h-full w-full;
+        @apply origin-center -translate-x-1/2 -translate-y-1/2 scale-x-115 scale-y-145;
+        @apply pointer-events-none select-none;
     }
 }
 

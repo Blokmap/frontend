@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 withDefaults(
     defineProps<{
-        severity?: 'info' | 'warn' | 'error' | 'success';
+        severity?: 'success' | 'info' | 'warn' | 'error' | 'secondary' | 'contrast';
         message?: string;
         icon?: IconDefinition;
         showIcon?: boolean;
@@ -27,6 +27,8 @@ const icons = {
     warn: faExclamationTriangle,
     error: faTimesCircle,
     success: faCheckCircle,
+    contrast: faInfoCircle,
+    secondary: faInfoCircle,
 };
 </script>
 

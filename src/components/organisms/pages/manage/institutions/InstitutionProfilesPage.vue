@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Paginator from 'primevue/paginator';
-import SearchField from '@/components/atoms/SearchField.vue';
+import SearchInput from '@/components/atoms/SearchInput.vue';
 import ManageBreadcrumb, { type BreadcrumbItem } from '@/components/molecules/Breadcrumb.vue';
 import ProfileAddDialog from '@/components/molecules/profile/ProfileAddDialog.vue';
 import ProfileStateSelect from '@/components/molecules/profile/forms/ProfileStateSelect.vue';
@@ -115,12 +115,12 @@ const isFiltering = computed(() => {
         </PageTitle>
 
         <PageFilters :is-filtering="isFiltering">
-            <SearchField
+            <SearchInput
                 v-model="searchQuery"
                 :placeholder="$t('pages.manage.institution.profiles.search')"
                 :loading="isFetching"
                 @input="onSearchChange">
-            </SearchField>
+            </SearchInput>
             <ProfileStateSelect v-model:status="filters.state" />
         </PageFilters>
 

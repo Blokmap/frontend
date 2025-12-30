@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
-import SearchField from '@/components/atoms/SearchField.vue';
+import SearchInput from '@/components/atoms/SearchInput.vue';
 import ManageBreadcrumb from '@/components/molecules/Breadcrumb.vue';
 import DateInput from '@/components/molecules/form/DateInput.vue';
 import ReservationScanner from '@/components/molecules/reservation/ReservationScanner.vue';
@@ -134,10 +134,10 @@ const breadcrumbs = computed(() => [
                 <DateInput input-id="day" v-model:date="selectedDay" />
             </div>
             <!-- Search -->
-            <SearchField
+            <SearchInput
                 v-model="searchQuery"
                 placeholder="Zoek op naam, gebruikersnaam of e-mail...">
-            </SearchField>
+            </SearchInput>
             <!-- State -->
         </PageFilters>
 

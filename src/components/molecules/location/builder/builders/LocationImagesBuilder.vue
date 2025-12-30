@@ -19,12 +19,12 @@ import {
     SUPPORTED_IMAGE_FORMATS,
 } from '@/domain/image/imageConstants';
 import { LOCATION_SETTINGS } from '@/domain/location';
-import type { ImageBody } from '@/domain/image';
+import type { ImageRequest } from '@/domain/image';
 
-const images = defineModel<ImageBody[]>({ required: true, default: () => [] });
+const images = defineModel<ImageRequest[]>({ required: true, default: () => [] });
 
 const urlInput = ref<string>('');
-const draggedImage = ref<ImageBody | null>(null);
+const draggedImage = ref<ImageRequest | null>(null);
 
 const showAddDialog = ref<boolean>(false);
 const isDragging = ref<boolean>(false);
@@ -124,7 +124,7 @@ function openAddDialog(): void {
  * @param event The drag event.
  * @param image The image being dragged.
  */
-function onDragStart(event: DragEvent, image: ImageBody): void {
+function onDragStart(event: DragEvent, image: ImageRequest): void {
     draggedImage.value = image;
     isDragging.value = true;
     if (event.dataTransfer) {
@@ -151,7 +151,7 @@ function onDragOver(event: DragEvent): void {
  * @param event The drag event.
  * @param targetImage The target image where the dragged image is dropped.
  */
-function onDrop(event: DragEvent, targetImage: ImageBody): void {
+function onDrop(event: DragEvent, targetImage: ImageRequest): void {
     event.preventDefault();
 
     if (!draggedImage.value || draggedImage.value === targetImage) return;

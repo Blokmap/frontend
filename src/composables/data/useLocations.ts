@@ -34,7 +34,7 @@ import {
 } from '@/domain/reservation';
 import { useToast } from '../store/useToast';
 import { invalidateQueries } from './queryCache';
-import type { ImageReorderBody, ImageBody } from '@/domain/image';
+import type { ImageReorderRequest, ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type {
     CompMutation,
@@ -305,7 +305,7 @@ export function useUpdateLocation(
 
 export type CreateLocationImageParams = {
     locationId: number;
-    image: ImageBody;
+    image: ImageRequest;
 };
 
 /**
@@ -386,7 +386,7 @@ export function useDeleteLocationImage(
 
 export type ReorderLocationImagesParams = {
     locationId: number;
-    reorders: ImageReorderBody[];
+    reorders: ImageReorderRequest[];
 };
 
 export function useReorderLocationImages(
@@ -423,8 +423,8 @@ export function useReorderLocationImages(
 
 export type UpdateLocationImagesParams = {
     locationId: number;
-    originalImages: ImageBody[];
-    currentImages: ImageBody[];
+    originalImages: ImageRequest[];
+    currentImages: ImageRequest[];
 };
 
 /**
@@ -486,7 +486,7 @@ export function useUpdateLocationImages(
 
             // Step 3: Reorder ONLY existing images that weren't deleted
             // New images were created with correct index, no need to reorder them
-            const reorders: ImageReorderBody[] = currentImages
+            const reorders: ImageReorderRequest[] = currentImages
                 .filter((img) => !!img.id)
                 .map((img) => ({
                     imageId: img.id!,

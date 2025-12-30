@@ -134,7 +134,7 @@ function goBack() {
                 v-slot="{ Component, route }"
                 :institution="institution"
                 :auth-profile="authProfile">
-                <Transition name="fade-slide-up" mode="out-in">
+                <Transition name="fade-slide-up" mode="out-in" appear>
                     <component :is="Component" :key="route.path" />
                 </Transition>
             </RouterView>

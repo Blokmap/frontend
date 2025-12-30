@@ -5,8 +5,7 @@
     @apply text-surface-700 dark:text-surface-0;
     @apply placeholder:text-surface-500 dark:placeholder:text-surface-400;
 
-    @apply shadow-playful-no-transform border-slate-200;
-    --shadow-color: var(--color-slate-200);
+    @apply border-slate-200;
 
     @apply disabled:bg-surface-200 disabled:text-surface-500;
     @apply dark:disabled:bg-surface-700 dark:disabled:text-surface-400;

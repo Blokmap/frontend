@@ -13,7 +13,6 @@ import { useSearchLocations, useNearestLocation } from '@/composables/data/useLo
 import { useMapBox } from '@/composables/maps/useMapBox';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { usePagination } from '@/composables/usePagination';
-import { hasNextPage } from '@/utils/pagination';
 import type { NearestLocation } from '@/domain/location';
 
 // Needed for KeepAlive
@@ -44,7 +43,7 @@ function onNearestClick(): void {
     }
 }
 
-const blokMapRef = useTemplateRef('blokMapRef');
+const blokMapRef = useTemplateRef('blokmap');
 const mapContainerRef = computed(() => blokMapRef.value?.$el ?? null);
 const map = useMapBox(mapContainerRef, config.value);
 
@@ -100,88 +99,69 @@ const transitionKey = computed<string | undefined>(() => {
 </script>
 
 <template>
-    <div class="page-container">
-        <div class="locations-list">
-            <div v-if="showLoading" class="mt-2">
-                <Skeleton height="2rem" />
-            </div>
+    <div class="locs">
+        <div class="locs__sidebar">
+            <Skeleton v-if="showLoading" height="2rem" />
 
-            <div class="space-y-4" v-else>
-                <h2 class="flex items-center justify-between text-xl font-extrabold">
-                    <template v-if="locations?.data?.length">
-                        <span v-if="locations.truncated">
-                            {{
-                                $t('pages.locations.filters.foundResultsTruncated', locations.total)
-                            }}
-                        </span>
-                        <span v-else>
-                            {{ $t('pages.locations.filters.foundResults', locations.total) }}
-                        </span>
-                    </template>
-                    <template v-else>
-                        <span>
-                            {{ $t('general.errors.noResultsExact') }}
-                        </span>
-                    </template>
+            <div v-else class="locs__header">
+                <h2 class="locs__title">
+                    <span v-if="locations?.data?.length">
+                        {{
+                            locations.truncated
+                                ? $t(
+                                      'pages.locations.filters.foundResultsTruncated',
+                                      locations.total,
+                                  )
+                                : $t('pages.locations.filters.foundResults', locations.total)
+                        }}
+                    </span>
+                    <span v-else>{{ $t('general.errors.noResultsExact') }}</span>
 
-                    <FontAwesomeIcon
-                        class="cursor-pointer text-slate-600 hover:text-slate-700"
-                        :icon="faFilter">
-                    </FontAwesomeIcon>
+                    <FontAwesomeIcon class="locs__filter-icon" :icon="faFilter" />
                 </h2>
 
-                <template v-if="locations && hasNextPage(locations)">
-                    <p class="text-slate-500">
-                        {{
-                            $t(
-                                'pages.locations.filters.showingLocations',
-                                { perPage: locations.perPage, total: locations.total },
-                                locations.perPage,
-                            )
-                        }}
-                    </p>
-                </template>
+                <p v-if="locations?.data?.length" class="locs__meta">
+                    {{
+                        $t(
+                            'pages.locations.filters.showingLocations',
+                            { shown: locations.data.length, total: locations.total },
+                            locations.data.length,
+                        )
+                    }}
+                </p>
 
-                <template v-if="!locations?.data?.length">
-                    <p class="text-slate-600">
-                        {{ $t('pages.locations.filters.adjustCriteria') }}
-                    </p>
-                    <p class="cursor-pointer text-slate-600 underline" @click="onNearestClick">
+                <template v-else>
+                    <p class="locs__meta">{{ $t('pages.locations.filters.adjustCriteria') }}</p>
+                    <p class="locs__meta locs__meta--link" @click="onNearestClick">
                         {{ $t('pages.locations.filters.flyToNearest') }}
-                        <FontAwesomeIcon :icon="faArrowRight" v-if="!isFlyingToNearestLocation" />
-                        <FontAwesomeIcon :icon="faSpinner" spin v-else />
+                        <FontAwesomeIcon
+                            :icon="isFlyingToNearestLocation ? faSpinner : faArrowRight"
+                            :spin="isFlyingToNearestLocation">
+                        </FontAwesomeIcon>
                     </p>
                 </template>
             </div>
 
-            <template v-if="showLoading">
-                <div class="locations-grid">
-                    <template v-for="n in previousLocationCount" :key="n">
-                        <div class="locations-grid__item">
-                            <LocationDetailCardSkeleton />
-                        </div>
-                    </template>
+            <div v-if="showLoading" class="locs-grid">
+                <div v-for="n in previousLocationCount" :key="n">
+                    <LocationDetailCardSkeleton />
                 </div>
-            </template>
+            </div>
 
             <Transition v-else name="fade" mode="out-in">
                 <TransitionGroup
                     v-if="!showLoading"
                     :key="transitionKey"
                     name="staggered-cards"
-                    class="locations-grid"
+                    class="locs-grid"
                     tag="div"
                     appear>
                     <div
                         v-for="(location, index) in locations?.data"
                         :key="location.id"
-                        class="locations-grid__item"
                         :style="{ '--i': index }">
                         <LocationDetailCard
-                            :to="{
-                                name: 'locations.detail',
-                                params: { locationId: location.id },
-                            }"
+                            :to="{ name: 'locations.detail', params: { locationId: location.id } }"
                             :location="location"
                             :show-navigation-buttons="false">
                         </LocationDetailCard>
@@ -198,12 +178,11 @@ const transitionKey = computed<string | undefined>(() => {
             </Paginator>
         </div>
 
-        <div class="map-container sticky top-4">
+        <div class="locs__map">
             <BlokMap
-                ref="blokMapRef"
-                class="shadow-md"
+                ref="blokmap"
+                class="locs__map-inner"
                 :map="map"
-                :style="{ height: 'calc(100vh - 2rem)' }"
                 :locations="locations?.data"
                 :loading="showLoading">
             </BlokMap>
@@ -214,29 +193,43 @@ const transitionKey = computed<string | undefined>(() => {
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.page-container {
-    @apply flex w-full flex-col items-stretch gap-3;
-    @apply md:flex-row md:items-start md:gap-6;
-}
+.locs {
+    @apply flex w-full flex-col items-stretch gap-3 md:flex-row md:items-start md:gap-6;
 
-.locations-list {
-    @apply hidden w-full flex-col space-y-6;
-    @apply md:flex md:w-1/2;
-}
-
-.map-container {
-    @apply md:mx-0 md:my-0 md:flex md:w-1/2;
-}
-
-.locations-grid {
-    @apply relative grid grid-cols-2 gap-6 xl:grid-cols-3;
-
-    .locations-grid__item {
-        @apply block;
+    .locs__sidebar {
+        @apply hidden w-full flex-col space-y-6 md:flex md:w-1/2;
     }
 
-    .locations-grid__link {
-        @apply block h-full;
+    .locs__header {
+        @apply space-y-4;
+    }
+
+    .locs__title {
+        @apply flex items-center justify-between text-2xl font-bold;
+    }
+
+    .locs__filter-icon {
+        @apply cursor-pointer text-slate-600 hover:text-slate-700;
+    }
+
+    .locs__meta {
+        @apply text-slate-500;
+
+        &.locs__meta--link {
+            @apply cursor-pointer underline;
+        }
+    }
+
+    .locs-grid {
+        @apply relative grid grid-cols-2 gap-6 xl:grid-cols-3;
+    }
+
+    .locs__map {
+        @apply sticky top-4 md:flex md:w-1/2;
+
+        .locs__map-inner {
+            @apply h-[calc(100vh-2rem)] shadow-md;
+        }
     }
 }
 </style>

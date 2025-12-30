@@ -10,8 +10,8 @@ const { space, k, meta, control } = useMagicKeys();
 const showSpotlight = ref<boolean>(false);
 
 watchEffect(() => {
-    const isMetaKey = k.value || meta.value;
-    const isToggleKey = space.value || control.value;
+    const isMetaKey = control.value || meta.value;
+    const isToggleKey = space.value || k.value;
 
     if (isMetaKey && isToggleKey) {
         showSpotlight.value = !showSpotlight.value;

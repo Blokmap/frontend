@@ -20,7 +20,7 @@
 
 @theme {
     --text-base: 16px;
-    --font-serif: 'Roboto', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'Merriweather Sans', ui-sans-serif, system-ui, sans-serif;
 
     --color-ocean-mist-50: oklch(0.962 0.039 160.76);
     --color-ocean-mist-100: oklch(0.922 0.081 165.11);
@@ -236,7 +236,7 @@ body {
 @utility shadow-playful {
     @apply enabled:hover:-translate-y-0.5 enabled:hover:scale-105;
     @apply enabled:active:translate-x-[0.125rem] enabled:active:translate-y-[0.125rem];
-    box-shadow: var(--shadow-size, 0.25rem) var(--shadow-size, 0.25rem) 0
+    box-shadow: var(--shadow-size, 0.2rem) var(--shadow-size, 0.2rem) 0
         var(--shadow-color, currentColor);
 
     /* Make active state more visible on touch devices */

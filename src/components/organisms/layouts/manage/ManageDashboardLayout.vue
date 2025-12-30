@@ -116,7 +116,9 @@ function goBack() {
                         :loading="isLoading"
                         :to="{
                             name: 'manage.locations',
-                            params: { profileId: props.profileId },
+                            params: {
+                                profileId: props.profileId,
+                            },
                         }"
                         :active="route.name === 'manage.locations'">
                         <template #img>
@@ -141,7 +143,9 @@ function goBack() {
                         :key="m.institution.id"
                         :to="{
                             name: 'manage.institution',
-                            params: { institutionId: m.institution.id },
+                            params: {
+                                institutionId: m.institution.id,
+                            },
                         }">
                         <template #img>
                             <EntityAvatar
@@ -217,7 +221,7 @@ function goBack() {
                     <div :key="route.path">
                         <Callout
                             v-if="isOtherProfile && targetProfile"
-                            severity="info"
+                            severity="contrast"
                             class="mb-6">
                             Je bekijkt het beheer van
                             <strong>

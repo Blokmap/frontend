@@ -1,5 +1,5 @@
 import { useIntersectionObserver } from '@vueuse/core';
-import { ref, watch, type Ref } from 'vue';
+import { nextTick, onMounted, ref, watch, type Ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 export type ScrollSpySection = {
@@ -35,6 +35,18 @@ export function useScrollSpy(defaultHash: string, sections: ScrollSpySection[]) 
             observerOptions,
         );
     }
+
+    onMounted(async () => {
+        const activeSection = sections.find((s) => s.hash === activeHash.value);
+        const activeSectionElement = activeSection?.element.value;
+
+        if (activeSectionElement) {
+            await nextTick();
+            activeSectionElement.scrollTo({
+                behavior: 'smooth',
+            });
+        }
+    });
 
     return {
         activeHash,

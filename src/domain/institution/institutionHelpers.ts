@@ -1,6 +1,6 @@
 import { SUPPORTED_LOCALES } from '@/config/i18nConfig';
 import { translationToRequest } from '../translation/translationHelpers';
-import type { Institution, InstitutionBody } from './types';
+import type { Institution, InstitutionRequest } from './types';
 
 /**
  * Converts an Institution to an InstitutionBody for editing.
@@ -8,7 +8,7 @@ import type { Institution, InstitutionBody } from './types';
  * @param institution - The institution object to convert.
  * @returns An InstitutionBody object suitable for forms.
  */
-export function institutionToRequest(institution: Institution): InstitutionBody {
+export function institutionToRequest(institution: Institution): InstitutionRequest {
     return {
         category: institution.category,
         name: translationToRequest(institution.name),

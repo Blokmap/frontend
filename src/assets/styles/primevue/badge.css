@@ -20,11 +20,11 @@
 }
 
 .p-badge-success {
-    @apply bg-timber-green-50 text-timber-green-600;
+    @apply bg-timber-green-100 text-timber-green-800;
 }
 
 .p-badge-info {
-    @apply bg-glacier-50 text-glacier-700;
+    @apply bg-glacier-100 text-glacier-800;
 }
 
 .p-badge-warn {
@@ -32,7 +32,7 @@
 }
 
 .p-badge-danger {
-    @apply border-red-300 bg-red-50 text-red-800;
+    @apply border-red-300 bg-red-100 text-red-800;
 }
 
 .p-badge-contrast {

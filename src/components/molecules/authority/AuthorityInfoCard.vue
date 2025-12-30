@@ -6,7 +6,7 @@ import CardValue from '@/components/molecules/CardValue.vue';
 import EditableCard from '@/components/organisms/EditableCard.vue';
 import { faBuilding } from '@fortawesome/free-solid-svg-icons';
 import { ref, watchEffect } from 'vue';
-import { authorityToRequest, type Authority, type AuthorityBody } from '@/domain/authority';
+import { authorityToRequest, type Authority, type AuthorityRequest } from '@/domain/authority';
 
 const props = defineProps<{
     authority: Authority;
@@ -14,12 +14,12 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    save: [data: AuthorityBody];
+    save: [data: AuthorityRequest];
 }>();
 
 const editMode = defineModel<boolean>('editMode', { default: false });
 
-const form = ref<AuthorityBody>(authorityToRequest(props.authority));
+const form = ref<AuthorityRequest>(authorityToRequest(props.authority));
 
 watchEffect(() => {
     form.value = authorityToRequest(props.authority);

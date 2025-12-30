@@ -18,28 +18,17 @@ const emit = defineEmits<{
 <template>
     <Transition name="slide-up">
         <div v-if="show" class="save-bar">
-            <div class="save-bar__container">
-                <div class="save-bar__content">
-                    <span class="save-bar__text">Je hebt niet-opgeslagen wijzigingen</span>
-                    <div class="save-bar__actions">
-                        <button
-                            @click="emit('cancel')"
-                            :disabled="loading"
-                            class="save-bar__cancel">
-                            <FontAwesomeIcon :icon="faTimes" />
-                            <span class="save-bar__action-text">Annuleren</span>
-                        </button>
-                        <Button
-                            @click="emit('save')"
-                            :loading="loading"
-                            :disabled="disabled"
-                            class="save-bar__save">
-                            <FontAwesomeIcon v-if="loading" :icon="faSpinner" spin />
-                            <FontAwesomeIcon :icon="faSave" v-else />
-                            <span>Opslaan</span>
-                        </Button>
-                    </div>
-                </div>
+            <span class="save-bar__text">Je hebt niet-opgeslagen wijzigingen</span>
+            <div class="save-bar__actions">
+                <button @click="emit('cancel')" :disabled="loading" class="save-bar__cancel">
+                    <FontAwesomeIcon :icon="faTimes" />
+                    <span class="save-bar__action-text">Annuleren</span>
+                </button>
+                <Button @click="emit('save')" :loading="loading" :disabled="disabled">
+                    <FontAwesomeIcon v-if="loading" :icon="faSpinner" spin />
+                    <FontAwesomeIcon :icon="faSave" v-else />
+                    <span>Opslaan</span>
+                </Button>
             </div>
         </div>
     </Transition>
@@ -49,36 +38,27 @@ const emit = defineEmits<{
 @reference '@/assets/styles/main.css';
 
 .save-bar {
-    @apply fixed bottom-0 left-1/2 z-50;
+    @apply fixed right-4 bottom-4 left-4 z-50;
+    @apply md:left-auto md:max-w-xl;
+    @apply flex items-center justify-between gap-4;
+    @apply px-5 py-4;
     @apply bg-primary-700 border-primary-800 rounded-lg border-2 shadow-lg;
-    @apply right-8 bottom-6 lg:left-auto lg:max-w-md;
-}
-
-.save-bar__container {
-    @apply px-4 py-2.5 lg:px-6 lg:py-3;
-}
-
-.save-bar__content {
-    @apply flex items-center justify-between gap-3;
 }
 
 .save-bar__text {
-    @apply min-w-0 flex-1 overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap text-white;
+    @apply font-medium text-white;
+    @apply text-base md:text-sm;
 }
 
 .save-bar__actions {
-    @apply flex flex-shrink-0 items-center justify-end gap-2;
+    @apply flex flex-shrink-0 items-center gap-2;
 }
 
 .save-bar__cancel {
-    @apply flex items-center gap-2 text-sm text-white transition-colors hover:text-slate-300 disabled:opacity-50;
+    @apply flex items-center gap-2 text-white transition-colors hover:text-slate-300 disabled:opacity-50;
 }
 
 .save-bar__action-text {
-    @apply hidden lg:inline;
-}
-
-.save-bar__save {
-    @apply text-sm;
+    @apply hidden md:inline;
 }
 </style>

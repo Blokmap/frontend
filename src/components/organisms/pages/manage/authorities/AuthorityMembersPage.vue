@@ -26,7 +26,7 @@ import { usePagination } from '@/composables/usePagination';
 import { has, InstitutionPermission, type RecursivePermissions } from '@/domain/auth';
 import { getInstitutionName } from '@/domain/institution';
 import type { Authority } from '@/domain/authority';
-import type { CreateMemberBody, MemberFilter } from '@/domain/member';
+import type { CreateMemberRequest, MemberFilter } from '@/domain/member';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -66,7 +66,7 @@ const { mutate: addAuthorityMember, isPending: addMemberIsPending } = useAddAuth
     },
 });
 
-function onAddMember(body: CreateMemberBody): void {
+function onAddMember(body: CreateMemberRequest): void {
     addAuthorityMember({
         id: props.authority.id,
         body,

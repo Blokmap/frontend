@@ -13,7 +13,7 @@ import { useI18n } from 'vue-i18n';
 import {
     institutionToRequest,
     type Institution,
-    type InstitutionBody,
+    type InstitutionRequest,
     INSTITUTION_CATEGORIES,
 } from '@/domain/institution';
 
@@ -23,7 +23,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    save: [data: InstitutionBody];
+    save: [data: InstitutionRequest];
 }>();
 
 const editMode = defineModel<boolean>('editMode', { default: false });
@@ -31,7 +31,7 @@ const editMode = defineModel<boolean>('editMode', { default: false });
 const { locale, t } = useI18n();
 
 const lang = ref<string>(locale.value);
-const form = ref<InstitutionBody>(institutionToRequest(props.institution));
+const form = ref<InstitutionRequest>(institutionToRequest(props.institution));
 
 watchEffect(() => {
     form.value = institutionToRequest(props.institution);

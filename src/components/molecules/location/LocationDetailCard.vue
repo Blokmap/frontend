@@ -85,7 +85,7 @@ const navigate = (): void => {
 @reference '@/assets/styles/main.css';
 
 .location-detail {
-    @apply flex h-full w-full flex-col rounded-xl shadow-md;
+    @apply flex h-full w-full flex-col rounded-xl;
 
     &.clickable {
         @apply cursor-pointer;
@@ -110,7 +110,7 @@ const navigate = (): void => {
     }
 
     .location-detail__content {
-        @apply flex-1 rounded-b-xl bg-white p-4;
+        @apply flex-1 rounded-b-xl border-1 border-slate-200 bg-white p-4;
 
         .location-detail__name {
             @apply truncate text-lg font-semibold;

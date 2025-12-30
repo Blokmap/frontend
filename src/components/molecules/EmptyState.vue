@@ -36,7 +36,7 @@ withDefaults(
 @reference '@/assets/styles/main.css';
 
 .empty-state {
-    @apply rounded-lg bg-white px-6 py-12 text-center shadow-md;
+    @apply rounded-lg border border-slate-200 bg-white px-6 py-12 text-center;
 
     .empty-state__content {
         @apply mx-auto flex max-w-md flex-col items-center gap-3;

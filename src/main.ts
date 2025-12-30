@@ -1,5 +1,6 @@
 import PrimeVuePlugin from 'primevue/config';
 import App from '@/App.vue';
+
 import { VueQueryPlugin } from '@tanstack/vue-query';
 import { createPinia } from 'pinia';
 import { ConfirmationService, FocusTrap, Ripple, ToastService, Tooltip } from 'primevue';
@@ -7,6 +8,7 @@ import { createApp } from 'vue';
 import { i18n } from '@/config/i18nConfig';
 import { vueQueryConfig, primevueConfig } from '@/config/plugin';
 import { router } from '@/config/router';
+import { setupFontAwesome } from './config/faConfig';
 
 // Create the app.
 const app = createApp(App);
@@ -20,6 +22,8 @@ app.use(ConfirmationService);
 
 app.use(VueQueryPlugin, vueQueryConfig);
 app.use(PrimeVuePlugin, primevueConfig);
+
+setupFontAwesome();
 
 // Register directives.
 app.directive('tooltip', Tooltip);

@@ -9,12 +9,12 @@ import {
 } from '../memberParser';
 import type {
     AuthorityMembership,
-    CreateMemberBody,
+    CreateMemberRequest,
     InstitutionMembership,
     LocationMembership,
     Member,
     MemberFilter,
-    UpdateMemberBody,
+    UpdateMemberRequest,
 } from '../types';
 import type { AuthorityIncludes } from '@/domain/authority';
 import type { LocationIncludes } from '@/domain/location';
@@ -54,7 +54,10 @@ export async function readLocationMembers(
  * @param locationId - The ID of the location
  * @param body - The member body containing the username and role ID
  */
-export async function addLocationMember(locationId: number, body: CreateMemberBody): Promise<void> {
+export async function addLocationMember(
+    locationId: number,
+    body: CreateMemberRequest,
+): Promise<void> {
     const endpoint = endpoints.locations.members.add.replace('{id}', locationId.toString());
 
     await client.post(endpoint, body);
@@ -84,7 +87,7 @@ export async function removeLocationMember(locationId: number, profileId: string
 export async function updateLocationMember(
     locationId: number,
     memberId: string,
-    body: UpdateMemberBody,
+    body: UpdateMemberRequest,
 ): Promise<void> {
     const endpoint = endpoints.locations.members.update
         .replace('{id}', locationId.toString())
@@ -145,7 +148,7 @@ export async function readInstitutionMembers(
  */
 export async function addAuthorityMember(
     authorityId: number,
-    body: CreateMemberBody,
+    body: CreateMemberRequest,
 ): Promise<void> {
     const endpoint = endpoints.authorities.members.add.replace('{id}', authorityId.toString());
 
@@ -162,7 +165,7 @@ export async function addAuthorityMember(
 export async function updateAuthorityMember(
     authorityId: number,
     memberId: string,
-    body: UpdateMemberBody,
+    body: UpdateMemberRequest,
 ): Promise<void> {
     const endpoint = endpoints.authorities.members.update
         .replace('{id}', authorityId.toString())
@@ -201,7 +204,7 @@ export async function removeAuthorityMember(authorityId: number, profileId: stri
  */
 export async function addInstitutionMember(
     institutionId: number,
-    body: CreateMemberBody,
+    body: CreateMemberRequest,
 ): Promise<void> {
     const endpoint = endpoints.institutions.members.add.replace('{id}', institutionId.toString());
 
@@ -214,7 +217,7 @@ export async function addInstitutionMember(
 export async function updateInstitutionMember(
     institutionId: number,
     memberId: string,
-    body: UpdateMemberBody,
+    body: UpdateMemberRequest,
 ): Promise<void> {
     const endpoint = endpoints.institutions.members.update
         .replace('{id}', institutionId.toString())

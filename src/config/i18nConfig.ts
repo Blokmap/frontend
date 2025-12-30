@@ -8,6 +8,7 @@ import frFlag from '@/assets/img/flags/fr.svg';
 
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
+export const DEFAULT_LOCALE = 'nl' as const;
 export const SUPPORTED_LOCALES = ['en', 'nl', 'fr'] as const;
 
 /**
@@ -35,22 +36,25 @@ const localeLoaders: Record<SupportedLocale, Record<string, () => Promise<object
         pages: () => import('@/assets/locale/nl/pages.json'),
         components: () => import('@/assets/locale/nl/components.json'),
         permissions: () => import('@/assets/locale/nl/permissions.json'),
+        validation: () => import('@/assets/locale/nl/validation.json'),
     },
     en: {
         app: () => import('@/assets/locale/en/app.json'),
         pages: () => import('@/assets/locale/en/pages.json'),
         components: () => import('@/assets/locale/en/components.json'),
         permissions: () => import('@/assets/locale/nl/permissions.json'),
+        validation: () => import('@/assets/locale/en/validation.json'),
     },
     fr: {
         app: () => import('@/assets/locale/fr/app.json'),
         pages: () => import('@/assets/locale/fr/pages.json'),
         components: () => import('@/assets/locale/fr/components.json'),
         permissions: () => import('@/assets/locale/nl/permissions.json'),
+        validation: () => import('@/assets/locale/fr/validation.json'),
     },
 };
 
-export const persistedLocale = useLocalStorage<string>('locale', 'nl');
+export const persistedLocale = useLocalStorage<string>('locale', DEFAULT_LOCALE);
 
 export const i18n = createI18n({
     legacy: false,
@@ -84,11 +88,12 @@ async function loadLocaleMessages(targetLocale: SupportedLocale): Promise<void> 
     }
 
     // Load all namespaces in parallel
-    const [app, pages, components, permissions] = await Promise.all([
+    const [app, pages, components, permissions, validation] = await Promise.all([
         loaders.app(),
         loaders.pages(),
         loaders.components(),
         loaders.permissions(),
+        loaders.validation(),
     ]);
 
     // Merge all namespaces into a single locale object
@@ -97,6 +102,7 @@ async function loadLocaleMessages(targetLocale: SupportedLocale): Promise<void> 
         pages,
         components,
         permissions,
+        validation,
     };
 
     // Set the locale messages

@@ -2,7 +2,7 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useLocalStorage } from '@/composables/useLocalStorage';
 import { DEFAULT_LOCATION_REQUEST, type LocationRequest } from '@/domain/location';
-import type { ImageBody } from '@/domain/image';
+import type { ImageRequest } from '@/domain/image';
 
 export enum BuilderStep {
     Basics,
@@ -25,7 +25,7 @@ export function useLocationBuilder() {
         defaults: DEFAULT_LOCATION_REQUEST,
     });
 
-    const imagesForm = ref<ImageBody[]>([]);
+    const imagesForm = ref<ImageRequest[]>([]);
     const step = ref<BuilderStep>(BuilderStep.Basics);
 
     const steps = [

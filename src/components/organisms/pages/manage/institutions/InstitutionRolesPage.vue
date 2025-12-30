@@ -18,7 +18,7 @@ import {
     useUpdateInstitutionRole,
 } from '@/composables/data/useMembers';
 import { getInstitutionName, type Institution } from '@/domain/institution';
-import { type CreateRoleBody, type Role } from '@/domain/member';
+import { type CreateRoleRequest, type Role } from '@/domain/member';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -81,7 +81,7 @@ function onDeleteRole(role: Role): void {
     });
 }
 
-function onSubmitRole(form: CreateRoleBody): void {
+function onSubmitRole(form: CreateRoleRequest): void {
     if (selectedRole.value) {
         // Update existing role
         updateRole({

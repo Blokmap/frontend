@@ -20,7 +20,7 @@ import {
     useUpdateInstitutionMember,
 } from '@/composables/data/useMembers';
 import { getInstitutionName, type Institution } from '@/domain/institution';
-import type { CreateMemberBody } from '@/domain/member';
+import type { CreateMemberRequest } from '@/domain/member';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -52,7 +52,7 @@ const { mutate: addInstitutionMember, isPending: addMemberIsPending } = useAddIn
     },
 });
 
-function onAddMember(body: CreateMemberBody): void {
+function onAddMember(body: CreateMemberRequest): void {
     addInstitutionMember({
         id: props.institution.id,
         body,

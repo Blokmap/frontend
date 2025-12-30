@@ -13,12 +13,12 @@ import { WEEK_DAYS } from '@/domain/calendar/calendarConstants';
 import {
     DEFAULT_OPENING_TIME_REQUEST,
     DEFAULT_REPETITION_CONFIG,
-    type OpeningTimeBody,
+    type OpeningTimeRequest,
 } from '@/domain/openings';
 import { formatDayName } from '@/utils/date';
 
 const props = defineProps<{
-    openingTime?: OpeningTimeBody | null;
+    openingTime?: OpeningTimeRequest | null;
     isEditing?: boolean | null;
 }>();
 
@@ -27,18 +27,18 @@ const visible = defineModel<boolean>('visible', {
 });
 
 const emit = defineEmits<{
-    save: [openingTime: OpeningTimeBody, applyToSequence: boolean];
-    delete: [openingTime: OpeningTimeBody, applyToSequence?: boolean];
+    save: [openingTime: OpeningTimeRequest, applyToSequence: boolean];
+    delete: [openingTime: OpeningTimeRequest, applyToSequence?: boolean];
 }>();
 
 const { locale } = useI18n();
 
-const openingTime = ref<OpeningTimeBody>({ ...DEFAULT_OPENING_TIME_REQUEST });
+const openingTime = ref<OpeningTimeRequest>({ ...DEFAULT_OPENING_TIME_REQUEST });
 const applyToSequence = ref<boolean>(false);
 
 watch(
     () => props.openingTime,
-    (opening?: OpeningTimeBody | null) => {
+    (opening?: OpeningTimeRequest | null) => {
         const def = opening ?? DEFAULT_OPENING_TIME_REQUEST;
         openingTime.value = { ...def };
         applyToSequence.value = false;

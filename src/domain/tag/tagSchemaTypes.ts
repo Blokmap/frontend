@@ -1,12 +1,11 @@
 import type { Profile } from '../profile';
 import type { Translation, TranslationRequest } from '../translation';
-import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 export type Tag = {
     id: number;
     name: Translation;
     key: string;
-    icon: IconDefinition | null;
+    icon: string | null;
     createdAt: Date;
     updatedAt: Date;
     createdBy?: Profile | null;

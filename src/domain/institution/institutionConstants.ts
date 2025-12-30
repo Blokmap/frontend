@@ -1,8 +1,8 @@
-import { InstitutionCategory, type InstitutionBody } from './types';
+import { InstitutionCategory, type InstitutionRequest } from './types';
 
 export const DEFAULT_INSTITUTION_SLUG = 'blokmap';
 
-export const DEFAULT_INSTITUTION_REQUEST: InstitutionBody = {
+export const DEFAULT_INSTITUTION_REQUEST: InstitutionRequest = {
     category: InstitutionCategory.Education,
     name: {
         en: '',

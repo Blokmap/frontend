@@ -12,7 +12,11 @@ import {
     useUpdateInstitutionLogo,
     useDeleteInstitutionLogo,
 } from '@/composables/data/useInstitutions';
-import { getInstitutionName, type Institution, type InstitutionBody } from '@/domain/institution';
+import {
+    getInstitutionName,
+    type Institution,
+    type InstitutionRequest,
+} from '@/domain/institution';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -28,7 +32,7 @@ const addressEditMode = ref(false);
 
 const { mutateAsync: updateInstitution, isPending: isUpdating } = useUpdateInstitution();
 
-async function saveInstitution(data: InstitutionBody) {
+async function saveInstitution(data: InstitutionRequest) {
     await updateInstitution({ id: props.institution.id, data });
     basicInfoEditMode.value = false;
     contactEditMode.value = false;

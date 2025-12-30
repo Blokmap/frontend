@@ -13,10 +13,10 @@ import {
     type LocationRequest,
     type NearestLocation,
     type LocationFilter,
-    type LocationStateBody,
+    type LocationStateRequest,
     type RecentLocationFilter,
 } from '../types';
-import type { Image, ImageReorderBody, ImageBody } from '@/domain/image';
+import type { Image, ImageReorderRequest, ImageRequest } from '@/domain/image';
 import type { LngLat } from '@/domain/map';
 import type { Paginated } from '@/utils/pagination';
 
@@ -159,12 +159,12 @@ export async function createLocation(body: LocationRequest): Promise<Location> {
  * Set images for a location.
  *
  * @param {number} locationId - The ID of the location to set images for.
- * @param {ImageBody} request - The images to set for the location.
+ * @param {ImageRequest} request - The images to set for the location.
  * @returns {Promise<Location>} A promise that resolves to the updated location.
  */
 export async function createLocationImage(
     locationId: number,
-    request: ImageBody,
+    request: ImageRequest,
 ): Promise<Location> {
     const endpoint = endpoints.locations.images.createOne.replace('{id}', locationId.toString());
 
@@ -247,10 +247,10 @@ export async function deleteLocationImages(locationId: number): Promise<void> {
  * Update the state of a location.
  *
  * @param {number} id - The ID of the location.
- * @param {LocationStateBody} body - The state and optional reason.
+ * @param {LocationStateRequest} body - The state and optional reason.
  * @returns {Promise<void>} A promise that resolves when the state is updated.
  */
-export async function updateLocationState(id: number, body: LocationStateBody): Promise<void> {
+export async function updateLocationState(id: number, body: LocationStateRequest): Promise<void> {
     const endpoint = endpoints.locations.state.replace('{id}', id.toString());
     await client.patch(endpoint, body);
 }
@@ -274,12 +274,12 @@ export async function deleteLocationImage(locationId: number, imageId: number): 
  * Reorder images for a location.
  *
  * @param {number} locationId - The ID of the location to reorder images for.
- * @param {ImageReorderBody[]} images - The new order of images.
+ * @param {ImageReorderRequest[]} images - The new order of images.
  * @returns {Promise<void>} A promise that resolves when the reordering is complete.
  */
 export async function reorderLocationImages(
     locationId: number,
-    images: ImageReorderBody[],
+    images: ImageReorderRequest[],
 ): Promise<void> {
     const endpoint = endpoints.locations.images.reorder.replace('{id}', locationId.toString());
 

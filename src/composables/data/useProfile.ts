@@ -21,7 +21,7 @@ import {
     type ProfileStats,
     type ProfileFilter,
     ProfileState,
-    type ProfileScanBody,
+    type ProfileScanRequest,
     type FoundProfile,
     type ProfileFindFilter,
 } from '@/domain/profile';
@@ -185,7 +185,7 @@ export function useUpdateProfile(
 
 export type ScanProfileParams = {
     profileId: string;
-    request: ProfileScanBody;
+    request: ProfileScanRequest;
 };
 
 /**

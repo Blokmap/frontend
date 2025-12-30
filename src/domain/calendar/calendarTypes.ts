@@ -26,31 +26,3 @@ export type TimeSlottable = {
     endTime: Time;
     repetition?: TimeSlotRepetition;
 };
-
-/**
- * Calendar drag interaction types
- */
-
-/** The mode of dragging interaction */
-export type CalendarDragMode = 'move' | 'resize';
-
-/** State for calendar drag operations */
-export type CalendarDragState<T = any> = {
-    isDragging: boolean;
-    slot: TimeSlot<T> | null;
-    mode: CalendarDragMode;
-    startPosition: { x: number; y: number };
-};
-
-/** Position and dimensions for a calendar slot */
-export type CalendarSlotPosition = {
-    top: string;
-    height: string;
-};
-
-/** Configuration for calendar drag functionality */
-export type CalendarDragConfig = {
-    enableDragging: boolean;
-    minSlotDuration: number;
-    pixelsPerHour: number;
-};

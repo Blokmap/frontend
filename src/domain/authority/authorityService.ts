@@ -6,7 +6,7 @@ import {
     transformResponseFactory,
 } from '@/utils/serviceUtils';
 import { parseAuthorityResponse } from './authorityParser';
-import type { Authority, AuthorityBody, AuthorityFilter } from './types';
+import type { Authority, AuthorityRequest, AuthorityFilter } from './types';
 import type { Paginated } from '@/utils/pagination';
 
 export type AuthorityIncludes = 'institution' | 'createdBy' | 'updatedBy';
@@ -88,7 +88,7 @@ export async function readAuthority(
  * @param request - The authority creation request data.
  * @returns A promise that resolves to the created authority.
  */
-export async function createAuthority(request: AuthorityBody): Promise<Authority> {
+export async function createAuthority(request: AuthorityRequest): Promise<Authority> {
     const endpoint = endpoints.authorities.create.toString();
 
     const transformResponse = transformResponseFactory(parseAuthorityResponse);
@@ -139,7 +139,7 @@ export async function deleteAuthorityLogo(authorityId: number): Promise<void> {
  */
 export async function updateAuthority(
     id: number,
-    request: Partial<AuthorityBody>,
+    request: Partial<AuthorityRequest>,
 ): Promise<Authority> {
     const endpoint = endpoints.authorities.update.replace('{id}', id.toString());
 

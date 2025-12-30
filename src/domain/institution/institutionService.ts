@@ -8,7 +8,7 @@ import {
 import { parseAuthorityResponse } from '../authority';
 import { parseInstitutionResponse } from './institutionParser';
 import type { Authority } from '../authority';
-import type { Institution, InstitutionBody, InstitutionFilter } from './types';
+import type { Institution, InstitutionRequest, InstitutionFilter } from './types';
 import type { Paginated } from '@/utils/pagination';
 
 /**
@@ -56,7 +56,7 @@ export async function readInstitution(id: number): Promise<Institution> {
  * @param request - The institution creation request data.
  * @returns A promise that resolves to the created institution.
  */
-export async function createInstitution(request: InstitutionBody): Promise<Institution> {
+export async function createInstitution(request: InstitutionRequest): Promise<Institution> {
     const endpoint = endpoints.institutions.create.toString();
 
     const transformResponse = transformResponseFactory(parseInstitutionResponse);
@@ -77,7 +77,7 @@ export async function createInstitution(request: InstitutionBody): Promise<Insti
  */
 export async function updateInstitution(
     id: number,
-    request: Partial<InstitutionBody>,
+    request: Partial<InstitutionRequest>,
 ): Promise<Institution> {
     const endpoint = endpoints.institutions.update.replace('{id}', id.toString());
 

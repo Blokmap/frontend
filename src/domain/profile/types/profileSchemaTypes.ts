@@ -44,7 +44,7 @@ export type ProfileRequest = {
     username: string;
 };
 
-export type ProfileScanBody = {
+export type ProfileScanRequest = {
     locationId: number;
     day?: Date | null;
     time?: Time | null;

@@ -14,13 +14,13 @@ export type AuthSettings = {
     institution?: Predicate;
 };
 
-export type LoginBody = {
+export type LoginRequest = {
     username: string;
     password: string;
     remember: boolean;
 };
 
-export type RegisterBody = {
+export type RegisterRequest = {
     firstName: string;
     lastName: string;
     email: string;

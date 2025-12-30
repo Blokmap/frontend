@@ -16,7 +16,7 @@ import {
     useReadLocationRoles,
     useUpdateLocationRole,
 } from '@/composables/data/useMembers';
-import { type CreateRoleBody, type Role } from '@/domain/member';
+import { type CreateRoleRequest, type Role } from '@/domain/member';
 import type { Location } from '@/domain/location';
 import type { Profile } from '@/domain/profile';
 
@@ -84,7 +84,7 @@ function onDeleteRole(role: Role): void {
     });
 }
 
-function onSubmitRole(form: CreateRoleBody): void {
+function onSubmitRole(form: CreateRoleRequest): void {
     if (selectedRole.value) {
         // Update existing role
         updateRole({

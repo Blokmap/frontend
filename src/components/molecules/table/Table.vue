@@ -190,7 +190,7 @@ provide('registerColumn', (column: string) => {
 
 /* Desktop Table View */
 .table {
-    @apply block max-w-full overflow-x-auto rounded-lg bg-white shadow-md;
+    @apply block max-w-full overflow-x-auto rounded-lg border border-slate-200 bg-white;
 
     .table__inner {
         @apply table w-full;
@@ -240,7 +240,7 @@ provide('registerColumn', (column: string) => {
     }
 
     .card__item {
-        @apply rounded-lg bg-white shadow-md;
+        @apply rounded-lg border border-slate-200 bg-white;
         @apply p-4;
         @apply cursor-pointer transition-all;
         @apply active:scale-[0.99];

@@ -30,7 +30,7 @@ import {
     type RecursivePermissions,
 } from '@/domain/auth';
 import type { Location } from '@/domain/location';
-import type { CreateMemberBody, MemberFilter } from '@/domain/member';
+import type { CreateMemberRequest, MemberFilter } from '@/domain/member';
 import type { Profile } from '@/domain/profile';
 
 const props = defineProps<{
@@ -70,7 +70,7 @@ const { mutate: addLocationMember, isPending: addMemberIsPending } = useAddLocat
     },
 });
 
-function onAddMember(body: CreateMemberBody): void {
+function onAddMember(body: CreateMemberRequest): void {
     addLocationMember({
         id: props.location.id,
         body,

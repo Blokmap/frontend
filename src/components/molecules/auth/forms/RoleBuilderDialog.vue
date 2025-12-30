@@ -3,7 +3,7 @@ import Dialog from 'primevue/dialog';
 import RoleForm from '@/components/molecules/auth/forms/RoleForm.vue';
 import { computed } from 'vue';
 import type { PermissionType } from '@/domain/auth';
-import type { CreateRoleBody, Role } from '@/domain/member';
+import type { CreateRoleRequest, Role } from '@/domain/member';
 
 const props = withDefaults(
     defineProps<{
@@ -17,7 +17,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-    'click:submit': [form: CreateRoleBody];
+    'click:submit': [form: CreateRoleRequest];
 }>();
 
 const isVisible = defineModel<boolean>('isVisible', {
@@ -48,7 +48,7 @@ const dialogDescription = computed(() => {
 /**
  * Handle submitting the form.
  */
-function onSubmitForm(form: CreateRoleBody): void {
+function onSubmitForm(form: CreateRoleRequest): void {
     emit('click:submit', form);
 }
 </script>

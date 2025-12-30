@@ -2,16 +2,10 @@
 
 .p-button {
     @apply relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden select-none;
-    @apply bg-primary text-primary-contrast;
+    @apply bg-primary hover:bg-primary-600 text-primary-contrast;
     @apply rounded-xl px-4 py-2 font-medium;
     @apply transition-all duration-200;
     @apply disabled:cursor-default;
-    @apply shadow-playful;
-    --shadow-color: var(--color-primary-600);
-}
-
-.p-button:active {
-    @apply shadow-playful-active;
 }
 
 .p-button-icon-right {
@@ -36,7 +30,6 @@
 
 .p-button-icon-only.p-button-rounded {
     @apply h-10 rounded-full;
-    --shadow-size: 0.2rem;
 }
 
 .p-button-icon-only .p-button-label {
@@ -100,65 +93,46 @@
 }
 
 .p-button-secondary {
-    @apply bg-secondary text-white;
+    @apply bg-secondary hover:bg-secondary-600 text-white;
     @apply border-0;
-    --shadow-color: var(--color-secondary-600);
 }
 
 .p-button-success {
-    @apply bg-green-100 text-green-700;
+    @apply bg-green-100 text-green-700 hover:bg-green-200;
     @apply border-0;
-    --shadow-color: rgb(34 197 94 / 0.4);
 }
 
 .p-button-info {
-    @apply bg-sky-500 text-white;
+    @apply hover:bg-glacier-200 text-glacier-800 bg-glacier-100;
     @apply border-0;
-    --shadow-color: rgb(14 165 233 / 0.5);
 }
 
 .p-button-warn {
-    @apply bg-orange-500 text-white;
+    @apply bg-orange-100 text-orange-800 hover:bg-orange-200;
     @apply border-0;
-    --shadow-color: rgb(249 115 22 / 0.5);
-}
-
-.p-button-help {
-    @apply bg-purple-100 text-purple-700;
-    @apply border-0;
-    --shadow-color: rgb(168 85 247 / 0.4);
 }
 
 .p-button-danger {
-    @apply bg-red-100 text-red-700;
+    @apply bg-red-100 text-red-800 hover:bg-red-200;
     @apply border-0;
-    --shadow-color: rgb(239 68 68 / 0.4);
 }
 
 .p-button-contrast {
-    @apply text-surface-600 bg-slate-100;
+    @apply bg-slate-200/75 text-slate-800 hover:bg-slate-300/75;
     @apply border-0;
-    --shadow-color: rgb(148 163 184 / 0.4);
-}
-
-.p-button-contrast:active {
-    @apply shadow-playful-active;
 }
 
 .p-button-outlined {
-    @apply text-primary-500 bg-primary-50;
+    @apply text-primary-600 bg-primary-100;
     @apply transition-all duration-200;
-    --shadow-color: var(--color-primary-300);
 }
 
 .p-button-outlined.p-button-secondary {
-    @apply text-secondary-500 border-secondary-300 bg-secondary-50;
-    --shadow-color: var(--color-secondary-300);
+    @apply text-secondary-600 border-secondary-300 bg-secondary-100;
 }
 
 .p-button-outlined.p-button-success {
     @apply border-green-300 text-green-500;
-    --shadow-color: var(--color-green-300);
 }
 
 .p-button-outlined.p-button-info {

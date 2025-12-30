@@ -13,7 +13,7 @@ import type {
     Profile,
     ProfileFilter,
     ProfileFindFilter,
-    ProfileScanBody,
+    ProfileScanRequest,
     ProfileStats,
 } from './types';
 import type { Paginated, Pagination } from '@/utils/pagination';
@@ -223,7 +223,7 @@ export async function unblockProfile(profileId: string): Promise<void> {
  */
 export async function scanProfile(
     profileId: string,
-    request: ProfileScanBody,
+    request: ProfileScanRequest,
 ): Promise<Reservation[]> {
     const endpoint = endpoints.profiles.scan.replace('{id}', profileId.toString());
 

@@ -36,13 +36,13 @@ const {
     variables: deletingVariables,
 } = useDeleteReservation();
 
-function onCancel(reservation: Reservation) {
+const onCancel = (reservation: Reservation): void => {
     deleteReservation({ reservationId: reservation.id });
-}
+};
 
-function isCancelling(reservationId: string) {
+const isCancelling = (reservationId: string) => {
     return isDeleting && deletingVariables?.value?.reservationId === reservationId;
-}
+};
 </script>
 
 <template>

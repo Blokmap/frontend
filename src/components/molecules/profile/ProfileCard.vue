@@ -156,7 +156,7 @@ function onDeleteProfileAvatar() {
 .profile-card {
     @apply grid grid-cols-2 items-center gap-4 p-4 sm:flex sm:flex-row sm:items-center sm:gap-8 sm:p-8;
     @apply justify-items-center sm:justify-items-stretch;
-    @apply rounded-xl bg-white shadow-md;
+    @apply rounded-xl border border-slate-200 bg-white;
 
     .profile-card__info {
         @apply col-span-1 flex flex-col items-center justify-center gap-3;

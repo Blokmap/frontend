@@ -36,7 +36,7 @@ defineProps<{
 @reference '@/assets/styles/main.css';
 
 .day-card {
-    @apply flex flex-col rounded-xl bg-white shadow-sm transition-all;
+    @apply flex flex-col rounded-xl border border-slate-200 bg-white transition-all;
 
     &.day-card--today {
         @apply ring-secondary-400 ring-2 ring-offset-2;

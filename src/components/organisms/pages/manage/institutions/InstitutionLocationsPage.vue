@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Paginator from 'primevue/paginator';
-import SearchField from '@/components/atoms/SearchField.vue';
+import SearchInput from '@/components/atoms/SearchInput.vue';
 import Breadcrumb from '@/components/molecules/Breadcrumb.vue';
 import Callout from '@/components/molecules/Callout.vue';
 import EmptyState from '@/components/molecules/EmptyState.vue';
@@ -85,7 +85,7 @@ const breadcrumbs = computed(() => {
         <PageTitle title="Locaties"> </PageTitle>
 
         <PageFilters>
-            <SearchField v-model="query" :loading="isFetching" />
+            <SearchInput v-model="query" :loading="isFetching" />
             <LocationStateSelect v-model="filters.state" :loading="isFetching" />
         </PageFilters>
 

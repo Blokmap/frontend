@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Paginator from 'primevue/paginator';
-import SearchField from '@/components/atoms/SearchField.vue';
+import SearchInput from '@/components/atoms/SearchInput.vue';
 import LocationActionMenu from '@/components/molecules/location/LocationActionMenu.vue';
 import LocationsTable from '@/components/molecules/location/LocationsTable.vue';
 import LocationStateSelect from '@/components/molecules/location/forms/LocationStateSelect.vue';
@@ -67,8 +67,8 @@ const onLocationClick = (location: Location) => {
         <PageTitle title="Locaties" />
 
         <PageFilters>
-            <SearchField v-model="query" placeholder="Zoek locaties..." />
-            <LocationStateSelect v-model:state="filters.state" />
+            <SearchInput v-model="query" label="Zoeken" placeholder="Zoek locaties..." />
+            <LocationStateSelect label="Status" v-model:state="filters.state" />
         </PageFilters>
 
         <LocationsTable

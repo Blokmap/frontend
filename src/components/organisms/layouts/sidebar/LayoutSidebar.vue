@@ -47,7 +47,8 @@ const emit = defineEmits<{
     @apply flex flex-col space-y-6 lg:h-full;
 
     .sidebar__back-button {
-        @apply flex w-fit items-center gap-2 text-slate-600 transition-colors hover:text-slate-900;
+        @apply flex w-fit items-center gap-2;
+        @apply cursor-pointer text-slate-600 transition-colors hover:text-slate-900;
     }
 
     .sidebar__header {

@@ -69,8 +69,7 @@ defineEmits<{
     @apply flex h-full w-full items-center justify-center rounded-md bg-slate-200;
 
     &.circle {
-        @apply shadow-playful rounded-full;
-        --shadow-color: var(--color-slate-300);
+        @apply rounded-full;
     }
 }
 
@@ -100,8 +99,7 @@ defineEmits<{
     @apply absolute aspect-square h-full w-full object-cover;
 
     &.circle {
-        @apply shadow-playful rounded-full;
-        --shadow-color: var(--color-slate-200);
+        @apply rounded-full;
     }
 }
 

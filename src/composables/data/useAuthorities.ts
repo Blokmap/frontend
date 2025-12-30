@@ -9,7 +9,7 @@ import {
     deleteAuthorityLogo,
     type Authority,
     type AuthorityFilter,
-    type AuthorityBody,
+    type AuthorityRequest,
     readProfileAuthorities,
     readInstitutionAuthorities,
     type AuthorityIncludes,
@@ -28,7 +28,7 @@ import type { AxiosError } from 'axios';
 
 export type UpdateAuthorityParams = {
     id: number;
-    data: AuthorityBody;
+    data: AuthorityRequest;
 };
 
 export type UpdateAuthorityLogoParams = {
@@ -140,7 +140,9 @@ export function useReadProfileAuthorities(
  * @param options - Mutation options.
  * @returns The mutation object for creating an authority.
  */
-export function useCreateAuthority(options: CompMutationOptions = {}): CompMutation<AuthorityBody> {
+export function useCreateAuthority(
+    options: CompMutationOptions = {},
+): CompMutation<AuthorityRequest> {
     const queryClient = useQueryClient();
 
     const mutation = useMutation({

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Paginator from 'primevue/paginator';
-import SearchField from '@/components/atoms/SearchField.vue';
+import SearchInput from '@/components/atoms/SearchInput.vue';
 import ProfileActionMenu from '@/components/molecules/profile/ProfileActionMenu.vue';
 import ProfileTable from '@/components/molecules/profile/table/ProfileTable.vue';
 import { debouncedWatch } from '@vueuse/core';
@@ -60,7 +60,7 @@ const onLocationsClick = (profileId: string): void => {
         <PageTitle title="Profielen" />
 
         <PageFilters>
-            <SearchField v-model="query" placeholder="Zoek profielen..." />
+            <SearchInput v-model="query" placeholder="Zoek profielen..." />
         </PageFilters>
 
         <ProfileTable :profiles="profiles?.data" :loading="isLoading">

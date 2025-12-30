@@ -8,14 +8,14 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { isAxiosError } from 'axios';
 import { computed, ref, watchEffect } from 'vue';
 import { useCreateLocation, useCreateLocationImage } from '@/composables/data/useLocations';
-import { getImageBodyPreviewUrl, type ImageBody } from '@/domain/image';
+import { getImageBodyPreviewUrl, type ImageRequest } from '@/domain/image';
 import type { SubmissionStep } from '.';
 import type { LocationRequest } from '@/domain/location';
 
 const props = defineProps<{
     canSubmit: boolean;
     location: LocationRequest;
-    images: ImageBody[];
+    images: ImageRequest[];
 }>();
 
 const visible = defineModel<boolean>('visible', {
@@ -57,7 +57,7 @@ const allImagesCompleted = computed(() => {
  * Get the status of a specific image.
  * @param image The image to get the status for.
  */
-function getImageStatus(image: ImageBody): SubmissionStep | undefined {
+function getImageStatus(image: ImageRequest): SubmissionStep | undefined {
     return imagesStatuses.value.get(image.index);
 }
 
@@ -65,7 +65,7 @@ function getImageStatus(image: ImageBody): SubmissionStep | undefined {
  * Submit a specific image.
  * @param image The image to submit.
  */
-async function submitImage(image: ImageBody): Promise<void> {
+async function submitImage(image: ImageRequest): Promise<void> {
     if (!locationId.value) return;
 
     imagesStatuses.value.set(image.index, 'loading');

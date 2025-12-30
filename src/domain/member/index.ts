@@ -3,3 +3,4 @@ export * from './helpers';
 export * from './types';
 export * from './memberParser';
 export * from './service';
+export * from './memberValidation';

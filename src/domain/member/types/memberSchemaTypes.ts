@@ -13,16 +13,13 @@ export type Role = {
     updatedAt: Date;
 };
 
-// Re-export RecursivePermissions from auth domain
-export type { RecursivePermissions } from '@/domain/auth';
-
-export type CreateRoleBody = {
+export type CreateRoleRequest = {
     name: string;
     permissions: number;
     colour: string;
 };
 
-export type UpdateRoleBody = {
+export type UpdateRoleRequest = {
     name?: string;
     permissions?: number;
     colour?: string;
@@ -36,11 +33,11 @@ export type Member = {
     addedAt: Date;
 };
 
-export type UpdateMemberBody = {
+export type UpdateMemberRequest = {
     roleId?: number;
 };
 
-export type CreateMemberBody = {
+export type CreateMemberRequest = {
     username: string;
     roleId: number | null;
 };

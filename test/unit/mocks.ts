@@ -1,6 +1,6 @@
-import type { Image, ImageBody } from '@/domain/image';
+import type { Image, ImageRequest } from '@/domain/image';
 import { LocationState, type Location, type LocationRequest } from '@/domain/location';
-import type { OpeningTime, OpeningTimeBody } from '@/domain/openings';
+import type { OpeningTime, OpeningTimeRequest } from '@/domain/openings';
 import { ProfileState, type Profile } from '@/domain/profile';
 import type { Reservation, ReservationState } from '@/domain/reservation';
 import type { TimeSlot, TimeSlottable } from '@/domain/calendar';
@@ -57,7 +57,7 @@ export function createMockImage(overrides?: Partial<Image>): Image {
 /**
  * Mock factory for ImageBody objects
  */
-export function createMockImageBody(overrides?: Partial<ImageBody>): ImageBody {
+export function createMockImageBody(overrides?: Partial<ImageRequest>): ImageRequest {
     return {
         id: 1,
         imageUrl: 'https://example.com/image.jpg',
@@ -130,7 +130,9 @@ export function createMockOpeningTime(overrides?: Partial<OpeningTime>): Opening
 /**
  * Mock factory for OpeningTimeBody objects
  */
-export function createMockOpeningTimeBody(overrides?: Partial<OpeningTimeBody>): OpeningTimeBody {
+export function createMockOpeningTimeBody(
+    overrides?: Partial<OpeningTimeRequest>,
+): OpeningTimeRequest {
     return {
         id: undefined,
         sequenceId: null,

@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { DEFAULT_AUTHORITY_REQUEST, authorityToRequest } from '@/domain/authority';
-import type { Authority, AuthorityBody } from '@/domain/authority';
+import type { Authority, AuthorityRequest } from '@/domain/authority';
 import type { InstitutionMembership } from '@/domain/member';
 
 const props = defineProps<{
@@ -20,12 +20,12 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'click:save', form: AuthorityBody): void;
+    (e: 'click:save', form: AuthorityRequest): void;
 }>();
 
 const { locale } = useI18n();
 
-const form = ref<AuthorityBody>({ ...DEFAULT_AUTHORITY_REQUEST });
+const form = ref<AuthorityRequest>({ ...DEFAULT_AUTHORITY_REQUEST });
 
 const institutionOptions = computed(() => {
     return props.institutions?.map((membership) => ({

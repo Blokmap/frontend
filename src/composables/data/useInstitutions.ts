@@ -10,7 +10,7 @@ import {
     deleteInstitutionLogo,
     type Institution,
     type InstitutionFilter,
-    type InstitutionBody,
+    type InstitutionRequest,
 } from '@/domain/institution';
 import { invalidateQueries } from './queryCache';
 import type {
@@ -25,7 +25,7 @@ import type { AxiosError } from 'axios';
 // Mutation parameter types
 export type UpdateInstitutionParams = {
     id: number;
-    data: InstitutionBody;
+    data: InstitutionRequest;
 };
 
 export type UpdateInstitutionLogoParams = {
@@ -92,7 +92,7 @@ export function useReadInstitution(
  */
 export function useCreateInstitution(
     options: CompMutationOptions = {},
-): CompMutation<InstitutionBody> {
+): CompMutation<InstitutionRequest> {
     const queryClient = useQueryClient();
     const toast = useToast();
 

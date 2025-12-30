@@ -59,11 +59,11 @@ const googleMapsLink = computed(() =>
 
 .location-address__icon-wrapper {
     @apply bg-primary text-primary-contrast;
-    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-lg;
-}
+    @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-lg;
 
-.location-address__icon {
-    @apply text-primary-contrast h-5 w-5;
+    .location-address__icon {
+        @apply text-primary-contrast text-2xl;
+    }
 }
 
 .location-address__info {

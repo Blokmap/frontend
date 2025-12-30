@@ -25,8 +25,7 @@ defineEmits<{
 .location-search {
     @apply relative w-full py-2 pr-2 pl-4 md:min-w-[320px];
     @apply flex items-center gap-3;
-    @apply cursor-pointer rounded-full bg-white;
-    @apply shadow-md hover:shadow-xl;
+    @apply cursor-pointer rounded-full border-1 border-slate-200 bg-white;
     @apply transition-all duration-200 ease-out;
 }
 
@@ -38,10 +37,6 @@ defineEmits<{
     @apply flex items-center justify-center rounded-full;
     @apply bg-secondary h-7 w-7 flex-shrink-0;
     @apply transition-colors duration-150;
-
-    .location-search:hover & {
-        @apply bg-secondary-600;
-    }
 }
 
 .location-search__icon {

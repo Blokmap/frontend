@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Paginator from 'primevue/paginator';
-import SearchField from '@/components/atoms/SearchField.vue';
+import SearchInput from '@/components/atoms/SearchInput.vue';
 import InstitutionActionMenu from '@/components/molecules/institution/InstitutionActionMenu.vue';
 import InstitutionTable from '@/components/molecules/institution/InstitutionTable.vue';
 import { debouncedWatch } from '@vueuse/core';
@@ -38,7 +38,7 @@ const { data: institutions, isPending: isPendingInstitutions } = useReadInstitut
         <PageTitle title="Organisaties" />
 
         <PageFilters>
-            <SearchField v-model="query" placeholder="Zoek organisaties..." />
+            <SearchInput v-model="query" placeholder="Zoek organisaties..." />
         </PageFilters>
 
         <InstitutionTable :institutions="institutions?.data" :loading="isPendingInstitutions">

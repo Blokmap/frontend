@@ -1,7 +1,7 @@
 import placeholder1 from '@/assets/img/placeholder/location-stock-1.jpg';
 import placeholder2 from '@/assets/img/placeholder/location-stock-2.jpg';
 import placeholder3 from '@/assets/img/placeholder/location-stock-3.jpg';
-import type { Image, ImageBody } from './imageTypes';
+import type { Image, ImageRequest } from './imageTypes';
 import type { Location } from '../location';
 
 /**
@@ -45,7 +45,7 @@ export function getLocationImages(locations?: Location[]): Image[] {
  * @param index - The index of the image.
  * @returns An ImageBody object suitable for forms.
  */
-export function imageToRequest(image: Image, index: number): ImageBody {
+export function imageToRequest(image: Image, index: number): ImageRequest {
     return {
         id: image.id,
         imageUrl: image.url,
@@ -58,7 +58,7 @@ export function imageToRequest(image: Image, index: number): ImageBody {
  * Get the preview URL for an image.
  * @param image The image to get the preview URL for.
  */
-export function getImageBodyPreviewUrl(image: ImageBody): string {
+export function getImageBodyPreviewUrl(image: ImageRequest): string {
     if (image.tempUrl) return image.tempUrl;
     if (image.imageUrl) return image.imageUrl;
     if (image.file) return URL.createObjectURL(image.file);

@@ -6,32 +6,15 @@ import LocationSearch from '@/components/molecules/location/search/LocationSearc
 import PublicHeaderMenuButton from '@/components/organisms/layouts/public/PublicHeaderMenuButton.vue';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { onMounted, onUnmounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
 
 defineEmits<{
-    (e: 'logout'): Promise<void>;
-    (e: 'click:search'): void;
+    logout: [];
+    'click:search': [];
 }>();
 
 const { data: profile, isLoading: profileIsLoading } = useAuthProfile();
-
-const isExpandedSearch = ref<boolean>(false);
-
-function onEscapeClick(event: KeyboardEvent): void {
-    if (event.key !== 'Escape') return;
-    event.preventDefault();
-    isExpandedSearch.value = false;
-}
-
-onMounted(() => {
-    window.addEventListener('keydown', onEscapeClick);
-});
-
-onUnmounted(() => {
-    window.removeEventListener('keydown', onEscapeClick);
-});
 </script>
 
 <template>
@@ -43,7 +26,7 @@ onUnmounted(() => {
 
             <div class="header__actions">
                 <RouterLink :to="{ name: 'profile' }" class="header__profile-link" v-if="profile">
-                    <EntityAvatar class="h-11 w-11" :image="profile.avatar?.url" />
+                    <EntityAvatar class="h-12 w-12" :image="profile.avatar?.url" />
                 </RouterLink>
 
                 <RouterLink :to="{ name: 'auth' }" v-else>
@@ -54,7 +37,8 @@ onUnmounted(() => {
                     </Button>
                 </RouterLink>
 
-                <PublicHeaderMenuButton :loading="profileIsLoading" :profile="profile" />
+                <PublicHeaderMenuButton :loading="profileIsLoading" :profile="profile">
+                </PublicHeaderMenuButton>
             </div>
         </div>
 

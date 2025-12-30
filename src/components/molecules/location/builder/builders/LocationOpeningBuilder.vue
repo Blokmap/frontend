@@ -4,25 +4,25 @@ import OpeningBuilderDialog from '@/components/molecules/openings/builder/Openin
 import OpeningsBuilderCalendar from '@/components/molecules/openings/builder/OpeningsBuilderCalendar.vue';
 import { ref } from 'vue';
 import { useRouteDate } from '@/composables/useRouteDate';
-import { DEFAULT_OPENING_TIME_REQUEST, type OpeningTimeBody } from '@/domain/openings';
+import { DEFAULT_OPENING_TIME_REQUEST, type OpeningTimeRequest } from '@/domain/openings';
 import type { TimeCell, TimeSlot } from '@/domain/calendar';
 import type { Location } from '@/domain/location';
 
 const props = defineProps<{
     location: Location;
-    openingTimes: OpeningTimeBody[];
+    openingTimes: OpeningTimeRequest[];
 }>();
 
 const emit = defineEmits<{
-    create: [openingTime: OpeningTimeBody];
-    update: [id: number, openingTime: OpeningTimeBody, sequence?: boolean];
+    create: [openingTime: OpeningTimeRequest];
+    update: [id: number, openingTime: OpeningTimeRequest, sequence?: boolean];
     delete: [id: number, sequence?: boolean];
 }>();
 
 const inWeekOf = useRouteDate({ paramName: 'inWeekOf' });
 
 const showDialog = ref(false);
-const editingOpeningTime = ref<OpeningTimeBody | null>(null);
+const editingOpeningTime = ref<OpeningTimeRequest | null>(null);
 const isEditing = ref(false);
 
 /**
@@ -58,7 +58,7 @@ function onCreateClick(timeCell?: TimeCell): void {
 /**
  * Opens the dialog to edit an existing opening time
  */
-function onEditClick(slot: TimeSlot<OpeningTimeBody>): void {
+function onEditClick(slot: TimeSlot<OpeningTimeRequest>): void {
     if (slot.metadata) {
         editingOpeningTime.value = { ...slot.metadata };
         isEditing.value = true;
@@ -69,12 +69,12 @@ function onEditClick(slot: TimeSlot<OpeningTimeBody>): void {
 /**
  * Handles drag event to update opening time
  */
-function onDragSlot(originalSlot: TimeSlot<OpeningTimeBody>, newSlot: TimeSlot): void {
+function onDragSlot(originalSlot: TimeSlot<OpeningTimeRequest>, newSlot: TimeSlot): void {
     const openingTimeId = originalSlot.metadata?.id;
 
     if (!openingTimeId || !originalSlot.metadata) return;
 
-    const updatedOpeningTime: OpeningTimeBody = {
+    const updatedOpeningTime: OpeningTimeRequest = {
         ...originalSlot.metadata,
         day: newSlot.day,
         startTime: newSlot.startTime,
@@ -87,7 +87,7 @@ function onDragSlot(originalSlot: TimeSlot<OpeningTimeBody>, newSlot: TimeSlot):
 /**
  * Handles saving (create/update) an opening time
  */
-function onSave(openingTime: OpeningTimeBody, sequence?: boolean): void {
+function onSave(openingTime: OpeningTimeRequest, sequence?: boolean): void {
     if (isEditing.value) {
         if (!openingTime.id) return;
         emit('update', openingTime.id, openingTime, sequence);
@@ -101,7 +101,7 @@ function onSave(openingTime: OpeningTimeBody, sequence?: boolean): void {
 /**
  * Handles deletion of an opening time
  */
-function onDelete(openingTime: OpeningTimeBody, sequence?: boolean): void {
+function onDelete(openingTime: OpeningTimeRequest, sequence?: boolean): void {
     if (!openingTime.id) return;
     emit('delete', openingTime.id, sequence);
     showDialog.value = false;

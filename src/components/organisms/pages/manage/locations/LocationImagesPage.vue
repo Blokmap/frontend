@@ -7,7 +7,7 @@ import PageTitle from '@/components/organisms/pages/PageTitle.vue';
 import { computed } from 'vue';
 import { useUpdateLocationImages } from '@/composables/data/useLocations';
 import { useDirtyForm } from '@/composables/useDirtyForm';
-import { imageToRequest, type ImageBody } from '@/domain/image';
+import { imageToRequest, type ImageRequest } from '@/domain/image';
 import type { Location } from '@/domain/location';
 
 const props = defineProps<{
@@ -26,7 +26,7 @@ const {
     source: () => props.location,
     toForm: (location) => (location.images || []).map(imageToRequest),
     onSave: async (currentImages) => {
-        const originalImages: ImageBody[] = (props.location.images || []).map((img) => {
+        const originalImages: ImageRequest[] = (props.location.images || []).map((img) => {
             const body = imageToRequest(img, img.index);
             return { ...body, locationId: props.location.id };
         });

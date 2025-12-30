@@ -12,7 +12,7 @@ import {
     INSTITUTION_CATEGORIES,
     institutionToRequest,
 } from '@/domain/institution';
-import type { Institution, InstitutionBody } from '@/domain/institution';
+import type { Institution, InstitutionRequest } from '@/domain/institution';
 
 const props = defineProps<{
     institution?: Institution;
@@ -20,12 +20,12 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'click:save', form: InstitutionBody): void;
+    (e: 'click:save', form: InstitutionRequest): void;
 }>();
 
 const { t, locale } = useI18n();
 
-const form = ref<InstitutionBody>({ ...DEFAULT_INSTITUTION_REQUEST });
+const form = ref<InstitutionRequest>({ ...DEFAULT_INSTITUTION_REQUEST });
 
 const currentLanguage = ref(locale.value);
 

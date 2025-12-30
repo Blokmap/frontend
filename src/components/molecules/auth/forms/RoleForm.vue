@@ -9,7 +9,7 @@ import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
 import { PERMISSIONS, type PermissionType } from '@/domain/auth';
-import { type CreateRoleBody, type Role } from '@/domain/member';
+import { type CreateRoleRequest, type Role } from '@/domain/member';
 
 const props = withDefaults(
     defineProps<{
@@ -23,10 +23,10 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-    'click:save': [form: CreateRoleBody];
+    'click:save': [form: CreateRoleRequest];
 }>();
 
-const form = ref<CreateRoleBody>({
+const form = ref<CreateRoleRequest>({
     name: '',
     permissions: 0,
     colour: '#1f4161',

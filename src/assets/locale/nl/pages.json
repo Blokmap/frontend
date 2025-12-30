@@ -37,7 +37,8 @@
         "filters": {
             "foundResultsTruncated": "Meer dan {count} resultaten gevonden.",
             "foundResults": "Één bloklocatie gevonden | {count} bloklocaties gevonden",
-            "showingLocations": "{perPage} locatie van {total} getoond. Gebruik de filters om je zoekopdracht te verfijnen. | {perPage} locaties van {total} getoond. Gebruik de filters om je zoekopdracht te verfijnen.",
+            "subtitleNoFilters": "Geen filters actief. Gebruik filters om resultaten te verfijnen.",
+            "showingLocations": "{shown} locatie van {total} getoond. Gebruik de filters om je zoekopdracht te verfijnen. | {shown} locaties van {total} getoond. Gebruik de filters om je zoekopdracht te verfijnen.",
             "adjustCriteria": "Probeer je zoekcriteria of filters aan te passen.",
             "flyToNearest": "Vlieg naar dichtstbijzijnde Blokspot"
         },

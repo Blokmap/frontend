@@ -15,8 +15,7 @@
 }
 
 .p-message-info {
-    @apply bg-glacier-50 text-glacier-600 outline-glacier-200 shadow-playful-no-transform;
-    --shadow-color: theme(colors.glacier.200);
+    @apply bg-glacier-50 text-glacier-600 outline-glacier-200;
 }
 
 .p-message-info .p-message-close-button {
@@ -24,8 +23,7 @@
 }
 
 .p-message-success {
-    @apply bg-timber-green-50 text-timber-green-600 border-timber-green-200 shadow-playful-no-transform;
-    --shadow-color: theme(colors.timber-green.200);
+    @apply bg-timber-green-50 text-timber-green-600 border-timber-green-200;
 }
 
 .p-message-success .p-message-close-button {
@@ -41,8 +39,7 @@
 }
 
 .p-message-warn {
-    @apply shadow-playful-no-transform border-yellow-200 bg-yellow-50/95 text-yellow-600;
-    --shadow-color: theme(colors.yellow.200);
+    @apply border-yellow-200 bg-yellow-50/95 text-yellow-600;
 }
 
 .p-message-warn .p-message-close-button {
@@ -58,8 +55,7 @@
 }
 
 .p-message-error {
-    @apply shadow-playful-no-transform border-blushed-brick-200 bg-blushed-brick-50/95 text-blushed-brick-700;
-    --shadow-color: theme(colors.blushed-brick.200);
+    @apply border-blushed-brick-200 bg-blushed-brick-50/95 text-blushed-brick-700;
 }
 
 .p-message-error .p-message-close-button {
@@ -75,8 +71,7 @@
 }
 
 .p-message-secondary {
-    @apply bg-secondary-50 text-secondary-900 border-secondary-200 shadow-playful-no-transform;
-    --shadow-color: theme(colors.secondary.200);
+    @apply bg-secondary-50 text-secondary-900 border-secondary-200;
 }
 
 .p-message-secondary .p-message-close-button {
@@ -92,8 +87,7 @@
 }
 
 .p-message-contrast {
-    @apply bg-surface-900 text-surface-50 border-surface-700 shadow-playful-no-transform;
-    --shadow-color: theme(colors.surface.700);
+    @apply border-slate-200 bg-slate-200/50 text-slate-800;
 }
 
 .p-message-contrast .p-message-close-button {

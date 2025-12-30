@@ -60,7 +60,7 @@ function closeMenu(): void {
 </script>
 
 <template>
-    <Button @click="toggleMenu" rounded>
+    <Button @click="toggleMenu" class="menu-button" rounded>
         <template #icon>
             <FontAwesomeIcon :icon="faBars" />
         </template>
@@ -177,6 +177,10 @@ function closeMenu(): void {
 
 <style scoped>
 @reference '@/assets/styles/main.css';
+
+.menu-button {
+    @apply h-12 w-12;
+}
 
 .menu-popover {
     @apply rounded-xl shadow-lg;

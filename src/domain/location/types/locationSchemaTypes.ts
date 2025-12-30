@@ -26,7 +26,7 @@ export enum LocationState {
     Rejected = 'Rejected',
 }
 
-export type LocationStateBody = {
+export type LocationStateRequest = {
     state: LocationState;
     reason?: string | null;
 };

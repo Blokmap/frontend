@@ -3,7 +3,7 @@ import { v, optional } from '@/utils/forms/validation';
 /**
  * Validation rules for OpeningTimeRequest
  */
-export const openingTimeRequestValidation = {
+export const openingTimeRequestRules = {
     id: {
         numeric: optional(v.numeric('id')),
     },
@@ -16,7 +16,6 @@ export const openingTimeRequestValidation = {
     },
     endTime: {
         required: v.required('endTime'),
-        endTimeAfterStartTime: v.endTimeAfterStartTime,
     },
     seatCount: {
         numeric: optional(v.numeric('seatCount')),
@@ -27,4 +26,4 @@ export const openingTimeRequestValidation = {
     repetition: {},
 };
 
-export type OpeningTimeRequestValidation = typeof openingTimeRequestValidation;
+export type OpeningTimeRequestRules = typeof openingTimeRequestRules;

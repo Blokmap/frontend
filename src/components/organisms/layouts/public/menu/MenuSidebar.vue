@@ -46,8 +46,8 @@ router.beforeEach(() => {
         <div class="menu-backdrop" @click="showMenu = false" v-if="showMenu"></div>
     </Transition>
     <Transition name="slide-left">
-        <div class="menu" @click.stop v-if="showMenu">
-            <div class="menu__header">
+        <aside class="menu" @click.stop v-if="showMenu" role="dialog" aria-modal>
+            <header class="menu__header">
                 <RouterLink :to="{ name: 'profile' }" class="header__profile-link" v-if="profile">
                     <EntityAvatar class="h-10 w-10" :image="profile.avatar?.url" />
                 </RouterLink>
@@ -65,20 +65,22 @@ router.beforeEach(() => {
                         <FontAwesomeIcon :icon="faX" />
                     </template>
                 </Button>
-            </div>
+            </header>
             <div class="menu__content">
                 <h2 class="text-4xl font-bold">Menu</h2>
 
-                <div class="menu__cta">
+                <section class="menu__cta" aria-labelledby="cta-heading">
                     <ImageStack class="cta__stack" :images="images" />
                     <div class="!mb-6 max-w-2xs space-y-2 text-center">
-                        <h2 class="text-xl font-bold">Zelf een locatie aanbieden?</h2>
+                        <h3 id="cta-heading" class="text-xl font-bold">
+                            Zelf een locatie aanbieden?
+                        </h3>
                         <p class="text-sm text-slate-600">
                             Dien zelf een locatie in als student of organisatie.
                         </p>
                     </div>
                     <Button severity="secondary">Aan de slag</Button>
-                </div>
+                </section>
 
                 <nav class="menu__nav">
                     <template v-if="profile">
@@ -103,9 +105,15 @@ router.beforeEach(() => {
                     </template>
                 </nav>
 
-                <div class="menu__divider"></div>
+                <hr class="menu__divider" v-if="profile" />
 
                 <nav class="menu__nav">
+                    <MenuSidebarItem
+                        v-if="!profile"
+                        label="Inloggen"
+                        :icon="faUser"
+                        :to="{ name: 'auth' }">
+                    </MenuSidebarItem>
                     <LanguageSelector v-model="locale">
                         <template #button="{ toggle }">
                             <MenuSidebarItem label="Taal" :icon="faGlobe" @click="toggle">
@@ -119,14 +127,18 @@ router.beforeEach(() => {
                     </MenuSidebarItem>
                 </nav>
 
-                <div class="menu__divider"></div>
+                <hr class="menu__divider" v-if="profile" />
 
                 <nav class="menu__nav">
-                    <MenuSidebarItem label="Uitloggen" :icon="faSignOut" @click="logout">
+                    <MenuSidebarItem
+                        v-if="profile"
+                        label="Uitloggen"
+                        :icon="faSignOut"
+                        @click="logout">
                     </MenuSidebarItem>
                 </nav>
             </div>
-        </div>
+        </aside>
     </Transition>
 </template>
 
@@ -151,7 +163,7 @@ router.beforeEach(() => {
 
         .menu__cta {
             @apply flex flex-col space-y-3;
-            @apply bg-secondary-50 rounded-xl p-6;
+            @apply bg-secondary-50 border-secondary-100 rounded-xl border p-6;
 
             .cta__stack {
                 @apply mx-auto h-30 w-30;

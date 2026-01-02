@@ -8,10 +8,12 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Build and library files.
-static
+dist
 node_modules
 tsconfig.tsbuildinfo
 *.local
+
+# Env
 .env
 
 # Editor directories and files.

@@ -24,7 +24,8 @@ import Skeleton from 'primevue/skeleton';
     }
 
     .skeleton__content {
-        @apply flex flex-1 flex-col gap-2 rounded-b-xl bg-white p-4;
+        @apply flex flex-1 flex-col gap-2 p-4;
+        @apply rounded-b-xl border border-slate-100 bg-white;
 
         .skeleton__name {
             @apply !h-6 !w-3/4;

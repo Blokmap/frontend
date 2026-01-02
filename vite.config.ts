@@ -5,7 +5,6 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     plugins: [vue(), tailwindcss()],
-    publicDir: 'static',
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),
@@ -13,7 +12,6 @@ export default defineConfig({
     },
     build: {
         chunkSizeWarningLimit: 2048,
-        outDir: 'public',
         rollupOptions: {
             output: {
                 manualChunks,

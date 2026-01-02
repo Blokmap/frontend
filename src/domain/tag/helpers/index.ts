@@ -1,2 +1,2 @@
 export * from './tagHelpers';
-export * from './tagValidatorRules';
+export * from './tagValidation';

@@ -1,4 +1,4 @@
-import type { Translation, TranslationRequest } from './translationTypes';
+import type { Translation, TranslationRequest } from '../translationTypes';
 
 /**
  * Converts a Translation object to a TranslationBody object for updating.

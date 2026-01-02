@@ -3,7 +3,7 @@ import { v, optional } from '@/utils/forms/validation';
 /**
  * Validation rules for AuthorityRequest
  */
-export const authorityRequestValidation = {
+export const authorityRequestRules = {
     name: {
         required: v.required('name'),
         maxLength: v.maxLength('name', 255),
@@ -14,4 +14,4 @@ export const authorityRequestValidation = {
     institutionId: {},
 };
 
-export type AuthorityRequestValidation = typeof authorityRequestValidation;
+export type AuthorityRequestRules = typeof authorityRequestRules;

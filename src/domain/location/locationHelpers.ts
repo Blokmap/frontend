@@ -1,7 +1,7 @@
 import placeholder from '@/assets/img/placeholder/location-placeholder.svg';
 import { isToday, isWeekend } from '@/utils/date';
 import { getCurrentTime, isEvening, isMorning, isNight, isTimeInRange } from '@/utils/time';
-import { translationToRequest } from '../translation/translationHelpers';
+import { translationToRequest } from '../translation';
 import { GOOGLE_MAPS_DIRECTIONS_BASE_URL } from './locationConstants';
 import type { Location, LocationAddress, LocationFeatures, LocationRequest } from './types';
 import type { OpeningTime } from '../openings';

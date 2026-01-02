@@ -1,20 +1,21 @@
 import { DEFAULT_LOCALE } from '@/config/i18nConfig';
 import { v, optional } from '@/utils/forms/validation';
+import { translationRequestRules } from '../translation';
 
 /**
  * Validation rules for LocationRequest
  */
-export const locationRequestValidation = {
+export const locationRequestRules = {
     name: {
         required: v.required('name'),
         maxLength: v.maxLength('name', 255),
     },
-    description: {
-        required: v.translationRequired('description', DEFAULT_LOCALE),
-    },
-    excerpt: {
-        required: v.translationRequired('excerpt', DEFAULT_LOCALE),
-    },
+    description: translationRequestRules([DEFAULT_LOCALE], {
+        required: v.required('description'),
+    }),
+    excerpt: translationRequestRules([DEFAULT_LOCALE], {
+        required: v.required('excerpt'),
+    }),
     seatCount: {
         required: v.required('seatCount'),
         numeric: v.numeric('seatCount'),
@@ -58,7 +59,7 @@ export const locationRequestValidation = {
 /**
  * Validation rules for LocationStateRequest
  */
-export const locationStateRequestValidation = {
+export const locationStateRequestRules = {
     state: {
         required: v.required('state'),
     },
@@ -67,5 +68,5 @@ export const locationStateRequestValidation = {
     },
 };
 
-export type LocationRequestValidation = typeof locationRequestValidation;
-export type LocationStateRequestValidation = typeof locationStateRequestValidation;
+export type LocationRequestRules = typeof locationRequestRules;
+export type LocationStateRequestRules = typeof locationStateRequestRules;

@@ -3,7 +3,7 @@ import { v, optional } from '@/utils/forms/validation';
 /**
  * Validation rules for CreateRoleRequest
  */
-export const createRoleRequestValidation = {
+export const createRoleRequestRules = {
     name: {
         required: v.required('name'),
         maxLength: v.maxLength('name', 100),
@@ -21,7 +21,7 @@ export const createRoleRequestValidation = {
 /**
  * Validation rules for UpdateRoleRequest
  */
-export const updateRoleRequestValidation = {
+export const updateRoleRequestRules = {
     name: {
         maxLength: optional(v.maxLength('name', 100)),
     },
@@ -36,7 +36,7 @@ export const updateRoleRequestValidation = {
 /**
  * Validation rules for UpdateMemberRequest
  */
-export const updateMemberRequestValidation = {
+export const updateMemberRequestRules = {
     roleId: {
         numeric: optional(v.numeric('roleId')),
     },
@@ -45,7 +45,7 @@ export const updateMemberRequestValidation = {
 /**
  * Validation rules for CreateMemberRequest
  */
-export const createMemberRequestValidation = {
+export const createMemberRequestRules = {
     username: {
         required: v.required('username'),
         maxLength: v.maxLength('username', 50),
@@ -55,7 +55,7 @@ export const createMemberRequestValidation = {
     },
 };
 
-export type CreateRoleRequestValidation = typeof createRoleRequestValidation;
-export type UpdateRoleRequestValidation = typeof updateRoleRequestValidation;
-export type UpdateMemberRequestValidation = typeof updateMemberRequestValidation;
-export type CreateMemberRequestValidation = typeof createMemberRequestValidation;
+export type CreateRoleRequestRules = typeof createRoleRequestRules;
+export type UpdateRoleRequestRules = typeof updateRoleRequestRules;
+export type UpdateMemberRequestRules = typeof updateMemberRequestRules;
+export type CreateMemberRequestRules = typeof createMemberRequestRules;

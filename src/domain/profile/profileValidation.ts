@@ -3,7 +3,7 @@ import { v, optional } from '@/utils/forms/validation';
 /**
  * Validation rules for ProfileRequest
  */
-export const profileRequestValidation = {
+export const profileRequestRules = {
     firstName: {
         maxLength: optional(v.maxLength('firstName', 100)),
     },
@@ -19,7 +19,7 @@ export const profileRequestValidation = {
 /**
  * Validation rules for ProfileScanRequest
  */
-export const profileScanRequestValidation = {
+export const profileScanRequestRules = {
     locationId: {
         required: v.required('locationId'),
         numeric: v.numeric('locationId'),
@@ -28,5 +28,5 @@ export const profileScanRequestValidation = {
     time: {},
 };
 
-export type ProfileRequestValidation = typeof profileRequestValidation;
-export type ProfileScanRequestValidation = typeof profileScanRequestValidation;
+export type ProfileRequestRules = typeof profileRequestRules;
+export type ProfileScanRequestRules = typeof profileScanRequestRules;

@@ -86,18 +86,18 @@ const showMenu = ref<boolean>(false);
 .header {
     @apply relative flex flex-col rounded-xl;
     @apply mx-auto w-full items-center justify-center gap-4;
-}
 
-.header__navigation {
-    @apply flex w-full items-center justify-between;
-}
+    .header__navigation {
+        @apply flex w-full items-center justify-between;
+    }
 
-.header__search {
-    @apply w-full md:max-w-[300px];
-    @apply md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2;
-}
+    .header__search {
+        @apply w-full md:max-w-[300px];
+        @apply md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2;
+    }
 
-.header__actions {
-    @apply flex items-center gap-4;
+    .header__actions {
+        @apply flex items-center gap-2;
+    }
 }
 </style>

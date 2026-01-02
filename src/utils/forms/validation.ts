@@ -12,8 +12,78 @@ import {
     between,
     helpers,
 } from '@vuelidate/validators';
-import { i18n, DEFAULT_LOCALE } from '@/config/i18nConfig';
-import type { TranslationRequest } from '@/domain/translation';
+import { i18n } from '@/config/i18nConfig';
+
+export function optional(validator: any): any {
+    return helpers.withParams({ type: 'optional' }, (value: any) => {
+        if (value === null || value === undefined || value === '') {
+            return true;
+        }
+
+        return helpers.unwrap(validator)(value);
+    });
+}
+
+/**
+ * Validation rule builder with i18n support
+ * All validators are namespaced under this object for consistency
+ */
+export const v = {
+    required(field: string) {
+        const message = () => createMessage('required', field);
+        return helpers.withMessage(message, required);
+    },
+
+    email(field: string) {
+        const message = () => createMessage('email', field);
+        return helpers.withMessage(message, email);
+    },
+
+    numeric(field: string) {
+        const message = () => createMessage('numeric', field);
+        return helpers.withMessage(message, numeric);
+    },
+
+    minValue(field: string, min: number) {
+        const message = () => createMessage('minValue', field, { min });
+        return helpers.withMessage(message, minValue(min));
+    },
+
+    maxValue(field: string, max: number) {
+        const message = () => createMessage('maxValue', field, { max });
+        return helpers.withMessage(message, maxValue(max));
+    },
+
+    minLength(field: string, min: number) {
+        const message = () => createMessage('minLength', field, { min });
+        return helpers.withMessage(message, minLength(min));
+    },
+
+    maxLength(field: string, max: number) {
+        const message = () => createMessage('maxLength', field, { max });
+        return helpers.withMessage(message, maxLength(max));
+    },
+
+    sameAs(field: string, other: string, otherField: any) {
+        const message = () => createMessage('sameAs', field, { other: getFieldName(other) });
+        return helpers.withMessage(message, sameAs(otherField));
+    },
+
+    url(field: string) {
+        const message = () => createMessage('url', field);
+        return helpers.withMessage(message, url);
+    },
+
+    alphaNum(field: string) {
+        const message = () => createMessage('alphaNum', field);
+        return helpers.withMessage(message, alphaNum);
+    },
+
+    between(field: string, min: number, max: number) {
+        const message = () => createMessage('between', field, { min, max });
+        return helpers.withMessage(message, between(min, max));
+    },
+};
 
 function getFieldName(field: string): string {
     const key = `validation.fields.${field}`;
@@ -29,93 +99,3 @@ function createMessage(validatorKey: string, field: string, params?: Record<stri
         ...params,
     });
 }
-
-/**
- * Helper to create optional validation rules (only validate if value exists)
- */
-export function optional(validator: any): any {
-    return helpers.withParams({ type: 'optional' }, (value: any) => {
-        if (value === null || value === undefined || value === '') return true;
-        return helpers.unwrap(validator)(value);
-    });
-}
-
-/**
- * Validation rule builder with i18n support
- * All validators are namespaced under this object for consistency
- */
-export const v = {
-    // Standard validators
-    required: (field: string) =>
-        helpers.withMessage(() => createMessage('required', field), required),
-
-    email: (field: string) => helpers.withMessage(() => createMessage('email', field), email),
-
-    numeric: (field: string) => helpers.withMessage(() => createMessage('numeric', field), numeric),
-
-    minValue: (field: string, min: number) =>
-        helpers.withMessage(() => createMessage('minValue', field, { min }), minValue(min)),
-
-    maxValue: (field: string, max: number) =>
-        helpers.withMessage(() => createMessage('maxValue', field, { max }), maxValue(max)),
-
-    minLength: (field: string, min: number) =>
-        helpers.withMessage(() => createMessage('minLength', field, { min }), minLength(min)),
-
-    maxLength: (field: string, max: number) =>
-        helpers.withMessage(() => createMessage('maxLength', field, { max }), maxLength(max)),
-
-    sameAs: (field: string, other: string, otherField: any) =>
-        helpers.withMessage(
-            () => createMessage('sameAs', field, { other: getFieldName(other) }),
-            sameAs(otherField),
-        ),
-
-    url: (field: string) => helpers.withMessage(() => createMessage('url', field), url),
-
-    alphaNum: (field: string) =>
-        helpers.withMessage(() => createMessage('alphaNum', field), alphaNum),
-
-    between: (field: string, min: number, max: number) =>
-        helpers.withMessage(() => createMessage('between', field, { min, max }), between(min, max)),
-
-    // Custom validators
-    endTimeAfterStartTime: helpers.withMessage(
-        () => i18n.global.t('validation.custom.endTimeAfterStartTime'),
-        (value: any, siblings: any): boolean => {
-            if (!value || !siblings.startTime) return true;
-            const start = siblings.startTime.split(':').map(Number);
-            const end = value.split(':').map(Number);
-            return end[0] > start[0] || (end[0] === start[0] && end[1] > start[1]);
-        },
-    ),
-
-    translationRequired: (field: string, locale: string = DEFAULT_LOCALE) =>
-        helpers.withMessage(
-            () =>
-                i18n.global.t('validation.custom.translationRequired', {
-                    locale: locale.toUpperCase(),
-                }),
-            (value: TranslationRequest | null | undefined): boolean => {
-                if (!value) return false;
-                return Boolean(value[locale] && value[locale]?.trim());
-            },
-        ),
-
-    translationAllRequired: (field: string, locales: string[]) =>
-        helpers.withMessage(
-            () =>
-                i18n.global.t('validation.custom.translationRequired', {
-                    locale: locales.map((l) => l.toUpperCase()).join(', '),
-                }),
-            (value: TranslationRequest | null | undefined): boolean => {
-                if (!value) return false;
-                return locales.every((locale) => Boolean(value[locale] && value[locale]?.trim()));
-            },
-        ),
-};
-
-/**
- * Type-safe validation builder
- */
-export type ValidationRules = Record<string, Record<string, any>>;

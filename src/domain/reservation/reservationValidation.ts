@@ -3,7 +3,7 @@ import { v } from '@/utils/forms/validation';
 /**
  * Validation rules for ReservationRequest
  */
-export const reservationRequestValidation = {
+export const reservationRequestRules = {
     openingTimeId: {
         required: v.required('openingTimeId'),
         numeric: v.numeric('openingTimeId'),
@@ -17,8 +17,7 @@ export const reservationRequestValidation = {
     },
     endTime: {
         required: v.required('endTime'),
-        endTimeAfterStartTime: v.endTimeAfterStartTime,
     },
 };
 
-export type ReservationRequestValidation = typeof reservationRequestValidation;
+export type ReservationRequestRules = typeof reservationRequestRules;

@@ -1,5 +1,5 @@
 import { SUPPORTED_LOCALES } from '@/config/i18nConfig';
-import { translationToRequest } from '../translation/translationHelpers';
+import { translationToRequest } from '../translation';
 import type { Institution, InstitutionRequest } from './types';
 
 /**

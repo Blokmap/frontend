@@ -1,16 +1,17 @@
 import { DEFAULT_LOCALE } from '@/config/i18nConfig';
 import { v, optional } from '@/utils/forms/validation';
+import { translationRequestRules } from '../translation';
 
 /**
  * Validation rules for InstitutionRequest
  */
-export const institutionRequestValidation = {
+export const institutionRequestRules = {
     category: {
         required: v.required('category'),
     },
-    name: {
-        required: v.translationRequired('name', DEFAULT_LOCALE),
-    },
+    name: translationRequestRules([DEFAULT_LOCALE], {
+        required: v.required('name'),
+    }),
     slug: {
         required: v.required('slug'),
         maxLength: v.maxLength('slug', 100),
@@ -45,4 +46,4 @@ export const institutionRequestValidation = {
     },
 };
 
-export type InstitutionRequestValidation = typeof institutionRequestValidation;
+export type InstitutionRequestRules = typeof institutionRequestRules;

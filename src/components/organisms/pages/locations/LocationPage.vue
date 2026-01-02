@@ -404,7 +404,7 @@ watchEffect(() => {
     }
 
     .location-page__divider {
-        @apply my-8 h-[2px] bg-slate-200;
+        @apply my-8 h-px bg-slate-200;
     }
 
     .location-page__section-title {

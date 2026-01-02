@@ -1,11 +1,9 @@
-<script setup lang="ts">
-import Stroke from '@/components/atoms/Stroke.vue';
-</script>
+<script setup lang="ts"></script>
 
 <template>
     <div class="relative">
         <div class="logo">
-            <Stroke class="stroke" />
+            <!-- <Stroke class="stroke" /> -->
             <span class="letters">
                 <span
                     v-for="(char, i) in 'Blokmap'"
@@ -22,9 +20,9 @@ import Stroke from '@/components/atoms/Stroke.vue';
 @reference '@/assets/styles/main.css';
 
 .logo {
-    @apply relative flex w-fit items-center px-4 py-2;
-    @apply cursor-pointer font-black tracking-tight select-none;
-    @apply text-2xl;
+    @apply relative flex w-fit items-center px-3 py-2;
+    @apply cursor-pointer font-[MegaSurprise] font-black tracking-tighter select-none;
+    @apply bg-primary rounded-xl text-3xl transition-all hover:scale-105;
 
     .letters {
         @apply text-primary-contrast relative z-10 flex items-center;
@@ -35,11 +33,11 @@ import Stroke from '@/components/atoms/Stroke.vue';
         }
     }
 
-    .stroke {
+    /* .stroke {
         @apply absolute top-1/2 left-1/2 h-full w-full;
-        @apply origin-center -translate-x-1/2 -translate-y-1/2 scale-x-115 scale-y-145;
+        @apply origin-center -translate-x-1/2 -translate-y-1/2 scale-x-115 scale-y-120;
         @apply pointer-events-none select-none;
-    }
+    } */
 }
 
 @keyframes logo-entrance {

@@ -236,7 +236,7 @@ onMounted(() => {
     @apply grid-cols-[50px_repeat(7,1fr)];
 
     .calendar__header-col {
-        @apply border-r border-b border-slate-100 last:border-r-0 first-of-type:border-b-0;
+        @apply border-r border-b border-slate-200 last:border-r-0 first-of-type:border-b-0;
         @apply text-xs;
 
         &:not(:first-child) {
@@ -278,7 +278,7 @@ onMounted(() => {
 
     .calendar__time-col {
         @apply sticky left-0 z-40;
-        @apply relative border-r border-slate-100;
+        @apply relative border-r border-slate-200;
 
         .calendar__time-label {
             @apply absolute right-0 left-0 -translate-y-[50%];
@@ -288,7 +288,7 @@ onMounted(() => {
 
     .calendar__day-col {
         @apply relative;
-        @apply border-r border-slate-100 last:border-r-0;
+        @apply border-r border-slate-200 last:border-r-0;
 
         &::before {
             @apply pointer-events-none absolute inset-0;
@@ -298,7 +298,7 @@ onMounted(() => {
 
     .calendar__cell {
         @apply relative cursor-pointer;
-        @apply border-b border-slate-100 hover:bg-slate-100;
+        @apply border-b border-slate-200 hover:bg-slate-100;
         @apply transition-colors;
 
         &.calendar__cell--disabled {

@@ -11,9 +11,16 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@font-face {
+/* @font-face {
     font-family: 'Armageda';
     src: url('@/assets/fonts/armageda.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+} */
+
+@font-face {
+    font-family: 'MegaSurprise';
+    src: url('@/assets/fonts/Mega-Surprise.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -130,7 +137,7 @@
 }
 
 body {
-    @apply bg-slate-900 font-serif text-base text-slate-900;
+    @apply bg-slate-900 font-serif text-base text-slate-800;
 
     h1,
     h2,

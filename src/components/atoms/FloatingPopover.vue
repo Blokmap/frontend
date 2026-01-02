@@ -188,7 +188,7 @@ onUnmounted(() => {
 }
 
 .popover {
-    @apply absolute rounded-lg shadow-lg;
+    @apply absolute rounded-lg border border-slate-200;
 }
 
 .popover-fullscreen {
@@ -208,11 +208,12 @@ onUnmounted(() => {
         @apply absolute left-1/2 -translate-x-1/2 content-[''];
     }
 
+    /* Border triangle */
     &::before {
-        @apply top-0 border-r-[9px] border-b-[9px] border-l-[9px] border-transparent;
-        filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+        @apply top-0 border-r-[9px] border-b-[9px] border-l-[9px] border-transparent border-b-slate-300;
     }
 
+    /* White fill triangle */
     &::after {
         @apply top-px border-r-[8px] border-b-[8px] border-l-[8px] border-transparent border-b-white;
     }
@@ -220,12 +221,12 @@ onUnmounted(() => {
     &.popover-arrow--below {
         @apply top-auto -bottom-[8px];
 
+        /* Border triangle */
         &::before {
-            @apply top-auto bottom-0 border-t-[9px] border-b-0;
-            filter: drop-shadow(0 -10px 8px rgb(0 0 0 / 0.04))
-                drop-shadow(0 -4px 3px rgb(0 0 0 / 0.1));
+            @apply top-auto bottom-0 border-t-[9px] border-b-0 border-t-slate-200;
         }
 
+        /* White fill triangle */
         &::after {
             @apply top-auto bottom-px border-t-[8px] border-b-0 border-t-white;
         }

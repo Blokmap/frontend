@@ -43,7 +43,7 @@ defineProps<{
     }
 
     .day-card__header {
-        @apply flex items-center justify-between border-b border-slate-100 px-4 py-3;
+        @apply flex items-center justify-between border-b border-slate-200 px-4 py-3;
     }
 
     .day-card__title {

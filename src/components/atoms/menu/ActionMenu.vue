@@ -17,17 +17,17 @@ const visible = defineModel<boolean>('visible', {
 
 const triggerRef = ref<HTMLElement | null>(null);
 
-function onToggleActionMenu(): void {
+const onToggleActionMenu = (): void => {
     if (props.disabled) {
         return;
     }
 
     visible.value = !visible.value;
-}
+};
 
-function hideMenu(): void {
+const hideMenu = (): void => {
     visible.value = false;
-}
+};
 </script>
 
 <template>
@@ -50,7 +50,7 @@ function hideMenu(): void {
         </div>
 
         <FloatingPopover :target-ref="triggerRef" v-model:visible="visible" :centered="false">
-            <div class="rounded-lg bg-white p-2 shadow-lg">
+            <div class="rounded-lg bg-white p-3 shadow-lg">
                 <p class="mb-3 text-sm font-medium text-slate-500">Acties</p>
                 <div class="space-y-3">
                     <!-- Main content slot -->

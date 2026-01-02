@@ -63,7 +63,7 @@ const isAdmin = computed(() => {
 
 .role-popover__item {
     @apply flex gap-2 py-4;
-    @apply border-b border-slate-100 first:pt-2 last:border-0 last:pb-2;
+    @apply border-b border-slate-200 first:pt-2 last:border-0 last:pb-2;
 }
 
 .role-popover__check {

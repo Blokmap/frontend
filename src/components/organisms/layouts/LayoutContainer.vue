@@ -61,7 +61,7 @@ const closeSidebar = () => {
 
     .container__sidebar {
         @apply fixed inset-y-0 left-0 z-50 w-80 -translate-x-full bg-white py-20 shadow-2xl lg:pr-4 xl:pr-10;
-        @apply lg:border-r-2 lg:border-slate-200;
+        @apply lg:border-r lg:border-slate-200;
         @apply overflow-y-auto transition-transform duration-300;
         @apply lg:relative lg:col-span-1 lg:w-auto lg:translate-x-0 lg:overflow-y-visible lg:bg-transparent lg:py-0 lg:shadow-none;
     }

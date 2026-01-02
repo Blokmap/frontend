@@ -75,7 +75,7 @@ watchEffect(() => {
 
 .public-layout__header {
     @apply py-3 md:py-6;
-    @apply border-b-2 border-slate-200 bg-slate-50 md:rounded-t-md;
+    @apply border-b border-slate-200 bg-slate-50 md:rounded-t-md;
 }
 
 .public-layout__footer {

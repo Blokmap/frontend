@@ -86,7 +86,7 @@ const active = computed<boolean>(() => {
         @apply px-3 py-2;
 
         .item__img {
-            @apply !h-8 !w-8 text-lg;
+            @apply !h-9 !w-9 text-lg;
         }
 
         .item__text {

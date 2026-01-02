@@ -81,9 +81,9 @@ const locationImages = computed(() => {
     return getLocationImages(locations);
 });
 
-function goBack() {
+const goBack = (): void => {
     router.push({ name: 'profile' });
-}
+};
 </script>
 
 <template>
@@ -151,7 +151,8 @@ function goBack() {
                             <EntityAvatar
                                 class="h-full w-full"
                                 :image="m.institution.logo?.url"
-                                :icon="faCity">
+                                :icon="faCity"
+                                :circle="false">
                             </EntityAvatar>
                         </template>
                         <template #text>

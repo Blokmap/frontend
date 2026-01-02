@@ -18,7 +18,9 @@ onMounted(() => {
 
 <template>
     <td :class="['cell', props.class]" :data-column="column">
-        <div class="cell__label">{{ column }}</div>
+        <div class="cell__label">
+            {{ column }}
+        </div>
         <div class="cell__content">
             <slot></slot>
         </div>

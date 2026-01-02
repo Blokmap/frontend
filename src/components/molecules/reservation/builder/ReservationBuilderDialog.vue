@@ -404,7 +404,7 @@ watch(visible, (newVisible) => {
     }
 
     .calendar-content {
-        @apply relative flex flex-1 border-t border-slate-100;
+        @apply relative flex flex-1 border-t border-slate-200;
         @apply min-h-0;
 
         .loading-overlay {

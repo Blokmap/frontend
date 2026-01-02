@@ -77,7 +77,7 @@ input.p-select-label {
 }
 
 .p-select-list {
-    @apply m-0 flex list-none flex-col;
+    @apply m-0 flex list-none flex-col py-1;
 }
 
 .p-select-option {

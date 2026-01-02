@@ -194,10 +194,11 @@ const transitionKey = computed<string | undefined>(() => {
 @reference '@/assets/styles/main.css';
 
 .locs {
-    @apply flex w-full flex-col items-stretch gap-3 md:flex-row md:items-start md:gap-6;
+    @apply flex w-full flex-col items-stretch gap-3 lg:flex-row lg:items-start lg:gap-6;
+    @apply lg:py-6;
 
     .locs__sidebar {
-        @apply hidden w-full flex-col space-y-6 md:flex md:w-1/2;
+        @apply hidden w-full flex-col space-y-6 lg:flex lg:w-1/2;
     }
 
     .locs__header {
@@ -225,7 +226,7 @@ const transitionKey = computed<string | undefined>(() => {
     }
 
     .locs__map {
-        @apply sticky top-4 md:flex md:w-1/2;
+        @apply sticky top-4 lg:flex lg:w-1/2;
 
         .locs__map-inner {
             @apply h-[calc(100vh-2rem)] shadow-md;

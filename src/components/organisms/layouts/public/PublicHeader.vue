@@ -3,11 +3,15 @@ import Button from 'primevue/button';
 import Logo from '@/components/atoms/Logo.vue';
 import EntityAvatar from '@/components/molecules/avatar/EntityAvatar.vue';
 import LocationSearch from '@/components/molecules/location/search/LocationSearchButton.vue';
-import PublicHeaderMenuButton from '@/components/organisms/layouts/public/PublicHeaderMenuButton.vue';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useAuthProfile } from '@/composables/data/useAuth';
+import { useReadRecentProfileLocations } from '@/composables/data/useLocations';
+import { getLocationImages, type Image } from '@/domain/image';
+import MenuSidebar from './menu/MenuSidebar.vue';
+import type { RecentLocationFilter } from '@/domain/location';
 
 defineEmits<{
     logout: [];
@@ -15,6 +19,22 @@ defineEmits<{
 }>();
 
 const { data: profile, isLoading: profileIsLoading } = useAuthProfile();
+
+const profileId = computed<string | null>(() => {
+    return profile.value?.id ?? null;
+});
+
+const filters = ref<RecentLocationFilter>({
+    maxCount: 3,
+});
+
+const { data: recentLocations } = useReadRecentProfileLocations(profileId, filters);
+
+const recentLocationImages = computed<Image[] | undefined>(() =>
+    getLocationImages(recentLocations.value),
+);
+
+const showMenu = ref<boolean>(false);
 </script>
 
 <template>
@@ -26,7 +46,7 @@ const { data: profile, isLoading: profileIsLoading } = useAuthProfile();
 
             <div class="header__actions">
                 <RouterLink :to="{ name: 'profile' }" class="header__profile-link" v-if="profile">
-                    <EntityAvatar class="h-12 w-12" :image="profile.avatar?.url" />
+                    <EntityAvatar class="h-10 w-10" :image="profile.avatar?.url" />
                 </RouterLink>
 
                 <RouterLink :to="{ name: 'auth' }" v-else>
@@ -37,8 +57,20 @@ const { data: profile, isLoading: profileIsLoading } = useAuthProfile();
                     </Button>
                 </RouterLink>
 
-                <PublicHeaderMenuButton :loading="profileIsLoading" :profile="profile">
-                </PublicHeaderMenuButton>
+                <Button severity="contrast" @click="showMenu = !showMenu" rounded>
+                    <template #icon>
+                        <FontAwesomeIcon :icon="faBars" />
+                    </template>
+                </Button>
+
+                <Teleport to="body">
+                    <MenuSidebar
+                        v-model:show="showMenu"
+                        :loading="profileIsLoading"
+                        :profile="profile"
+                        :images="recentLocationImages">
+                    </MenuSidebar>
+                </Teleport>
             </div>
         </div>
 

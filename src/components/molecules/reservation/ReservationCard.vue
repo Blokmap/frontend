@@ -76,7 +76,7 @@ function onConfirmCancel() {
 @reference '@/assets/styles/main.css';
 
 .reservation-card {
-    @apply flex flex-col gap-2 rounded-lg border border-slate-100 bg-slate-50 p-3;
+    @apply flex flex-col gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3;
 
     .reservation-card__header {
         @apply flex items-center justify-between gap-2;

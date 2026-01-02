@@ -153,6 +153,26 @@
     @apply -translate-x-4 opacity-0;
 }
 
+/* Slide Left Transition */
+/* Used for: Elements sliding from right to left */
+.slide-left-enter-active,
+.slide-left-leave-active {
+    @apply transition-all duration-300 ease-out;
+}
+
+.slide-left-enter-from {
+    @apply translate-x-24 opacity-0;
+}
+
+.slide-left-enter-to,
+.slide-left-leave-from {
+    @apply translate-x-0 opacity-100;
+}
+
+.slide-left-leave-to {
+    @apply translate-x-24 opacity-0;
+}
+
 /* Staggered Cards Transition */
 /* Used for: Grid items with delayed enter/leave animations */
 .staggered-cards-enter-active {

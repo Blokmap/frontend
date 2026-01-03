@@ -14,7 +14,7 @@ const { locale } = useI18n();
 
 <template>
     <Badge severity="contrast">
-        <FontAwesomeIcon :icon="tag.icon ?? faTag" />
+        <FontAwesomeIcon :icon="tag.icon?.split(' ') ?? faTag" />
         <span>{{ tag.name[locale] }}</span>
     </Badge>
 </template>

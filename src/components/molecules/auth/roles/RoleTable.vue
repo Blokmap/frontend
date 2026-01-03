@@ -29,7 +29,7 @@ const { locale } = useI18n();
 
             <TableCell column="Aangemaakt op">
                 {{
-                    new Date(role.createdAt).toLocaleDateString(locale, {
+                    role.createdAt.toLocaleDateString(locale, {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
@@ -41,7 +41,7 @@ const { locale } = useI18n();
 
             <TableCell column="Laatst bijgewerkt">
                 {{
-                    new Date(role.updatedAt).toLocaleDateString(locale, {
+                    role.updatedAt.toLocaleDateString(locale, {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',

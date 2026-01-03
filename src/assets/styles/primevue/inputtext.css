@@ -23,7 +23,7 @@
 }
 
 .p-inputtext.p-invalid {
-    @apply border-red-400 dark:border-red-300;
+    @apply border-blushed-brick-500 dark:border-red-300;
 }
 
 .p-inputtext.p-variant-filled {

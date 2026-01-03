@@ -4,7 +4,7 @@ import type { Translation, TranslationRequest } from '../translation';
 export type Tag = {
     id: number;
     name: Translation;
-    key: string;
+    slug: string;
     icon: string | null;
     createdAt: Date;
     updatedAt: Date;
@@ -14,6 +14,6 @@ export type Tag = {
 
 export type TagRequest = {
     name: TranslationRequest;
-    key: string;
+    slug: string;
     icon: string | null | undefined;
 };

@@ -140,7 +140,7 @@ const isPending = computed<boolean>(() => {
                 v-slot="{ Component, route }"
                 :auth-profile="authProfile">
                 <Transition name="fade-slide-up" mode="out-in">
-                    <component :is="Component" :key="route.path" />
+                    <component :is="Component" :key="route.name" />
                 </Transition>
             </RouterView>
             <LoaderError v-else :errors="[countsError]" />

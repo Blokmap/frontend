@@ -28,13 +28,25 @@ const onRowClick = (tag: Tag): void => {
                 <TagComponent :tag="tag" />
             </TableCell>
             <TableCell column="Gemaakt Op">
-                {{ tag.createdAt.toLocaleDateString(locale) }}
+                {{
+                    tag.createdAt.toLocaleDateString(locale, {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                    })
+                }}
             </TableCell>
             <TableCell column="Aangepast Op">
-                {{ tag.updatedAt.toLocaleDateString(locale) }}
+                {{
+                    tag.updatedAt.toLocaleDateString(locale, {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                    })
+                }}
             </TableCell>
             <TableCell column="Acties">
-                <slot name="actions"></slot>
+                <slot name="actions" :tag="tag"></slot>
             </TableCell>
         </template>
     </Table>

@@ -138,7 +138,7 @@ const routes: RouteRecordRaw[] = [
                                 component: LocationIndexPage,
                             },
                             {
-                                path: 'tags',
+                                path: 'tags/:tagId?',
                                 name: 'admin.tags',
                                 component: TagIndexPage,
                             },

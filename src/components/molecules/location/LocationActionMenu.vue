@@ -49,9 +49,6 @@ const onStateSelect = (state: LocationState | null): void => {
     emit('select:state', props.location.id, state);
 };
 
-/**
- * Confirm location rejection and emit status change.
- */
 const onConfirmRejection = (reason: string): void => {
     if (props.location.state !== LocationState.Rejected) {
         emit('select:state', props.location.id, LocationState.Rejected, reason);
@@ -60,40 +57,23 @@ const onConfirmRejection = (reason: string): void => {
     showRejectionDialog.value = false;
 };
 
-/**
- * Cancel location rejection dialog.
- */
 const onCancelRejection = (): void => {
     showRejectionDialog.value = false;
 };
 
-/**
- * Confirm location deletion and emit delete event.
- */
 const onConfirmDeletion = (): void => {
     emit('click:delete', props.location.id);
 };
 
-/**
- * Cancel location deletion dialog.
- */
 const onCancelDeletion = (): void => {
     showDeleteDialog.value = false;
 };
 
-/**
- * Handle delete location click.
- */
 const onDeleteClick = (): void => {
     showDeleteDialog.value = true;
 };
 
-/**
- * Check if a specific action is pending.
- *
- * @param action - The action to check
- */
-const isPending = (action: LocationAction): boolean => {
+const actionPending = (action: LocationAction): boolean => {
     return props.pendingActions?.[action] ?? false;
 };
 
@@ -122,7 +102,7 @@ watch(pending, (isPending, wasPending) => {
             <LocationStateSelect
                 :state="location.state"
                 :clearable="false"
-                :loading="isPending('select:state')"
+                :loading="actionPending('select:state')"
                 @update:state="onStateSelect">
             </LocationStateSelect>
         </template>
@@ -152,7 +132,7 @@ watch(pending, (isPending, wasPending) => {
                 v-if="actions.includes('click:delete')"
                 label="Verwijderen"
                 :icon="faTrashCan"
-                :loading="isPending('click:delete')"
+                :loading="actionPending('click:delete')"
                 @click="onDeleteClick"
                 destructive>
             </ActionMenuButton>

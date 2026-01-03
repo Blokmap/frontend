@@ -7,7 +7,7 @@ export const tagRequestRules = {
         required: v.required('name'),
         maxLength: v.maxLength('name', 100),
     }),
-    key: {
+    slug: {
         required: v.required('key'),
         maxLength: v.maxLength('key', 20),
     },

@@ -1,12 +1,10 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import { faSave, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { watchImmediate } from '@vueuse/core';
-import { computed, ref } from 'vue';
-import { tagToRequest, type Tag, type TagRequest } from '@/domain/tag';
-import { defaultTagRequest } from '@/domain/tag/tagConstants';
+import { computed } from 'vue';
+import { type Tag, type TagRequest } from '@/domain/tag';
 import TagForm from './TagForm.vue';
 
 const props = defineProps<{
@@ -20,23 +18,12 @@ const emit = defineEmits<{
 
 const visible = defineModel<boolean>('visible');
 
-const isEditing = computed<boolean>(() => {
+const editing = computed<boolean>(() => {
     return props.tag !== undefined;
 });
 
-const form = ref<TagRequest>(defaultTagRequest());
-
-// Sync tag prop to form
-watchImmediate([visible, () => props.tag] as const, ([isVisible, tag]) => {
-    if (!isVisible) {
-        return;
-    }
-
-    form.value = tag ? tagToRequest(tag) : defaultTagRequest();
-});
-
-const onSaveClick = (): void => {
-    emit('click:save', form.value);
+const onSaveClick = (form: TagRequest): void => {
+    emit('click:save', form);
 };
 
 const onCancelClick = (): void => {
@@ -57,23 +44,24 @@ const onCancelClick = (): void => {
         class="tag-builder-dialog">
         <template #header>
             <h3 class="tag-builder-dialog__title">
-                <template v-if="!isEditing">Nieuwe Tag</template>
+                <template v-if="!editing">Nieuwe Tag</template>
                 <template v-else>Tag Bewerken</template>
             </h3>
         </template>
         <template #default>
-            <TagForm :tag="tag" @click:save="onSaveClick" />
+            <TagForm :tag="tag" id="tag-form" @click:save="onSaveClick" />
         </template>
 
         <template #footer>
             <Button severity="contrast" class="text-sm" :disabled="pending" @click="onCancelClick">
-                <FontAwesomeIcon :icon="faXmark" class="mr-2" />
+                <FontAwesomeIcon :icon="faXmark" />
                 Annuleren
             </Button>
 
-            <Button class="text-sm" :loading="pending" @click="onSaveClick">
-                <FontAwesomeIcon :icon="faSave" class="mr-2" />
-                {{ isEditing ? 'Opslaan' : 'Aanmaken' }}
+            <Button type="submit" form="tag-form" class="text-sm" :loading="pending">
+                <FontAwesomeIcon v-if="pending" :icon="faSpinner" spin />
+                <FontAwesomeIcon v-else :icon="faSave" />
+                {{ editing ? 'Opslaan' : 'Aanmaken' }}
             </Button>
         </template>
     </Dialog>

@@ -3,12 +3,12 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import useVuelidate from '@vuelidate/core';
 import { watchImmediate } from '@vueuse/core';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { SUPPORTED_LOCALES } from '@/config/i18nConfig';
 import { tagToRequest, type Tag, type TagRequest } from '@/domain/tag';
 import { tagRequestRules } from '@/domain/tag/helpers';
 import { defaultTagRequest } from '@/domain/tag/tagConstants';
+import { focusInvalidLocale } from '@/domain/translation';
 import LanguageSelector from '../LanguageSelector.vue';
 import InputHint from '../form/InputHint.vue';
 import InputLabel from '../form/InputLabel.vue';
@@ -21,13 +21,12 @@ const emit = defineEmits<{
     'click:save': [TagRequest];
 }>();
 
-const form = ref<TagRequest>(defaultTagRequest());
-
-const v$ = useVuelidate(tagRequestRules, form);
-
 const { locale } = useI18n();
 
 const editingLocale = ref<string>(locale.value);
+const form = ref<TagRequest>(defaultTagRequest());
+
+const v$ = useVuelidate(tagRequestRules, form);
 
 watchImmediate(
     () => props.tag,
@@ -39,40 +38,18 @@ watchImmediate(
 const onSaveClick = async (): Promise<void> => {
     const valid = await v$.value.$validate();
 
-    if (!valid) {
-        // Check if name validation failed and find missing locale
-        if (v$.value.name?.$error) {
-            const missingLocale = SUPPORTED_LOCALES.find(
-                (loc) => !form.value.name[loc] || !form.value.name[loc]?.trim(),
-            );
-            if (missingLocale) {
-                editingLocale.value = missingLocale;
-            }
+    if (!valid && v$.value.name.$error) {
+        const nextLocale = focusInvalidLocale(v$.value.name);
+
+        if (nextLocale) {
+            editingLocale.value = nextLocale;
         }
-        return;
     }
 
-    emit('click:save', form.value);
+    if (valid) {
+        emit('click:save', form.value);
+    }
 };
-
-const nameError = computed(() => {
-    if (v$.value.name?.$error && v$.value.name.required?.$invalid) {
-        return v$.value.name.required.$message as string;
-    }
-    return '';
-});
-
-const keyError = computed(() => {
-    if (v$.value.key?.$error) {
-        if (v$.value.key.required?.$invalid) {
-            return v$.value.key.required.$message as string;
-        }
-        if (v$.value.key.maxLength?.$invalid) {
-            return v$.value.key.maxLength.$message as string;
-        }
-    }
-    return '';
-});
 </script>
 
 <template>
@@ -93,37 +70,30 @@ const keyError = computed(() => {
             <InputLabel :htmlFor="`tag-name-${editingLocale}`">
                 Naam ({{ editingLocale.toUpperCase() }}) *
             </InputLabel>
-
             <InputText
-                :id="`tag-name-${editingLocale}`"
-                v-model="form.name[editingLocale]"
-                :invalid="v$.name.$error"
                 class="w-full"
                 placeholder="Bijv. toegankelijk"
-                required>
+                v-model="form.name[editingLocale]"
+                :id="`tag-name-${editingLocale}`"
+                :invalid="v$.name[editingLocale].$error">
             </InputText>
-            <InputHint :invalid="v$.name.$error">
-                <template v-if="nameError">{{ nameError }}</template>
-                <template v-else>Deze naam wordt getoond in de geselecteerde taal.</template>
+            <InputHint :errors="v$.name.$errors" :locale="editingLocale">
+                Deze naam wordt getoond in de geselecteerde taal.
             </InputHint>
         </fieldset>
 
         <div class="form__grid">
             <div class="space-y-1">
-                <InputLabel htmlFor="tag-key">Sleutel *</InputLabel>
+                <InputLabel htmlFor="tag-slug">Sleutel *</InputLabel>
                 <InputText
-                    id="tag-key"
-                    v-model="form.key"
-                    :invalid="v$.key.$error"
+                    id="tag-slug"
+                    v-model="form.slug"
+                    :invalid="v$.slug.$error"
                     class="w-full"
-                    placeholder="bijv. toegankelijk"
-                    required>
+                    placeholder="bijv. toegankelijk">
                 </InputText>
-                <InputHint :invalid="v$.key.$error">
-                    <template v-if="keyError">{{ keyError }}</template>
-                    <template v-else>
-                        Unieke sleutel voor API/filters (kleine letters, geen spaties).
-                    </template>
+                <InputHint :errors="v$.slug.$errors">
+                    Unieke sleutel voor API/filters (kleine letters, geen spaties).
                 </InputHint>
             </div>
 
@@ -144,10 +114,6 @@ const keyError = computed(() => {
 
 .form {
     @apply max-w-[500px] space-y-5;
-
-    .form__fieldset {
-        @apply space-y-3;
-    }
 
     .form__legend {
         @apply flex w-full items-center justify-between gap-3;

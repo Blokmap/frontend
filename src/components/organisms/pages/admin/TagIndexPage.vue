@@ -17,7 +17,7 @@ const route = useRoute();
 
 const { data: tags, isLoading } = useReadTags();
 
-const isCreating = ref(false);
+const isCreating = ref<boolean>(false);
 
 const { mutate: createTag, isPending: isPendingCreate } = useCreateTag({
     onSuccess: () => {
@@ -91,7 +91,7 @@ const isPending = computed(() => {
             </template>
         </PageTitle>
 
-        <TagTable :tags="tags" :loading="isLoading">
+        <TagTable :tags="tags" :loading="isLoading" @click:row="onEditClick($event.id)">
             <template #actions="{ tag }">
                 <TagActionMenu
                     :tag="tag"

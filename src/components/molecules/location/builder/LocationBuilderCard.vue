@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Card from 'primevue/card';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
@@ -8,42 +9,44 @@ defineProps<{
 </script>
 
 <template>
-    <div class="builder-card">
-        <div class="builder-card__body">
-            <div class="builder-card__header">
-                <div v-if="icon" class="builder-card__icon">
+    <Card class="card">
+        <template #header>
+            <div class="card__header">
+                <div v-if="icon" class="card__icon">
                     <FontAwesomeIcon :icon="icon" />
                 </div>
-                <div class="builder-card__title">
+                <div class="card__title">
                     <slot name="header"></slot>
                 </div>
             </div>
-            <slot name="default"></slot>
-        </div>
-    </div>
+        </template>
+        <template #content>
+            <div class="card__body">
+                <slot name="default"></slot>
+            </div>
+        </template>
+    </Card>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.builder-card {
-    @apply rounded-lg bg-white p-4 shadow-md;
+.card {
+    .card__header {
+        @apply flex items-center gap-3 p-4 pb-0;
 
-    .builder-card__body {
-        @apply space-y-4 sm:space-y-6;
+        .card__icon {
+            @apply bg-primary-50 text-primary-700 hidden h-13 w-13 shrink-0 items-center justify-center sm:flex;
+            @apply rounded-full;
+        }
+
+        .card__title {
+            @apply w-full space-y-1;
+        }
     }
 
-    .builder-card__header {
-        @apply flex items-center gap-3;
-    }
-
-    .builder-card__icon {
-        @apply bg-primary-50 text-primary-700 hidden h-13 w-13 shrink-0 items-center justify-center sm:flex;
-        @apply rounded-full;
-    }
-
-    .builder-card__title {
-        @apply w-full space-y-1;
+    .card__body {
+        @apply space-y-4;
     }
 }
 </style>

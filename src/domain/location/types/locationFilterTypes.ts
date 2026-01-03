@@ -1,6 +1,8 @@
 import type { LocationState } from './locationSchemaTypes';
-import type { LngLat, LngLatBounds } from '@/domain/map/types/mapTypes';
+import type { LngLatBounds } from '@/domain/map/types/mapTypes';
+import type { Tag } from '@/domain/tag';
 import type { Pagination } from '@/utils/pagination';
+import type { Time } from '@/utils/time';
 
 export type LocationFilter = Pagination & {
     query?: string | null;
@@ -10,14 +12,11 @@ export type LocationFilter = Pagination & {
 
 export type LocationSearchFilter = Pagination & {
     query?: string | null;
-    isReservable?: boolean | null;
-    openOn?: Date | null;
+    reservable?: boolean | null;
+    openOnTime?: Time | null;
+    openOnDay?: Date | null;
+    tags?: Tag[];
     bounds?: LngLatBounds | null;
-    center?: {
-        coords: LngLat;
-        radius?: number | null;
-    } | null;
-    language?: string | null;
 };
 
 export type RecentLocationFilter = {

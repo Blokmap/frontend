@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import ErrorPage from '@/components/organisms/ErrorPage.vue';
+import { RouterLink } from 'vue-router';
 </script>
 
 <template>
-    <ErrorPage
-        code="404"
-        title="Pagina niet gevonden"
-        description="De pagina die je zoekt bestaat niet of is verplaatst. Controleer de URL of ga terug naar de homepage.">
-    </ErrorPage>
+    <div class="prose prose-slate mx-auto max-w-4xl px-4 py-8">
+        <h1>De pagina werd niet gevonden...</h1>
+        <p>We helpen je graag weer op weg:</p>
+        <ul>
+            <li>
+                <RouterLink :to="{ name: 'locations' }">Bekijk alle locaties</RouterLink>
+            </li>
+            <li>
+                <RouterLink :to="{ name: 'locations.submit' }">Dien een locatie in</RouterLink>
+            </li>
+        </ul>
+    </div>
 </template>

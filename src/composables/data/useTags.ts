@@ -24,6 +24,7 @@ import type { AxiosError } from 'axios';
 export function useReadTags(options: CompQueryOptions = {}): CompQuery<Tag[]> {
     const query = useQuery<Tag[], AxiosError>({
         ...options,
+        staleTime: Infinity,
         queryKey: ['tags', 'list'],
         queryFn: readTags,
     });

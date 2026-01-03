@@ -85,14 +85,6 @@ export type LocationRequest = {
     country: string;
     latitude: number;
     longitude: number;
-    parent?: {
-        id: number;
-        type: LocationOwnerType;
-    } | null;
-    /* @deprecated Use parent instead */
-    authorityId?: number | null;
-    /* @deprecated Use parent instead */
-    institutionId?: number | null;
 };
 
 export type NearestLocation = {

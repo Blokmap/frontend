@@ -1,5 +1,5 @@
 <template>
-    <div class="prose prose-slate mx-auto max-w-4xl px-4 py-8">
+    <div class="prose prose-slate mx-auto max-w-4xl px-2 py-8">
         <h1>Privacy Policy</h1>
 
         <p class="text-sm text-gray-600">Last updated: 20 December 2025</p>
@@ -187,13 +187,6 @@
             request the export of their personal data for portability purposes. Requests can be
             submitted by emailing <a href="mailto:info@blokmap.be">info@blokmap.be</a>. Blokmap will
             respond to all requests in a timely manner in accordance with applicable law.
-        </p>
-
-        <h2>International Data Transfers</h2>
-        <p>
-            Data may be processed by third-party providers in countries outside the European Union
-            only where appropriate safeguards are in place. In practice, all processors used by
-            Blokmap operate within the EU.
         </p>
 
         <h2>Security</h2>

@@ -16,6 +16,7 @@ import type { RecentLocationFilter } from '@/domain/location';
 defineEmits<{
     logout: [];
     'click:search': [];
+    'click:filters': [];
 }>();
 
 const { data: profile, isLoading: profileIsLoading } = useAuthProfile();
@@ -75,7 +76,10 @@ const showMenu = ref<boolean>(false);
         </div>
 
         <div class="header__search">
-            <LocationSearch @click:search="$emit('click:search')" />
+            <LocationSearch
+                @click:search="$emit('click:search')"
+                @click:filters="$emit('click:filters')">
+            </LocationSearch>
         </div>
     </div>
 </template>

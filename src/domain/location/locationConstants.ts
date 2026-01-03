@@ -18,7 +18,6 @@ export const DEFAULT_LOCATION_REQUEST: LocationRequest = {
     seatCount: 20,
     isReservable: true,
     isVisible: true,
-    authorityId: null,
 };
 
 export const LOCATION_SETTINGS = {

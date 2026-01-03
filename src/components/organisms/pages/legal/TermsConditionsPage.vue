@@ -1,5 +1,5 @@
 <template>
-    <div class="prose prose-slate mx-auto max-w-4xl px-4 py-8">
+    <div class="prose prose-slate mx-auto max-w-4xl px-2 py-8">
         <h1>Terms and Conditions</h1>
 
         <p>Last updated: 20 December 2025</p>

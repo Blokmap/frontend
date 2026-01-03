@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Toast from '@/components/Toast.vue';
-import CookieNotice from '@/components/atoms/CookieNotice.vue';
 import ProgressBar from '@/components/atoms/ProgressBar.vue';
+import CookieNotice from '@/components/organisms/CookieNotice.vue';
 import { setupAxiosInterceptors } from './config/axiosConfig';
 import { setupI18n } from './config/i18nConfig';
 import { setupAuthGuard, setupRouterGuards } from './config/router/routerGuards';

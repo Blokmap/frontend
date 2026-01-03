@@ -1,11 +1,12 @@
 import { parseAuthorityResponse } from '@/domain/authority';
 import { parseImageResponse } from '@/domain/image';
+import { parseInstitutionResponse } from '@/domain/institution';
 import { parseOpeningTimeResponse } from '@/domain/openings';
 import { parseProfileResponse } from '@/domain/profile';
 import { parseTranslationResponse } from '@/domain/translation';
-import { stringToDate } from '@/utils/date';
-import { parseInstitutionResponse } from '../institution';
-import type { Location } from './types';
+import { dateToString, stringToDate } from '@/utils/date';
+import { timeToString } from '@/utils/time';
+import type { Location, LocationSearchFilter } from '../types';
 
 /**
  * Transform a Location response object.
@@ -54,6 +55,29 @@ export function parseLocationResponse(data: any): Location {
 
     if (data.institution) {
         result.institution = parseInstitutionResponse(data.institution);
+    }
+
+    return result;
+}
+
+export function formatLocationSearchFilters(filters: LocationSearchFilter): Record<string, any> {
+    const result: Record<string, any> = {
+        tags: filters.tags?.map((tag) => tag.id),
+        reservable: filters.reservable,
+        query: filters.query,
+        openOnTime: timeToString(filters.openOnTime),
+        openOnDay: dateToString(filters.openOnDay, true),
+    };
+
+    if (filters.bounds) {
+        const [southWest, northEast] = filters.bounds;
+
+        if (southWest && northEast) {
+            result.southWestLng = southWest[0];
+            result.southWestLat = southWest[1];
+            result.northEastLng = northEast[0];
+            result.northEastLat = northEast[1];
+        }
     }
 
     return result;

@@ -23,9 +23,6 @@ import {
     Error404Page,
     Error405Page,
     DashboardLocationsPage,
-    LocationInfoPage,
-    LocationImagesPage,
-    LocationSettingsPage,
     LocationOpeningsPage,
     LocationReservationsPage,
     LocationMembersPage,
@@ -212,17 +209,7 @@ const routes: RouteRecordRaw[] = [
                             {
                                 path: 'info',
                                 name: 'manage.location.info',
-                                component: LocationInfoPage,
-                            },
-                            {
-                                path: 'images',
-                                name: 'manage.location.images',
-                                component: LocationImagesPage,
-                            },
-                            {
-                                path: 'settings',
-                                name: 'manage.location.settings',
-                                component: LocationSettingsPage,
+                                redirect: { name: 'manage.location.reservations' },
                             },
                             {
                                 path: 'openings',

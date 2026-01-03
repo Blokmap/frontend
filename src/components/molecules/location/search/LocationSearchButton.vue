@@ -4,12 +4,13 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 defineEmits<{
     'click:search': [];
+    'click:filters': [];
 }>();
 </script>
 
 <template>
     <button @click="$emit('click:search')" class="location-search">
-        <FontAwesomeIcon :icon="faSliders" />
+        <FontAwesomeIcon :icon="faSliders" @click.stop="$emit('click:filters')" />
         <div class="location-search__content">
             <span class="location-search__text">Zoek bloklocaties...</span>
             <div class="location-search__icon-wrapper">

@@ -1,3 +1,76 @@
+<script setup lang="ts">
+import {
+    faMagnifyingGlass,
+    faSpinner,
+    faChevronRight,
+    faSliders,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { useDebounce } from '@vueuse/core';
+import { storeToRefs } from 'pinia';
+import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { useSearchGeoLocations } from '@/composables/data/useGeoCoding';
+import { useSearchLocations } from '@/composables/data/useLocations';
+import { useLocationFilters } from '@/composables/store/useLocationFilters';
+import type { Location } from '@/domain/location';
+import type { GeoJsonProperties } from 'geojson';
+
+const isVisible = defineModel<boolean>('visible', { default: false });
+
+const emit = defineEmits<{
+    filter: [];
+}>();
+
+const search = ref('');
+const debouncedSearch = useDebounce(search, 500);
+
+const router = useRouter();
+const filters = storeToRefs(useLocationFilters());
+
+const enabled = computed(() => debouncedSearch.value.length >= 2);
+
+const { data: locations, isFetching: isFetchingLocations } = useSearchLocations(
+    computed(() => ({ query: debouncedSearch.value, perPage: 5 })),
+    { enabled },
+);
+
+const { data: geolocations, isFetching: isFetchingGeolocations } = useSearchGeoLocations(
+    computed(() => ({ search: debouncedSearch.value, limit: 5 })),
+    { enabled },
+);
+
+const searchInput = useTemplateRef<HTMLInputElement>('searchInput');
+
+const isSearching = computed(() => {
+    return isFetchingLocations.value || isFetchingGeolocations.value;
+});
+
+const hasResults = computed(() => {
+    const hasLocations = locations.value?.data.length || 0;
+    const hasGeos = geolocations.value?.length || 0;
+    return hasLocations > 0 || hasGeos > 0;
+});
+
+// Focus the search input when the spotlight becomes visible
+watch(isVisible, async (newValue) => {
+    if (!newValue) return;
+    await nextTick();
+    searchInput.value?.focus();
+});
+
+function onLocationClick(location: Location) {
+    router.push({ name: 'locations.detail', params: { locationId: location.id } });
+    isVisible.value = false;
+}
+
+function onGeoClick(geo: GeoJsonProperties) {
+    router.push({ name: 'locations' });
+    filters.geoLocation.value = geo;
+    isVisible.value = false;
+}
+</script>
+
 <template>
     <Transition name="fade">
         <div
@@ -91,79 +164,6 @@
         </div>
     </Transition>
 </template>
-
-<script setup lang="ts">
-import {
-    faMagnifyingGlass,
-    faSpinner,
-    faChevronRight,
-    faSliders,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useDebounce } from '@vueuse/core';
-import { storeToRefs } from 'pinia';
-import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { useSearchGeoLocations } from '@/composables/data/useGeoCoding';
-import { useSearchLocations } from '@/composables/data/useLocations';
-import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import type { Location } from '@/domain/location';
-import type { GeoJsonProperties } from 'geojson';
-
-const isVisible = defineModel<boolean>('visible', { default: false });
-
-const emit = defineEmits<{
-    filter: [];
-}>();
-
-const search = ref('');
-const debouncedSearch = useDebounce(search, 500);
-
-const router = useRouter();
-const filters = storeToRefs(useLocationFilters());
-
-const enabled = computed(() => debouncedSearch.value.length >= 2);
-
-const { data: locations, isFetching: isFetchingLocations } = useSearchLocations(
-    computed(() => ({ query: debouncedSearch.value, perPage: 5 })),
-    { enabled },
-);
-
-const { data: geolocations, isFetching: isFetchingGeolocations } = useSearchGeoLocations(
-    computed(() => ({ search: debouncedSearch.value, limit: 5 })),
-    { enabled },
-);
-
-const searchInput = useTemplateRef<HTMLInputElement>('searchInput');
-
-const isSearching = computed(() => {
-    return isFetchingLocations.value || isFetchingGeolocations.value;
-});
-
-const hasResults = computed(() => {
-    const hasLocations = locations.value?.data.length || 0;
-    const hasGeos = geolocations.value?.length || 0;
-    return hasLocations > 0 || hasGeos > 0;
-});
-
-// Focus the search input when the spotlight becomes visible
-watch(isVisible, async (newValue) => {
-    if (!newValue) return;
-    await nextTick();
-    searchInput.value?.focus();
-});
-
-function onLocationClick(location: Location) {
-    router.push({ name: 'locations.detail', params: { locationId: location.id } });
-    isVisible.value = false;
-}
-
-function onGeoClick(geo: GeoJsonProperties) {
-    router.push({ name: 'locations' });
-    filters.geoLocation.value = geo;
-    isVisible.value = false;
-}
-</script>
 
 <style scoped>
 @reference '@/assets/styles/main.css';

@@ -8,6 +8,7 @@ import LanguageSelector from '@/components/molecules/LanguageSelector.vue';
 import EditorInput from '@/components/molecules/editor/EditorInput.vue';
 import LocationBuilderCard from '@/components/molecules/location/builder/LocationBuilderCard.vue';
 import LocationMap from '@/components/molecules/map/LocationMap.vue';
+import TagSelect from '@/components/molecules/tags/TagSelect.vue';
 import {
     faEdit,
     faHome,
@@ -20,18 +21,26 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGeocodeAddress } from '@/composables/data/useGeoCoding';
+import { useReadTags } from '@/composables/data/useTags';
 import { useToast } from '@/composables/store/useToast';
 import { getOutputDataLength } from '@/domain/editor/editorHelpers';
 import { LOCATION_SETTINGS, formatLocationAddress } from '@/domain/location';
 import { DEFAULT_MAP_OPTIONS } from '@/domain/map';
+import { type Tag as TagType } from '@/domain/tag';
 import type { LocationRequest } from '@/domain/location';
 import type { LngLat } from '@/domain/map';
 
 const form = defineModel<LocationRequest>({ required: true });
 
+const selectedTags = defineModel<TagType[]>('tags', {
+    default: [],
+});
+
 const toast = useToast();
 
 const { locale } = useI18n();
+
+const { data: tags, isLoading: isLoadingTags } = useReadTags();
 
 const { mutateAsync: geocodeAddress, isPending: isPendingCoordinates } = useGeocodeAddress({
     disableToasts: true,
@@ -97,11 +106,7 @@ watch(
     },
 );
 
-/**
- * Calculate coordinates based on the entered address
- * and update the map center and zoom.
- */
-async function calculateCoordinates(): Promise<void> {
+const calculateCoordinates = async (): Promise<void> => {
     if (!canCalculateCoordinates.value) return;
 
     try {
@@ -118,17 +123,14 @@ async function calculateCoordinates(): Promise<void> {
             detail: 'Er is iets misgegaan bij het ophalen van de locatie. Controleer het adres en probeer het opnieuw.',
         });
     }
-}
+};
 
-/**
- * Reset the map center and zoom to the last calculated coordinates
- */
-function resetToCalculatedCoordinates(): void {
+const resetToCalculatedCoordinates = (): void => {
     if (calculatedCoordinates.value) {
         mapCenter.value = calculatedCoordinates.value;
         mapZoom.value = 18;
     }
-}
+};
 </script>
 
 <template>
@@ -187,8 +189,13 @@ function resetToCalculatedCoordinates(): void {
                     </InputHint>
                 </div>
 
+                <!-- Tags -->
+                <div>
+                    <InputLabel html-for="tags"> Tags </InputLabel>
+                    <TagSelect v-model="selectedTags" :tags="tags" :loading="isLoadingTags" />
+                </div>
+
                 <!-- Detailed Description -->
-                <!-- Current language description -->
                 <div>
                     <InputLabel :htmlFor="`description-${currentLanguage}`">
                         Uitgebreide Beschrijving ({{ currentLanguage }})

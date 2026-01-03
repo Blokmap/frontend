@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import LocationSearch from '@/components/molecules/location/search/LocationSearchSpotlight.vue';
+import LocationFilterDialog from '@/components/molecules/location/LocationFilterDialog.vue';
+import LocationSearchSpotlight from '@/components/molecules/location/search/LocationSearchSpotlight.vue';
 import PublicHeader from '@/components/organisms/layouts/public//PublicHeader.vue';
 import PublicFooter from '@/components/organisms/layouts/public/PublicFooter.vue';
 import { useMagicKeys } from '@vueuse/core';
-import { ref, watchEffect } from 'vue';
+import { storeToRefs } from 'pinia';
+import { watchEffect } from 'vue';
+import { useReadTags } from '@/composables/data/useTags';
+import { useLayoutState } from '@/composables/store/useLayoutState';
 
 const { space, k, meta, control } = useMagicKeys();
+const { showSpotlight, showFilters } = storeToRefs(useLayoutState());
 
-const showSpotlight = ref<boolean>(false);
+const { data: tags } = useReadTags();
 
 watchEffect(() => {
     const isMetaKey = control.value || meta.value;
@@ -23,7 +28,10 @@ watchEffect(() => {
     <div class="public-layout">
         <header class="public-layout__header">
             <div class="public-layout__container">
-                <PublicHeader @click:search="showSpotlight = true" />
+                <PublicHeader
+                    @click:search="showSpotlight = true"
+                    @click:filters="showFilters = true">
+                </PublicHeader>
             </div>
         </header>
 
@@ -46,7 +54,8 @@ watchEffect(() => {
         </footer>
 
         <Teleport to="body">
-            <LocationSearch v-model:visible="showSpotlight" />
+            <LocationSearchSpotlight v-model:visible="showSpotlight" />
+            <LocationFilterDialog v-model:visible="showFilters" :tags="tags" v-if="tags" />
         </Teleport>
     </div>
 </template>

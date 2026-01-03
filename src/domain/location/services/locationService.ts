@@ -1,12 +1,12 @@
 import { client } from '@/config/axiosConfig';
 import { endpoints } from '@/config/endpoints';
-import { formatFilters, formatLocationSearchFilters } from '@/utils/filter';
+import { formatFilters } from '@/utils/filter';
 import {
     formatFormDataBody,
     transformPaginatedResponseFactory,
     transformResponseFactory,
 } from '@/utils/serviceUtils';
-import { parseLocationResponse } from '../locationParser';
+import { formatLocationSearchFilters, parseLocationResponse } from '../helpers';
 import {
     type Location,
     type LocationSearchFilter,

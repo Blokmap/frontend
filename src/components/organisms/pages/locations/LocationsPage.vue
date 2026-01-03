@@ -9,8 +9,9 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { refDebounced, useDebounceFn } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, ref, useTemplateRef, watch } from 'vue';
-import { useSearchLocations, useNearestLocation } from '@/composables/data/useLocations';
+import { useNearestLocation } from '@/composables/data/useLocations';
 import { useMapBox } from '@/composables/maps/useMapBox';
+import { useLayoutState } from '@/composables/store/useLayoutState';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { usePagination } from '@/composables/usePagination';
 import type { NearestLocation } from '@/domain/location';
@@ -19,13 +20,9 @@ import type { NearestLocation } from '@/domain/location';
 defineOptions({ name: 'LocationsPage' });
 
 const filterStore = useLocationFilters();
-
-const { geoLocation, filters, config } = storeToRefs(filterStore);
+const { showFilters } = storeToRefs(useLayoutState());
+const { geoLocation, filters, isFetching, locations } = storeToRefs(filterStore);
 const { first, onPageChange } = usePagination(filters);
-
-const { data: locations, isFetching } = useSearchLocations(filters, {
-    enabled: computed(() => !!filters.value.bounds),
-});
 
 const showLoading = refDebounced(isFetching, 150);
 
@@ -35,17 +32,17 @@ const { mutate: flyToNearestLocation, isPending: isFlyingToNearestLocation } = u
     },
 );
 
-function onNearestClick(): void {
+const onNearestClick = (): void => {
     const center = map.center.value;
 
     if (center) {
         flyToNearestLocation(center);
     }
-}
+};
 
 const blokMapRef = useTemplateRef('blokmap');
 const mapContainerRef = computed(() => blokMapRef.value?.$el ?? null);
-const map = useMapBox(mapContainerRef, config.value);
+const map = useMapBox(mapContainerRef);
 
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
 
@@ -75,7 +72,6 @@ watch(
 
 // Watch for changes in map bounds to update filters
 watch(map.bounds, () => {
-    debouncedConfigUpdate();
     debouncedFilterUpdate();
 });
 
@@ -83,13 +79,6 @@ const debouncedFilterUpdate = useDebounceFn(() => {
     filterStore.updateFilters({
         bounds: map.bounds.value,
         page: 1,
-    });
-}, 400);
-
-const debouncedConfigUpdate = useDebounceFn(() => {
-    filterStore.updateConfig({
-        center: map.center.value,
-        zoom: map.zoom.value,
     });
 }, 400);
 
@@ -117,7 +106,11 @@ const transitionKey = computed<string | undefined>(() => {
                     </span>
                     <span v-else>{{ $t('general.errors.noResultsExact') }}</span>
 
-                    <FontAwesomeIcon class="locs__filter-icon" :icon="faFilter" />
+                    <FontAwesomeIcon
+                        class="locs__filter-icon"
+                        :icon="faFilter"
+                        @click="showFilters = true">
+                    </FontAwesomeIcon>
                 </h2>
 
                 <p v-if="locations?.data?.length" class="locs__meta">

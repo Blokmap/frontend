@@ -1,6 +1,6 @@
 import { DEFAULT_LOCALE } from '@/config/i18nConfig';
+import { translationRequestRules } from '@/domain/translation';
 import { v, optional } from '@/utils/forms/validation';
-import { translationRequestRules } from '../translation';
 
 /**
  * Validation rules for LocationRequest

@@ -9,9 +9,6 @@ import LayoutSidebarSection from '@/components/organisms/layouts/sidebar/LayoutS
 import {
     faCalendarDays,
     faClock,
-    faCog,
-    faImages,
-    faInfoCircle,
     faQrcode,
     faUsers,
     faUserTag,
@@ -131,42 +128,12 @@ function goBack(): void {
                 <LayoutSidebarSection title="Instellingen">
                     <LayoutSidebarItem
                         :loading="isLoading"
-                        :to="{ name: 'manage.location.info', params: { locationId } }"
-                        :active="route.name === 'manage.location.info'">
-                        <template #img>
-                            <FontAwesomeIcon :icon="faInfoCircle" />
-                        </template>
-                        <template #text>Informatie</template>
-                    </LayoutSidebarItem>
-
-                    <LayoutSidebarItem
-                        :loading="isLoading"
-                        :to="{ name: 'manage.location.images', params: { locationId } }"
-                        :active="route.name === 'manage.location.images'">
-                        <template #img>
-                            <FontAwesomeIcon :icon="faImages" />
-                        </template>
-                        <template #text>Afbeeldingen</template>
-                    </LayoutSidebarItem>
-
-                    <LayoutSidebarItem
-                        :loading="isLoading"
                         :to="{ name: 'manage.location.openings', params: { locationId } }"
                         :active="route.name === 'manage.location.openings'">
                         <template #img>
                             <FontAwesomeIcon :icon="faClock" />
                         </template>
                         <template #text>Openingsuren</template>
-                    </LayoutSidebarItem>
-
-                    <LayoutSidebarItem
-                        :loading="isLoading"
-                        :to="{ name: 'manage.location.settings', params: { locationId } }"
-                        :active="route.name === 'manage.location.settings'">
-                        <template #img>
-                            <FontAwesomeIcon :icon="faCog" />
-                        </template>
-                        <template #text>Instellingen</template>
                     </LayoutSidebarItem>
                 </LayoutSidebarSection>
 

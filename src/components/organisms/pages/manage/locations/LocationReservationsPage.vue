@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
 import SearchInput from '@/components/atoms/SearchInput.vue';
+import DateInput from '@/components/atoms/form/DateInput.vue';
 import ManageBreadcrumb from '@/components/molecules/Breadcrumb.vue';
-import DateInput from '@/components/molecules/form/DateInput.vue';
 import ReservationScanner from '@/components/molecules/reservation/ReservationScanner.vue';
 import LocationReservationsTable from '@/components/molecules/reservation/table/LocationReservationsTable.vue';
 import PageContent from '@/components/organisms/pages/PageContent.vue';

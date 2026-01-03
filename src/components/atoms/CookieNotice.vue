@@ -3,12 +3,12 @@ import { useLocalStorage } from '@vueuse/core';
 import { computed } from 'vue';
 import { useAuthProfile } from '@/composables/data/useAuth';
 
-const { data: profile } = useAuthProfile();
+const { data: profile, isLoading } = useAuthProfile();
 
 const cookieConsent = useLocalStorage<Date | null>('cookieConsent', null);
 
 const show = computed<boolean>(() => {
-    return !profile.value && !cookieConsent.value;
+    return !isLoading.value && !profile.value && !cookieConsent.value;
 });
 
 const accept = () => {
@@ -22,11 +22,11 @@ const accept = () => {
             <div class="cookie__box" @click.stop>
                 <img class="cookie__image" src="@/assets/img/illustrations/ah-shit.png" alt="" />
                 <div>
-                    <h3 class="cookie__title">Sorry, wij ook</h3>
+                    <h3 class="cookie__title">Yep, wij ook</h3>
                     <p class="cookie__text">
-                        Blokmap gebruikt cookies om je ervaring zo fijn mogelijk te maken. Ze
-                        onthouden wie je bent, wat je leuk vindt, en zorgen ervoor dat alles
-                        soepeltjes werkt.
+                        Blokmap gebruikt cookies om je ervaring zo goed mogelijk te maken. Ze
+                        onthouden wie je bent, wat je leuk vindt, en zorgen ervoor dat alles soepel
+                        werkt. Er worden nooit trackingsgegevens opgeslagen.
                     </p>
                     <p class="cookie__link">
                         <RouterLink :to="{ name: 'legal.privacy' }">Privacybeleid</RouterLink>

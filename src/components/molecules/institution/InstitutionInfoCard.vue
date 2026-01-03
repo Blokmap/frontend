@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
+import InputLabel from '@/components/atoms/form/InputLabel.vue';
 import CardField from '@/components/molecules/CardField.vue';
 import CardValue from '@/components/molecules/CardValue.vue';
 import LanguageSelector from '@/components/molecules/LanguageSelector.vue';
-import InputLabel from '@/components/molecules/form/InputLabel.vue';
 import EditableCard from '@/components/organisms/EditableCard.vue';
 import { faBuilding, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';

@@ -2,9 +2,9 @@
 import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import InputHint from '@/components/atoms/form/InputHint.vue';
+import InputLabel from '@/components/atoms/form/InputLabel.vue';
 import EntityAvatar from '@/components/molecules/avatar/EntityAvatar.vue';
-import InputHint from '@/components/molecules/form/InputHint.vue';
-import InputLabel from '@/components/molecules/form/InputLabel.vue';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useDebounceFn } from '@vueuse/core';

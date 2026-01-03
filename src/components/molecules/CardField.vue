@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import InputLabel from './form/InputLabel.vue';
+import InputLabel from '@/components/atoms/form/InputLabel.vue';
 
 defineProps<{
     label: string;

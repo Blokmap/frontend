@@ -9,7 +9,7 @@ export const tagRequestRules = {
     }),
     slug: {
         required: v.required('key'),
-        maxLength: v.maxLength('key', 20),
+        maxLength: v.maxLength('key', 30),
     },
     icon: {},
 };

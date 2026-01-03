@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import ManageBreadcrumb from '@/components/molecules/Breadcrumb.vue';
 import MemberActionMenu from '@/components/molecules/auth/MemberActionMenu.vue';
-import RoleBadge from '@/components/molecules/auth/roles/RoleBadge.vue';
 import MemberAddDialog from '@/components/molecules/member/MemberAddDialog.vue';
 import MembersTable from '@/components/molecules/member/MembersTable.vue';
+import RoleBadge from '@/components/molecules/member/roles/RoleBadge.vue';
 import LoaderError from '@/components/organisms/layouts/LoaderError.vue';
 import PageContent from '@/components/organisms/pages/PageContent.vue';
 import PageHeaderButton from '@/components/organisms/pages/PageHeaderButton.vue';

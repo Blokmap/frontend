@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import InputNumber from 'primevue/inputnumber';
-import FormCheckbox from '@/components/molecules/form/FormCheckbox.vue';
-import InputHint from '@/components/molecules/form/InputHint.vue';
-import InputLabel from '@/components/molecules/form/InputLabel.vue';
+import FormCheckbox from '@/components/atoms/form/FormCheckbox.vue';
+import InputHint from '@/components/atoms/form/InputHint.vue';
+import InputLabel from '@/components/atoms/form/InputLabel.vue';
 import { faCircleQuestion, faClock, faCog } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import LocationBuilderCard from '../LocationBuilderCard.vue';

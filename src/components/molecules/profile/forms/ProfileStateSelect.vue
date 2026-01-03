@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import Select from 'primevue/select';
+import InputLabel from '@/components/atoms/form/InputLabel.vue';
 import { faChartBar, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ProfileState } from '@/domain/profile';
 import { PROFILE_STATE_ICONS, PROFILE_STATES } from '@/domain/profile/profileConstants';
-import InputLabel from '../../form/InputLabel.vue';
 import ProfileStateBadge from '../ProfileStateBadge.vue';
 import type { FilterOption } from '@/utils/filter';
 

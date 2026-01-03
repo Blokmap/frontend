@@ -2,9 +2,9 @@
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
+import InputLabel from '@/components/atoms/form/InputLabel.vue';
 import { faSearch, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import InputLabel from '../molecules/form/InputLabel.vue';
 
 withDefaults(
     defineProps<{

@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import InputHint from '@/components/atoms/form/InputHint.vue';
+import InputIcon from '@/components/atoms/form/InputIcon.vue';
+import InputLabel from '@/components/atoms/form/InputLabel.vue';
 import useVuelidate from '@vuelidate/core';
 import { watchImmediate } from '@vueuse/core';
 import { ref } from 'vue';
@@ -10,8 +13,6 @@ import { tagRequestRules } from '@/domain/tag/helpers';
 import { defaultTagRequest } from '@/domain/tag/tagConstants';
 import { focusInvalidLocale } from '@/domain/translation';
 import LanguageSelector from '../LanguageSelector.vue';
-import InputHint from '../form/InputHint.vue';
-import InputLabel from '../form/InputLabel.vue';
 
 const props = defineProps<{
     tag?: Tag;
@@ -99,8 +100,8 @@ const onSaveClick = async (): Promise<void> => {
 
             <div class="space-y-1">
                 <InputLabel htmlFor="tag-icon">Icoon</InputLabel>
-                <InputText id="tag-icon" v-model="form.icon" class="w-full" placeholder="bijv. tag">
-                </InputText>
+                <InputIcon id="tag-icon" v-model="form.icon" class="w-full" placeholder="bijv. tag">
+                </InputIcon>
                 <InputHint>
                     Optioneel FontAwesome Regular icoon (valt terug op standaard icoon).
                 </InputHint>

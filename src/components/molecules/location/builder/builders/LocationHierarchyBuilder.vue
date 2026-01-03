@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import Skeleton from 'primevue/skeleton';
+import InputHint from '@/components/atoms/form/InputHint.vue';
 import Callout from '@/components/molecules/Callout.vue';
 import AuthoritySelect from '@/components/molecules/authority/AuthoritySelect.vue';
-import InputHint from '@/components/molecules/form/InputHint.vue';
 import InstitutionSelect from '@/components/molecules/institution/InstitutionSelect.vue';
 import { faSitemap } from '@fortawesome/free-solid-svg-icons';
 import { computed, watchEffect } from 'vue';

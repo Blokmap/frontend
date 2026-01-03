@@ -16,23 +16,23 @@ const emit = defineEmits<{
     delete: [role: Role];
 }>();
 
-const showDeleteDialog = ref(false);
+const showDeleteDialog = ref<boolean>(false);
 
-function onEdit() {
+const onEdit = () => {
     emit('edit', props.role);
-}
+};
 
-function onDeleteClick() {
+const onDeleteClick = () => {
     showDeleteDialog.value = true;
-}
+};
 
-function onConfirmDeletion(): void {
+const onConfirmDeletion = (): void => {
     emit('delete', props.role);
-}
+};
 
-function onCancelDeletion(): void {
+const onCancelDeletion = (): void => {
     showDeleteDialog.value = false;
-}
+};
 
 watch(
     () => props.pending,

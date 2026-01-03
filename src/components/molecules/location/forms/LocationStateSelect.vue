@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import Select from 'primevue/select';
+import InputLabel from '@/components/atoms/form/InputLabel.vue';
 import { faChartBar, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { LOCATION_STATE_ICONS, LOCATION_STATES, LocationState } from '@/domain/location';
-import InputLabel from '../../form/InputLabel.vue';
 import LocationStateBadge from '../details/LocationStateBadge.vue';
 import type { FilterOption } from '@/utils/filter';
 

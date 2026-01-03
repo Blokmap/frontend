@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import InputHint from '@/components/atoms/form/InputHint.vue';
+import InputLabel from '@/components/atoms/form/InputLabel.vue';
 import Callout from '@/components/molecules/Callout.vue';
 import LanguageSelector from '@/components/molecules/LanguageSelector.vue';
 import EditorInput from '@/components/molecules/editor/EditorInput.vue';
-import InputHint from '@/components/molecules/form/InputHint.vue';
-import InputLabel from '@/components/molecules/form/InputLabel.vue';
 import LocationBuilderCard from '@/components/molecules/location/builder/LocationBuilderCard.vue';
 import LocationMap from '@/components/molecules/map/LocationMap.vue';
 import {

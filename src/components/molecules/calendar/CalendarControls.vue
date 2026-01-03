@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
+import DateInput from '@/components/atoms/form/DateInput.vue';
 import {
     faCalendarDays,
     faChevronDown,
@@ -10,7 +11,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { addToDate, endOfWeek, startOfWeek } from '@/utils/date';
-import DateInput from '../form/DateInput.vue';
 
 defineProps<{
     minDate?: Date;

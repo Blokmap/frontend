@@ -2,7 +2,7 @@
 import AuthorityActionMenu from '@/components/molecules/authority/AuthorityActionMenu.vue';
 import Table from '@/components/molecules/table/Table.vue';
 import TableCell from '@/components/molecules/table/TableCell.vue';
-import RoleBadge from '../auth/roles/RoleBadge.vue';
+import RoleBadge from '../member/roles/RoleBadge.vue';
 import type { AuthorityMembership } from '@/domain/member';
 
 const props = defineProps<{

@@ -3,7 +3,8 @@ import InstitutionActionMenu from '@/components/molecules/institution/Institutio
 import Table from '@/components/molecules/table/Table.vue';
 import TableCell from '@/components/molecules/table/TableCell.vue';
 import { useI18n } from 'vue-i18n';
-import RoleBadge from '../auth/roles/RoleBadge.vue';
+import EntityAvatar from '../avatar/EntityAvatar.vue';
+import RoleBadge from '../member/roles/RoleBadge.vue';
 import type { InstitutionMembership } from '@/domain/member';
 
 defineProps<{
@@ -28,7 +29,7 @@ const onInstitutionClick = (membership: InstitutionMembership) => {
             <TableCell column="Institutie">
                 <div class="flex items-center space-x-3">
                     <div class="h-16 w-16 flex-shrink-0">
-                        <InstitutionLogo :slug="membership.institution.slug" />
+                        <EntityAvatar :image="membership.institution.logo?.url" :circle="false" />
                     </div>
                     <div class="min-w-0 flex-1">
                         <div class="truncate text-sm font-medium text-slate-900">

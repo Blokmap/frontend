@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import FloatingPopover from '@/components/atoms/FloatingPopover.vue';
-import TimeInput from '@/components/molecules/form/TimeInput.vue';
+import TimeInput from '@/components/atoms/form/TimeInput.vue';
 import type { TimeSlot } from '@/domain/calendar';
 import type { OpeningTime } from '@/domain/openings';
 import type { ReservationRequest } from '@/domain/reservation';

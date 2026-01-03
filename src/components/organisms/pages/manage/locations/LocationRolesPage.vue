@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import ManageBreadcrumb from '@/components/molecules/Breadcrumb.vue';
-import RoleActionsMenu from '@/components/molecules/auth/RoleActionsMenu.vue';
 import RoleBuilderDialog from '@/components/molecules/auth/forms/RoleBuilderDialog.vue';
-import RoleTable from '@/components/molecules/auth/roles/RoleTable.vue';
+import RoleActionsMenu from '@/components/molecules/member/roles/RoleActionsMenu.vue';
+import RoleTable from '@/components/molecules/member/roles/RoleTable.vue';
 import LoaderError from '@/components/organisms/layouts/LoaderError.vue';
 import PageContent from '@/components/organisms/pages/PageContent.vue';
 import PageHeaderButton from '@/components/organisms/pages/PageHeaderButton.vue';

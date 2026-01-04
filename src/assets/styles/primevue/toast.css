@@ -40,7 +40,7 @@
 .p-toast-message-error,
 .p-toast-message-secondary,
 .p-toast-message-contrast {
-    @apply text-color dark:bg-surface-800 rounded-md border-0 bg-white shadow-lg backdrop-blur-lg;
+    @apply text-color dark:bg-surface-800 rounded-md border border-slate-200 bg-white backdrop-blur-lg;
 }
 
 .p-toast-close-icon {

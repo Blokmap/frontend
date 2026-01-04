@@ -4,10 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
 import type { RouteLocationRaw } from 'vue-router';
 
-export interface BreadcrumbItem {
+export type BreadcrumbItem = {
     label?: string | null;
     to?: RouteLocationRaw;
-}
+};
 
 const props = defineProps<{
     items: BreadcrumbItem[];

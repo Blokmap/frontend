@@ -15,6 +15,8 @@ export const DashboardLocationsPage = () =>
     import('@/components/organisms/pages/manage/DashboardLocationsPage.vue');
 
 // Manage - Location
+export const LocationOverviewPage = () =>
+    import('@/components/organisms/pages/manage/locations/LocationOverviewPage.vue');
 export const LocationOpeningsPage = () =>
     import('@/components/organisms/pages/manage/locations/LocationOpeningsPage.vue');
 export const LocationReservationsPage = () =>

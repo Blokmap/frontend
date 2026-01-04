@@ -63,7 +63,7 @@ const isPending = computed(() => {
 
 const breadcrumbs = computed(() => [
     { label: 'Mijn locaties', to: { name: 'manage.locations' } },
-    { label: props.location?.name ?? 'Locatie', to: { name: 'manage.location.info' } },
+    { label: props.location?.name ?? 'Locatie', to: { name: 'manage.location.overview' } },
     { label: 'Beheerders' },
 ]);
 

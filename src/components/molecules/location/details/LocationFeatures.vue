@@ -1,8 +1,22 @@
 <script lang="ts" setup>
 import Skeleton from 'primevue/skeleton';
-import { faCalendarWeek, faChair, faClock, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import {
+    findIconDefinition,
+    type IconDefinition,
+    type IconName,
+    type IconPrefix,
+} from '@fortawesome/fontawesome-svg-core';
+import {
+    faCalendarWeek,
+    faChair,
+    faClock,
+    faMoon,
+    faSun,
+    faTag,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { type Location, getLocationFeatures } from '@/domain/location';
 
 const props = defineProps<{
@@ -10,12 +24,16 @@ const props = defineProps<{
     loading?: boolean;
 }>();
 
+const { locale } = useI18n();
+
 const features = computed(() => {
     return props.location ? getLocationFeatures(props.location) : null;
 });
 
 const featuresList = computed(() => {
-    if (!props.location || !features.value) return [];
+    if (!props.location || !features.value) {
+        return [];
+    }
 
     const list = [];
 
@@ -55,7 +73,6 @@ const featuresList = computed(() => {
         });
     }
 
-    // Add location-specific features
     if (props.location.isReservable) {
         list.push({
             icon: faCalendarWeek,
@@ -76,42 +93,105 @@ const featuresList = computed(() => {
 
     return list;
 });
+
+const allTags = computed(() => {
+    if (!props.location?.tags) {
+        return [];
+    }
+
+    return props.location.tags;
+});
+
+const getTagIcon = (iconString: string | null): IconDefinition => {
+    if (!iconString) {
+        return faTag;
+    }
+
+    const parts = iconString.split(' ');
+
+    if (parts.length !== 2) {
+        return faTag;
+    }
+
+    const [prefix, iconName] = parts as [IconPrefix, IconName];
+
+    const iconDefinition = findIconDefinition({ prefix, iconName });
+
+    return iconDefinition ?? faTag;
+};
+
+const allItems = computed(() => {
+    const items = [
+        ...featuresList.value.map((feature) => ({
+            type: 'feature' as const,
+            icon: feature.icon,
+            text: feature.title,
+        })),
+        ...allTags.value.map((tag) => ({
+            type: 'tag' as const,
+            icon: getTagIcon(tag.icon),
+            text: tag.name[locale.value] || tag.name.en || tag.name.nl || tag.name.id || '',
+        })),
+    ];
+
+    return items;
+});
+
+const visibleItems = computed(() => allItems.value.slice(0, 8));
+const hiddenItems = computed(() => allItems.value.slice(8));
+const hasMoreItems = computed(() => allItems.value.length > 8);
 </script>
 
 <template>
-    <div v-if="loading" class="features-grid">
+    <div v-if="loading" class="items-grid">
         <div v-for="n in 4" :key="n" class="flex items-center gap-3">
             <Skeleton width="2rem" height="2rem" />
             <Skeleton width="8rem" height="1rem" />
         </div>
     </div>
 
-    <div v-else class="features-grid">
-        <div v-for="feature in featuresList" :key="feature.title" class="feature">
-            <div class="feature__icon">
-                <FontAwesomeIcon :icon="feature.icon" />
+    <div v-else class="space-y-6">
+        <div class="items-grid">
+            <div v-for="(item, idx) in visibleItems" :key="idx" class="item">
+                <div class="item__icon">
+                    <FontAwesomeIcon :icon="item.icon" />
+                </div>
+                <span class="item__text">{{ item.text }}</span>
             </div>
-            <span class="feature__title">{{ feature.title }}</span>
         </div>
+
+        <details v-if="hasMoreItems" class="mt-4">
+            <summary class="cursor-pointer text-sm text-gray-600 hover:text-gray-900">
+                Toon {{ hiddenItems.length }} meer
+            </summary>
+            <div class="items-grid mt-4">
+                <div v-for="(item, idx) in hiddenItems" :key="idx" class="item">
+                    <div class="item__icon">
+                        <FontAwesomeIcon :icon="item.icon" />
+                    </div>
+                    <span class="item__text">{{ item.text }}</span>
+                </div>
+            </div>
+        </details>
     </div>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.features-grid {
-    @apply grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-3;
-}
+.items-grid {
+    @apply grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4;
 
-.feature {
-    @apply flex items-center gap-3 text-lg;
-}
+    .item {
+        @apply flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3;
 
-.feature__icon {
-    @apply flex h-8 w-8 items-center justify-center text-gray-700;
-}
+        .item__icon {
+            @apply text-primary flex h-8 w-8 items-center justify-center text-lg;
+        }
 
-.feature__title {
-    @apply text-sm text-gray-700;
+        .item__text {
+            @apply text-sm font-medium text-gray-700;
+        }
+    }
 }
 </style>

@@ -9,6 +9,7 @@ import LayoutSidebarSection from '@/components/organisms/layouts/sidebar/LayoutS
 import {
     faCalendarDays,
     faClock,
+    faDashboard,
     faQrcode,
     faUsers,
     faUserTag,
@@ -126,6 +127,15 @@ function goBack(): void {
                 :back-button-text="backButtonText"
                 @click:back="goBack">
                 <LayoutSidebarSection title="Instellingen">
+                    <LayoutSidebarItem
+                        :loading="isLoading"
+                        :to="{ name: 'manage.location.overview', params: { locationId } }"
+                        :active="route.name === 'manage.location.overview'">
+                        <template #img>
+                            <FontAwesomeIcon :icon="faDashboard" />
+                        </template>
+                        <template #text>Overzicht</template>
+                    </LayoutSidebarItem>
                     <LayoutSidebarItem
                         :loading="isLoading"
                         :to="{ name: 'manage.location.openings', params: { locationId } }"

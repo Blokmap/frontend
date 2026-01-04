@@ -14,9 +14,12 @@ const form = defineModel<LocationRequest>('form', {
 </script>
 
 <template>
-    <form class="space-y-8">
+    <form>
+        <div class="flex items-center justify-end gap-2 px-4 pt-4 pb-4">
+            <slot name="actions"></slot>
+        </div>
         <!-- Settings Card -->
-        <LocationBuilderCard :icon="faCog">
+        <LocationBuilderCard :icon="faCog" class="mb-8">
             <template #header>
                 <h3 class="text-xl font-semibold text-gray-900">Algemeen</h3>
                 <p class="text-sm text-gray-600">

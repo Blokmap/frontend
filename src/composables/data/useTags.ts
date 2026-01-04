@@ -115,9 +115,25 @@ export function useDeleteTag(options: CompMutationOptions = {}): CompMutation<nu
 export function useSetLocationTags(
     options: CompMutationOptions = {},
 ): CompMutation<SetLocationTagParams, Location> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
     const mutation = useMutation({
         ...options,
         mutationFn: setLocationTags,
+        onSuccess: (data, variables, context) => {
+            invalidateQueries(queryClient, ['locations'], variables.locationId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Tags bijgewerkt',
+                    detail: 'De tags voor de locatie zijn succesvol bijgewerkt.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
     });
 
     return mutation;

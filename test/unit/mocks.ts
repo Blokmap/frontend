@@ -102,6 +102,7 @@ export function createMockLocation(overrides?: Partial<Location>): Location {
         updatedBy: null,
         rejectedBy: null,
         images: [],
+        tags: [],
         ...overrides,
     };
 }

@@ -36,7 +36,7 @@ export type Location = {
     name: string;
     state: LocationState;
     excerpt: Translation;
-    tags?: Tag[];
+    tags: Tag[];
     description?: Translation;
     seatCount: number;
     minReservationLength: number | null;

@@ -49,8 +49,8 @@ const googleMapsLink = computed(() =>
 @reference '@/assets/styles/main.css';
 
 .location-address {
-    @apply flex flex-col gap-4;
-    @apply sm:flex-row sm:items-center sm:gap-3;
+    @apply flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-3;
+    @apply rounded-xl border border-slate-200 bg-white;
 }
 
 .location-address__content {

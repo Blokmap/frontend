@@ -7,10 +7,20 @@ import { onKeyStroke } from '@vueuse/core';
 import { computed, nextTick, ref } from 'vue';
 import { sortImagesByIndex, type Image } from '@/domain/image';
 
-const props = defineProps<{
-    images: Image[];
-    placeholder?: string;
-    loading?: boolean;
+const props = withDefaults(
+    defineProps<{
+        images: Image[];
+        placeholder?: string;
+        loading?: boolean;
+        fullscreen?: boolean;
+    }>(),
+    {
+        fullscreen: true,
+    },
+);
+
+const emit = defineEmits<{
+    'click:fullscreen': [];
 }>();
 
 const isFullscreen = ref<boolean>(false);
@@ -62,20 +72,32 @@ const displayImages = computed<DisplayImage[]>(() => {
 });
 
 const openFullScreen = async (index: number): Promise<void> => {
-    isFullscreen.value = true;
-    selectedImageIndex.value = index;
+    emit('click:fullscreen');
 
-    await nextTick();
+    if (props.fullscreen) {
+        isFullscreen.value = true;
+        selectedImageIndex.value = index;
 
-    const element = document.getElementById(`gallery-image-${index}`);
-    element?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-    });
+        await nextTick();
+
+        const element = document.getElementById(`gallery-image-${index}`);
+
+        element?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+        });
+    }
 };
 
 const closeFullscreen = (): void => {
     isFullscreen.value = false;
+};
+
+const showLabel = (item: DisplayImage): boolean => {
+    const displayed = displayImages.value;
+    const total = totalImagesCount.value;
+
+    return item.index === displayed[displayed.length - 1].index && total > 1;
 };
 
 onKeyStroke('Escape', () => {
@@ -101,13 +123,10 @@ onKeyStroke('Escape', () => {
             <img :src="item.image.url" class="gallery__image" />
 
             <!-- Bottom Banner Overlay (only on last visible image) -->
-            <div
-                v-if="
-                    item.index === displayImages[displayImages.length - 1].index &&
-                    totalImagesCount > 1
-                "
-                class="gallery__banner">
-                <span>Bekijk {{ totalImagesCount }} foto's</span>
+            <div v-if="showLabel(item)" class="gallery__banner">
+                <slot name="label">
+                    <span>Bekijk {{ totalImagesCount }} foto's</span>
+                </slot>
             </div>
         </div>
     </div>
@@ -129,18 +148,20 @@ onKeyStroke('Escape', () => {
             </div>
 
             <div class="gallery-fullscreen__container">
-                <div class="gallery-fullscreen__grid">
-                    <div
-                        v-for="(image, index) in images"
-                        :id="`gallery-image-${index}`"
-                        :key="index"
-                        class="gallery-fullscreen__grid-item">
-                        <img
-                            :src="image.url"
-                            :alt="`Gallery image ${index + 1}`"
-                            class="gallery-fullscreen__grid-image" />
+                <slot name="fullscreen">
+                    <div class="gallery-fullscreen__grid">
+                        <div
+                            v-for="(image, index) in images"
+                            :id="`gallery-image-${index}`"
+                            :key="index"
+                            class="gallery-fullscreen__grid-item">
+                            <img
+                                :src="image.url"
+                                :alt="`Gallery image ${index + 1}`"
+                                class="gallery-fullscreen__grid-image" />
+                        </div>
                     </div>
-                </div>
+                </slot>
             </div>
         </div>
     </Transition>
@@ -170,14 +191,14 @@ onKeyStroke('Escape', () => {
 }
 
 .gallery-fullscreen {
-    @apply fixed top-0 left-0 z-50 flex h-full w-full flex-col overflow-y-auto bg-white;
+    @apply fixed top-0 left-0 z-50 flex h-[100dvh] w-[100dvw] flex-col overflow-y-auto bg-white;
 
     .gallery-fullscreen__header {
         @apply flex items-center justify-between p-2 md:p-4;
     }
 
     .gallery-fullscreen__container {
-        @apply flex flex-1 justify-center p-2 pb-[88px] md:p-4;
+        @apply flex flex-1 justify-center p-2 !pb-[88px] md:p-4;
     }
 
     .gallery-fullscreen__grid {

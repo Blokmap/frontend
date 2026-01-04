@@ -11,7 +11,7 @@ withDefaults(
         circle?: boolean;
     }>(),
     {
-        circle: true,
+        circle: false,
         editable: false,
         icon: () => faUser,
     },

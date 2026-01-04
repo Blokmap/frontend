@@ -56,7 +56,7 @@ const onDeleteClick = (locationId: number): void => {
 
 const onLocationClick = (location: Location) => {
     router.push({
-        name: 'manage.location.info',
+        name: 'manage.location.overview',
         params: { locationId: location.id },
     });
 };

@@ -12,8 +12,8 @@ import PrivacyPolicyPage from '@/components/organisms/pages/legal/PrivacyPolicyP
 import TermsConditionsPage from '@/components/organisms/pages/legal/TermsConditionsPage.vue';
 import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
-import { useToast } from '@/composables/store/useToast';
 import { useProgress } from '@/composables/store/useProgress';
+import { useToast } from '@/composables/store/useToast';
 import { readAuthProfile, pullRedirectUrl } from '@/domain/auth';
 import { blank } from '@/domain/member';
 import {
@@ -45,6 +45,7 @@ import {
     AuthorityIndexPage,
     InstitutionIndexPage,
     TagIndexPage,
+    LocationOverviewPage,
 } from './routerPages';
 
 const routes: RouteRecordRaw[] = [
@@ -204,13 +205,13 @@ const routes: RouteRecordRaw[] = [
                             },
                         },
                         redirect: {
-                            name: 'manage.location.info',
+                            name: 'manage.location.overview',
                         },
                         children: [
                             {
-                                path: 'info',
-                                name: 'manage.location.info',
-                                redirect: { name: 'manage.location.reservations' },
+                                path: 'overview',
+                                name: 'manage.location.overview',
+                                component: LocationOverviewPage,
                             },
                             {
                                 path: 'openings',

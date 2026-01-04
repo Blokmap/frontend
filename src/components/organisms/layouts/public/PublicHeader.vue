@@ -47,7 +47,7 @@ const showMenu = ref<boolean>(false);
 
             <div class="header__actions">
                 <RouterLink :to="{ name: 'profile' }" class="header__profile-link" v-if="profile">
-                    <EntityAvatar class="h-10 w-10" :image="profile.avatar?.url" />
+                    <EntityAvatar class="h-10 w-10" :image="profile.avatar?.url" circle />
                 </RouterLink>
 
                 <RouterLink :to="{ name: 'auth' }" v-else>

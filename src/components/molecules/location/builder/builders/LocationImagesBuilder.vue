@@ -25,9 +25,16 @@ const images = defineModel<ImageRequest[]>({ required: true, default: () => [] }
 
 const urlInput = ref<string>('');
 const draggedImage = ref<ImageRequest | null>(null);
+const dragOverImage = ref<ImageRequest | null>(null);
 
 const showAddDialog = ref<boolean>(false);
 const isDragging = ref<boolean>(false);
+
+onMounted(() => {
+    if (images.value.length === 0) {
+        showAddDialog.value = true;
+    }
+});
 
 const canAddMore = computed<boolean>(() => images.value.length < LOCATION_SETTINGS.MAX_IMAGES);
 
@@ -38,17 +45,28 @@ const sortedImages = computed(() =>
 const primaryImage = computed(() => images.value.find((img) => img.index === 0));
 const secondaryImages = computed(() => sortedImages.value.filter((img) => img.index !== 0));
 
-onMounted(() => {
-    if (images.value.length === 0) {
-        showAddDialog.value = true;
-    }
-});
+const removeImage = (imageIndex: number): void => {
+    images.value = images.value.filter((img) => img.index !== imageIndex);
 
-/**
- * Add image from URL input. This will reset the URL input and close the dialog.
- */
-function addImageFromUrl(): void {
-    if (!urlInput.value || !canAddMore.value) return;
+    sortedImages.value.forEach((img, i) => {
+        img.index = i;
+    });
+};
+
+const setPrimary = (imageIndex: number): void => {
+    for (const img of images.value) {
+        if (img.index === imageIndex) {
+            img.index = 0;
+        } else if ((img.index ?? 0) < imageIndex) {
+            img.index = (img.index ?? 0) + 1;
+        }
+    }
+};
+
+const addImageFromUrl = (): void => {
+    if (!urlInput.value || !canAddMore.value) {
+        return;
+    }
 
     images.value.push({
         imageUrl: urlInput.value,
@@ -58,43 +76,12 @@ function addImageFromUrl(): void {
 
     urlInput.value = '';
     showAddDialog.value = false;
-}
+};
 
-/**
- * Remove image by its index in the images array.
- *
- * @param imageIndex - The index of the image to remove.
- */
-function removeImage(imageIndex: number): void {
-    images.value = images.value.filter((img) => img.index !== imageIndex);
-
-    sortedImages.value.forEach((img, i) => {
-        img.index = i;
-    });
-}
-
-/**
- * Set an image as primary by its index in the images array.
- *
- * @param imageIndex - The index of the image to set as primary.
- */
-function setPrimary(imageIndex: number): void {
-    images.value.forEach((img) => {
-        if (img.index === imageIndex) {
-            img.index = 0;
-        } else if ((img.index ?? 0) < imageIndex) {
-            img.index = (img.index ?? 0) + 1;
-        }
-    });
-}
-
-/**
- * Handle file upload event from FileUpload component.
- *
- * @param event The file upload select event.
- */
-function handleFileUpload(event: FileUploadSelectEvent): void {
-    if (!event.files?.length) return;
+const addImageFromFile = (event: FileUploadSelectEvent): void => {
+    if (!event.files?.length) {
+        return;
+    }
 
     const startIndex = images.value.length;
 
@@ -108,85 +95,71 @@ function handleFileUpload(event: FileUploadSelectEvent): void {
 
     images.value.push(...newImages);
     showAddDialog.value = false;
-}
+};
 
-/**
- * Open the add image dialog.
- */
-function openAddDialog(): void {
+const openAddDialog = (): void => {
     showAddDialog.value = true;
     urlInput.value = '';
-}
+};
 
-/**
- * Handle drag start event for an image.
- *
- * @param event The drag event.
- * @param image The image being dragged.
- */
-function onDragStart(event: DragEvent, image: ImageRequest): void {
+const onDragStart = (event: DragEvent, image: ImageRequest): void => {
     draggedImage.value = image;
     isDragging.value = true;
+
     if (event.dataTransfer) {
         event.dataTransfer.effectAllowed = 'move';
         event.dataTransfer.setData('text/plain', '');
     }
-}
+};
 
-/**
- * Handle drag over event for an image.
- *
- * @param event The drag event.
- */
-function onDragOver(event: DragEvent): void {
+const onDragOver = (event: DragEvent, targetImage: ImageRequest): void => {
     event.preventDefault();
     if (event.dataTransfer) {
         event.dataTransfer.dropEffect = 'move';
     }
-}
+    dragOverImage.value = targetImage;
+};
 
-/**
- * Handle drop event for an image.
- *
- * @param event The drag event.
- * @param targetImage The target image where the dragged image is dropped.
- */
-function onDrop(event: DragEvent, targetImage: ImageRequest): void {
+const onDrop = (event: DragEvent, targetImage: ImageRequest): void => {
     event.preventDefault();
+    dragOverImage.value = null;
 
-    if (!draggedImage.value || draggedImage.value === targetImage) return;
+    if (!draggedImage.value || draggedImage.value === targetImage) {
+        return;
+    }
 
-    // Get sorted array
     const sorted = [...images.value].sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
 
-    // Find positions in sorted array
     const draggedPos = sorted.findIndex((img) => img === draggedImage.value);
     const targetPos = sorted.findIndex((img) => img === targetImage);
 
-    if (draggedPos === -1 || targetPos === -1) return;
+    if (draggedPos === -1 || targetPos === -1) {
+        return;
+    }
 
-    // Remove from old position
     const [removed] = sorted.splice(draggedPos, 1);
 
-    // Insert at new position
     sorted.splice(targetPos, 0, removed);
-
-    // Reassign all indices
     sorted.forEach((img, i) => {
         img.index = i;
     });
 
-    // Update reactive array
     images.value = [...sorted];
-}
+};
 
-/**
- * Handle drag end event for an image.
- */
-function onDragEnd(): void {
+const onDragEnd = (): void => {
     draggedImage.value = null;
+    dragOverImage.value = null;
     isDragging.value = false;
-}
+};
+
+const isSourceImage = (image: ImageRequest): boolean => {
+    return isDragging.value && draggedImage.value === image;
+};
+
+const isTargetImage = (image: ImageRequest): boolean => {
+    return isDragging.value && dragOverImage.value === image && draggedImage.value !== image;
+};
 </script>
 
 <template>
@@ -197,6 +170,9 @@ function onDragEnd(): void {
                 Voeg afbeeldingen toe van uw locatie
                 <span class="ml-2 text-gray-500">({{ images.length }}/10)</span>
             </p>
+        </template>
+        <template #actions>
+            <slot name="actions"></slot>
         </template>
         <template #default>
             <!-- Images Gallery -->
@@ -235,13 +211,14 @@ function onDragEnd(): void {
                         :key="image.tempUrl || image.imageUrl || `image-${index}`"
                         class="secondary-image group"
                         :class="{
-                            dragging: isDragging && draggedImage === image,
+                            'drop-source': isSourceImage(image),
+                            'drop-target': isTargetImage(image),
                         }"
-                        draggable="true"
                         @dragstart="onDragStart($event, image)"
-                        @dragover="onDragOver"
+                        @dragover="onDragOver($event, image)"
                         @drop="onDrop($event, image)"
-                        @dragend="onDragEnd">
+                        @dragend="onDragEnd"
+                        draggable="true">
                         <img
                             v-if="image.tempUrl"
                             :src="image.tempUrl"
@@ -328,7 +305,7 @@ function onDragEnd(): void {
                                 :auto="true"
                                 choose-label="Selecteer bestanden"
                                 class="w-full"
-                                @select="handleFileUpload">
+                                @select="addImageFromFile">
                                 <template #chooseicon>
                                     <FontAwesomeIcon :icon="faUpload" />
                                 </template>
@@ -431,7 +408,7 @@ function onDragEnd(): void {
         @apply transition-all duration-300;
 
         /* Smooth transitions for reordering */
-        transition-property: transform, opacity, grid-column, grid-row;
+        transition-property: transform, opacity, box-shadow, border-color;
 
         &:active {
             @apply scale-95 opacity-80;
@@ -442,9 +419,14 @@ function onDragEnd(): void {
             @apply transition-transform duration-200 group-hover:scale-105;
         }
 
-        &.dragging {
+        &.drop-source {
             @apply scale-95 opacity-50;
             transition-duration: 150ms;
+        }
+
+        &.drop-target {
+            @apply scale-105;
+            animation: wiggle 0.3s ease-in-out infinite;
         }
     }
 }
@@ -523,5 +505,15 @@ function onDragEnd(): void {
     @apply flex h-48 cursor-pointer items-center justify-center rounded-lg;
     @apply border-1 border-dashed border-gray-300;
     @apply hover:border-primary-400 hover:bg-primary-50 transition-colors duration-200;
+}
+
+@keyframes wiggle {
+    0%,
+    100% {
+        transform: scale(0.95) rotate(-2deg);
+    }
+    50% {
+        transform: scale(0.95) rotate(2deg);
+    }
 }
 </style>

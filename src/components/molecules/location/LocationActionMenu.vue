@@ -113,7 +113,7 @@ watch(pending, (isPending, wasPending) => {
                 label="Beheren"
                 :icon="faEdit"
                 :to="{
-                    name: 'manage.location.info',
+                    name: 'manage.location.overview',
                     params: { locationId: props.location.id },
                 }">
             </ActionMenuButton>

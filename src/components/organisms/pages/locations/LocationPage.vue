@@ -10,6 +10,8 @@ import LocationAddress from '@/components/molecules/location/details/LocationAdd
 import LocationFeatures from '@/components/molecules/location/details/LocationFeatures.vue';
 import LocationMap from '@/components/molecules/map/LocationMap.vue';
 import OpeningsTable from '@/components/molecules/openings/OpeningsTable.vue';
+import OverviewDivider from '@/components/molecules/overview/OverviewDivider.vue';
+import OverviewSection from '@/components/molecules/overview/OverviewSection.vue';
 import ReservationBuilderDialog from '@/components/molecules/reservation/builder/ReservationBuilderDialog.vue';
 import PageContent from '@/components/organisms/pages/PageContent.vue';
 import PageHeaderButton from '@/components/organisms/pages/PageHeaderButton.vue';
@@ -142,9 +144,8 @@ watchEffect(() => {
 
 <template>
     <PageContent class="location-page">
-        <!-- Header -->
-        <div class="location-page__header">
-            <div class="my-4 space-y-1">
+        <header class="location-page__header">
+            <hgroup>
                 <h1 v-if="!isPending && location" class="location-page__title">
                     {{ location.name }}
                 </h1>
@@ -154,9 +155,9 @@ watchEffect(() => {
                     {{ formatLocationAddress(location) }}
                 </p>
                 <Skeleton v-else height="20px" width="300px" />
-            </div>
+            </hgroup>
 
-            <div class="location-page__actions">
+            <nav class="location-page__actions">
                 <template v-if="!isPending && location && profile?.isAdmin">
                     <RouterLink
                         v-if="location.isReservable"
@@ -174,7 +175,10 @@ watchEffect(() => {
 
                     <RouterLink
                         class="hidden md:block"
-                        :to="{ name: 'manage.location.info', params: { locationId: location.id } }">
+                        :to="{
+                            name: 'manage.location.overview',
+                            params: { locationId: location.id },
+                        }">
                         <PageHeaderButton severity="secondary" :label="$t('general.actions.edit')">
                             <FontAwesomeIcon :icon="faEdit" />
                         </PageHeaderButton>
@@ -190,68 +194,56 @@ watchEffect(() => {
                 </PageHeaderButton>
 
                 <Skeleton v-if="isPending" height="36px" width="120px" />
-            </div>
-        </div>
+            </nav>
+        </header>
 
         <!-- Gallery -->
         <Transition name="fade-slide-up" appear>
-            <div class="location-page__gallery">
+            <figure class="location-page__gallery">
                 <Gallery
                     :images="location?.images ?? []"
                     :placeholder="placeholder"
                     :loading="isPending">
                 </Gallery>
-            </div>
+            </figure>
         </Transition>
 
         <div class="location-page__grid">
-            <!-- Main Content -->
-            <div class="location-page__main">
+            <main class="location-page__main">
                 <Transition name="stagger-fade" appear>
-                    <div class="max-w-[850px]">
-                        <h2
-                            v-if="!isPending && location"
-                            class="location-page__section-title !mb-5">
-                            {{ location.excerpt[locale] }}
-                        </h2>
-                        <Skeleton v-else height="28px" width="400px" class="mb-5" />
-
+                    <OverviewSection
+                        :title="location?.excerpt[locale]"
+                        :loading="isPending"
+                        class="max-w-[850px]">
                         <EditorOuput
                             v-if="location?.description"
                             :data="location.description[locale]"
                             :loading="isPending">
                         </EditorOuput>
-                    </div>
+                    </OverviewSection>
                 </Transition>
 
-                <div class="location-page__divider"></div>
+                <OverviewDivider />
 
                 <Transition name="stagger-fade" appear>
-                    <div>
-                        <h2 v-if="!isPending" class="location-page__section-title">
-                            {{ $t('pages.locations.sections.features.title') }}
-                        </h2>
-                        <Skeleton v-else height="28px" width="200px" class="mb-8" />
-
+                    <OverviewSection
+                        :title="$t('pages.locations.sections.features.title')"
+                        :loading="isPending"
+                        class="max-w-[850px]">
                         <LocationFeatures :location="location" :loading="isPending" />
-                    </div>
+                    </OverviewSection>
                 </Transition>
 
-                <div class="location-page__divider"></div>
+                <OverviewDivider />
 
                 <Transition name="stagger-fade" appear>
-                    <div>
-                        <h2 v-if="!isPending" class="location-page__section-title">
-                            {{ $t('pages.locations.sections.geolocation.title') }}
-                        </h2>
-                        <Skeleton v-else height="28px" width="200px" class="mb-8" />
+                    <OverviewSection
+                        :title="$t('pages.locations.sections.geolocation.title')"
+                        :loading="isPending">
+                        <LocationAddress v-if="location" :location="location" :loading="isPending">
+                        </LocationAddress>
 
-                        <LocationAddress
-                            v-if="location"
-                            :location="location"
-                            :loading="isPending" />
-
-                        <div v-if="location" class="location-page__map">
+                        <figure v-if="location" class="location-page__map">
                             <LocationMap
                                 :center="[location.longitude, location.latitude]"
                                 :zoom="17"
@@ -259,14 +251,13 @@ watchEffect(() => {
                                 :geo-location-control="false"
                                 :loading="isPending">
                             </LocationMap>
-                        </div>
-                    </div>
+                        </figure>
+                    </OverviewSection>
                 </Transition>
-            </div>
+            </main>
 
-            <!-- Sidebar -->
             <Transition name="stagger-fade" appear>
-                <div ref="openingsSidebarRef" class="location-page__sidebar">
+                <aside ref="openingsSidebarRef" class="location-page__sidebar">
                     <h3 v-if="!isPending && location" class="location-page__sidebar-title">
                         <template v-if="location.isReservable">
                             {{ $t('pages.locations.sections.reservations.title') }}
@@ -277,19 +268,19 @@ watchEffect(() => {
                     </h3>
                     <Skeleton v-else height="24px" width="150px" class="mb-6" />
 
-                    <div class="space-y-4">
+                    <section class="space-y-4">
                         <CalendarControls v-model:date="currentWeek" />
                         <OpeningsTable
                             :opening-times="openingTimes"
                             :current-week="currentWeek"
                             :loading="openingTimesIsFetching">
                         </OpeningsTable>
-                    </div>
+                    </section>
 
-                    <div v-if="isPending" class="location-page__cta">
+                    <footer v-if="isPending" class="location-page__cta">
                         <Skeleton height="40px" width="100%" />
-                    </div>
-                    <div v-else-if="location?.isReservable" class="location-page__cta">
+                    </footer>
+                    <footer v-else-if="location?.isReservable" class="location-page__cta">
                         <Button
                             v-if="profileId"
                             class="w-full"
@@ -301,20 +292,21 @@ watchEffect(() => {
                             {{ $t('pages.locations.sections.reservations.login') }}
                             <FontAwesomeIcon :icon="faArrowRight" />
                         </Button>
-                    </div>
-                    <div
+                    </footer>
+                    <p
                         v-else-if="location && !location.isReservable"
                         class="location-page__no-reservation">
                         {{ $t('pages.locations.sections.reservations.notNeeded') }}
-                    </div>
-                </div>
+                    </p>
+                </aside>
             </Transition>
         </div>
 
         <!-- Mobile Sticky Banner -->
         <Transition name="fade-slide-up">
-            <div
+            <button
                 v-if="!isPending && location && !isOpeningsSidebarVisible"
+                type="button"
                 class="location-page__mobile-banner"
                 @click="scrollToOpenings">
                 <span>
@@ -326,7 +318,7 @@ watchEffect(() => {
                     </template>
                 </span>
                 <FontAwesomeIcon :icon="faArrowRight" />
-            </div>
+            </button>
         </Transition>
 
         <Teleport to="body">
@@ -377,6 +369,10 @@ watchEffect(() => {
 
     .location-page__header {
         @apply flex items-center justify-between gap-3;
+
+        hgroup {
+            @apply space-y-1;
+        }
     }
 
     .location-page__title {
@@ -388,7 +384,7 @@ watchEffect(() => {
     }
 
     .location-page__actions {
-        @apply flex space-x-3;
+        @apply flex gap-3;
     }
 
     .location-page__gallery {
@@ -397,42 +393,35 @@ watchEffect(() => {
 
     .location-page__grid {
         @apply mt-8 grid items-start gap-8 lg:grid-cols-3;
-    }
 
-    .location-page__main {
-        @apply lg:col-span-2;
-    }
+        .location-page__main {
+            @apply lg:col-span-2;
 
-    .location-page__divider {
-        @apply my-8 h-px bg-slate-200;
-    }
+            .location-page__map {
+                @apply mt-8 h-[400px] overflow-hidden rounded-xl shadow-sm;
+            }
+        }
 
-    .location-page__section-title {
-        @apply mt-0 mb-8 text-2xl font-semibold text-gray-900;
-    }
+        .location-page__sidebar {
+            @apply sticky top-8 rounded-xl bg-white p-6 shadow-md lg:col-span-1;
 
-    .location-page__map {
-        @apply mt-8 h-[400px] overflow-hidden rounded-xl shadow-sm;
-    }
+            .location-page__sidebar-title {
+                @apply mb-6 text-2xl font-semibold text-gray-900;
+            }
 
-    .location-page__sidebar {
-        @apply sticky top-8 rounded-xl bg-white p-6 pt-6 shadow-md lg:col-span-1;
-    }
+            .location-page__cta {
+                @apply mt-6;
+            }
 
-    .location-page__sidebar-title {
-        @apply mb-6 text-2xl font-semibold text-gray-900;
-    }
-
-    .location-page__cta {
-        @apply mt-6 w-full;
-    }
-
-    .location-page__no-reservation {
-        @apply mt-6 text-center text-sm text-slate-600;
+            .location-page__no-reservation {
+                @apply mt-6 text-center text-sm text-slate-600;
+            }
+        }
     }
 
     .location-page__mobile-banner {
-        @apply fixed bottom-3 left-1/2 z-50 -translate-x-1/2 rounded-full bg-slate-50 px-3 py-2 text-sm shadow-md lg:hidden;
+        @apply fixed bottom-3 left-1/2 z-50 -translate-x-1/2 rounded-full bg-slate-50 px-3 py-2 text-sm shadow-md transition-colors lg:hidden;
+        @apply hover:bg-slate-100;
     }
 }
 </style>

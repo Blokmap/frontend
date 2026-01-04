@@ -2,6 +2,7 @@
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import SubmissionDialog from '@/components/molecules/location/builder/LocationSubmissionDialog.vue';
+import LocationAddressBuilder from '@/components/molecules/location/builder/builders/LocationAddressBuilder.vue';
 import LocationImagesBuilder from '@/components/molecules/location/builder/builders/LocationImagesBuilder.vue';
 import LocationInformationBuilder from '@/components/molecules/location/builder/builders/LocationInformationBuilder.vue';
 import LocationSettingsBuilder from '@/components/molecules/location/builder/builders/LocationSettingsBuilder.vue';
@@ -112,11 +113,12 @@ async function submitLocation() {
         <main class="submit-page__content">
             <Transition name="fade-slide-up" is="div" mode="out-in" appear>
                 <!-- Builder content -->
-                <LocationInformationBuilder
-                    v-if="step === BuilderStep.Basics"
-                    v-model="locationForm"
-                    :key="BuilderStep.Basics">
-                </LocationInformationBuilder>
+                <div v-if="step === BuilderStep.Basics" :key="BuilderStep.Basics" class="space-y-8">
+                    <LocationInformationBuilder v-model="locationForm">
+                    </LocationInformationBuilder>
+
+                    <LocationAddressBuilder v-model="locationForm"> </LocationAddressBuilder>
+                </div>
 
                 <LocationImagesBuilder
                     v-else-if="step === BuilderStep.Images"

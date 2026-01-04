@@ -26,7 +26,7 @@ const openingsForm = ref<OpeningTimeRequest[]>([]);
 
 const breadcrumbs = computed(() => [
     { label: 'Mijn locaties', to: { name: 'manage.locations' } },
-    { label: props.location?.name ?? 'Locatie', to: { name: 'manage.location.info' } },
+    { label: props.location?.name ?? 'Locatie', to: { name: 'manage.location.overview' } },
     { label: 'Openingsuren' },
 ]);
 
@@ -39,33 +39,33 @@ watchEffect(() => {
     openingsForm.value = props.location.openingTimes.map(openingToRequest);
 });
 
-async function onCreateOpeningTime(openingTime: OpeningTimeRequest): Promise<void> {
+const onCreateOpeningTime = async (openingTime: OpeningTimeRequest): Promise<void> => {
     await createOpeningTimes({
         locationId: props.location.id,
         openings: [openingTime],
     });
-}
+};
 
-async function onUpdateOpeningTime(
+const onUpdateOpeningTime = async (
     openingTimeId: number,
     openingTime: OpeningTimeRequest,
     sequence?: boolean,
-): Promise<void> {
+): Promise<void> => {
     await updateOpeningTime({
         locationId: props.location.id,
         openingTimeId,
         opening: openingTime,
         sequence,
     });
-}
+};
 
-async function onDeleteOpeningTime(openingTimeId: number, sequence?: boolean): Promise<void> {
+const onDeleteOpeningTime = async (openingTimeId: number, sequence?: boolean): Promise<void> => {
     await deleteOpeningTime({
         locationId: props.location.id,
         openingTimeId,
         sequence,
     });
-}
+};
 </script>
 
 <template>

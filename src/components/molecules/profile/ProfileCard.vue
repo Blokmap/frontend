@@ -34,25 +34,25 @@ const { mutateAsync: deleteProfileAvatar, isPending: isDeletingProfileAvatar } =
 
 const showEntityAvatarDialog = ref<boolean>(false);
 
-function onAvatarEditClick() {
+const onAvatarEditClick = () => {
     showEntityAvatarDialog.value = true;
-}
+};
 
-function onUpdateProfileAvatar(file: File) {
+const onUpdateProfileAvatar = (file: File) => {
     if (!props.profile) {
         return;
     }
 
     updateProfileAvatar({ profileId: props.profile.id, file });
-}
+};
 
-function onDeleteProfileAvatar() {
+const onDeleteProfileAvatar = () => {
     if (!props.profile) {
         return;
     }
 
     deleteProfileAvatar(props.profile.id);
-}
+};
 </script>
 
 <template>
@@ -64,6 +64,7 @@ function onDeleteProfileAvatar() {
                     v-if="profile"
                     :image="profile.avatar?.url"
                     @click:edit="onAvatarEditClick"
+                    circle
                     editable>
                 </EntityAvatar>
                 <Skeleton shape="circle" size="100%" v-else />

@@ -41,7 +41,7 @@ const clearAllFilters = () => {
     reservable.value = null;
     openOnDay.value = null;
     openOnTime.value = null;
-    tags.value = [];
+    selectedTags.value = [];
 };
 
 const debouncedFilterUpdate = useDebounceFn((filters: LocationSearchFilter) => {

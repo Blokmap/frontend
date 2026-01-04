@@ -10,7 +10,7 @@ import { useReadTags } from '@/composables/data/useTags';
 import { useLayoutState } from '@/composables/store/useLayoutState';
 
 const { space, k, meta, control } = useMagicKeys();
-const { showSpotlight, showFilters } = storeToRefs(useLayoutState());
+const { showSearchSpotlight, showFiltersDialog } = storeToRefs(useLayoutState());
 
 const { data: tags } = useReadTags();
 
@@ -19,7 +19,7 @@ watchEffect(() => {
     const isToggleKey = space.value || k.value;
 
     if (isMetaKey && isToggleKey) {
-        showSpotlight.value = !showSpotlight.value;
+        showSearchSpotlight.value = !showSearchSpotlight.value;
     }
 });
 </script>
@@ -29,8 +29,8 @@ watchEffect(() => {
         <header class="public-layout__header">
             <div class="public-layout__container">
                 <PublicHeader
-                    @click:search="showSpotlight = true"
-                    @click:filters="showFilters = true">
+                    @click:search="showSearchSpotlight = true"
+                    @click:filters="showFiltersDialog = true">
                 </PublicHeader>
             </div>
         </header>
@@ -54,8 +54,11 @@ watchEffect(() => {
         </footer>
 
         <Teleport to="body">
-            <LocationSearchSpotlight v-model:visible="showSpotlight" />
-            <LocationFilterDialog v-model:visible="showFilters" :tags="tags" v-if="tags" />
+            <LocationSearchSpotlight
+                v-model:visible="showSearchSpotlight"
+                @click:filter="showFiltersDialog = true">
+            </LocationSearchSpotlight>
+            <LocationFilterDialog v-model:visible="showFiltersDialog" :tags="tags" v-if="tags" />
         </Teleport>
     </div>
 </template>

@@ -2,8 +2,8 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useLayoutState = defineStore('layout-state', () => {
-    const showFilters = ref<boolean>(false);
-    const showSpotlight = ref<boolean>(false);
+    const showFiltersDialog = ref<boolean>(false);
+    const showSearchSpotlight = ref<boolean>(false);
 
-    return { showFilters, showSpotlight };
+    return { showFiltersDialog, showSearchSpotlight };
 });

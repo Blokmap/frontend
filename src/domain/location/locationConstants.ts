@@ -1,5 +1,5 @@
 import { faCheck, faClock, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { LocationState, type LocationRequest } from './types';
+import { LocationState, type LocationRequest, type LocationSearchFilter } from './types';
 
 export const GOOGLE_MAPS_DIRECTIONS_BASE_URL =
     'https://www.google.com/maps/dir/?api=1&destination=';
@@ -18,6 +18,15 @@ export const DEFAULT_LOCATION_REQUEST: LocationRequest = {
     seatCount: 20,
     isReservable: true,
     isVisible: true,
+};
+
+export const DEFAULT_LOCATION_FILTER: LocationSearchFilter = {
+    reservable: null,
+    openOnTime: null,
+    openOnDay: null,
+    bounds: null,
+    perPage: 36,
+    page: 1,
 };
 
 export const LOCATION_SETTINGS = {

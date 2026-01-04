@@ -3,8 +3,9 @@ import Paginator from 'primevue/paginator';
 import Skeleton from 'primevue/skeleton';
 import LocationDetailCardSkeleton from '@/components/molecules/location/LocationCardSkeleton.vue';
 import LocationDetailCard from '@/components/molecules/location/LocationDetailCard.vue';
+import LocationFilterButton from '@/components/molecules/location/search/LocationFilterButton.vue';
 import BlokMap from '@/components/molecules/map/BlokMap.vue';
-import { faArrowRight, faFilter, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { refDebounced, useDebounceFn } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
@@ -20,11 +21,17 @@ import type { NearestLocation } from '@/domain/location';
 defineOptions({ name: 'LocationsPage' });
 
 const filterStore = useLocationFilters();
-const { showFilters } = storeToRefs(useLayoutState());
-const { geoLocation, filters, isFetching, locations } = storeToRefs(filterStore);
+
+const { geoLocation, filters, mapConfigCache, isFetching, isPending, locations } =
+    storeToRefs(filterStore);
+
+const { showFiltersDialog } = storeToRefs(useLayoutState());
 const { first, onPageChange } = usePagination(filters);
 
-const showLoading = refDebounced(isFetching, 150);
+const showLoading = refDebounced(
+    computed<boolean>(() => isFetching.value || isPending.value),
+    150,
+);
 
 const { mutate: flyToNearestLocation, isPending: isFlyingToNearestLocation } = useNearestLocation(
     async (location: NearestLocation) => {
@@ -42,7 +49,7 @@ const onNearestClick = (): void => {
 
 const blokMapRef = useTemplateRef('blokmap');
 const mapContainerRef = computed(() => blokMapRef.value?.$el ?? null);
-const map = useMapBox(mapContainerRef);
+const map = useMapBox(mapContainerRef, mapConfigCache.value);
 
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
 
@@ -72,7 +79,15 @@ watch(
 
 // Watch for changes in map bounds to update filters
 watch(map.bounds, () => {
+    debouncedConfigCacheUpdate();
     debouncedFilterUpdate();
+});
+
+const debouncedConfigCacheUpdate = useDebounceFn(() => {
+    filterStore.updateConfigCache({
+        center: map.center.value,
+        zoom: map.zoom.value,
+    });
 });
 
 const debouncedFilterUpdate = useDebounceFn(() => {
@@ -106,11 +121,7 @@ const transitionKey = computed<string | undefined>(() => {
                     </span>
                     <span v-else>{{ $t('general.errors.noResultsExact') }}</span>
 
-                    <FontAwesomeIcon
-                        class="locs__filter-icon"
-                        :icon="faFilter"
-                        @click="showFilters = true">
-                    </FontAwesomeIcon>
+                    <LocationFilterButton :filters="filters" @click="showFiltersDialog = true" />
                 </h2>
 
                 <p v-if="locations?.data?.length" class="locs__meta">
@@ -200,10 +211,6 @@ const transitionKey = computed<string | undefined>(() => {
 
     .locs__title {
         @apply flex items-center justify-between text-2xl font-bold;
-    }
-
-    .locs__filter-icon {
-        @apply cursor-pointer text-slate-600 hover:text-slate-700;
     }
 
     .locs__meta {

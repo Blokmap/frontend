@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { faMagnifyingGlass, faSliders } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { storeToRefs } from 'pinia';
+import { useLocationFilters } from '@/composables/store/useLocationFilters';
+import LocationFilterButton from './LocationFilterButton.vue';
+
+const { filters } = storeToRefs(useLocationFilters());
 
 defineEmits<{
     'click:search': [];
@@ -10,7 +15,7 @@ defineEmits<{
 
 <template>
     <button @click="$emit('click:search')" class="location-search">
-        <FontAwesomeIcon :icon="faSliders" @click.stop="$emit('click:filters')" />
+        <LocationFilterButton :filters="filters" @click.stop="$emit('click:filters')" />
         <div class="location-search__content">
             <span class="location-search__text">Zoek bloklocaties...</span>
             <div class="location-search__icon-wrapper">

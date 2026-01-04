@@ -19,7 +19,7 @@ import type { GeoJsonProperties } from 'geojson';
 const isVisible = defineModel<boolean>('visible', { default: false });
 
 const emit = defineEmits<{
-    filter: [];
+    'click:filter': [];
 }>();
 
 const search = ref('');
@@ -96,7 +96,7 @@ function onGeoClick(geo: GeoJsonProperties) {
                         v-if="!isSearching"
                         type="button"
                         class="filter-button"
-                        @click="emit('filter')"
+                        @click="emit('click:filter')"
                         aria-label="Open filters">
                         <FontAwesomeIcon :icon="faSliders" class="h-3.5 w-3.5 text-slate-600" />
                     </button>

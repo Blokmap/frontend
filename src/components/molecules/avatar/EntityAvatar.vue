@@ -60,50 +60,50 @@ defineEmits<{
 .entity-avatar {
     @apply relative flex aspect-auto items-center justify-center rounded-md;
 
+    .entity-avatar__overlay {
+        @apply absolute inset-0 z-10 flex items-center justify-center;
+        @apply cursor-pointer bg-black/50 opacity-0 transition-opacity duration-300;
+
+        &.circle {
+            @apply rounded-full;
+        }
+
+        .entity-avatar__edit-icon {
+            @apply text-white;
+            width: clamp(1rem, 25%, 4rem);
+            height: clamp(1rem, 25%, 4rem);
+        }
+    }
+
+    .entity-avatar__placeholder {
+        @apply flex h-full w-full items-center justify-center rounded-md bg-slate-200;
+
+        &.circle {
+            @apply rounded-full;
+        }
+
+        .entity-avatar__placeholder-icon {
+            @apply text-slate-700;
+            width: clamp(1rem, 25%, 4rem);
+            height: clamp(1rem, 25%, 4rem);
+            font-size: clamp(1rem, 25%, 4rem);
+        }
+    }
+
+    .entity-avatar__image {
+        @apply absolute aspect-square h-full w-full rounded-md object-cover;
+
+        &.circle {
+            @apply rounded-full;
+        }
+    }
+
+    &:hover .entity-avatar__overlay {
+        @apply opacity-100;
+    }
+
     &.circle {
         @apply rounded-full;
     }
-}
-
-.entity-avatar__placeholder {
-    @apply flex h-full w-full items-center justify-center rounded-md bg-slate-200;
-
-    &.circle {
-        @apply rounded-full;
-    }
-}
-
-.entity-avatar__placeholder-icon {
-    @apply text-slate-700;
-    width: clamp(1rem, 25%, 4rem);
-    height: clamp(1rem, 25%, 4rem);
-    font-size: clamp(1rem, 25%, 4rem);
-}
-
-.entity-avatar__overlay {
-    @apply absolute inset-0 z-10 flex items-center justify-center;
-    @apply cursor-pointer bg-black/50 opacity-0 transition-opacity duration-300;
-
-    &.circle {
-        @apply rounded-full;
-    }
-}
-
-.entity-avatar__edit-icon {
-    @apply text-white;
-    width: clamp(1rem, 25%, 4rem);
-    height: clamp(1rem, 25%, 4rem);
-}
-
-.entity-avatar__image {
-    @apply absolute aspect-square h-full w-full object-cover;
-
-    &.circle {
-        @apply rounded-full;
-    }
-}
-
-.entity-avatar:hover .entity-avatar__overlay {
-    @apply opacity-100;
 }
 </style>

@@ -164,7 +164,8 @@ const goBack = (): void => {
                         </template>
                     </LayoutSidebarItem>
                     <template v-else>
-                        <div class="space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg">
+                        <div class="organisation-callout">
+                            <h2 class="text-xl font-bold">Organisaties</h2>
                             <p>
                                 Maak een organisatie aan voor je instelling om bloklocaties te
                                 beheren, of vraag een beheerder om je toe te voegen.
@@ -195,7 +196,8 @@ const goBack = (): void => {
                             <EntityAvatar
                                 class="h-full w-full"
                                 :image="m.authority.logo?.url"
-                                :icon="faBuilding">
+                                :icon="faBuilding"
+                                :circle="false">
                             </EntityAvatar>
                         </template>
                         <template #text>
@@ -252,5 +254,9 @@ const goBack = (): void => {
 
 .count {
     @apply ml-1 text-sm font-normal text-slate-400;
+}
+
+.organisation-callout {
+    @apply space-y-4 rounded-lg border border-slate-200 bg-white p-4 text-sm;
 }
 </style>

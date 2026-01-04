@@ -173,8 +173,8 @@ export function setupAuthGuard(): void {
 
 export function setupRouterGuards(): void {
     const router = useRouter();
-    const progressStore = useProgress();
 
+    const progressStore = useProgress();
     const progressTimeout = ref<number | null>(null);
 
     const clearProgress = () => {

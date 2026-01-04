@@ -13,6 +13,7 @@ import TermsConditionsPage from '@/components/organisms/pages/legal/TermsConditi
 import { useQueryClient } from '@tanstack/vue-query';
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 import { useToast } from '@/composables/store/useToast';
+import { useProgress } from '@/composables/store/useProgress';
 import { readAuthProfile, pullRedirectUrl } from '@/domain/auth';
 import { blank } from '@/domain/member';
 import {
@@ -362,6 +363,7 @@ const routes: RouteRecordRaw[] = [
                 component: AuthPage,
                 beforeEnter: async () => {
                     const toast = useToast();
+                    const progress = useProgress();
                     const client = useQueryClient();
 
                     const profile = await client.fetchQuery({
@@ -376,6 +378,9 @@ const routes: RouteRecordRaw[] = [
                             detail: 'Je bent succesvol ingelogd via je instelling!',
                         });
 
+                        // Clear progress before redirecting
+                        progress.finish();
+
                         return (
                             pullRedirectUrl() || {
                                 name: 'profile',
@@ -389,7 +394,13 @@ const routes: RouteRecordRaw[] = [
                         detail: 'Inloggen via je instelling is mislukt, probeer het opnieuw.',
                     });
 
+                    // Clear progress before redirecting
+                    progress.finish();
+
                     return { name: 'auth' };
+                },
+                meta: {
+                    auth: { required: false },
                 },
             },
             {

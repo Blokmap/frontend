@@ -4,7 +4,6 @@ about: Propose a new feature.
 title: ''
 labels: ''
 assignees: EwoutV
-projects: ['Open Issues']
 ---
 
 ## Feature Description

@@ -3,12 +3,68 @@
     <head>
         <meta charset="UTF-8" />
         <link rel="icon" href="/src/assets/img/favicon.ico" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&display=swap">
+        <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&family=Sigmar&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="/src/assets/styles/main.css" />
-        <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Blokmap</title>
+        <style>
+            .app-preloader {
+                position: fixed;
+                inset: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #0f172b;
+                z-index: 9999;
+            }
+
+            #app:not(:empty) + .app-preloader {
+                display: none;
+            }
+
+            .preloader-circle {
+                width: 80px;
+                height: 80px;
+            }
+
+            .preloader-path {
+                stroke-dasharray: 150;
+                stroke-dashoffset: 150;
+                animation: dash 1.5s ease-in-out infinite;
+                stroke-linecap: round;
+            }
+
+            @keyframes dash {
+                0% {
+                    stroke-dashoffset: 150;
+                }
+                50% {
+                    stroke-dashoffset: 0;
+                }
+                100% {
+                    stroke-dashoffset: -150;
+                }
+            }
+        </style>
     </head>
     <body>
         <div id="app"></div>
+        <div class="app-preloader">
+            <svg class="preloader-circle" viewBox="0 0 50 50">
+                <circle 
+                    class="preloader-path" 
+                    cx="25" 
+                    cy="25" 
+                    r="20" 
+                    fill="none" 
+                    stroke="#399071" 
+                    stroke-width="3"
+                />
+            </svg>
+        </div>
         <script type="module" src="/src/main.ts"></script>
     </body>
 </html>

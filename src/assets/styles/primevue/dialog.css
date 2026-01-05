@@ -1,22 +1,17 @@
 @import './button';
 
 .p-dialog {
-    @apply border-surface-200 dark:border-surface-700;
-    @apply bg-surface-0 dark:bg-surface-900;
-    @apply dark:text-surface-0 text-slate-800;
-    @apply max-h-[90%] scale-100;
-    @apply rounded-xl border;
-    @apply shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)];
+    @apply bg-surface-0 rounded-xl text-slate-800;
+    @apply w-fit scale-100;
 }
 
 .p-dialog-content {
-    @apply overflow-y-auto px-5 py-5;
+    @apply overflow-y-auto px-5 py-4;
 }
 
 .p-dialog-header {
     @apply flex shrink-0 items-center justify-between;
-    @apply border-b-2 border-b-slate-200;
-    @apply px-5 py-3;
+    @apply px-5 pt-5;
 }
 
 .p-dialog-title {
@@ -25,8 +20,7 @@
 
 .p-dialog-footer {
     @apply flex shrink-0 justify-end gap-2;
-    @apply border-t-2 border-slate-200;
-    @apply px-5 py-3;
+    @apply px-5 pt-1 pb-5;
 }
 
 .p-dialog-header-actions {

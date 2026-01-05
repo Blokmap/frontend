@@ -1,0 +1,138 @@
+{
+    "general": {
+        "errors": {
+            "tryAgainLater": "Veuillez réessayer plus tard.",
+            "noResultsExact": "Aucun résultat exact trouvé."
+        },
+        "actions": {
+            "edit": "Modifier",
+            "delete": "Supprimer",
+            "create": "Créer",
+            "view": "Voir",
+            "save": "Enregistrer",
+            "previous": "Précédent",
+            "next": "Suivant",
+            "complete": "Terminer"
+        }
+    },
+    "locales": {
+        "en": "English",
+        "nl": "Nederlands",
+        "fr": "Français"
+    },
+    "domains": {
+        "locations": {
+            "name": "Lieu | Lieux",
+            "spot": "Place | Places",
+            "success": {
+                "statusUpdated": "Statut mis à jour",
+                "statusUpdatedDetail": "Le statut du lieu a été mis à jour avec succès !",
+                "deleted": "Lieu supprimé",
+                "deletedDetail": "Le lieu a été supprimé avec succès !"
+            },
+            "errors": {
+                "notFound": "Lieu non trouvé",
+                "fetchNearest": "Erreur lors de la récupération du lieu le plus proche"
+            }
+        },
+        "reservations": {
+            "name": "Réservation | Réservations"
+        },
+        "openings": {
+            "name": "Heure d’ouverture | Heures d’ouverture",
+            "success": {
+                "created": "Heure d’ouverture ajoutée",
+                "createdDetail": "L’heure d’ouverture a été ajoutée avec succès.",
+                "updated": "Heure d’ouverture mise à jour",
+                "updatedDetail": "L’heure d’ouverture a été mise à jour avec succès.",
+                "deleted": "Heure d’ouverture supprimée",
+                "deletedDetail": "L’heure d’ouverture a été supprimée avec succès."
+            },
+            "errors": {
+                "createFailed": "Échec de l’ajout",
+                "createFailedDetail": "Une erreur est survenue lors de l’ajout de l’heure d’ouverture.",
+                "updateFailed": "Échec de la mise à jour",
+                "updateFailedDetail": "Une erreur est survenue lors de la mise à jour de l’heure d’ouverture.",
+                "deleteFailed": "Échec de la suppression",
+                "deleteFailedDetail": "Une erreur est survenue lors de la suppression de l’heure d’ouverture."
+            }
+        },
+        "auth": {
+            "name": "Authentification",
+            "success": {
+                "loggedIn": "Connecté !",
+                "loggedInDetail": "Vous êtes connecté avec succès.",
+                "registered": "Inscrit !",
+                "registeredDetail": "Vous êtes inscrit avec succès. Vous pouvez maintenant vous connecter."
+            },
+            "errors": {
+                "loginFailed": "Échec de la connexion",
+                "registerFailed": "Échec de l’inscription"
+            }
+        },
+        "profiles": {
+            "name": "Profil | Profils",
+            "success": {
+                "scanSuccessful": "Scan réussi",
+                "scanSuccessfulDetail": "Le profil a été scanné avec succès.",
+                "statusUpdated": "Statut mis à jour",
+                "statusUpdatedDetail": "Le statut du profil a été {0} avec succès."
+            },
+            "errors": {
+                "scanFailed": "Échec du scan",
+                "scanFailedDetail": "Une erreur est survenue lors du scan du profil."
+            },
+            "info": {
+                "alreadyScanned": "Déjà scanné",
+                "alreadyScannedDetail": "Ce profil a déjà été scanné récemment."
+            }
+        },
+        "authorities": {
+            "name": "Autorité | Autorités",
+            "success": {
+                "created": "Autorité Créée",
+                "createdDetail": "L'autorité a été créée avec succès.",
+                "updated": "Autorité Mise à Jour",
+                "updatedDetail": "L'autorité a été mise à jour avec succès.",
+                "deleted": "Autorité Supprimée",
+                "deletedDetail": "L'autorité a été supprimée avec succès."
+            },
+            "errors": {
+                "createFailed": "Échec de Création",
+                "createFailedDetail": "Une erreur s'est produite lors de la création de l'autorité.",
+                "updateFailed": "Échec de Mise à Jour",
+                "updateFailedDetail": "Une erreur s'est produite lors de la mise à jour de l'autorité.",
+                "deleteFailed": "Échec de Suppression",
+                "deleteFailedDetail": "Une erreur s'est produite lors de la suppression de l'autorité."
+            }
+        },
+        "institutions": {
+            "name": "Institution | Institutions",
+            "category": {
+                "education": "Éducation",
+                "organisation": "Organisation",
+                "government": "Gouvernement"
+            },
+            "aclType": {
+                "whitelist": "Liste blanche",
+                "blacklist": "Liste noire"
+            },
+            "success": {
+                "created": "Institution Créée",
+                "createdDetail": "L'institution a été créée avec succès.",
+                "updated": "Institution Mise à Jour",
+                "updatedDetail": "L'institution a été mise à jour avec succès.",
+                "deleted": "Institution Supprimée",
+                "deletedDetail": "L'institution a été supprimée avec succès."
+            },
+            "errors": {
+                "createFailed": "Échec de Création",
+                "createFailedDetail": "Une erreur s'est produite lors de la création de l'institution.",
+                "updateFailed": "Échec de Mise à Jour",
+                "updateFailedDetail": "Une erreur s'est produite lors de la mise à jour de l'institution.",
+                "deleteFailed": "Échec de Suppression",
+                "deleteFailedDetail": "Une erreur s'est produite lors de la suppression de l'institution."
+            }
+        }
+    }
+}

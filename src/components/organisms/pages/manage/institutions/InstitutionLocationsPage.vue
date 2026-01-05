@@ -1,0 +1,139 @@
+<script lang="ts" setup>
+import Paginator from 'primevue/paginator';
+import SearchInput from '@/components/atoms/SearchInput.vue';
+import Breadcrumb from '@/components/molecules/Breadcrumb.vue';
+import Callout from '@/components/molecules/Callout.vue';
+import EmptyState from '@/components/molecules/EmptyState.vue';
+import LocationCardSkeleton from '@/components/molecules/location/LocationCardSkeleton.vue';
+import LocationDetailCard from '@/components/molecules/location/LocationDetailCard.vue';
+import LocationStateSelect from '@/components/molecules/location/forms/LocationStateSelect.vue';
+import PageContent from '@/components/organisms/pages/PageContent.vue';
+import PageFilters from '@/components/organisms/pages/PageFilters.vue';
+import PageTitle from '@/components/organisms/pages/PageTitle.vue';
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { debouncedWatch } from '@vueuse/core';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useReadInstitutionLocations } from '@/composables/data/useLocations';
+import { usePagination } from '@/composables/usePagination';
+import { getInstitutionName, type Institution } from '@/domain/institution';
+import { type LocationFilter } from '@/domain/location';
+
+const props = defineProps<{
+    institution: Institution;
+}>();
+
+const { locale } = useI18n();
+
+const filters = ref<LocationFilter>({
+    perPage: 10,
+    page: 1,
+    query: null,
+    state: null,
+});
+
+const isFiltering = computed(() => {
+    return !!filters.value.query || !!filters.value.state;
+});
+
+const { first, onPageChange, resetPage } = usePagination(filters);
+
+const query = ref<string>('');
+
+debouncedWatch(
+    query,
+    (newQuery) => {
+        resetPage();
+        filters.value.query = newQuery;
+    },
+    { debounce: 300 },
+);
+
+const institutionId = computed<number>(() => props.institution.id);
+
+const {
+    data: locations,
+    isLoading,
+    isFetching,
+    error,
+} = useReadInstitutionLocations(institutionId, filters);
+
+const breadcrumbs = computed(() => {
+    const institutionName = getInstitutionName(props.institution, locale.value);
+
+    return [
+        {
+            label: institutionName,
+            to: {
+                name: 'manage.institution.info',
+                params: {
+                    institutionId: props.institution.id,
+                },
+            },
+        },
+        {
+            label: 'Locaties',
+        },
+    ];
+});
+</script>
+
+<template>
+    <PageContent>
+        <Breadcrumb :items="breadcrumbs" />
+
+        <PageTitle title="Locaties"> </PageTitle>
+
+        <PageFilters>
+            <SearchInput v-model="query" :loading="isFetching" />
+            <LocationStateSelect v-model="filters.state" :loading="isFetching" />
+        </PageFilters>
+
+        <p class="text-slate-600">Locaties die onder deze organisatie vallen.</p>
+
+        <!-- Error State -->
+        <Callout v-if="error" severity="error">
+            Er ging iets mis bij het laden van de locaties. Probeer het later opnieuw.
+        </Callout>
+
+        <!-- Empty State -->
+        <EmptyState
+            v-else-if="!isLoading && locations?.data?.length === 0"
+            :icon="faMapMarkerAlt"
+            title="Geen locaties gevonden">
+            <template #message>
+                <span v-if="isFiltering">
+                    Er zijn geen locaties die voldoen aan de zoekcriteria.
+                </span>
+                <span v-else> Er zijn nog geen locaties toegevoegd aan deze organisatie. </span>
+            </template>
+        </EmptyState>
+
+        <!-- Data / Loading State -->
+        <template v-else>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <template v-if="isLoading">
+                    <LocationCardSkeleton v-for="i in 6" :key="i" />
+                </template>
+                <template v-else>
+                    <LocationDetailCard
+                        v-for="location in locations?.data"
+                        :key="location.id"
+                        :location="location"
+                        :to="{
+                            name: 'manage.location',
+                            params: { locationId: location.id },
+                        }">
+                    </LocationDetailCard>
+                </template>
+            </div>
+
+            <Paginator
+                :first="first(locations)"
+                :rows="locations?.perPage"
+                :total-records="locations?.total"
+                @page="onPageChange">
+            </Paginator>
+        </template>
+    </PageContent>
+</template>

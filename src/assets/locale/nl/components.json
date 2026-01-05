@@ -1,0 +1,49 @@
+{
+    "toast": {
+        "error": "Er is een fout opgetreden",
+        "success": "Actie succesvol uitgevoerd",
+        "info": "Informatie"
+    },
+    "search": {
+        "noResults": "Geen resultaten gevonden",
+        "inNeighborhood": "In de buurt",
+        "allLocations": "Alle locaties",
+        "anyDay": "Alle data"
+    },
+    "reservation": {},
+    "calendar": {
+        "days": {
+            "monday": "Maandag",
+            "tuesday": "Dinsdag",
+            "wednesday": "Woensdag",
+            "thursday": "Donderdag",
+            "friday": "Vrijdag",
+            "saturday": "Zaterdag",
+            "sunday": "Zondag"
+        }
+    },
+    "institutions": {
+        "form": {
+            "category": "Categorie",
+            "aclType": "Toegangscontroletype",
+            "name": "Naam",
+            "slug": "Slug",
+            "contactInformation": "Contactinformatie",
+            "email": "E-mail",
+            "phone": "Telefoonnummer",
+            "address": "Adres",
+            "street": "Straat",
+            "number": "Nummer",
+            "zip": "Postcode",
+            "city": "Stad",
+            "province": "Provincie",
+            "country": "Land"
+        }
+    },
+    "authorities": {
+        "form": {
+            "name": "Naam",
+            "description": "Beschrijving"
+        }
+    }
+}

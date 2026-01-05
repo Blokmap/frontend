@@ -1,6 +1,5 @@
-/* Bouncy Scale Up Transition
-   Used for: Markers, buttons, icons that need a bouncy entrance
-   ========================================================================== */
+/* Bouncy Scale Up Transition */
+/* Used for: Markers, buttons, icons that need a bouncy entrance */
 .bounce-scale-enter-active {
     transition-property: transform, opacity;
     transition-duration: 400ms;
@@ -17,9 +16,22 @@
     opacity: 1;
 }
 
-/* Slide Down Transition
-   Used for: Dropdowns, popovers, overlays that slide down from above
-   ========================================================================== */
+/* Roll Down Transition */
+/* Used for: Menus, tooltips that roll down into view */
+.roll-down-enter-active {
+    @apply transition-all duration-300 ease-out;
+}
+
+.roll-down-enter-from {
+    @apply h-0 opacity-0;
+}
+
+.roll-down-enter-to {
+    @apply h-full opacity-100;
+}
+
+/* Slide Down Transition */
+/* Used for: Dropdowns, popovers, overlays that slide down from above */
 .slide-down-enter-active {
     @apply transition-all duration-200 ease-out;
 }
@@ -44,9 +56,8 @@
     @apply -translate-y-2 scale-95 opacity-0;
 }
 
-/* Slide Up Entry Transition
-   Used for: List items, cards, elements that slide up when appearing and down when leaving
-   ========================================================================== */
+/* Slide Up Entry Transition */
+/* Used for: List items, cards, elements that slide up when appearing and down when leaving */
 .slide-up-enter-active,
 .slide-up-leave-active {
     @apply transition-all duration-300 ease-out;
@@ -68,19 +79,17 @@
     @apply translate-y-2 scale-90 opacity-0;
 }
 
-/* Smooth Move Transition
-   Used for: Reordering list items, position changes with smooth movement
-   ========================================================================== */
+/* Smooth Move Transition */
+/* Used for: Reordering list items, position changes with smooth movement */
 .slide-up-move {
-    @apply transition-transform duration-300 ease-out;
+    @apply transition-transform duration-100 ease-out;
 }
 
-/* Fade Transition
-   Used for: Simple fade in/out effects
-   ========================================================================== */
+/* Fade Transition */
+/* Used for: Simple fade in/out effects */
 .fade-enter-active,
 .fade-leave-active {
-    @apply transition-opacity duration-300 ease-out;
+    @apply transition-opacity duration-200 ease-out;
 }
 
 .fade-enter-from,
@@ -93,9 +102,8 @@
     @apply opacity-100;
 }
 
-/* Scale Transition
-   Used for: Modal dialogs, overlays that scale in/out
-   ========================================================================== */
+/* Scale Transition */
+/* Used for: Modal dialogs, overlays that scale in/out */
 .scale-enter-active,
 .scale-leave-active {
     @apply transition-all duration-200 ease-out;
@@ -109,4 +117,133 @@
 .scale-enter-to,
 .scale-leave-from {
     @apply scale-100 opacity-100;
+}
+
+.slide-in-right {
+    animation: slide-in-right 0.3s ease-out forwards;
+}
+
+@keyframes slide-in-right {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Slide In Left Transition */
+.slide-in-left-enter-active,
+.slide-in-left-leave-active {
+    @apply transition-all duration-300 ease-out;
+}
+
+.slide-in-left-enter-from {
+    @apply -translate-x-4 opacity-0;
+}
+
+.slide-in-left-enter-to,
+.slide-in-left-leave-from {
+    @apply translate-x-0 opacity-100;
+}
+
+.slide-in-left-leave-to {
+    @apply -translate-x-4 opacity-0;
+}
+
+/* Slide Left Transition */
+/* Used for: Elements sliding from right to left */
+.slide-left-enter-active,
+.slide-left-leave-active {
+    @apply transition-all duration-300 ease-out;
+}
+
+.slide-left-enter-from {
+    @apply translate-x-24 opacity-0;
+}
+
+.slide-left-enter-to,
+.slide-left-leave-from {
+    @apply translate-x-0 opacity-100;
+}
+
+.slide-left-leave-to {
+    @apply translate-x-24 opacity-0;
+}
+
+/* Staggered Cards Transition */
+/* Used for: Grid items with delayed enter/leave animations */
+.staggered-cards-enter-active {
+    transition: all 0.4s ease-out;
+    transition-delay: calc(var(--i) * 0.05s);
+}
+
+.staggered-cards-enter-from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+}
+
+.staggered-cards-enter-to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Fade Slide Up Transition */
+/* Used for: Page sections that fade in with a subtle upward motion */
+.fade-slide-up-enter-active,
+.fade-slide-up-leave-active {
+    @apply transition-all duration-300 ease-out;
+}
+
+.fade-slide-up-enter-from {
+    @apply translate-y-4 opacity-0;
+}
+
+.fade-slide-up-enter-to,
+.fade-slide-up-leave-from {
+    @apply translate-y-0 opacity-100;
+}
+
+.fade-slide-up-leave-to {
+    @apply translate-y-4 opacity-0;
+}
+
+/* Staggered Fade In Transition */
+/* Used for: Sequential content sections with delayed entrance */
+.stagger-fade-enter-active {
+    transition:
+        opacity 0.6s ease-out,
+        transform 0.6s ease-out;
+}
+
+.stagger-fade-enter-from {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.stagger-fade-enter-to {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Fade Slide Right Transition */
+/* Used for: Sidebar elements that fade and slide in from left to right */
+.fade-slide-right-enter-active,
+.fade-slide-right-leave-active {
+    @apply transition-all duration-300 ease-out;
+}
+
+.fade-slide-right-enter-from {
+    @apply -translate-x-4 opacity-0;
+}
+
+.fade-slide-right-enter-to,
+.fade-slide-right-leave-from {
+    @apply translate-x-0 opacity-100;
+}
+
+.fade-slide-right-leave-to {
+    @apply -translate-x-4 opacity-0;
 }

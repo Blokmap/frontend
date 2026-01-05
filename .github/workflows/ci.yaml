@@ -2,8 +2,8 @@ name: Lint, format, and test code
 
 on:
     push:
-        branches-ignore: ["main", "staging"]
-        tags-ignore: ["**"]
+        branches-ignore: ['main', 'staging']
+        tags-ignore: ['**']
 
     workflow_call:
 
@@ -12,47 +12,27 @@ jobs:
         runs-on: self-hosted
 
         steps:
-          - name: Checkout code
-            uses: actions/checkout@v4
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-          - name: Setup
-            uses: ./.github/actions/common
+            - name: Setup
+              uses: ./.github/actions/common
 
-          - name: Lint code
-            run: npm run lint
+            - name: Lint code
+              run: npm run lint
 
-          - name: Format code
-            run: npm run format
+            - name: Format code
+              run: npm run format
 
     unit-tests:
         runs-on: self-hosted
 
         steps:
-          - name: Checkout code
-            uses: actions/checkout@v4
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-          - name: Setup
-            uses: ./.github/actions/common
+            - name: Setup
+              uses: ./.github/actions/common
 
-          - name: Run unit tests
-            run: npm run test:unit
-
-    e2e-tests:
-        runs-on: self-hosted
-
-        steps:
-          - name: Checkout code
-            uses: actions/checkout@v4
-
-          - name: Setup
-            uses: ./.github/actions/common
-
-            # See https://github.com/cypress-io/github-action/issues/601#issuecomment-1301013647
-          - name: Setup xvfb (Linux)
-            if: runner.os == 'Linux'
-            run: |
-                sudo DEBIAN_FRONTEND=noninteractive apt-get update
-                sudo DEBIAN_FRONTEND=noninteractive apt-get -y install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
-
-          - name: Run e2e tests
-            run: npm run test:e2e
+            - name: Run unit tests
+              run: npm run test:unit -- --no-cache

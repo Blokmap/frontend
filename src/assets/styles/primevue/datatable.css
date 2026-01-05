@@ -1,7 +1,8 @@
 @import './paginator';
 
 .p-datatable {
-    @apply relative;
+    @apply relative rounded-md;
+    @apply border-1 border-slate-200 bg-white;
 }
 
 .p-datatable-table {
@@ -25,7 +26,7 @@
 }
 
 .p-datatable-scrollable .p-datatable-frozen-column {
-    @apply bg-surface-0 dark:bg-surface-900 sticky;
+    @apply dark:bg-surface-900 sticky;
 }
 
 .p-datatable-scrollable th.p-datatable-frozen-column {
@@ -38,7 +39,7 @@
     > .p-virtualscroller
     > .p-datatable-table
     > .p-datatable-thead {
-    @apply bg-surface-0 dark:bg-surface-900;
+    @apply dark:bg-surface-900;
 }
 
 .p-datatable-scrollable > .p-datatable-table-container > .p-datatable-table > .p-datatable-tfoot,
@@ -47,7 +48,7 @@
     > .p-virtualscroller
     > .p-datatable-table
     > .p-datatable-tfoot {
-    @apply bg-surface-0 dark:bg-surface-900;
+    @apply dark:bg-surface-900;
 }
 
 .p-datatable-flex-scrollable {
@@ -118,7 +119,7 @@
 }
 
 .p-datatable-filter-overlay {
-    @apply bg-surface-0 dark:bg-surface-900 border-surface-200 dark:border-surface-700 text-surface-700 dark:text-surface-0 min-w-52 rounded-md border shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)];
+    @apply dark:bg-surface-900 border-surface-200 dark:border-surface-700 text-surface-700 dark:text-surface-0 min-w-52 rounded-md border shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)];
 }
 
 .p-datatable-filter-constraint-list {
@@ -154,7 +155,7 @@
 }
 
 .p-datatable-filter-overlay-popover {
-    @apply bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0 border-surface-200 dark:border-surface-700 flex min-w-52 flex-col gap-2 rounded-md border p-3 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)];
+    @apply dark:bg-surface-900 text-surface-700 dark:text-surface-0 border-surface-200 dark:border-surface-700 flex min-w-52 flex-col gap-2 rounded-md border p-3 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)];
 }
 
 .p-datatable-filter-operator-dropdown {
@@ -199,15 +200,15 @@
 }
 
 .p-datatable-header {
-    @apply border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0 border-b px-4 py-3;
+    @apply border-surface-200 dark:border-surface-700 dark:bg-surface-900 text-surface-700 dark:text-surface-0 border-b px-4 py-3;
 }
 
 .p-datatable-footer {
-    @apply border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0 border-b px-4 py-3;
+    @apply border-surface-200 dark:border-surface-700 dark:bg-surface-900 text-surface-700 dark:text-surface-0 border-b px-4 py-3;
 }
 
 .p-datatable-header-cell {
-    @apply border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0 border-b px-4 py-3 text-start font-normal transition-colors duration-200;
+    @apply border-surface-200 dark:border-surface-700 dark:bg-surface-900 text-surface-700 dark:text-surface-0 border-b px-4 py-3 text-start font-normal transition-colors duration-200;
 }
 
 .p-datatable-column-title {
@@ -215,7 +216,7 @@
 }
 
 .p-datatable-tbody > tr {
-    @apply bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0 transition-colors duration-200;
+    @apply dark:bg-surface-900 text-surface-700 dark:text-surface-0 transition-colors duration-200;
 }
 
 .p-datatable-tbody > tr > td {
@@ -244,7 +245,7 @@
 }
 
 .p-datatable-tfoot > tr > td {
-    @apply border-surface-200 dark:border-surface-800 bg-surface-0 dark:bg-surface-900 text-surface-700 dark:text-surface-0 border-b px-4 py-3 text-start;
+    @apply border-surface-200 dark:border-surface-800 dark:bg-surface-900 text-surface-700 dark:text-surface-0 border-b px-4 py-3 text-start;
 }
 
 .p-datatable-column-footer {
@@ -392,7 +393,7 @@
 }
 
 .p-datatable-tbody > tr.p-datatable-row-selected .p-datatable-row-toggle-button:hover {
-    @apply bg-surface-0 dark:bg-surface-900 text-primary;
+    @apply dark:bg-surface-900 text-primary;
 }
 
 .p-datatable-row-toggle-icon:dir(rtl) {

@@ -3,6 +3,7 @@ import { defineConfig } from 'cypress';
 
 export default defineConfig({
     e2e: {
+        baseUrl: 'https://dev.blokmap.io',
         specPattern: 'test/e2e/**/*.cy.ts',
         fixturesFolder: 'test/cy/fixtures',
         supportFile: 'test/cy/support/e2e.ts',

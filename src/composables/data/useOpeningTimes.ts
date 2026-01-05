@@ -1,0 +1,224 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
+import { useToast } from '@/composables/store/useToast';
+import {
+    readOpeningTimes,
+    createOpeningTimes,
+    updateOpeningTime,
+    deleteOpeningTime,
+    deleteOpeningTimes,
+    type OpeningTime,
+    type OpeningTimeRequest,
+    type OpeningTimeFilter,
+} from '@/domain/openings';
+import { invalidateQueries } from './queryCache';
+import type { CompMutation, CompMutationOptions, CompQuery } from '@/utils/composable';
+import type { AxiosError } from 'axios';
+
+/**
+ * Composable to fetch opening times for a specific location within a given week.
+ *
+ * @param locationId - The ID of the location to fetch opening times for.
+ * @param filters - The filters to apply when fetching opening times.
+ * @returns An object containing the opening times and their state.
+ */
+export function useReadOpeningTimes(
+    locationId: MaybeRef<number | null>,
+    filters: MaybeRefOrGetter<OpeningTimeFilter> = {},
+): CompQuery<OpeningTime[]> {
+    const enabled = computed(() => toValue(locationId) !== null);
+
+    const query = useQuery<OpeningTime[], AxiosError>({
+        enabled,
+        queryKey: ['openingTimes', 'list', 'byLocation', locationId, filters],
+        queryFn: () => {
+            const locationIdValue = toValue(locationId)!;
+            const filtersValue = toValue(filters);
+            return readOpeningTimes(locationIdValue, filtersValue);
+        },
+    });
+
+    return query;
+}
+
+export type CreateOpeningTimesParams = {
+    locationId: number;
+    openings: OpeningTimeRequest[];
+};
+
+/**
+ * Composable to handle creating multiple opening times for a location.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for creating opening times.
+ */
+export function useCreateOpeningTimes(
+    options: CompMutationOptions = {},
+): CompMutation<CreateOpeningTimesParams, OpeningTime[]> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate all opening times and location queries
+            invalidateQueries(queryClient, ['locations', 'read', variables.locationId]);
+
+            invalidateQueries(queryClient, [
+                'openingTimes',
+                'list',
+                'byLocation',
+                variables.locationId,
+            ]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Openingstijden aangemaakt',
+                    detail: `${data.length} openingstijd(en) zijn succesvol aangemaakt.`,
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: ({ locationId, openings }: CreateOpeningTimesParams) => {
+            return createOpeningTimes(locationId, openings);
+        },
+    });
+
+    return mutation;
+}
+
+export type UpdateOpeningTimeParams = {
+    locationId: number;
+    openingTimeId: number;
+    opening: OpeningTimeRequest;
+    sequence?: boolean;
+};
+
+/**
+ * Composable to handle updating a single opening time.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for updating an opening time.
+ */
+export function useUpdateOpeningTime(
+    options: CompMutationOptions = {},
+): CompMutation<UpdateOpeningTimeParams, OpeningTime> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate all opening times and location queries
+            invalidateQueries(queryClient, ['locations', 'read', variables.locationId]);
+
+            invalidateQueries(queryClient, [
+                'openingTimes',
+                'list',
+                'byLocation',
+                variables.locationId,
+            ]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Openingstijd bijgewerkt',
+                    detail: 'De openingstijd is succesvol bijgewerkt.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: ({ locationId, openingTimeId, opening, sequence }: UpdateOpeningTimeParams) => {
+            return updateOpeningTime(locationId, openingTimeId, opening, sequence);
+        },
+    });
+
+    return mutation;
+}
+
+export type DeleteOpeningTimeParams = {
+    locationId: number;
+    openingTimeId: number;
+    sequence?: boolean;
+};
+
+/**
+ * Composable to handle deleting a single opening time.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for deleting an opening time.
+ */
+export function useDeleteOpeningTime(
+    options: CompMutationOptions = {},
+): CompMutation<DeleteOpeningTimeParams, void> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate all opening times and location queries
+            invalidateQueries(queryClient, ['locations', 'read', variables.locationId]);
+
+            invalidateQueries(queryClient, [
+                'openingTimes',
+                'list',
+                'byLocation',
+                variables.locationId,
+            ]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Openingstijd verwijderd',
+                    detail: 'De openingstijd is succesvol verwijderd.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: ({ locationId, openingTimeId, sequence }: DeleteOpeningTimeParams) => {
+            return deleteOpeningTime(locationId, openingTimeId, sequence);
+        },
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to handle deleting all opening times for a location.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for deleting all opening times.
+ */
+export function useDeleteAllOpeningTimes(
+    options: CompMutationOptions = {},
+): CompMutation<number, void> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate all opening times and location queries
+            invalidateQueries(queryClient, ['locations', 'read', variables]);
+            invalidateQueries(queryClient, ['openingTimes', 'list', 'byLocation', variables]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Alle openingstijden verwijderd',
+                    detail: 'Alle openingstijden van deze locatie zijn succesvol verwijderd.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: deleteOpeningTimes,
+    });
+
+    return mutation;
+}

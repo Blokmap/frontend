@@ -1,31 +1,34 @@
-import { useToast } from '@/composables/useToast';
-import { getAuthProfile, login, logout, register } from '@/services/auth';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { type Ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { readAuthProfile, login, logout, register } from '@/domain/auth';
+import { invalidateQueries } from './queryCache';
+import type { LoginRequest, RegisterRequest } from '@/domain/auth';
+import type { Profile } from '@/domain/profile';
 import type {
     CompMutation,
     CompMutationOptions,
     CompQuery,
     CompQueryOptions,
-} from '@/types/contract/Composable';
-import type { LoginRequest, RegisterRequest } from '@/types/schema/Auth';
-import type { Profile } from '@/types/schema/Profile';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { type Ref, computed } from 'vue';
+} from '@/utils/composable';
+import type { AxiosError } from 'axios';
 
 /**
  * Composable to fetch the authenticated user's profile.
  *
+ * @param options - Optional query options.
  * @returns The query object containing the profile data and its state.
  */
 export function useAuthProfile(
     options: CompQueryOptions = {},
-): CompQuery<Profile | null> & { profileId: Ref<number | null> } {
-    const query = useQuery<Profile | null>({
+): CompQuery<Profile | null> & { profileId: Ref<string | null> } {
+    const query = useQuery<Profile | null, AxiosError>({
         ...options,
-        queryKey: ['profile'],
-        throwOnError: false,
-        refetchInterval: 60000,
+        queryKey: ['auth', 'profile'],
+        refetchInterval: 60_000,
+        staleTime: 30_000,
         retry: false,
-        queryFn: getAuthProfile,
+        queryFn: readAuthProfile,
     });
 
     const profileId = computed(() => query.data.value?.id ?? null);
@@ -41,18 +44,14 @@ export function useAuthProfile(
  */
 export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<void> {
     const client = useQueryClient();
-    const toast = useToast();
 
     const mutation = useMutation({
         ...options,
         mutationFn: logout,
         onSuccess: (data, vars, context) => {
-            toast.add({
-                severity: 'success',
-                summary: 'Uitgelogd',
-                detail: 'Je bent succesvol uitgelogd.',
-            });
-            client.invalidateQueries({ queryKey: ['profile'] });
+            // Invalidate auth and profile queries to refresh data
+            invalidateQueries(client, ['auth', 'profile']);
+
             options.onSuccess?.(data, vars, context);
         },
     });
@@ -67,13 +66,22 @@ export function useAuthLogout(options: CompMutationOptions = {}): CompMutation<v
  */
 export function useAuthLogin(options: CompMutationOptions = {}): CompMutation<LoginRequest> {
     const client = useQueryClient();
+    const router = useRouter();
 
     const mutation = useMutation({
         ...options,
         mutationFn: login,
         onSuccess: (data, vars, context) => {
-            client.invalidateQueries({ queryKey: ['profile'] });
+            // Invalidate auth and profile queries to refresh data
+            invalidateQueries(client, ['auth', 'profile']);
+
+            // Redirect to SSO route after login
+            router.push({ name: 'auth.sso' });
+
             options.onSuccess?.(data, vars, context);
+        },
+        onError: (error, vars, context) => {
+            options.onError?.(error, vars, context);
         },
     });
 
@@ -94,8 +102,13 @@ export function useAuthRegister(options: CompMutationOptions = {}): CompMutation
         ...options,
         mutationFn: register,
         onSuccess: (data, vars, context) => {
-            client.invalidateQueries({ queryKey: ['profile'] });
+            // Invalidate auth and profile queries to refresh data
+            invalidateQueries(client, ['auth', 'profile']);
+
             options.onSuccess?.(data, vars, context);
+        },
+        onError: (error, vars, context) => {
+            options.onError?.(error, vars, context);
         },
     });
 

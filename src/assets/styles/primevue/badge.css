@@ -1,13 +1,18 @@
 .p-badge {
-    @apply bg-primary text-primary-contrast inline-flex h-6 min-w-6 items-center justify-center rounded-md px-2 py-0 text-xs font-bold;
+    @apply bg-primary text-primary-contrast;
+    @apply inline-flex w-fit items-center justify-center whitespace-nowrap;
+    @apply px-2 py-1;
+    @apply rounded-md text-sm font-semibold;
 }
 
 .p-badge-dot {
-    @apply h-2 min-w-2 rounded-full p-0;
+    @apply h-2 min-w-2 p-0;
+    @apply rounded-full;
 }
 
 .p-badge-circle {
-    @apply rounded-full p-0;
+    @apply p-0;
+    @apply rounded-full;
 }
 
 .p-badge-secondary {
@@ -15,23 +20,23 @@
 }
 
 .p-badge-success {
-    @apply bg-green-500 text-white dark:bg-green-400 dark:text-green-950;
+    @apply bg-timber-green-100 text-timber-green-800;
 }
 
 .p-badge-info {
-    @apply bg-sky-500 text-white dark:bg-sky-400 dark:text-sky-950;
+    @apply bg-glacier-100 text-glacier-800;
 }
 
 .p-badge-warn {
-    @apply bg-orange-500 text-white dark:bg-orange-400 dark:text-orange-950;
+    @apply bg-orange-100 text-orange-700;
 }
 
 .p-badge-danger {
-    @apply bg-red-500 text-white dark:bg-red-400 dark:text-red-950;
+    @apply border-red-300 bg-red-100 text-red-800;
 }
 
 .p-badge-contrast {
-    @apply bg-surface-950 dark:text-surface-950 text-white dark:bg-white;
+    @apply bg-slate-100 text-slate-700;
 }
 
 .p-badge-sm {

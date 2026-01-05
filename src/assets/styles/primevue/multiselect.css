@@ -4,15 +4,7 @@
 @import './iconfield';
 
 .p-multiselect {
-    @apply bg-surface-0 dark:bg-surface-950 border-surface-300 dark:border-surface-700 relative inline-flex cursor-pointer rounded-md border shadow-[0_1px_2px_0_rgba(18,18,23,0.05)] transition-colors duration-200 select-none;
-}
-
-.p-multiselect:not(.p-disabled):hover {
-    @apply border-surface-400 dark:border-surface-600;
-}
-
-.p-multiselect:not(.p-disabled).p-focus {
-    @apply border-primary;
+    @apply bg-surface-0 dark:bg-surface-950 relative inline-flex cursor-pointer rounded-md border border-slate-200 transition-colors duration-200 select-none;
 }
 
 .p-multiselect.p-variant-filled {
@@ -40,7 +32,7 @@
 }
 
 .p-multiselect-label {
-    @apply text-surface-700 dark:text-surface-0 flex items-center gap-1 overflow-hidden px-3 py-2 text-ellipsis whitespace-nowrap;
+    @apply text-surface-700 dark:text-surface-0 flex flex-wrap items-center gap-1 overflow-hidden px-3 py-2 text-ellipsis whitespace-nowrap;
 }
 
 .p-multiselect-label.p-placeholder {

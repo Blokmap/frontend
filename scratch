@@ -1,0 +1,23 @@
+primevue/button
+primevue/toast
+primevue/inputtext (primevue/inputicon primevue/iconfield)
+primevue/dialog
+primevue/menu
+primevue/select
+primevue/message
+primevue/dialog
+primevue/skeleton
+primevue/popover
+primevue/avatar
+primevue/divider
+primevue/checkbox
+primevue/textarea
+primevue/colorpicker
+primevue/datepicker
+primevue/badge
+primevue/fileupload
+primevue/inputnumber
+primevue/autocomplete
+primevue/progressspinner
+primevue/paginator
+

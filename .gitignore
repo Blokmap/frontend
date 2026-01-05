@@ -8,9 +8,12 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Build and library files.
+dist
 node_modules
 tsconfig.tsbuildinfo
 *.local
+
+# Env
 .env
 
 # Editor directories and files.
@@ -21,3 +24,6 @@ tsconfig.tsbuildinfo
 *.njsproj
 *.sln
 *.sw?
+
+# Test files
+test/cy/screenshots

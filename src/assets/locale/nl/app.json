@@ -1,0 +1,159 @@
+{
+    "general": {
+        "errors": {
+            "tryAgainLater": "Probeer het later opnieuw.",
+            "noResultsExact": "Geen exacte resultaten gevonden."
+        },
+        "actions": {
+            "edit": "Bewerken",
+            "delete": "Verwijderen",
+            "create": "Aanmaken",
+            "view": "Bekijken",
+            "previous": "Vorige",
+            "next": "Volgende",
+            "complete": "Voltooien",
+            "save": "Opslaan"
+        }
+    },
+    "locales": {
+        "en": "English",
+        "nl": "Nederlands",
+        "fr": "Français"
+    },
+    "domains": {
+        "locations": {
+            "name": "Locatie | Locaties",
+            "spot": "Plek | Plekken",
+            "state": {
+                "Approved": {
+                    "label": "Goedgekeurd",
+                    "description": "Deze locatie is goedgekeurd en zichtbaar voor het publiek."
+                },
+                "Pending": {
+                    "label": "In afwachting",
+                    "description": "Deze locatie is in afwachting van goedkeuring door een beheerder."
+                },
+                "Rejected": {
+                    "label": "Afgewezen",
+                    "description": "Deze locatie werd afgewezen en niet zichtbaar voor het publiek."
+                }
+            },
+            "success": {
+                "statusUpdated": "Status Bijgewerkt",
+                "statusUpdatedDetail": "Locatiestatus werd succesvol bijgewerkt!",
+                "deleted": "Locatie Verwijderd",
+                "deletedDetail": "De locatie werd succesvol verwijderd!"
+            },
+            "errors": {
+                "notFound": "Locatie niet gevonden",
+                "fetchNearest": "Fout bij het ophalen van de dichtstbijzijnde locatie"
+            }
+        },
+        "reservations": {
+            "name": "Reservatie | Reservaties",
+            "state": {
+                "Pending": "In afwachting",
+                "Created": "Goedgekeurd",
+                "Rejected": "Afgewezen",
+                "Present": "Aanwezig",
+                "Absent": "Afwezig"
+            }
+        },
+        "openings": {
+            "name": "Openingsuur | Openingsuren",
+            "success": {
+                "created": "Openingstijd toegevoegd",
+                "createdDetail": "De openingstijd is succesvol toegevoegd.",
+                "updated": "Openingstijd bijgewerkt",
+                "updatedDetail": "De openingstijd is succesvol bijgewerkt.",
+                "deleted": "Openingstijd verwijderd",
+                "deletedDetail": "De openingstijd is succesvol verwijderd."
+            },
+            "errors": {
+                "createFailed": "Fout bij toevoegen",
+                "createFailedDetail": "Er is iets misgegaan bij het toevoegen van de openingstijd.",
+                "updateFailed": "Fout bij bijwerken",
+                "updateFailedDetail": "Er is iets misgegaan bij het bijwerken van de openingstijd.",
+                "deleteFailed": "Fout bij verwijderen",
+                "deleteFailedDetail": "Er is iets misgegaan bij het verwijderen van de openingstijd."
+            }
+        },
+        "auth": {
+            "name": "Authenticatie",
+            "success": {
+                "loggedIn": "Ingelogd!",
+                "loggedInDetail": "Je bent succesvol ingelogd.",
+                "registered": "Geregistreerd!",
+                "registeredDetail": "Je bent succesvol geregistreerd. Je kan nu inloggen."
+            },
+            "errors": {
+                "loginFailed": "Inloggen mislukt",
+                "registerFailed": "Registratie mislukt"
+            }
+        },
+        "profiles": {
+            "name": "Profiel | Profielen",
+            "success": {
+                "scanSuccessful": "Scan succesvol",
+                "scanSuccessfulDetail": "Profiel is succesvol gescand.",
+                "statusUpdated": "Status Bijgewerkt",
+                "statusUpdatedDetail": "Profielstatus is succesvol {0}."
+            },
+            "errors": {
+                "scanFailed": "Scan mislukt",
+                "scanFailedDetail": "Er is een fout opgetreden tijdens het scannen van het profiel."
+            },
+            "info": {
+                "alreadyScanned": "Al gescand",
+                "alreadyScannedDetail": "Dit profiel is recentelijk al gescand."
+            }
+        },
+        "authorities": {
+            "name": "Autoriteit | Autoriteiten",
+            "success": {
+                "created": "Autoriteit Aangemaakt",
+                "createdDetail": "De autoriteit is succesvol aangemaakt.",
+                "updated": "Autoriteit Bijgewerkt",
+                "updatedDetail": "De autoriteit is succesvol bijgewerkt.",
+                "deleted": "Autoriteit Verwijderd",
+                "deletedDetail": "De autoriteit is succesvol verwijderd."
+            },
+            "errors": {
+                "createFailed": "Aanmaken Mislukt",
+                "createFailedDetail": "Er is iets misgegaan bij het aanmaken van de autoriteit.",
+                "updateFailed": "Bijwerken Mislukt",
+                "updateFailedDetail": "Er is iets misgegaan bij het bijwerken van de autoriteit.",
+                "deleteFailed": "Verwijderen Mislukt",
+                "deleteFailedDetail": "Er is iets misgegaan bij het verwijderen van de autoriteit."
+            }
+        },
+        "institutions": {
+            "name": "Institutie | Instituties",
+            "category": {
+                "Education": "Onderwijs",
+                "Organisation": "Organisatie",
+                "Government": "Overheid"
+            },
+            "aclType": {
+                "whitelist": "Witte lijst",
+                "blacklist": "Zwarte lijst"
+            },
+            "success": {
+                "created": "Institutie Aangemaakt",
+                "createdDetail": "De institutie is succesvol aangemaakt.",
+                "updated": "Institutie Bijgewerkt",
+                "updatedDetail": "De institutie is succesvol bijgewerkt.",
+                "deleted": "Institutie Verwijderd",
+                "deletedDetail": "De institutie is succesvol verwijderd."
+            },
+            "errors": {
+                "createFailed": "Aanmaken Mislukt",
+                "createFailedDetail": "Er is iets misgegaan bij het aanmaken van de institutie.",
+                "updateFailed": "Bijwerken Mislukt",
+                "updateFailedDetail": "Er is iets misgegaan bij het bijwerken van de institutie.",
+                "deleteFailed": "Verwijderen Mislukt",
+                "deleteFailedDetail": "Er is iets misgegaan bij het verwijderen van de institutie."
+            }
+        }
+    }
+}

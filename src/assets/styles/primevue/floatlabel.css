@@ -31,14 +31,14 @@
 .p-floatlabel:has(input.p-filled) label,
 .p-floatlabel:has(textarea.p-filled) label,
 .p-floatlabel:has(.p-inputwrapper-filled) label {
-    @apply text-surface-500 dark:text-surface-400;
+    @apply text-slate-500;
 }
 
 .p-floatlabel:has(input:focus) label,
 .p-floatlabel:has(input:-webkit-autofill) label,
 .p-floatlabel:has(textarea:focus) label,
 .p-floatlabel:has(.p-inputwrapper-focus) label {
-    @apply text-primary;
+    @apply text-slate-800;
 }
 
 .p-floatlabel-in .p-inputtext,

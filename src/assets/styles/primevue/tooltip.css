@@ -1,5 +1,5 @@
 .p-tooltip {
-    @apply absolute hidden max-w-48;
+    @apply absolute hidden;
 }
 
 .p-tooltip-left {
@@ -21,7 +21,7 @@
 }
 
 .p-tooltip-text {
-    @apply bg-surface-700 text-surface-0 rounded-md p-2 text-sm break-words whitespace-pre-line shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)];
+    @apply text-surface-0 rounded-md bg-slate-900 p-3 text-sm break-words whitespace-pre-line;
 }
 
 .p-tooltip-arrow {
@@ -29,17 +29,17 @@
 }
 
 .p-tooltip-right .p-tooltip-arrow {
-    @apply border-e-surface-700 -mt-1 border-[.25rem] border-s-0 rtl:rotate-180;
+    @apply -mt-1 border-[.25rem] border-s-0 border-e-slate-900 rtl:rotate-180;
 }
 
 .p-tooltip-left .p-tooltip-arrow {
-    @apply border-s-surface-700 -mt-1 border-[.25rem] border-e-0 rtl:rotate-180;
+    @apply -mt-1 border-[.25rem] border-e-0 border-s-slate-900 rtl:rotate-180;
 }
 
 .p-tooltip-top .p-tooltip-arrow {
-    @apply border-t-surface-700 -ms-1 border-[.25rem] border-b-0;
+    @apply -ms-1 border-[.25rem] border-b-0 border-t-slate-900;
 }
 
 .p-tooltip-bottom .p-tooltip-arrow {
-    @apply border-b-surface-700 -ms-1 border-[.25rem] border-t-0;
+    @apply -ms-1 border-[.25rem] border-t-0 border-b-slate-900;
 }

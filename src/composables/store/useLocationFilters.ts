@@ -1,46 +1,47 @@
-import type { LocationFilter } from '@/types/schema/Filter';
+import { useLocalStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { DEFAULT_LOCATION_FILTER, type LocationSearchFilter } from '@/domain/location';
+import { useSearchLocations } from '../data/useLocations';
+import type { LngLat } from '@/domain/map';
 
-/**
- * Pinia store for managing location filters.
- */
+export type ConfigCache = {
+    center?: LngLat;
+    zoom?: number;
+};
+
 export const useLocationFilters = defineStore('locationFilters', () => {
-    const geoLocation = ref<GeoJSON.GeoJsonProperties | null>(null);
-    const geoLocationActionTrigger = ref(0);
+    const mapConfigCache = useLocalStorage<ConfigCache>('mapConfigCache', {});
 
-    const filters = ref<LocationFilter>({
-        query: null,
-        isReservable: null,
-        openOn: null,
-        bounds: null,
-        center: null,
-        perPage: 12,
+    const geoLocation = ref<GeoJSON.GeoJsonProperties | null>(null);
+    const filters = ref<LocationSearchFilter>(DEFAULT_LOCATION_FILTER);
+
+    const {
+        data: locations,
+        isFetching,
+        isLoading,
+        isPending,
+    } = useSearchLocations(filters, {
+        enabled: computed(() => !!filters.value.bounds),
     });
 
-    /**
-     * Update the location filters with new values.
-     *
-     * @param {Partial<LocationFilter>} newFilters - The new filter values to update.
-     * @returns {void}
-     */
-    function updateFilters(newFilters: Partial<LocationFilter>): void {
-        Object.assign(filters.value, newFilters);
-    }
+    const updateConfigCache = (newCache: ConfigCache): void => {
+        Object.assign(mapConfigCache.value, newCache);
+    };
 
-    /**
-     * Trigger actions for the current geoLocation without changing its value.
-     * Useful for forcing map updates or re-running location-based logic.
-     */
-    function triggerGeoLocationAction(): void {
-        geoLocationActionTrigger.value++;
-    }
+    const updateFilters = (newFilters: LocationSearchFilter): void => {
+        Object.assign(filters.value, newFilters);
+    };
 
     return {
         filters,
+        mapConfigCache,
         geoLocation,
-        geoLocationActionTrigger,
         updateFilters,
-        triggerGeoLocationAction,
+        updateConfigCache,
+        locations,
+        isFetching,
+        isLoading,
+        isPending,
     };
 });

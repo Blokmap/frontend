@@ -1,33 +1,28 @@
+import path from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
-import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     plugins: [vue(), tailwindcss()],
-    optimizeDeps: {
-        exclude: ['@primeuix'],
-    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),
         },
     },
     build: {
-        outDir: 'public',
+        chunkSizeWarningLimit: 2048,
         rollupOptions: {
             output: {
-                manualChunks: {
-                    vue: ['vue', '@vueuse/core', '@vueuse/shared'],
-                    primevue: ['primevue'],
-                    mapbox: ['mapbox-gl'],
-                },
+                manualChunks,
             },
         },
     },
     test: {
         include: ['test/unit/**/*.{test,spec}.ts'],
         environment: 'jsdom',
+        globals: true,
+        pool: 'threads',
     },
     server: {
         host: true,
@@ -38,3 +33,35 @@ export default defineConfig({
         },
     },
 });
+
+function manualChunks(id: string) {
+    // Split FontAwesome icon packages
+    if (id.includes('@fortawesome/free-solid-svg-icons')) {
+        return 'fontawesome-solid';
+    }
+    if (id.includes('@fortawesome/free-regular-svg-icons')) {
+        return 'fontawesome-regular';
+    }
+    if (id.includes('@fortawesome/free-brands-svg-icons')) {
+        return 'fontawesome-brands';
+    }
+    if (id.includes('@fortawesome/fontawesome-svg-core')) {
+        return 'fontawesome-svg-core';
+    }
+    if (id.includes('@fortawesome/vue-fontawesome')) {
+        return 'fontawesome-vue';
+    }
+
+    // Core libraries
+    if (id.includes('node_modules')) {
+        if (id.includes('primevue')) {
+            return 'primevue';
+        }
+        if (id.includes('vue') || id.includes('@vueuse')) {
+            return 'vue';
+        }
+        if (id.includes('mapbox-gl')) {
+            return 'mapbox';
+        }
+    }
+}

@@ -1,23 +1,21 @@
-import { mapBoxClient } from '@/config/axios';
-import { mapboxEndpoints } from '@/endpoints';
-import { geocodeAddress } from '@/services/geocoding';
-import type { CompMutation, CompQuery } from '@/types/contract/Composable';
-import type { LngLat } from '@/types/contract/Map';
 import { useMutation, useQuery } from '@tanstack/vue-query';
-import { useDebounce } from '@vueuse/core';
-import { type Ref, computed } from 'vue';
+import { type MaybeRef, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { mapBoxClient } from '@/config/axiosConfig';
+import { mapboxEndpoints } from '@/config/endpoints';
+import { geocodeAddress, type GeoSearchFilter, type LngLat } from '@/domain/map';
+
+import type {
+    CompMutation,
+    CompMutationOptions,
+    CompQuery,
+    CompQueryOptions,
+} from '@/utils/composable';
+import type { AxiosError } from 'axios';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 
-type UseGeoSearchOptions = {
-    types?: string;
-    auto_complete?: boolean;
-    country?: string;
-    limit?: number;
-};
-
-const defaultGeoSearchOptions: UseGeoSearchOptions = {
+const defaultGeoSearchOptions: Partial<GeoSearchFilter> = {
     auto_complete: true,
     types: 'place,locality',
     country: 'be',
@@ -27,35 +25,39 @@ const defaultGeoSearchOptions: UseGeoSearchOptions = {
 /**
  * A composable function to perform a location search using Mapbox's geocoding API.
  *
- * @param options - Optional parameters to customize the geocoding search.
- * @returns An object containing the search input and the query result.
+ * @param filters - MaybeRef filters containing search query and mapbox options
+ * @param options - CompQueryOptions for query configuration (enabled, etc.)
+ * @returns An object containing the search results and their state.
  */
-export function useGeoSearch(
-    search: Ref<string>,
-    options: UseGeoSearchOptions = defaultGeoSearchOptions,
+export function useSearchGeoLocations(
+    filters?: MaybeRef<GeoSearchFilter>,
+    options: CompQueryOptions = {},
 ): CompQuery<GeoJSON.GeoJsonProperties[]> {
     const { locale } = useI18n();
 
-    const debouncedSearch = useDebounce(search, 250);
-    const isEnabled = computed(() => debouncedSearch.value.length > 0);
-
-    const query = useQuery({
-        queryKey: ['geosearch', debouncedSearch],
+    const query = useQuery<GeoJSON.GeoJsonProperties[], AxiosError>({
+        ...toValue(options),
+        queryKey: ['geo', 'search', filters, locale],
         retry: false,
-        enabled: isEnabled,
         queryFn: async () => {
-            const q = debouncedSearch.value.trim().toLowerCase();
+            const params = toValue(filters);
+            const searchQuery = params?.search?.trim().toLowerCase();
 
-            const params = {
-                q,
+            if (!searchQuery) {
+                return [];
+            }
+
+            const requestParams = {
+                q: searchQuery,
                 access_token: MAPBOX_ACCESS_TOKEN,
                 language: locale.value,
-                ...options,
+                ...defaultGeoSearchOptions,
+                ...params,
             };
 
             const response = await mapBoxClient.get<GeoJSON.FeatureCollection>(
                 mapboxEndpoints.geocoding.forward,
-                { params },
+                { params: requestParams },
             );
 
             // Filter out duplicate names in the results
@@ -83,9 +85,12 @@ export function useGeoSearch(
  * A composable function to perform forward geocoding using Mapbox's geocoding API.
  * Returns coordinates for a given address string.
  */
-export function useForwardGeoSearch(): CompMutation<string, LngLat> {
+export function useGeocodeAddress(options: CompMutationOptions = {}): CompMutation<string, LngLat> {
     const mutation = useMutation({
-        mutationFn: geocodeAddress,
+        ...options,
+        mutationFn: async (address: string) => {
+            return geocodeAddress(address);
+        },
     });
 
     return mutation;

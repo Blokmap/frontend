@@ -1,11 +1,14 @@
+import PrimeVuePlugin from 'primevue/config';
 import App from '@/App.vue';
-import { i18n } from '@/config/i18n';
-import router from '@/router/router';
+
 import { VueQueryPlugin } from '@tanstack/vue-query';
 import { createPinia } from 'pinia';
-import { ConfirmationService, Ripple, ToastService, Tooltip } from 'primevue';
-import PrimeVuePlugin from 'primevue/config';
+import { ConfirmationService, FocusTrap, Ripple, ToastService, Tooltip } from 'primevue';
 import { createApp } from 'vue';
+import { i18n } from '@/config/i18nConfig';
+import { vueQueryConfig, primevueConfig } from '@/config/plugin';
+import { router } from '@/config/router';
+import { setupFontAwesome } from './config/faConfig';
 
 // Create the app.
 const app = createApp(App);
@@ -17,31 +20,35 @@ app.use(i18n);
 app.use(ToastService);
 app.use(ConfirmationService);
 
-app.use(VueQueryPlugin, {
-    queryClientConfig: {
-        defaultOptions: {
-            queries: {
-                staleTime: 10_000,
-            },
-        },
-    },
-});
+app.use(VueQueryPlugin, vueQueryConfig);
+app.use(PrimeVuePlugin, primevueConfig);
 
-app.use(PrimeVuePlugin, {
-    ripple: true,
-    theme: {
-        options: {
-            cssLayer: {
-                name: 'primevue',
-                order: 'theme, base, primevue',
-            },
-        },
-    },
-});
+setupFontAwesome();
 
 // Register directives.
 app.directive('tooltip', Tooltip);
 app.directive('ripple', Ripple);
+app.directive('focustrap', FocusTrap);
+
+// Initialize Sentry.
+// initSentry({
+//     app,
+//     dsn: '',
+//     sendDefaultPii: true,
+// });
+
+// // Cache busting
+// // A bit of a hack but works
+// let reloaded = false;
+
+// window.addEventListener('unhandledrejection', (event) => {
+//     if (event.reason?.message?.includes('dynamically imported module') && !reloaded) {
+//         window.location.reload();
+//         reloaded = true;
+//     }
+// });
 
 // Mount the app.
 app.mount('#app');
+
+export default app;

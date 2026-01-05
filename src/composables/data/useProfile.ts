@@ -1,24 +1,57 @@
-import {
-    deleteProfileAvatar,
-    getProfileReservations,
-    getProfileStats,
-    updateProfileAvatar,
-} from '@/services/profile';
-import type { CompMutation, CompMutationOptions, CompQuery } from '@/types/contract/Composable';
-import type { ProfileStats } from '@/types/schema/Profile';
-import type { Reservation } from '@/types/schema/Reservation';
-import { useMutation, useQuery } from '@tanstack/vue-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { type MaybeRef, type MaybeRefOrGetter, computed, toValue } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useToast } from '@/composables/store/useToast';
+import {
+    blockProfile,
+    deleteProfileAvatar,
+    readProfileStats,
+    readProfiles,
+    unblockProfile,
+    updateProfile,
+    updateProfileAvatar,
+    readProfile,
+    scanProfile,
+    readInstitutionProfiles,
+    findProfiles,
+    addInstitutionProfile,
+} from '@/domain/profile';
+import {
+    type Profile,
+    type ProfileStats,
+    type ProfileFilter,
+    ProfileState,
+    type ProfileScanRequest,
+    type FoundProfile,
+    type ProfileFindFilter,
+} from '@/domain/profile';
+import { invalidateQueries } from './queryCache';
 
-export function useProfileStats(
-    profileId: MaybeRefOrGetter<number | null>,
+import type { Reservation } from '@/domain/reservation';
+import type {
+    CompMutation,
+    CompMutationOptions,
+    CompQuery,
+    CompQueryOptions,
+} from '@/utils/composable';
+import type { Paginated } from '@/utils/pagination';
+import type { AxiosError } from 'axios';
+
+/**
+ * Composable to fetch statistics for a specific profile.
+ *
+ * @param profileId - The ID of the profile to fetch statistics for.
+ * @returns The query object containing profile statistics and their state.
+ */
+export function useReadProfileStats(
+    profileId: MaybeRefOrGetter<string | null>,
 ): CompQuery<ProfileStats> {
     const enabled = computed(() => toValue(profileId) !== null);
-    const query = useQuery<ProfileStats>({
-        queryKey: ['profile', 'stats', profileId],
+    const query = useQuery<ProfileStats, AxiosError>({
+        queryKey: ['profiles', 'read', profileId, 'stats'],
         queryFn: () => {
             const profileIdValue = toValue(profileId)!;
-            return getProfileStats(profileIdValue);
+            return readProfileStats(profileIdValue);
         },
         enabled,
     });
@@ -26,35 +59,80 @@ export function useProfileStats(
     return query;
 }
 
-export function useProfileReservations(
-    profileId: MaybeRef<number | null>,
-    inWeekOf: MaybeRefOrGetter<Date> = new Date(),
-): CompQuery<Reservation[]> {
-    const enabled = computed(() => toValue(profileId) !== null);
+/**
+ * Composable to fetch a single profile by its ID.
+ *
+ * @param profileId - The ID of the profile to fetch.
+ * @param options - Additional options for the query.
+ * @returns The query object containing the profile data and its state.
+ */
+export function useReadProfile(
+    profileId: MaybeRef<string>,
+    options: CompQueryOptions = {},
+): CompQuery<Profile | null> {
+    const query = useQuery<Profile | null, AxiosError>({
+        ...options,
+        queryKey: ['profiles', 'read', profileId],
+        queryFn: () => readProfile(toValue(profileId)),
+    });
 
-    const query = useQuery({
-        queryKey: ['profile', 'reservations', profileId, inWeekOf],
-        enabled,
-        queryFn: () => {
-            const profileIdValue = toValue(profileId)!;
-            const dateInWeek = toValue(inWeekOf);
-            return getProfileReservations(profileIdValue, dateInWeek, ['location', 'openingTime']);
-        },
+    return query;
+}
+
+/**
+ * Composable to fetch a list of profiles with filters.
+ *
+ * @param pagination - The pagination settings to apply when fetching profiles.
+ * @param filters - The filters to apply when fetching profiles.
+ * @param options - Additional options for the query.
+ * @returns The query object containing the list of profiles and their state.
+ */
+export function useReadProfiles(
+    filters: MaybeRefOrGetter<ProfileFilter>,
+    options: CompMutationOptions = {},
+): CompQuery<Paginated<Profile>> {
+    const query = useQuery<Paginated<Profile>, AxiosError>({
+        ...options,
+        queryKey: ['profiles', 'list', filters],
+        queryFn: () => readProfiles(toValue(filters)),
     });
 
     return query;
 }
 
 export type UpdateAvatarParams = {
-    profileId: number;
+    profileId: string;
     file: File;
 };
 
-export function useUpdateAvatar(
+/**
+ * Composable to handle updating a profile's avatar image.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for updating a profile avatar.
+ */
+export function useUpdateProfileAvatar(
     options: CompMutationOptions = {},
 ): CompMutation<UpdateAvatarParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific profile query
+            invalidateQueries(queryClient, ['auth'], variables.profileId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Avatar bijgewerkt',
+                    detail: 'De profielfoto is succesvol bijgewerkt.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: async ({ profileId, file }: UpdateAvatarParams) => {
             await updateProfileAvatar(profileId, file);
         },
@@ -63,11 +141,218 @@ export function useUpdateAvatar(
     return mutation;
 }
 
-export function useDeleteAvatar(options: CompMutationOptions = {}): CompMutation<number> {
+export type UpdateProfileParams = {
+    profileId: string;
+    profileData: Partial<Profile>;
+};
+
+/**
+ * Composable to handle updating profile data.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for updating a profile.
+ */
+export function useUpdateProfile(
+    options: CompMutationOptions = {},
+): CompMutation<UpdateProfileParams> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
     const mutation = useMutation({
         ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate all profile queries
+            invalidateQueries(queryClient, ['profiles'], variables.profileId);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Profiel bijgewerkt',
+                    detail: 'Het profiel is succesvol bijgewerkt.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: async ({ profileId, profileData }: UpdateProfileParams) => {
+            const profile = await updateProfile(profileId, profileData);
+            return profile;
+        },
+    });
+
+    return mutation;
+}
+
+export type ScanProfileParams = {
+    profileId: string;
+    request: ProfileScanRequest;
+};
+
+/**
+ * Composable to handle scanning a profile.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for scanning a profile.
+ */
+export function useScanProfile(
+    options: CompMutationOptions = {},
+): CompMutation<ScanProfileParams, Reservation[]> {
+    const mutation = useMutation({
+        ...options,
+        mutationFn: ({ profileId, request }: ScanProfileParams) => scanProfile(profileId, request),
+    });
+
+    return mutation;
+}
+
+/**
+ * Composable to handle deleting a profile's avatar.
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for deleting a profile avatar.
+ */
+export function useDeleteProfileAvatar(options: CompMutationOptions = {}): CompMutation<string> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            // Invalidate the specific profile query
+            invalidateQueries(queryClient, ['auth'], variables);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Avatar verwijderd',
+                    detail: 'De profielfoto is succesvol verwijderd.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
         mutationFn: deleteProfileAvatar,
     });
 
     return mutation;
+}
+
+type ProfileStateParams = {
+    profileId: string;
+    state: ProfileState;
+};
+
+/**
+ * Composable to handle changing a profile's state (active or disabled).
+ *
+ * @param options - Additional options for the mutation.
+ * @returns The mutation object for updating a profile's state.
+ */
+export function useUpdateProfileState(
+    options: CompMutationOptions = {},
+): CompMutation<ProfileStateParams, void> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+    const i18n = useI18n();
+
+    const mutation = useMutation({
+        ...options,
+        onSuccess: (data, variables, context) => {
+            invalidateQueries(queryClient, ['profiles'], variables.profileId);
+
+            if (!options.disableToasts) {
+                const statusLabel =
+                    variables.state === ProfileState.Disabled ? 'geblokkeerd' : 'geactiveerd';
+
+                toast.add({
+                    severity: 'success',
+                    summary: i18n.t('domains.profiles.success.statusUpdated'),
+                    detail: i18n.t('domains.profiles.success.statusUpdatedDetail', [statusLabel]),
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+        mutationFn: ({ profileId, state }: ProfileStateParams) => {
+            if (state === ProfileState.Disabled) {
+                return blockProfile(profileId);
+            } else if (state === ProfileState.Active) {
+                return unblockProfile(profileId);
+            }
+
+            throw new Error(`Invalid state: ${state}`);
+        },
+    });
+
+    return mutation;
+}
+
+export function useReadInstitutionProfiles(
+    institutionId: MaybeRefOrGetter<number>,
+    filters: MaybeRefOrGetter<ProfileFilter>,
+    options: CompQueryOptions = {},
+): CompQuery<Paginated<Profile>> {
+    const query = useQuery<Paginated<Profile>, AxiosError>({
+        ...options,
+        queryKey: ['profiles', 'list', 'byInstitution', institutionId, filters],
+        queryFn: () => readInstitutionProfiles(toValue(institutionId), toValue(filters)),
+    });
+
+    return query;
+}
+
+export function useAddInstitutionProfile(
+    institutionId: MaybeRefOrGetter<number>,
+    options: CompMutationOptions = {},
+): CompMutation<string, Profile> {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    const mutation = useMutation({
+        ...options,
+        mutationFn: (username: string) => {
+            const institutionIdValue = toValue(institutionId);
+            return addInstitutionProfile(institutionIdValue, username);
+        },
+        onSuccess: (data, variables, context) => {
+            invalidateQueries(queryClient, ['profiles', 'list', 'byInstitution', institutionId]);
+
+            if (!options.disableToasts) {
+                toast.add({
+                    severity: 'success',
+                    summary: 'Profiel toegevoegd',
+                    detail: 'Het profiel is succesvol toegevoegd aan de organisatie.',
+                });
+            }
+
+            options.onSuccess?.(data, variables, context);
+        },
+    });
+
+    return mutation;
+}
+/**
+ * Composable to search/find profiles by query string.
+ *
+ * @param filters - The search filters including the query string and pagination.
+ * @param options - Additional options for the query.
+ * @returns The query object containing the paginated list of found profiles and their state.
+ */
+export function useFindProfiles(
+    filters: MaybeRefOrGetter<ProfileFindFilter>,
+    options: CompQueryOptions = {},
+): CompQuery<Paginated<FoundProfile>> {
+    const enabled = computed(() => {
+        const filtersValue = toValue(filters);
+        return !!filtersValue.query && filtersValue.query.length > 0;
+    });
+
+    const query = useQuery<Paginated<FoundProfile>, AxiosError>({
+        ...options,
+        queryKey: ['profiles', 'find', filters],
+        queryFn: () => findProfiles(toValue(filters)),
+        enabled,
+    });
+
+    return query;
 }

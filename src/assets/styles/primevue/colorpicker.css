@@ -7,7 +7,7 @@
 }
 
 .p-colorpicker-preview {
-    @apply focus-visible:outline-primary h-6 w-6 cursor-pointer rounded-md border-none p-0 transition-colors duration-200 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 disabled:cursor-auto;
+    @apply focus-visible:outline-primary h-10 w-10 cursor-pointer rounded-md border-none p-0 transition-colors duration-200 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 disabled:cursor-auto;
 }
 
 .p-colorpicker-panel {
@@ -39,5 +39,5 @@
 }
 
 .p-colorpicker-hue-handle {
-    @apply border-surface-0 absolute start-0 top-[150px] -ms-[2px] -mt-[5px] h-[10px] w-[21px] cursor-pointer border-2 opacity-85;
+    @apply border-surface-0 absolute start-0 top-[150px] -ms-[2px] -mt-[5px] h-[10px] w-[21px] cursor-pointer border-1 opacity-85;
 }

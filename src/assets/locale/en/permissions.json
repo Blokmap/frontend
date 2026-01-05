@@ -1,0 +1,69 @@
+{
+    "administrator": {
+        "name": "Administrator",
+        "description": "Full access to all features and settings"
+    },
+    "none": "No permissions",
+    "location": {
+        "Administrator": {
+            "name": "Administrator",
+            "description": "Full access to all location features and settings"
+        },
+        "ManageImages": {
+            "name": "Manage Images",
+            "description": "Upload, reorder, and delete location images"
+        },
+        "ManageOpeningTimes": {
+            "name": "Manage Opening Times",
+            "description": "Create, update, and delete opening time schedules"
+        },
+        "ManageMembers": {
+            "name": "Manage Members",
+            "description": "Add members, update roles, and remove access"
+        },
+        "ManageReservations": {
+            "name": "Manage Reservations",
+            "description": "View and manage all location reservations"
+        }
+    },
+    "authority": {
+        "Administrator": {
+            "name": "Administrator",
+            "description": "Full access to all authority features and settings"
+        },
+        "AddLocations": {
+            "name": "Add Locations",
+            "description": "Submit new locations under this authority"
+        },
+        "ApproveLocations": {
+            "name": "Approve Locations",
+            "description": "Review and approve or reject location submissions"
+        },
+        "DeleteLocations": {
+            "name": "Delete Locations",
+            "description": "Remove locations from the authority"
+        },
+        "ManageMembers": {
+            "name": "Manage Members",
+            "description": "Add members, update roles, and remove access"
+        }
+    },
+    "institution": {
+        "Administrator": {
+            "name": "Administrator",
+            "description": "Full access to all institution features and settings"
+        },
+        "AddAuthority": {
+            "name": "Add Authority",
+            "description": "Create or link new authorities to the institution"
+        },
+        "DeleteAuthority": {
+            "name": "Delete Authority",
+            "description": "Remove authorities from the institution"
+        },
+        "ManageMembers": {
+            "name": "Manage Members",
+            "description": "Add members, update roles, and remove access"
+        }
+    }
+}

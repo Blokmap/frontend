@@ -1,113 +1,105 @@
 .p-message {
-    @apply rounded-md outline-2;
+    @apply rounded-lg border-0 text-sm outline-0;
 }
 
 .p-message-content {
-    @apply flex h-full items-center gap-2 px-3 py-2;
+    @apply flex h-full items-start gap-4 p-4;
 }
 
 .p-message-icon {
-    @apply flex-shrink-0;
+    @apply flex-shrink-0 text-2xl;
 }
 
 .p-message-close-button {
-    @apply relative ms-auto flex h-7 w-7 flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border-none bg-transparent p-0 text-inherit transition-colors duration-200 select-none focus-visible:outline-1 focus-visible:outline-offset-2;
+    @apply relative ms-auto flex h-7 w-7 flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border-none bg-transparent p-0 text-inherit transition-colors duration-200 select-none;
 }
 
 .p-message-info {
-    @apply text-color bg-slate-100 shadow-[0px_4px_8px_0px_theme(colors.blue.500/0.04)] outline-2 outline-slate-200 dark:bg-blue-500/15 dark:text-blue-500 dark:outline-blue-700/35;
+    @apply bg-glacier-50 text-glacier-600 outline-glacier-200;
 }
 
 .p-message-info .p-message-close-button {
-    @apply hover:bg-blue-100 focus-visible:outline-blue-600 dark:hover:bg-white/5 dark:focus-visible:outline-blue-500;
-}
-
-.p-message-info.p-message-outlined {
-    @apply text-blue-500 outline-blue-500 dark:text-blue-600 dark:outline-blue-600;
-}
-
-.p-message-info.p-message-simple {
-    @apply text-blue-500 dark:text-blue-600;
+    @apply hover:bg-secondary-100;
 }
 
 .p-message-success {
-    @apply bg-green-50/95 text-green-600 shadow-[0px_4px_8px_0px_theme(colors.green.500/0.04)] outline-green-200 dark:bg-green-500/15 dark:text-green-500 dark:outline-green-700/35;
+    @apply bg-timber-green-50 text-timber-green-600 border-timber-green-200;
 }
 
 .p-message-success .p-message-close-button {
-    @apply hover:bg-green-100 focus-visible:outline-green-600 dark:hover:bg-white/5 dark:focus-visible:outline-green-500;
+    @apply hover:bg-timber-green-100;
 }
 
 .p-message-success.p-message-outlined {
-    @apply text-green-500 outline-green-500 dark:text-green-600 dark:outline-green-600;
+    @apply text-timber-green-500;
 }
 
 .p-message-success.p-message-simple {
-    @apply text-green-500 dark:text-green-600;
+    @apply text-timber-green-500;
 }
 
 .p-message-warn {
-    @apply bg-yellow-50/95 text-yellow-600 shadow-[0px_4px_8px_0px_theme(colors.yellow.500/0.04)] outline-yellow-200 dark:bg-yellow-500/15 dark:text-yellow-500 dark:outline-yellow-700/35;
+    @apply border-yellow-200 bg-yellow-50/95 text-yellow-600;
 }
 
 .p-message-warn .p-message-close-button {
-    @apply hover:bg-yellow-100 focus-visible:outline-yellow-600 dark:hover:bg-white/5 dark:focus-visible:outline-yellow-500;
+    @apply hover:bg-yellow-100;
 }
 
 .p-message-warn.p-message-outlined {
-    @apply text-yellow-500 outline-yellow-500 dark:text-yellow-600 dark:outline-yellow-600;
+    @apply text-yellow-500;
 }
 
 .p-message-warn.p-message-simple {
-    @apply text-yellow-500 dark:text-yellow-600;
+    @apply text-yellow-500;
 }
 
 .p-message-error {
-    @apply bg-red-50/95 text-red-600 shadow-[0px_4px_8px_0px_theme(colors.red.500/0.04)] outline-red-200 dark:bg-red-500/15 dark:text-red-500 dark:outline-red-700/35;
+    @apply border-blushed-brick-200 bg-blushed-brick-50/95 text-blushed-brick-700;
 }
 
 .p-message-error .p-message-close-button {
-    @apply hover:bg-red-100 focus-visible:outline-red-600 dark:hover:bg-white/5 dark:focus-visible:outline-red-500;
+    @apply hover:bg-blushed-brick-100;
 }
 
 .p-message-error.p-message-outlined {
-    @apply text-red-500 outline-red-500 dark:text-red-600 dark:outline-red-600;
+    @apply text-red-500;
 }
 
 .p-message-error.p-message-simple {
-    @apply text-red-500 dark:text-red-600;
+    @apply text-red-500;
 }
 
 .p-message-secondary {
-    @apply bg-secondary-50 outline-secondary-200 text-secondary-900 dark:bg-surface-800 dark:outline-surface-700 dark:text-surface-300 shadow-[0px_4px_8px_0px_rgba(0,0,0,0.04)];
+    @apply bg-secondary-50 text-secondary-900 border-secondary-200;
 }
 
 .p-message-secondary .p-message-close-button {
-    @apply hover:bg-surface-200 focus-visible:outline-surface-600 dark:hover:bg-surface-700 dark:focus-visible:outline-surface-300;
+    @apply hover:bg-surface-200;
 }
 
 .p-message-secondary.p-message-outlined {
-    @apply text-surface-500 outline-surface-500 dark:text-surface-600 dark:outline-surface-600;
+    @apply text-surface-500;
 }
 
 .p-message-secondary.p-message-simple {
-    @apply text-surface-500 dark:text-surface-600;
+    @apply text-surface-500;
 }
 
 .p-message-contrast {
-    @apply bg-surface-900 outline-surface-950 text-surface-50 dark:bg-surface-0 dark:outline-surface-100 dark:text-surface-950 shadow-[0px_4px_8px_0px_rgba(0,0,0,0.04)];
+    @apply border-slate-200 bg-slate-200/50 text-slate-800;
 }
 
 .p-message-contrast .p-message-close-button {
-    @apply hover:bg-surface-800 focus-visible:outline-surface-50 dark:hover:bg-surface-100 dark:focus-visible:outline-surface-950;
+    @apply hover:bg-surface-800;
 }
 
 .p-message-contrast.p-message-outlined {
-    @apply text-surface-950 outline-surface-950 dark:text-surface-0 dark:outline-surface-0;
+    @apply text-surface-950;
 }
 
 .p-message-contrast.p-message-simple {
-    @apply text-surface-950 dark:text-surface-0;
+    @apply text-surface-950;
 }
 
 .p-message-text {
@@ -175,11 +167,11 @@
 }
 
 .p-message-outlined {
-    @apply bg-transparent outline outline-1;
+    @apply bg-transparent;
 }
 
 .p-message-simple {
-    @apply bg-transparent shadow-none outline-none;
+    @apply bg-transparent;
 }
 
 .p-message-simple .p-message-content {

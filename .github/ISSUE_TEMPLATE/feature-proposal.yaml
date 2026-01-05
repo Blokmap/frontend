@@ -1,0 +1,27 @@
+name: Feature Proposal
+description: Propose a new feature.
+labels: ["feat"]
+type: "Feature"
+projects: ["Blokmap/8"]
+
+body:
+  - type: textarea
+    attributes:
+        label: Description
+        description: Provide a clear description of the feature you'd like to propose. What problem does it solve, and how would it benefit the project?
+    validations:
+        required: true
+
+  - type: textarea
+    attributes:
+        label: Use Case
+        description: Explain a specific use case where this feature would be applied or needed.
+    validations:
+        required: false
+
+  - type: textarea
+    attributes:
+        label: Extra info
+        description: Include any relevant details, such as potential implementations, technologies to consider, or references to similar features.
+    validations:
+        required: false

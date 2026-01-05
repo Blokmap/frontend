@@ -1,30 +1,25 @@
 <script lang="ts" setup>
-import { setupAxiosInterceptors } from './config/axios';
 import Toast from '@/components/Toast.vue';
-import ProgressBar from '@/components/features/layout/ProgressBar.vue';
-import { useToast } from '@/composables/useToast';
-import { onMounted, useTemplateRef } from 'vue';
-import { useRouter } from 'vue-router';
+import ProgressBar from '@/components/atoms/ProgressBar.vue';
+import CookieNotice from '@/components/organisms/CookieNotice.vue';
+import { setupAxiosInterceptors } from './config/axiosConfig';
+import { setupI18n } from './config/i18nConfig';
+import { setupAuthGuard, setupRouterGuards } from './config/router/routerGuards';
 
-const router = useRouter();
-const toast = useToast();
-const progressRef = useTemplateRef('progress');
-
-setupAxiosInterceptors(router, toast);
-
-onMounted(() => {
-    router.beforeEach(() => {
-        progressRef.value?.start();
-    });
-
-    router.afterEach(() => {
-        progressRef.value?.finish();
-    });
-});
+setupI18n();
+setupAxiosInterceptors();
+setupAuthGuard();
+setupRouterGuards();
 </script>
 
 <template>
     <Toast />
-    <ProgressBar ref="progress" />
-    <RouterView />
+    <ProgressBar />
+    <CookieNotice />
+
+    <RouterView v-slot="{ Component, route }">
+        <Transition name="fade" mode="out-in">
+            <component :is="Component" :key="route.matched[0]?.path" />
+        </Transition>
+    </RouterView>
 </template>

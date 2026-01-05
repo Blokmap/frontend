@@ -1,36 +1,45 @@
-@plugin 'tailwindcss-primeui';
 @import 'tailwindcss';
-@import './primevue/tailwind.css' layer(components);
-@import './transitions.css';
 
-/* Custom font: Bozlby (Bowlby One) */
-@font-face {
-    font-family: 'Bowlby';
-    src: url('../fonts/bowlby/BowlbyOne-Regular.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
+@plugin '@tailwindcss/typography';
+@plugin 'tailwindcss-primeui';
+
+@import './primevue/tailwind.css' layer(components);
+@import './editor.css';
+@import './maps.css';
+@import './transitions.css';
+@import './utilities.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@utility bg-gradient-conic {
-    background-image: linear-gradient(
-        to bottom right,
-        var(--color-primary-500),
-        var(--color-secondary-500)
-    );
-}
+/* @font-face {
+    font-family: 'Armageda';
+    src: url('@/assets/fonts/armageda.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+} */
 
-@utility text-gradient-conic {
-    @apply bg-gradient-conic bg-clip-text font-semibold text-transparent;
+@font-face {
+    font-family: 'MegaSurprise';
+    src: url('@/assets/fonts/Mega-Surprise.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
 @theme {
-    /* New Tailwind font token */
-    --font-bowlby: 'Bowlby', ui-sans-serif, system-ui, sans-serif;
+    --text-base: 16px;
+    --font-serif: 'Merriweather Sans', ui-sans-serif, system-ui, sans-serif;
 
-    --text-base: 14px;
+    --color-ocean-mist-50: oklch(0.962 0.039 160.76);
+    --color-ocean-mist-100: oklch(0.922 0.081 165.11);
+    --color-ocean-mist-200: oklch(0.858 0.101 169.78);
+    --color-ocean-mist-300: oklch(0.792 0.089 173.4);
+    --color-ocean-mist-400: oklch(0.732 0.079 176.65);
+    --color-ocean-mist-500: oklch(0.665 0.069 180.96);
+    --color-ocean-mist-600: oklch(0.562 0.061 176.52);
+    --color-ocean-mist-700: oklch(0.451 0.051 173.18);
+    --color-ocean-mist-800: oklch(0.348 0.04 170.48);
+    --color-ocean-mist-900: oklch(0.237 0.03 165.11);
+    --color-ocean-mist-950: oklch(0.185 0.025 161.09);
 
     --color-timber-green-50: #f0f9f5;
     --color-timber-green-100: #dbf0e5;
@@ -56,61 +65,118 @@
     --color-glacier-800: oklch(25.996% 0.07965 268.39);
     --color-glacier-900: oklch(19.004% 0.05983 273.58);
 
-    --color-primary: var(--color-timber-green-500);
-    --color-primary-50: var(--color-timber-green-50);
-    --color-primary-100: var(--color-timber-green-100);
-    --color-primary-200: var(--color-timber-green-200);
-    --color-primary-300: var(--color-timber-green-300);
-    --color-primary-400: var(--color-timber-green-400);
-    --color-primary-500: var(--color-timber-green-500);
-    --color-primary-600: var(--color-timber-green-600);
-    --color-primary-700: var(--color-timber-green-700);
-    --color-primary-800: var(--color-timber-green-800);
-    --color-primary-900: var(--color-timber-green-900);
-    --color-primary-950: var(--color-timber-green-950);
+    --color-blushed-brick-50: oklch(0.95 0.013 48.65);
+    --color-blushed-brick-100: oklch(0.908 0.023 41.44);
+    --color-blushed-brick-200: oklch(0.817 0.051 35.1);
+    --color-blushed-brick-300: oklch(0.716 0.091 30.68);
+    --color-blushed-brick-400: oklch(0.626 0.12 27.4);
+    --color-blushed-brick-500: oklch(0.533 0.123 21.51);
+    --color-blushed-brick-600: oklch(0.435 0.096 14.77);
+    --color-blushed-brick-700: oklch(0.331 0.072 8.77);
+    --color-blushed-brick-800: oklch(0.266 0.058 15.21);
+    --color-blushed-brick-900: oklch(0.205 0.047 22.11);
+    --color-blushed-brick-950: oklch(0.168 0.032 28.51);
 
-    --color-secondary: var(--color-glacier-500);
-    --color-secondary-50: var(--color-glacier-50);
-    --color-secondary-100: var(--color-glacier-100);
-    --color-secondary-200: var(--color-glacier-200);
-    --color-secondary-300: var(--color-glacier-300);
-    --color-secondary-400: var(--color-glacier-400);
-    --color-secondary-500: var(--color-glacier-500);
-    --color-secondary-600: var(--color-glacier-600);
-    --color-secondary-700: var(--color-glacier-700);
-    --color-secondary-800: var(--color-glacier-800);
-    --color-secondary-900: var(--color-glacier-900);
-    --color-secondary-950: var(--color-glacier-950);
+    --color-flag-red-50: oklch(0.959 0.017 17.56);
+    --color-flag-red-100: oklch(0.909 0.04 17.96);
+    --color-flag-red-200: oklch(0.829 0.082 18.98);
+    --color-flag-red-300: oklch(0.74 0.137 20.91);
+    --color-flag-red-400: oklch(0.661 0.196 24.24);
+    --color-flag-red-500: oklch(0.568 0.208 27.06);
+    --color-flag-red-600: oklch(0.487 0.178 27.02);
+    --color-flag-red-700: oklch(0.398 0.146 27.01);
+    --color-flag-red-800: oklch(0.315 0.115 27.03);
+    --color-flag-red-900: oklch(0.225 0.083 27.23);
+    --color-flag-red-950: oklch(0.184 0.069 27.38);
 
-    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.2);
-    --shadow-default: 0 4px 12px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.12);
-    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.15);
-    --shadow-xl: 0 10px 40px rgba(0, 0, 0, 0.18);
-    --shadow-2xl: 0 12px 60px rgba(0, 0, 0, 0.2);
+    --color-primary: var(--color-blushed-brick-500);
+    --color-primary-50: var(--color-blushed-brick-50);
+    --color-primary-100: var(--color-blushed-brick-100);
+    --color-primary-200: var(--color-blushed-brick-200);
+    --color-primary-300: var(--color-blushed-brick-300);
+    --color-primary-400: var(--color-blushed-brick-400);
+    --color-primary-500: var(--color-blushed-brick-500);
+    --color-primary-600: var(--color-blushed-brick-600);
+    --color-primary-700: var(--color-blushed-brick-700);
+    --color-primary-800: var(--color-blushed-brick-800);
+    --color-primary-900: var(--color-blushed-brick-900);
+    --color-primary-950: var(--color-blushed-brick-950);
+
+    --color-secondary: var(--color-ocean-mist-500);
+    --color-secondary-50: var(--color-timber-green-50);
+    --color-secondary-100: var(--color-timber-green-100);
+    --color-secondary-200: var(--color-timber-green-200);
+    --color-secondary-300: var(--color-timber-green-300);
+    --color-secondary-400: var(--color-timber-green-400);
+    --color-secondary-500: var(--color-ocean-mist-500);
+    --color-secondary-600: var(--color-ocean-mist-600);
+    --color-secondary-700: var(--color-ocean-mist-700);
+    --color-secondary-800: var(--color-ocean-mist-800);
+    --color-secondary-900: var(--color-ocean-mist-900);
+    --color-secondary-950: var(--color-ocean-mist-950);
+
+    --color-purple: oklch(48.839% 0.24687 310.1);
+    --color-purple-50: oklch(73.798% 0.19927 314.84);
+    --color-purple-100: oklch(70.321% 0.22784 314.52);
+    --color-purple-200: oklch(64.607% 0.27252 313.34);
+    --color-purple-300: oklch(60.759% 0.29611 311.27);
+    --color-purple-400: oklch(56.236% 0.28457 309.9);
+    --color-purple-500: oklch(48.839% 0.24687 310.1);
+    --color-purple-600: oklch(38.339% 0.19302 310.85);
+    --color-purple-700: oklch(26.888% 0.13478 311.68);
+    --color-purple-800: oklch(14.199% 0.06946 316.33);
+    --color-purple-900: oklch(0% 0 none);
+    --color-purple-950: oklch(0% 0 none);
+
+    --shadow-xs: 0px 0px 6px 0px rgba(0, 0, 0, 0.02);
+    --shadow-sm: 0px 0px 6px 1px rgba(0, 0, 0, 0.03);
+    --shadow-md: 0px 0px 8px 3px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0px 0px 8px 4px rgba(0, 0, 0, 0.06);
+    --shadow-xl: 0px 0px 10px 5px rgba(0, 0, 0, 0.06);
+    --shadow-2xl: 0px 0px 10px 6px rgba(0, 0, 0, 0.08);
 }
 
 body {
-    @apply bg-slate-900 text-base text-slate-800;
+    @apply bg-slate-900 font-serif text-base text-slate-800;
 
     &.dark {
         @apply bg-surface-900 text-surface-0;
+    }
+
+    a.styled,
+    .ce-paragraph a,
+    .cdx-list a {
+        @apply inline-flex items-center px-1 py-0.5;
+        @apply rounded-t-sm font-semibold no-underline;
+        @apply border-glacier-500 text-glacier-500 border-b;
+        @apply bg-[length:1px_0] bg-bottom bg-repeat-x;
+        @apply transition-[background-size] duration-200;
+
+        background-image: linear-gradient(
+            to bottom,
+            var(--color-glacier-50) 0%,
+            var(--color-glacier-50) 100%
+        );
+
+        &:hover {
+            @apply bg-[length:1px_100%];
+        }
     }
 }
 
 /* Primary and Surface Palettes */
 :root {
-    --p-primary-50: var(--color-timber-green-50);
-    --p-primary-100: var(--color-timber-green-100);
-    --p-primary-200: var(--color-timber-green-200);
-    --p-primary-300: var(--color-timber-green-300);
-    --p-primary-400: var(--color-timber-green-400);
-    --p-primary-500: var(--color-timber-green-500);
-    --p-primary-600: var(--color-timber-green-600);
-    --p-primary-700: var(--color-timber-green-700);
-    --p-primary-800: var(--color-timber-green-800);
-    --p-primary-900: var(--color-timber-green-900);
-    --p-primary-950: var(--color-timber-green-950);
+    --p-primary-50: var(--color-primary-50);
+    --p-primary-100: var(--color-primary-100);
+    --p-primary-200: var(--color-primary-200);
+    --p-primary-300: var(--color-primary-300);
+    --p-primary-400: var(--color-primary-400);
+    --p-primary-500: var(--color-primary-500);
+    --p-primary-600: var(--color-primary-600);
+    --p-primary-700: var(--color-primary-700);
+    --p-primary-800: var(--color-primary-800);
+    --p-primary-900: var(--color-primary-900);
+    --p-primary-950: var(--color-primary-950);
     --p-surface-0: #ffffff;
     --p-surface-50: #fafafa;
     --p-surface-100: #f4f4f5;
@@ -135,7 +201,7 @@ body {
     --p-content-border-color: var(--p-surface-200);
     --p-content-hover-background: var(--p-surface-100);
     --p-content-hover-color: var(--p-surface-800);
-    --p-highlight-background: var(--p-primary-100);
+    --p-highlight-background: var(--p-primary-50);
     --p-highlight-color: var(--p-primary-700);
     --p-highlight-focus-background: var(--p-primary-100);
     --p-highlight-focus-color: var(--p-primary-800);
@@ -162,4 +228,36 @@ body {
     --p-text-hover-color: var(--p-surface-0);
     --p-text-muted-color: var(--p-surface-400);
     --p-text-hover-muted-color: var(--p-surface-300);
+}
+
+/* Playful box shadow utilities */
+@utility shadow-playful {
+    @apply enabled:hover:-translate-y-0.5 enabled:hover:scale-105;
+    @apply enabled:active:translate-x-[0.125rem] enabled:active:translate-y-[0.125rem];
+    box-shadow: var(--shadow-size, 0.2rem) var(--shadow-size, 0.2rem) 0
+        var(--shadow-color, currentColor);
+
+    /* Make active state more visible on touch devices */
+    @media (pointer: coarse) {
+        @apply enabled:active:scale-[0.97];
+        transition:
+            transform 0.05s ease-out,
+            box-shadow 0.05s ease-out;
+    }
+}
+
+@utility shadow-playful-no-transform {
+    box-shadow: var(--shadow-size, 0.25rem) var(--shadow-size, 0.25rem) 0
+        var(--shadow-color, currentColor);
+}
+
+@utility shadow-playful-active {
+    box-shadow: calc(var(--shadow-size, 0.25rem) * 0.5) calc(var(--shadow-size, 0.25rem) * 0.5) 0
+        var(--shadow-color, currentColor);
+
+    /* Make the active state more noticeable on touch devices */
+    @media (pointer: coarse) {
+        box-shadow: calc(var(--shadow-size, 0.25rem) * 0.25)
+            calc(var(--shadow-size, 0.25rem) * 0.25) 0 var(--shadow-color, currentColor);
+    }
 }

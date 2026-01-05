@@ -1,0 +1,69 @@
+{
+    "administrator": {
+        "name": "Administrateur",
+        "description": "Accès complet à toutes les fonctionnalités et paramètres"
+    },
+    "none": "Aucune permission",
+    "location": {
+        "Administrator": {
+            "name": "Administrateur",
+            "description": "Accès complet à toutes les fonctionnalités et paramètres de la location"
+        },
+        "ManageImages": {
+            "name": "Gérer les Images",
+            "description": "Télécharger, réorganiser et supprimer les images de la location"
+        },
+        "ManageOpeningTimes": {
+            "name": "Gérer les Horaires",
+            "description": "Créer, mettre à jour et supprimer les horaires d'ouverture"
+        },
+        "ManageMembers": {
+            "name": "Gérer les Membres",
+            "description": "Ajouter des membres, mettre à jour les rôles et supprimer l'accès"
+        },
+        "ManageReservations": {
+            "name": "Gérer les Réservations",
+            "description": "Afficher et gérer toutes les réservations de la location"
+        }
+    },
+    "authority": {
+        "Administrator": {
+            "name": "Administrateur",
+            "description": "Accès complet à toutes les fonctionnalités et paramètres de l'autorité"
+        },
+        "AddLocations": {
+            "name": "Ajouter des Locations",
+            "description": "Soumettre de nouvelles locations sous cette autorité"
+        },
+        "ApproveLocations": {
+            "name": "Approuver les Locations",
+            "description": "Examiner et approuver ou rejeter les soumissions de locations"
+        },
+        "DeleteLocations": {
+            "name": "Supprimer les Locations",
+            "description": "Retirer des locations de l'autorité"
+        },
+        "ManageMembers": {
+            "name": "Gérer les Membres",
+            "description": "Ajouter des membres, mettre à jour les rôles et supprimer l'accès"
+        }
+    },
+    "institution": {
+        "Administrator": {
+            "name": "Administrateur",
+            "description": "Accès complet à toutes les fonctionnalités et paramètres de l'institution"
+        },
+        "AddAuthority": {
+            "name": "Ajouter une Autorité",
+            "description": "Créer ou lier de nouvelles autorités à l'institution"
+        },
+        "DeleteAuthority": {
+            "name": "Supprimer une Autorité",
+            "description": "Retirer des autorités de l'institution"
+        },
+        "ManageMembers": {
+            "name": "Gérer les Membres",
+            "description": "Ajouter des membres, mettre à jour les rôles et supprimer l'accès"
+        }
+    }
+}

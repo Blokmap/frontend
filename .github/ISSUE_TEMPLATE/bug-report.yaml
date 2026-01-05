@@ -1,0 +1,38 @@
+name: "Bug Report"
+description: Report a bug you've encountered.
+labels: ["bug"]
+type: "Bug"
+projects: ["Blokmap/8"]
+
+body:
+  - type: textarea
+    attributes:
+        label: Description
+        description: Describe the bug you're experiencing, including any unexpected behavior or errors.
+    validations:
+        required: true
+
+  - type: textarea
+    attributes:
+        label: Expected behavior
+        description: Explain what the correct or expected behavior should be.
+    validations:
+        required: false
+
+  - type: textarea
+    attributes:
+        label: Steps to reproduce
+        description: Please list the steps to reproduce the issue
+        placeholder: |
+            1.
+            1.
+            1.
+    validations:
+        required: false
+
+  - type: textarea
+    attributes:
+        label: Extra info
+        description: If applicable, attach any screenshots or relevant log outputs to help diagnose the issue.
+    validations:
+        required: false

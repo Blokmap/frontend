@@ -1,0 +1,32 @@
+name: Refactor
+description: |
+    Propose an improvement/change that doesn't change functionality but may
+    improve the code or performance
+labels: ["refactor"]
+type: "Refactor"
+projects: ["Blokmap/8"]
+
+body:
+  - type: textarea
+    attributes:
+        label: Areas affected
+        description: |
+            Describe the current feature(s) or process(es) and how they could be improved or enhanced.
+
+            What limitations are being faced?
+    validations:
+        required: true
+
+  - type: textarea
+    attributes:
+        label: Proposed changes
+        description: Detail the changes you'd like to see and how they would improve the project.
+    validations:
+        required: true
+
+  - type: textarea
+    attributes:
+        label: Impact
+        description: Describe the expected impact of this enhancement on users or the project.
+    validations:
+        required: false

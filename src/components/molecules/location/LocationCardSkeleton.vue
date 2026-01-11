@@ -4,7 +4,9 @@ import Skeleton from 'primevue/skeleton';
 
 <template>
     <div class="skeleton">
-        <Skeleton class="skeleton__image" />
+        <div class="skeleton__image-wrapper">
+            <Skeleton class="skeleton__image" />
+        </div>
         <div class="skeleton__content">
             <Skeleton class="skeleton__name" />
             <Skeleton class="skeleton__address" />
@@ -19,8 +21,12 @@ import Skeleton from 'primevue/skeleton';
 .skeleton {
     @apply flex h-full w-full flex-col rounded-xl;
 
-    .skeleton__image {
-        @apply !h-40 !w-full !rounded-t-xl !rounded-b-none;
+    .skeleton__image-wrapper {
+        @apply aspect-12/9 w-full overflow-hidden rounded-t-xl;
+
+        .skeleton__image {
+            @apply !h-full !w-full rounded-none;
+        }
     }
 
     .skeleton__content {

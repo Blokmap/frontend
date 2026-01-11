@@ -137,9 +137,9 @@ const allItems = computed(() => {
     return items;
 });
 
-const visibleItems = computed(() => allItems.value.slice(0, 8));
-const hiddenItems = computed(() => allItems.value.slice(8));
-const hasMoreItems = computed(() => allItems.value.length > 8);
+const visibleItems = computed(() => allItems.value.slice(0, 6));
+const hiddenItems = computed(() => allItems.value.slice(6));
+const hasMoreItems = computed(() => allItems.value.length > 6);
 </script>
 
 <template>
@@ -180,13 +180,13 @@ const hasMoreItems = computed(() => allItems.value.length > 8);
 @reference '@/assets/styles/main.css';
 
 .items-grid {
-    @apply grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4;
+    @apply grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3;
 
     .item {
         @apply flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3;
 
         .item__icon {
-            @apply text-primary flex h-8 w-8 items-center justify-center text-lg;
+            @apply flex h-8 w-8 items-center justify-center text-lg text-slate-800;
         }
 
         .item__text {

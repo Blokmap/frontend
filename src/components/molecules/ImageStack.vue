@@ -71,7 +71,7 @@ const getStackStyle = (index: number, total: number) => {
 }
 
 .image-stack__item {
-    @apply absolute h-[60%] w-[60%] overflow-hidden rounded border-2 border-white shadow-sm transition-transform;
+    @apply absolute h-[90%] w-[90%] overflow-hidden rounded border-2 border-white shadow-sm transition-transform;
 }
 
 .image-stack__img {

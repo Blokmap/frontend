@@ -105,7 +105,7 @@ const {
 @reference '@/assets/styles/main.css';
 
 .locations-grid {
-    @apply grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4;
+    @apply grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3;
 
     .location-card-wrapper {
         @apply h-full;

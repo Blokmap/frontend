@@ -123,9 +123,9 @@ function goBack(): void {
                 :title="location?.name ?? 'Locatie'"
                 :logo="locationImageUrl"
                 :loading="isLoading"
-                show-back-button
                 :back-button-text="backButtonText"
-                @click:back="goBack">
+                @click:back="goBack"
+                show-back-button>
                 <LayoutSidebarSection title="Instellingen">
                     <LayoutSidebarItem
                         :loading="isLoading"

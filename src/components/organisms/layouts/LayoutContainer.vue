@@ -52,18 +52,18 @@ const closeSidebar = () => {
 @reference '@/assets/styles/main.css';
 
 .container {
-    @apply relative mx-auto grid w-full flex-1 grid-cols-1;
-    @apply my-4 lg:max-w-[1420px] lg:grid-cols-4 lg:px-0;
+    @apply mx-auto grid grid-cols-1 lg:grid-cols-4;
 
     .sidebar-backdrop {
         @apply fixed inset-0 z-50 bg-black/50;
     }
 
     .container__sidebar {
-        @apply fixed inset-y-0 left-0 z-50 w-80 -translate-x-full bg-white py-20 shadow-2xl lg:pr-4 xl:pr-10;
-        @apply lg:border-r lg:border-slate-200;
-        @apply overflow-y-auto transition-transform duration-300;
-        @apply lg:relative lg:col-span-1 lg:w-auto lg:translate-x-0 lg:overflow-y-visible lg:bg-transparent lg:py-0 lg:shadow-none;
+        @apply fixed inset-y-0 left-0 z-50 w-80 -translate-x-full;
+        @apply overflow-y-auto bg-white py-20 shadow-2xl transition-transform duration-300;
+        @apply lg:relative lg:col-span-1 lg:w-auto lg:translate-x-0 lg:py-0;
+        @apply lg:overflow-y-visible lg:bg-transparent lg:shadow-none;
+        @apply lg:border-r lg:border-slate-200 lg:pr-4 xl:pr-10;
     }
 
     .container__sidebar--open {
@@ -71,7 +71,7 @@ const closeSidebar = () => {
     }
 
     .container__main {
-        @apply col-span-3 lg:pl-6 xl:pl-12;
+        @apply lg:col-span-3 lg:pl-6 xl:pl-12;
     }
 }
 

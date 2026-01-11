@@ -5,6 +5,7 @@ import LocationStateBadge from '@/components/molecules/location/details/Location
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { type Image } from '@/domain/image';
 import { formatLocationAddress, LocationState, type Location } from '@/domain/location';
 import type { RouteLocationRaw } from 'vue-router';
 
@@ -16,6 +17,10 @@ const props = defineProps<{
 
 const { locale } = useI18n();
 const router = useRouter();
+
+const images = computed<Image[]>(() => {
+    return props.location.images ?? [];
+});
 
 const isApproved = computed<boolean>(() => {
     return props.location.state === LocationState.Approved;
@@ -30,10 +35,10 @@ const navigate = (): void => {
 
 <template>
     <div class="location-detail" :class="{ clickable: to }">
-        <div class="location-detail__carousel-wrapper">
+        <div class="location-detail__image-container">
             <SlideCarousel
                 class="location-detail__carousel"
-                :items="location.images ?? []"
+                :items="images"
                 :disabled="!isApproved"
                 :show-navigation-buttons="showNavigationButtons"
                 :show-dots="isApproved"
@@ -50,16 +55,14 @@ const navigate = (): void => {
                 v-if="location.state !== LocationState.Approved"
                 :location="location"
                 :state="location.state"
-                class="location-detail__badge">
+                class="location-detail__state-badge">
             </LocationStateBadge>
         </div>
+
         <div class="location-detail__content" @click="navigate">
-            <div class="location-detail__header">
-                <h2 class="location-detail__name">
-                    {{ location.name }}
-                </h2>
+            <div class="location-detail__top">
+                <h3 class="location-detail__title">{{ location.name }}</h3>
                 <RouterLink
-                    class="flex"
                     v-if="location.authority"
                     :to="{
                         name: 'manage.authority.info',
@@ -71,10 +74,12 @@ const navigate = (): void => {
                     </Badge>
                 </RouterLink>
             </div>
-            <p class="location-detail__address">
-                {{ formatLocationAddress(location) }}
-            </p>
-            <p class="location-detail__excerpt">
+
+            <div v-if="formatLocationAddress(location)" class="location-detail__address">
+                <span>{{ formatLocationAddress(location) }}</span>
+            </div>
+
+            <p v-if="location.excerpt[locale]" class="location-detail__excerpt">
                 {{ location.excerpt[locale] }}
             </p>
         </div>
@@ -85,44 +90,55 @@ const navigate = (): void => {
 @reference '@/assets/styles/main.css';
 
 .location-detail {
-    @apply flex h-full w-full flex-col rounded-xl;
+    @apply flex h-full w-full flex-col;
+    @apply rounded-lg border border-slate-200 bg-white;
+    @apply overflow-hidden;
+    @apply transition-shadow duration-200;
 
     &.clickable {
         @apply cursor-pointer;
+
+        &:hover {
+            @apply shadow-md;
+        }
     }
 
-    .location-detail__carousel-wrapper {
-        @apply relative;
+    .location-detail__image-container {
+        @apply relative w-full;
     }
 
     .location-detail__carousel {
         .carousel__image {
-            @apply h-40 w-full rounded-t-xl object-cover;
+            @apply aspect-12/9 w-full object-cover;
         }
     }
 
-    .location-detail__header {
-        @apply flex items-center justify-between gap-2;
-    }
-
-    .location-detail__badge {
-        @apply absolute top-3 right-3 z-10 text-xs shadow-lg;
+    .location-detail__state-badge {
+        @apply absolute top-2 right-2 z-10;
     }
 
     .location-detail__content {
-        @apply flex-1 rounded-b-xl border-1 border-slate-200 bg-white p-4;
+        @apply flex flex-col gap-2 p-4;
+    }
 
-        .location-detail__name {
-            @apply truncate text-lg font-semibold;
-        }
+    .location-detail__top {
+        @apply flex items-start justify-between gap-3;
+    }
 
-        .location-detail__address {
-            @apply text-xs text-slate-600;
-        }
+    .location-detail__title {
+        @apply text-lg font-semibold text-slate-900;
+        @apply line-clamp-2 flex-1;
+    }
 
-        .location-detail__excerpt {
-            @apply mt-2 text-sm text-slate-800;
-        }
+    .location-detail__address {
+        @apply flex items-center gap-1.5;
+        @apply text-sm text-slate-500;
+    }
+
+    .location-detail__excerpt {
+        @apply text-sm leading-relaxed text-slate-600;
+        @apply line-clamp-2;
+        @apply mt-1;
     }
 }
 </style>

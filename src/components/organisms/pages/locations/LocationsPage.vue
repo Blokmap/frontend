@@ -3,7 +3,6 @@ import Paginator from 'primevue/paginator';
 import Skeleton from 'primevue/skeleton';
 import LocationDetailCardSkeleton from '@/components/molecules/location/LocationCardSkeleton.vue';
 import LocationDetailCard from '@/components/molecules/location/LocationDetailCard.vue';
-import LocationFilterButton from '@/components/molecules/location/search/LocationFilterButton.vue';
 import BlokMap from '@/components/molecules/map/BlokMap.vue';
 import { faArrowRight, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -12,21 +11,26 @@ import { storeToRefs } from 'pinia';
 import { computed, ref, useTemplateRef, watch } from 'vue';
 import { useNearestLocation } from '@/composables/data/useLocations';
 import { useMapBox } from '@/composables/maps/useMapBox';
-import { useLayoutState } from '@/composables/store/useLayoutState';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
 import { usePagination } from '@/composables/usePagination';
+import PageContent from '../PageContent.vue';
 import type { NearestLocation } from '@/domain/location';
 
 // Needed for KeepAlive
 defineOptions({ name: 'LocationsPage' });
+
+defineProps<{ headerHeight: number }>();
 
 const filterStore = useLocationFilters();
 
 const { geoLocation, filters, mapConfigCache, isFetching, isPending, locations } =
     storeToRefs(filterStore);
 
-const { showFiltersDialog } = storeToRefs(useLayoutState());
 const { first, onPageChange } = usePagination(filters);
+
+const hasLocations = computed<boolean>(() => {
+    return !!locations.value?.data.length;
+});
 
 const showLoading = refDebounced(
     computed<boolean>(() => isFetching.value || isPending.value),
@@ -103,40 +107,29 @@ const transitionKey = computed<string | undefined>(() => {
 </script>
 
 <template>
-    <div class="locs">
-        <div class="locs__sidebar">
+    <PageContent class="locations">
+        <section class="locations__list">
             <Skeleton v-if="showLoading" height="2rem" />
 
-            <div v-else class="locs__header">
-                <h2 class="locs__title">
-                    <span v-if="locations?.data?.length">
-                        {{
-                            locations.truncated
-                                ? $t(
-                                      'pages.locations.filters.foundResultsTruncated',
-                                      locations.total,
-                                  )
-                                : $t('pages.locations.filters.foundResults', locations.total)
-                        }}
-                    </span>
-                    <span v-else>{{ $t('general.errors.noResultsExact') }}</span>
-
-                    <LocationFilterButton :filters="filters" @click="showFiltersDialog = true" />
+            <div v-else ref="locationsHeader" class="locations__header">
+                <div class="locations__drawer-ribbon"></div>
+                <h2 class="locations__title">
+                    <template v-if="hasLocations && locations?.truncated">
+                        {{ $t('pages.locations.filters.foundResultsTruncated', locations.total) }}
+                    </template>
+                    <template v-else-if="hasLocations && locations">
+                        {{ $t('pages.locations.filters.foundResults', locations?.total) }}
+                    </template>
+                    <template v-else>
+                        {{ $t('general.errors.noResultsExact') }}
+                    </template>
                 </h2>
 
-                <p v-if="locations?.data?.length" class="locs__meta">
-                    {{
-                        $t(
-                            'pages.locations.filters.showingLocations',
-                            { shown: locations.data.length, total: locations.total },
-                            locations.data.length,
-                        )
-                    }}
-                </p>
-
-                <template v-else>
-                    <p class="locs__meta">{{ $t('pages.locations.filters.adjustCriteria') }}</p>
-                    <p class="locs__meta locs__meta--link" @click="onNearestClick">
+                <template v-if="!showLoading && !hasLocations">
+                    <p class="locations__meta">
+                        {{ $t('pages.locations.filters.adjustCriteria') }}
+                    </p>
+                    <p class="locations__meta locations__meta--link" @click="onNearestClick">
                         {{ $t('pages.locations.filters.flyToNearest') }}
                         <FontAwesomeIcon
                             :icon="isFlyingToNearestLocation ? faSpinner : faArrowRight"
@@ -146,18 +139,17 @@ const transitionKey = computed<string | undefined>(() => {
                 </template>
             </div>
 
-            <div v-if="showLoading" class="locs-grid">
-                <div v-for="n in previousLocationCount" :key="n">
-                    <LocationDetailCardSkeleton />
-                </div>
+            <div v-if="showLoading" ref="locationsGrid" class="locations-grid">
+                <LocationDetailCardSkeleton v-for="n in previousLocationCount" :key="n" />
             </div>
 
             <Transition v-else name="fade" mode="out-in">
                 <TransitionGroup
                     v-if="!showLoading"
+                    ref="locationsGrid"
                     :key="transitionKey"
                     name="staggered-cards"
-                    class="locs-grid"
+                    class="locations-grid"
                     tag="div"
                     appear>
                     <div
@@ -180,57 +172,69 @@ const transitionKey = computed<string | undefined>(() => {
                 :total-records="locations?.total"
                 @page="onPageChange">
             </Paginator>
-        </div>
+        </section>
 
-        <div class="locs__map">
+        <section class="locations__map">
             <BlokMap
                 ref="blokmap"
-                class="locs__map-inner"
+                class="locations__map-inner"
                 :map="map"
                 :locations="locations?.data"
                 :loading="showLoading">
             </BlokMap>
-        </div>
-    </div>
+        </section>
+    </PageContent>
 </template>
 
 <style scoped>
 @reference '@/assets/styles/main.css';
 
-.locs {
-    @apply flex w-full flex-col items-stretch gap-3 lg:flex-row lg:items-start lg:gap-6;
-    @apply lg:py-6;
+.locations {
+    @apply flex flex-row gap-8;
+}
 
-    .locs__sidebar {
-        @apply hidden w-full flex-col space-y-6 lg:flex lg:w-1/2;
+.locations__list {
+    @apply z-2 w-full flex-col space-y-8 lg:flex lg:w-3/5;
+    @apply mt-[calc(100vh-155px)] -mb-6 p-4 pb-12 md:p-0 lg:mt-0;
+    @apply rounded-2xl bg-white md:bg-transparent;
+
+    .locations-grid {
+        @apply relative grid grid-cols-1 gap-6 xl:grid-cols-3;
     }
 
-    .locs__header {
+    .locations__header {
         @apply space-y-4;
-    }
+        @apply cursor-pointer lg:cursor-default;
+        @apply flex flex-col items-center lg:items-start;
+        @apply relative;
 
-    .locs__title {
-        @apply flex items-center justify-between text-2xl font-bold;
-    }
+        .locations__drawer-ribbon {
+            @apply h-1.5 w-12 rounded-full bg-slate-300 lg:hidden;
+            @apply mb-4;
+        }
 
-    .locs__meta {
-        @apply text-slate-500;
+        .locations__title {
+            @apply font-bold;
+            @apply text-center lg:text-left;
+        }
 
-        &.locs__meta--link {
-            @apply cursor-pointer underline;
+        .locations__meta {
+            @apply text-slate-500;
+            @apply text-center lg:text-left;
+
+            &.locations__meta--link {
+                @apply cursor-pointer underline;
+            }
         }
     }
+}
 
-    .locs-grid {
-        @apply relative grid grid-cols-2 gap-6 xl:grid-cols-3;
-    }
+.locations__map {
+    @apply fixed top-0 left-0 z-1 lg:sticky lg:top-0 lg:flex lg:w-2/5;
+    @apply h-full w-full;
 
-    .locs__map {
-        @apply sticky top-4 lg:flex lg:w-1/2;
-
-        .locs__map-inner {
-            @apply h-[calc(100vh-2rem)] shadow-md;
-        }
+    .locations__map-inner {
+        @apply lg:h-[calc(100vh-2rem)] lg:rounded-xl lg:shadow-md;
     }
 }
 </style>

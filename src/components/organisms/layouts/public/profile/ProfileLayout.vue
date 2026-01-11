@@ -57,7 +57,11 @@ const recentLocationImages = computed<Image[] | undefined>(() =>
                             :active="route.name === 'profile' && activeHash === '#about'"
                             :compact="false">
                             <template #img>
-                                <EntityAvatar class="h-full w-full" :image="profile.avatar?.url" />
+                                <EntityAvatar
+                                    class="h-full w-full"
+                                    :image="profile.avatar?.url"
+                                    circle>
+                                </EntityAvatar>
                             </template>
                             <template #text>
                                 <span>Mijn Profiel</span>

@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
     <div class="flex items-center space-x-3">
-        <EntityAvatar class="h-12 w-12 flex-shrink-0" :image="profile.avatar?.url" />
+        <EntityAvatar class="h-12 w-12 flex-shrink-0" :image="profile.avatar?.url" circle />
         <div class="min-w-0 flex-1">
             <div class="truncate text-sm font-medium text-slate-900">
                 {{ profile.firstName }} {{ profile.lastName }}

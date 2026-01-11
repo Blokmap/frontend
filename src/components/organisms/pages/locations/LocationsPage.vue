@@ -236,11 +236,10 @@ const transitionKey = computed<string | undefined>(() => {
 }
 
 .locations__map {
-    @apply fixed top-0 left-0 z-1 lg:sticky lg:top-0 lg:flex lg:w-2/5;
-    @apply h-full w-full;
+    @apply fixed top-0 left-0 z-1 h-full w-full lg:sticky lg:top-0 lg:flex lg:w-2/5;
 
     .locations__map-inner {
-        @apply lg:h-[calc(100vh-2rem)] lg:rounded-xl lg:shadow-md;
+        @apply h-full w-full lg:h-[calc(100vh-2rem)] lg:rounded-xl lg:shadow-md;
     }
 }
 </style>

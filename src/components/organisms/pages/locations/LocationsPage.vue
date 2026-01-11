@@ -66,7 +66,7 @@ const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
 // Keep track of previous location count to show skeletons when loading new data
 watch(locations, (locations) => {
     if (!locations || !locations.data.length) return;
-    previousLocationCount.value = locations.data.length;
+    //previousLocationCount.value = locations.data.length;
 });
 
 // Watch for changes in geoLocation to fly the map to that location
@@ -196,7 +196,7 @@ const transitionKey = computed<string | undefined>(() => {
 @reference '@/assets/styles/main.css';
 
 .locations {
-    @apply flex flex-row gap-8;
+    @apply flex flex-row items-start gap-8;
 }
 
 .locations__list {
@@ -236,10 +236,11 @@ const transitionKey = computed<string | undefined>(() => {
 }
 
 .locations__map {
-    @apply fixed top-0 left-0 z-1 h-full w-full lg:sticky lg:top-0 lg:flex lg:w-2/5;
+    @apply fixed top-0 left-0 z-1 h-screen w-full;
+    @apply lg:sticky lg:top-[2rem] lg:h-[calc(100vh-4rem)] lg:w-2/5 lg:self-start;
 
     .locations__map-inner {
-        @apply h-full w-full lg:h-[calc(100vh-2rem)] lg:rounded-xl lg:shadow-md;
+        @apply h-full w-full lg:rounded-xl lg:shadow-md;
     }
 }
 </style>

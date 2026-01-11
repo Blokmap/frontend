@@ -20,12 +20,12 @@
 @reference '@/assets/styles/main.css';
 
 .logo {
-    @apply relative flex w-fit items-center px-3 py-2;
-    @apply cursor-pointer font-[MegaSurprise] font-black tracking-tighter select-none;
-    @apply bg-primary rounded-xl text-3xl transition-all hover:scale-105;
+    @apply relative flex w-fit items-center px-3 py-1;
+    @apply cursor-pointer font-black tracking-tighter uppercase select-none;
+    @apply bg-primary rounded-2xl transition-all hover:scale-105 md:text-3xl;
 
     .letters {
-        @apply text-primary-contrast relative z-10 flex items-center;
+        @apply text-primary-contrast relative z-10 flex items-center text-2xl;
 
         span {
             @apply flex opacity-0;

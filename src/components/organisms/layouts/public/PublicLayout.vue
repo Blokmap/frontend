@@ -5,7 +5,7 @@ import PublicHeader from '@/components/organisms/layouts/public//PublicHeader.vu
 import PublicFooter from '@/components/organisms/layouts/public/PublicFooter.vue';
 import { useMagicKeys } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
-import { watchEffect } from 'vue';
+import { computed, useTemplateRef, watchEffect } from 'vue';
 import { useReadTags } from '@/composables/data/useTags';
 import { useLayoutState } from '@/composables/store/useLayoutState';
 
@@ -13,6 +13,12 @@ const { space, k, meta, control } = useMagicKeys();
 const { showSearchSpotlight, showFiltersDialog } = storeToRefs(useLayoutState());
 
 const { data: tags } = useReadTags();
+
+const headerRef = useTemplateRef('header');
+
+const headerHeight = computed<number>(() => {
+    return headerRef.value?.offsetHeight ?? 0;
+});
 
 watchEffect(() => {
     const isMetaKey = control.value || meta.value;
@@ -26,7 +32,7 @@ watchEffect(() => {
 
 <template>
     <div class="public-layout">
-        <header class="public-layout__header">
+        <header class="public-layout__header" ref="header">
             <div class="public-layout__container">
                 <PublicHeader
                     @click:search="showSearchSpotlight = true"
@@ -40,7 +46,11 @@ watchEffect(() => {
                 <RouterView v-slot="{ Component }">
                     <Transition name="fade" mode="out-in">
                         <KeepAlive :include="['LocationsPage']">
-                            <component :is="Component" />
+                            <component
+                                :is="Component"
+                                v-if="headerHeight > 0"
+                                :header-height="headerHeight">
+                            </component>
                         </KeepAlive>
                     </Transition>
                 </RouterView>
@@ -72,12 +82,11 @@ watchEffect(() => {
 }
 
 .public-layout__container {
-    @apply mx-auto w-full max-w-[1420px] 2xl:w-[85vw] 2xl:max-w-[1920px];
-    @apply px-3 md:px-6;
+    @apply mx-auto w-full max-w-[1920px];
 }
 
 .public-layout__main {
-    @apply flex w-full flex-1 flex-col py-4 md:py-6;
+    @apply flex w-full flex-1 flex-col p-4 md:p-6 lg:p-8;
     @apply bg-slate-50 md:rounded-b-md;
 
     .public-layout__container {
@@ -86,12 +95,12 @@ watchEffect(() => {
 }
 
 .public-layout__header {
-    @apply py-3 md:py-6;
+    @apply z-5 px-3 py-3 md:px-6 md:py-6;
     @apply border-b border-slate-200 bg-slate-50 md:rounded-t-md;
 }
 
 .public-layout__footer {
-    @apply bg-slate-900 text-slate-300;
+    @apply z-5 bg-slate-900 text-slate-300;
     @apply py-4 md:py-6;
 }
 </style>

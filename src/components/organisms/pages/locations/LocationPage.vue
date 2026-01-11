@@ -29,7 +29,6 @@ import { useCreateLocationReport } from '@/composables/data/useReports';
 import { usePageTitleStore } from '@/composables/store/usePageTitle';
 import { useRouteDate } from '@/composables/useRouteDate';
 import { pushRedirectUrl } from '@/domain/auth';
-import { formatLocationAddress } from '@/domain/location';
 import type { OpeningTimeFilter } from '@/domain/openings';
 
 const props = defineProps<{ locationId: string }>();
@@ -150,11 +149,6 @@ watchEffect(() => {
                     {{ location.name }}
                 </h1>
                 <Skeleton v-else height="36px" width="400px" />
-
-                <p v-if="!isPending && location" class="location-page__subtitle">
-                    {{ formatLocationAddress(location) }}
-                </p>
-                <Skeleton v-else height="20px" width="300px" />
             </hgroup>
 
             <nav class="location-page__actions">
@@ -166,9 +160,7 @@ watchEffect(() => {
                             name: 'manage.location.reservations',
                             params: { locationId: location.id },
                         }">
-                        <PageHeaderButton
-                            severity="contrast"
-                            :label="$t('domains.reservations.name', 2)">
+                        <PageHeaderButton severity="contrast">
                             <FontAwesomeIcon :icon="faUsers" />
                         </PageHeaderButton>
                     </RouterLink>
@@ -179,7 +171,7 @@ watchEffect(() => {
                             name: 'manage.location.overview',
                             params: { locationId: location.id },
                         }">
-                        <PageHeaderButton severity="secondary" :label="$t('general.actions.edit')">
+                        <PageHeaderButton severity="secondary">
                             <FontAwesomeIcon :icon="faEdit" />
                         </PageHeaderButton>
                     </RouterLink>
@@ -376,7 +368,7 @@ watchEffect(() => {
     }
 
     .location-page__title {
-        @apply text-3xl font-extrabold text-gray-900;
+        @apply text-3xl font-bold text-gray-900;
     }
 
     .location-page__subtitle {

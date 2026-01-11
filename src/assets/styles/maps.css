@@ -1,7 +1,7 @@
 @import 'mapbox-gl';
 
 .map {
-    @apply relative z-2 h-full w-full overflow-hidden rounded-xl;
+    @apply relative z-2 h-full w-full overflow-hidden;
 
     .mapboxgl-canvas {
         @apply !h-full !w-full;

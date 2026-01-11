@@ -1,5 +1,5 @@
 import { parseAuthorityResponse } from '@/domain/authority';
-import { parseImageResponse } from '@/domain/image';
+import { parseImageResponse, type Image } from '@/domain/image';
 import { parseInstitutionResponse } from '@/domain/institution';
 import { parseOpeningTimeResponse } from '@/domain/openings';
 import { parseProfileResponse } from '@/domain/profile';
@@ -30,7 +30,9 @@ export function parseLocationResponse(data: any): Location {
     }
 
     if (data.images) {
-        result.images = data.images.map(parseImageResponse);
+        result.images = data.images
+            .map(parseImageResponse)
+            .sort((img1: Image, img2: Image) => img1.index - img2.index);
     }
 
     if (data.createdBy) {

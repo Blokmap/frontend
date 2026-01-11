@@ -10,6 +10,7 @@
 @reference '@/assets/styles/main.css';
 
 .content {
-    @apply mx-auto w-full space-y-6 md:space-y-8;
+    @apply mx-auto w-full;
+    @apply space-y-6 md:space-y-8;
 }
 </style>

@@ -125,10 +125,10 @@ const goBack = (): void => {
                             <ImageStack :images="locationImages" />
                         </template>
                         <template #text>
-                            {{ !isOtherProfile ? 'Mijn locaties' : 'Locaties' }}
-                            <span v-if="locationMemberships" class="count">
-                                ({{ locationMemberships.length }})
-                            </span>
+                            <p>{{ !isOtherProfile ? 'Mijn locaties' : 'Locaties' }}</p>
+                            <p class="text-xs font-normal text-slate-600">
+                                Beheer individuele locaties
+                            </p>
                         </template>
                     </LayoutSidebarItem>
                 </LayoutSidebarSection>

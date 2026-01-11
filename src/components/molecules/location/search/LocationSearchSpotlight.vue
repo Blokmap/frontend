@@ -6,38 +6,60 @@ import {
     faSliders,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useDebounce } from '@vueuse/core';
+import { debouncedWatch } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSearchGeoLocations } from '@/composables/data/useGeoCoding';
 import { useSearchLocations } from '@/composables/data/useLocations';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
-import type { Location } from '@/domain/location';
+import { type LocationSearchFilter, type Location } from '@/domain/location';
+import type { GeoSearchFilter } from '@/domain/map';
 import type { GeoJsonProperties } from 'geojson';
-
-const isVisible = defineModel<boolean>('visible', { default: false });
 
 const emit = defineEmits<{
     'click:filter': [];
 }>();
 
-const search = ref('');
-const debouncedSearch = useDebounce(search, 500);
+const isVisible = defineModel<boolean>('visible', { default: false });
 
 const router = useRouter();
 const filters = storeToRefs(useLocationFilters());
 
-const enabled = computed(() => debouncedSearch.value.length >= 2);
+const search = ref('');
+
+const locationSearchFilters = ref<LocationSearchFilter>({
+    query: null,
+    perPage: 5,
+});
+
+const locationSearchEnabled = computed<boolean>(() => {
+    const query = locationSearchFilters.value.query;
+    return !!query && query.length >= 2;
+});
 
 const { data: locations, isFetching: isFetchingLocations } = useSearchLocations(
-    computed(() => ({ query: debouncedSearch.value, perPage: 5 })),
-    { enabled },
+    locationSearchFilters,
+    {
+        enabled: locationSearchEnabled,
+    },
 );
 
+const geoLocationFilters = ref<GeoSearchFilter>({
+    search: '',
+    limit: 5,
+});
+
+const geoLocationEnabled = computed<boolean>(() => {
+    const search = geoLocationFilters.value.search;
+    return !!search && search.length >= 2;
+});
+
 const { data: geolocations, isFetching: isFetchingGeolocations } = useSearchGeoLocations(
-    computed(() => ({ search: debouncedSearch.value, limit: 5 })),
-    { enabled },
+    geoLocationFilters,
+    {
+        enabled: geoLocationEnabled,
+    },
 );
 
 const searchInput = useTemplateRef<HTMLInputElement>('searchInput');
@@ -59,16 +81,25 @@ watch(isVisible, async (newValue) => {
     searchInput.value?.focus();
 });
 
-function onLocationClick(location: Location) {
+debouncedWatch(
+    search,
+    (value) => {
+        locationSearchFilters.value.query = value;
+        geoLocationFilters.value.search = value;
+    },
+    { debounce: 250 },
+);
+
+const onLocationClick = (location: Location) => {
     router.push({ name: 'locations.detail', params: { locationId: location.id } });
     isVisible.value = false;
-}
+};
 
-function onGeoClick(geo: GeoJsonProperties) {
+const onGeoClick = (geo: GeoJsonProperties) => {
     router.push({ name: 'locations' });
     filters.geoLocation.value = geo;
     isVisible.value = false;
-}
+};
 </script>
 
 <template>

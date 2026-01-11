@@ -13,7 +13,7 @@ import LocationFeatures from '@/components/molecules/location/details/LocationFe
 import LocationMap from '@/components/molecules/map/LocationMap.vue';
 import OverviewDivider from '@/components/molecules/overview/OverviewDivider.vue';
 import OverviewSection from '@/components/molecules/overview/OverviewSection.vue';
-import { faCheck, faCogs, faEdit, faX } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faCogs, faEdit, faEye, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -211,6 +211,12 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => [
                     <FontAwesomeIcon :icon="faCogs" />
                     <span>Geavanceerd</span>
                 </Button>
+                <RouterLink :to="{ name: 'locations.detail', params: { locationId: location.id } }">
+                    <Button>
+                        <FontAwesomeIcon :icon="faEye" />
+                        <span>Voorbeeld</span>
+                    </Button>
+                </RouterLink>
             </template>
         </PageTitle>
 

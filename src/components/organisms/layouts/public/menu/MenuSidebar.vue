@@ -49,7 +49,7 @@ router.beforeEach(() => {
         <aside class="menu" @click.stop v-if="showMenu" role="dialog" aria-modal>
             <header class="menu__header">
                 <RouterLink :to="{ name: 'profile' }" class="header__profile-link" v-if="profile">
-                    <EntityAvatar class="h-10 w-10" :image="profile.avatar?.url" />
+                    <EntityAvatar class="h-10 w-10" :image="profile.avatar?.url" circle />
                 </RouterLink>
 
                 <RouterLink :to="{ name: 'auth' }" v-else>
@@ -162,11 +162,11 @@ router.beforeEach(() => {
         @apply space-y-6;
 
         .menu__cta {
-            @apply flex flex-col space-y-3;
+            @apply flex flex-col space-y-8;
             @apply bg-secondary-50 border-secondary-100 rounded-xl border p-6;
 
             .cta__stack {
-                @apply mx-auto h-30 w-30;
+                @apply mx-auto h-25 w-25;
             }
         }
 

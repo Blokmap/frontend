@@ -90,6 +90,9 @@ const currentLanguage = ref<string>(locale.value);
                 <div>
                     <InputLabel html-for="tags"> Tags </InputLabel>
                     <TagSelect v-model="selectedTags" :tags="tags" :loading="isLoadingTags" />
+                    <InputHint>
+                        Met tags kan je voorzieningen oplijsten die de locatie aanbiedt.
+                    </InputHint>
                 </div>
 
                 <!-- Detailed Description -->

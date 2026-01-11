@@ -151,8 +151,8 @@ router.beforeEach(() => {
 }
 
 .menu {
-    @apply fixed top-0 right-0 z-[200] h-screen min-w-[400px] space-y-8 px-12 py-8;
-    @apply overflow-y-auto rounded-l-4xl bg-white;
+    @apply fixed top-0 right-0 z-[200] h-screen space-y-8 px-6 py-8 md:min-w-[400px] md:px-12;
+    @apply overflow-y-auto bg-white md:rounded-l-4xl;
 
     .menu__header {
         @apply flex items-center justify-end gap-3;

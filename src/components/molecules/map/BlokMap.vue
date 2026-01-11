@@ -2,20 +2,18 @@
 import SlideCarousel from '@/components/molecules/image/SlideCarousel.vue';
 import { faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { useGeolocation } from '@vueuse/core';
-import { computed, ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
 import { type Location } from '@/domain/location';
-import { isLngLat } from '@/domain/map/mapHelpers';
 import Cluster from './Cluster.vue';
 import Marker from './Marker.vue';
 import type { ClusterData, LngLat, MapAdapter } from '@/domain/map';
 
-const { map, locations } = defineProps<{
+const { map, locations, isLoading, rounded } = defineProps<{
     map: MapAdapter;
     locations?: Location[];
     isLoading?: boolean;
+    rounded?: boolean;
 }>();
 
 const hoveredLocation = defineModel<Location | null>('hoveredLocation', {
@@ -23,15 +21,11 @@ const hoveredLocation = defineModel<Location | null>('hoveredLocation', {
 });
 
 const emit = defineEmits<{
-    (e: 'click:marker', id: number): void;
+    'click:marker': [id: number];
+    'click:location': [id: number];
 }>();
 
 const { locale } = useI18n();
-const { coords } = useGeolocation();
-
-const router = useRouter();
-
-const hasFlownToUserLocation = ref<boolean>(false);
 
 const clusters = computed<ClusterData[]>(() => map.getClusters?.() || []);
 
@@ -55,25 +49,21 @@ const visibleLocations = computed(() => {
     });
 });
 
-function onMarkerClick(id: number): void {
+const onMarkerClick = (id: number): void => {
     emit('click:marker', id);
-}
+};
 
-function onMarkerMouseEnter(location: Location) {
+const onMarkerMouseEnter = (location: Location) => {
     hoveredLocation.value = location;
-}
+};
 
-function onMarkerMouseLeave() {
+const onMarkerMouseLeave = () => {
     hoveredLocation.value = null;
-}
+};
 
-function navigateToDetail(locationId: number): void {
-    router.push({ name: 'locations.detail', params: { locationId } });
-}
-
-function onClusterClick(clusterId: string): void {
+const onClusterClick = (clusterId: string): void => {
     map.zoomToCluster?.(clusterId);
-}
+};
 
 // Update clustered markers when locations change or map loads
 watch(
@@ -95,23 +85,15 @@ watch(
     },
     { immediate: true, deep: true },
 );
-
-// Fly to user's geolocation when available
-watch([map.isLoaded, coords], async ([isLoaded, coords]) => {
-    if (isLoaded && isLngLat(coords) && !hasFlownToUserLocation.value) {
-        map.flyTo([coords.longitude, coords.latitude], 15);
-        hasFlownToUserLocation.value = true;
-    }
-});
 </script>
 
 <template>
-    <div ref="mapContainer" class="map">
+    <div ref="mapContainer" class="map" :class="{ 'rounded-lg': rounded }">
         <div v-if="isLoading" class="loader">
             <span>Loading</span>
             <FontAwesomeIcon :icon="faSpinner" spin />
         </div>
-        <slot v-if="map.isLoaded.value">
+        <template v-if="map.isLoaded.value">
             <!-- Render clusters -->
             <Cluster
                 v-for="cluster in clusters"
@@ -136,7 +118,7 @@ watch([map.isLoaded, coords], async ([isLoaded, coords]) => {
                 @mouseenter="onMarkerMouseEnter(location)"
                 @mouseleave="onMarkerMouseLeave">
                 <template #popover="{ closePopover }">
-                    <div class="location-popover" @click="navigateToDetail(location.id)">
+                    <div class="location-popover" @click="emit('click:location', location.id)">
                         <!-- Carousel for location images -->
                         <div class="location-popover__carousel">
                             <SlideCarousel
@@ -177,7 +159,7 @@ watch([map.isLoaded, coords], async ([isLoaded, coords]) => {
                     </div>
                 </template>
             </Marker>
-        </slot>
+        </template>
     </div>
 </template>
 

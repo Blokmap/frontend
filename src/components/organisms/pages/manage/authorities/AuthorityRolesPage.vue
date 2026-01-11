@@ -97,7 +97,7 @@ const breadcrumbs = computed(() => {
         {
             label: institutionName,
             to: {
-                name: 'manage.institution.info',
+                name: 'manage.institution.overview',
                 params: {
                     institutionId,
                 },
@@ -106,7 +106,7 @@ const breadcrumbs = computed(() => {
         {
             label: props.authority?.name ?? 'Groep',
             to: {
-                name: 'manage.authority.info',
+                name: 'manage.authority.overview',
             },
         },
         {

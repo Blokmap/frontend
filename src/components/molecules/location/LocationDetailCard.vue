@@ -65,7 +65,7 @@ const navigate = (): void => {
                 <RouterLink
                     v-if="location.authority"
                     :to="{
-                        name: 'manage.authority.info',
+                        name: 'manage.authority.overview',
                         params: { authorityId: location.authority.id },
                     }"
                     @click.stop>

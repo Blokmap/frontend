@@ -27,8 +27,8 @@ export const LocationRolesPage = () =>
     import('@/components/organisms/pages/manage/locations/LocationRolesPage.vue');
 
 // Manage - Authority
-export const AuthorityInfoPage = () =>
-    import('@/components/organisms/pages/manage/authorities/AuthorityInfoPage.vue');
+export const AuthorityOverviewPage = () =>
+    import('@/components/organisms/pages/manage/authorities/AuthorityOverviewPage.vue');
 export const AuthoritySettingsPage = () =>
     import('@/components/organisms/pages/manage/authorities/AuthoritySettingsPage.vue');
 export const AuthorityLocationsPage = () =>
@@ -39,8 +39,8 @@ export const AuthorityRolesPage = () =>
     import('@/components/organisms/pages/manage/authorities/AuthorityRolesPage.vue');
 
 // Manage - Institution
-export const InstitutionInfoPage = () =>
-    import('@/components/organisms/pages/manage/institutions/InstitutionInfoPage.vue');
+export const InstitutionOverviewPage = () =>
+    import('@/components/organisms/pages/manage/institutions/InstitutionOverviewPage.vue');
 export const InstitutionSettingsPage = () =>
     import('@/components/organisms/pages/manage/institutions/InstitutionSettingsPage.vue');
 export const InstitutionAuthoritiesPage = () =>

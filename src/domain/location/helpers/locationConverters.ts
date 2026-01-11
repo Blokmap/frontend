@@ -9,6 +9,16 @@ import { timeToString } from '@/utils/time';
 import type { Location, LocationSearchFilter } from '../types';
 
 /**
+ * Extract coordinates from locations as [longitude, latitude] tuples.
+ *
+ * @param locations - Array of locations.
+ * @returns Array of [longitude, latitude] coordinates.
+ */
+export function locationsToCoordinates(locations: Location[]): [number, number][] {
+    return locations.map((loc) => [loc.longitude, loc.latitude]);
+}
+
+/**
  * Transform a Location response object.
  *
  * @param data - The raw location data from the API.

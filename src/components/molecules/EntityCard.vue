@@ -32,29 +32,29 @@ const emit = defineEmits<{
     'delete:avatar': [];
 }>();
 
-function onEditClick() {
+const onEditClick = () => {
     emit('click:edit');
-}
+};
 
-function onSaveClick() {
+const onSaveClick = () => {
     emit('click:save');
-}
+};
 
-function onCancelClick() {
+const onCancelClick = () => {
     emit('click:cancel');
-}
+};
 
-function onAvatarEditClick() {
+const onAvatarEditClick = () => {
     avatarDialogVisible.value = true;
-}
+};
 
-function onUpdateAvatar(file: File) {
+const onUpdateAvatar = (file: File) => {
     emit('update:avatar', file);
-}
+};
 
-function onDeleteAvatar() {
+const onDeleteAvatar = () => {
     emit('delete:avatar');
-}
+};
 </script>
 
 <template>
@@ -148,7 +148,7 @@ function onDeleteAvatar() {
 .entity-card {
     @apply relative grid grid-cols-2 items-start gap-4 p-4 sm:flex sm:flex-row sm:items-center sm:gap-8 sm:p-8;
     @apply justify-items-center sm:justify-items-stretch;
-    @apply rounded-xl bg-white shadow-md;
+    @apply rounded-xl border border-slate-200 bg-white;
 
     .entity-card__actions {
         @apply absolute top-4 right-4 flex gap-2;

@@ -58,10 +58,10 @@ defineEmits<{
 @reference '@/assets/styles/main.css';
 
 .entity-avatar {
-    @apply relative flex aspect-auto items-center justify-center rounded-md;
+    @apply relative flex aspect-auto items-center justify-center rounded-lg;
 
     .entity-avatar__overlay {
-        @apply absolute inset-0 z-10 flex items-center justify-center;
+        @apply absolute inset-0 z-10 flex items-center justify-center rounded-lg;
         @apply cursor-pointer bg-black/50 opacity-0 transition-opacity duration-300;
 
         &.circle {

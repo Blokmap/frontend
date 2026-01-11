@@ -85,12 +85,12 @@ function goBack() {
                 <LayoutSidebarSection title="Instellingen">
                     <LayoutSidebarItem
                         :loading="isLoading"
-                        :to="{ name: 'manage.authority.info', params: { authorityId } }"
-                        :active="route.name === 'manage.authority.info'">
+                        :to="{ name: 'manage.authority.overview', params: { authorityId } }"
+                        :active="route.name === 'manage.authority.overview'">
                         <template #img>
                             <FontAwesomeIcon :icon="faInfoCircle" />
                         </template>
-                        <template #text>Informatie</template>
+                        <template #text>Overzicht</template>
                     </LayoutSidebarItem>
 
                     <LayoutSidebarItem

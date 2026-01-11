@@ -61,7 +61,7 @@ function onDeleteClick(): void {
                 :icon="faEdit"
                 label="Bewerken"
                 :to="{
-                    name: 'manage.authority.info',
+                    name: 'manage.authority.overview',
                     params: { authorityId: props.authority.id },
                 }">
             </ActionMenuButton>

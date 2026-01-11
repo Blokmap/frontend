@@ -59,7 +59,7 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
         {
             label: institutionName,
             to: {
-                name: 'manage.institution.info',
+                name: 'manage.institution.overview',
             },
         },
         {

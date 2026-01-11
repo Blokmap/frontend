@@ -41,7 +41,6 @@ const recentLocationImages = computed<Image[] | undefined>(() =>
 
 const showMenu = ref<boolean>(false);
 
-// Computed active states for navigation links
 const isLocationsActive = computed(() => {
     const name = route.name?.toString() || '';
     return name === 'locations' || name === 'locations.detail';
@@ -103,24 +102,24 @@ const isManageActive = computed(() => {
         </div>
 
         <nav class="header__inner">
-            <RouterLink 
-                :to="{ name: 'locations' }" 
+            <RouterLink
+                :to="{ name: 'locations' }"
                 class="header__nav__item"
                 :class="{ active: isLocationsActive }">
                 <img :src="map" alt="Map Illustration" />
                 <span>Verkennen</span>
             </RouterLink>
 
-            <RouterLink 
-                :to="{ name: 'profile', hash: '#reservations' }" 
+            <RouterLink
+                :to="{ name: 'profile', hash: '#reservations' }"
                 class="header__nav__item"
                 :class="{ active: isReservationsActive }">
                 <img :src="calendar" alt="School Illustration" />
                 <span>Reservaties</span>
             </RouterLink>
 
-            <RouterLink 
-                :to="{ name: 'manage.dashboard' }" 
+            <RouterLink
+                :to="{ name: 'manage.dashboard' }"
                 class="header__nav__item"
                 :class="{ active: isManageActive }">
                 <ImageStack class="header__nav__stack" :images="recentLocationImages" />
@@ -166,12 +165,12 @@ const isManageActive = computed(() => {
             }
 
             img {
-                @apply aspect-square h-10 w-10 rounded object-cover;
+                @apply aspect-square h-8 w-8 rounded object-cover;
                 @apply border border-slate-200;
             }
 
             .header__nav__stack {
-                @apply h-10 w-10;
+                @apply h-8 w-8;
             }
         }
     }

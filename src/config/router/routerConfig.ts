@@ -28,12 +28,12 @@ import {
     LocationReservationsPage,
     LocationMembersPage,
     LocationRolesPage,
-    AuthorityInfoPage,
+    AuthorityOverviewPage,
     AuthoritySettingsPage,
     AuthorityLocationsPage,
     AuthorityMembersPage,
     AuthorityRolesPage,
-    InstitutionInfoPage,
+    InstitutionOverviewPage,
     InstitutionSettingsPage,
     InstitutionAuthoritiesPage,
     InstitutionMembersPage,
@@ -250,12 +250,12 @@ const routes: RouteRecordRaw[] = [
                         name: 'manage.authority',
                         component: ManageAuthorityLayout,
                         props: true,
-                        redirect: { name: 'manage.authority.info' },
+                        redirect: { name: 'manage.authority.overview' },
                         children: [
                             {
-                                path: 'info',
-                                name: 'manage.authority.info',
-                                component: AuthorityInfoPage,
+                                path: 'overview',
+                                name: 'manage.authority.overview',
+                                component: AuthorityOverviewPage,
                             },
                             {
                                 path: 'settings',
@@ -285,12 +285,12 @@ const routes: RouteRecordRaw[] = [
                         name: 'manage.institution',
                         component: ManageInstitutionLayout,
                         props: true,
-                        redirect: { name: 'manage.institution.info' },
+                        redirect: { name: 'manage.institution.overview' },
                         children: [
                             {
-                                path: 'info',
-                                name: 'manage.institution.info',
-                                component: InstitutionInfoPage,
+                                path: 'overview',
+                                name: 'manage.institution.overview',
+                                component: InstitutionOverviewPage,
                             },
                             {
                                 path: 'settings',

@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { refDebounced, useDebounceFn } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import { computed, ref, useTemplateRef, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useNearestLocation } from '@/composables/data/useLocations';
 import { useMapBox } from '@/composables/maps/useMapBox';
 import { useLocationFilters } from '@/composables/store/useLocationFilters';
@@ -21,6 +22,7 @@ defineOptions({ name: 'LocationsPage' });
 
 defineProps<{ headerHeight: number }>();
 
+const router = useRouter();
 const filterStore = useLocationFilters();
 
 const { geoLocation, filters, mapConfigCache, isFetching, isPending, locations } =
@@ -51,9 +53,13 @@ const onNearestClick = (): void => {
     }
 };
 
-const blokMapRef = useTemplateRef('blokmap');
-const mapContainerRef = computed(() => blokMapRef.value?.$el ?? null);
+const blokMapRef = useTemplateRef<InstanceType<typeof BlokMap>>('blokmap');
+const mapContainerRef = computed<HTMLElement | null>(() => blokMapRef.value?.$el);
 const map = useMapBox(mapContainerRef, mapConfigCache.value);
+
+const onLocationClick = (locationId: number) => {
+    router.push({ name: 'locations.detail', params: { locationId } });
+};
 
 const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
 
@@ -173,14 +179,14 @@ const transitionKey = computed<string | undefined>(() => {
                 @page="onPageChange">
             </Paginator>
         </section>
-
         <section class="locations__map">
             <BlokMap
                 ref="blokmap"
                 class="locations__map-inner"
                 :map="map"
                 :locations="locations?.data"
-                :loading="showLoading">
+                :loading="showLoading"
+                @click:location="onLocationClick">
             </BlokMap>
         </section>
     </PageContent>

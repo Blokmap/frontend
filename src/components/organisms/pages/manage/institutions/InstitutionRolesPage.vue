@@ -107,7 +107,7 @@ const breadcrumbs = computed(() => {
         {
             label: institutionName.value,
             to: {
-                name: 'manage.institution.info',
+                name: 'manage.institution.overview',
             },
         },
         {

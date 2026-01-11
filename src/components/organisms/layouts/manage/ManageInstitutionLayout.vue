@@ -51,8 +51,8 @@ function goBack() {
                 <LayoutSidebarSection title="Instellingen">
                     <LayoutSidebarItem
                         :loading="isLoading"
-                        :to="{ name: 'manage.institution.info', params: { institutionId } }"
-                        :active="route.name === 'manage.institution.info'">
+                        :to="{ name: 'manage.institution.overview', params: { institutionId } }"
+                        :active="route.name === 'manage.institution.overview'">
                         <template #img>
                             <FontAwesomeIcon :icon="faInfoCircle" />
                         </template>

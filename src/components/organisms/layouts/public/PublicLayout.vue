@@ -86,7 +86,7 @@ watchEffect(() => {
 }
 
 .public-layout__main {
-    @apply flex w-full flex-1 flex-col p-4 md:p-6 lg:p-8;
+    @apply flex w-full flex-1 flex-col p-4 py-6 md:p-6 lg:p-8;
     @apply bg-slate-50 md:rounded-b-md;
 
     .public-layout__container {

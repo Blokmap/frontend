@@ -28,7 +28,7 @@ const breadcrumbs = computed(() => [
     { label: 'Groepen', to: { name: 'manage' } },
     {
         label: props.authority?.name ?? 'Groep',
-        to: { name: 'manage.authority.info', params: { authorityId: props.authority.id } },
+        to: { name: 'manage.authority.overview', params: { authorityId: props.authority.id } },
     },
     { label: 'Instellingen' },
 ]);

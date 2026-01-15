@@ -3,39 +3,29 @@ import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import InputHint from '@/components/atoms/form/InputHint.vue';
 import InputLabel from '@/components/atoms/form/InputLabel.vue';
-import { useForm } from '@/composables/useForm';
-import {
-    authorityRequestRules,
-    authorityToRequest,
-    defaultAuthorityRequest,
-    type Authority,
-    type AuthorityRequest,
-} from '@/domain/authority';
+import { computed } from 'vue';
+import { type Form } from '@/composables/useForm';
+import { type AuthorityRequest } from '@/domain/authority';
 
 const props = defineProps<{
-    authority?: Authority;
+    form: Form<AuthorityRequest>;
 }>();
 
-const emit = defineEmits<{
-    'click:save': [AuthorityRequest];
-}>();
-
-const { form, v$ } = useForm(defaultAuthorityRequest(), authorityRequestRules, {
-    sync: () => props.authority,
-    syncFn: authorityToRequest,
+const form = computed(() => {
+    return props.form.body.value;
 });
 
-const onSaveClick = async (): Promise<void> => {
-    const valid = await v$.value.$validate();
+const v$ = computed(() => {
+    return props.form.v$.value;
+});
 
-    if (valid) {
-        emit('click:save', form.value);
-    }
-};
+const emit = defineEmits<{
+    submit: [];
+}>();
 </script>
 
 <template>
-    <form class="space-y-5" @submit.prevent="onSaveClick">
+    <form class="space-y-5" @submit.prevent="emit('submit')">
         <div class="space-y-1">
             <InputLabel htmlFor="authority-name">Naam *</InputLabel>
             <InputText

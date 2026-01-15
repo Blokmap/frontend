@@ -23,7 +23,7 @@ const emit = defineEmits<{
 
 const { locale } = useI18n();
 
-const { form, v$ } = useForm(defaultTagRequest(), tagRequestRules, {
+const { body, v$ } = useForm(defaultTagRequest(), tagRequestRules, {
     sync: () => props.tag,
     syncFn: tagToRequest,
 });
@@ -42,7 +42,7 @@ const onSaveClick = async (): Promise<void> => {
     }
 
     if (valid) {
-        emit('click:save', form.value);
+        emit('click:save', body.value);
     }
 };
 </script>
@@ -67,7 +67,7 @@ const onSaveClick = async (): Promise<void> => {
             <InputText
                 class="w-full"
                 placeholder="Bijv. toegankelijk"
-                v-model="form.name[editingLocale]"
+                v-model="body.name[editingLocale]"
                 :id="`tag-name-${editingLocale}`"
                 :invalid="v$.name[editingLocale].$error">
             </InputText>
@@ -81,7 +81,7 @@ const onSaveClick = async (): Promise<void> => {
                 <InputLabel htmlFor="tag-slug">Sleutel *</InputLabel>
                 <InputText
                     id="tag-slug"
-                    v-model="form.slug"
+                    v-model="body.slug"
                     :invalid="v$.slug.$error"
                     class="w-full"
                     placeholder="bijv. toegankelijk">
@@ -93,7 +93,7 @@ const onSaveClick = async (): Promise<void> => {
 
             <div class="space-y-1">
                 <InputLabel htmlFor="tag-icon">Icoon</InputLabel>
-                <InputIcon id="tag-icon" v-model="form.icon" class="w-full" placeholder="bijv. tag">
+                <InputIcon id="tag-icon" v-model="body.icon" class="w-full" placeholder="bijv. tag">
                 </InputIcon>
                 <InputHint>
                     Optioneel FontAwesome Regular icoon (valt terug op standaard icoon).

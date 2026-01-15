@@ -20,7 +20,13 @@ import {
 } from '@/composables/data/useAuthorities';
 import { useReadAuthorityLocations } from '@/composables/data/useLocations';
 import { useMapBox } from '@/composables/maps';
-import { type Authority, type AuthorityRequest } from '@/domain/authority';
+import { useForm } from '@/composables/useForm';
+import {
+    authorityRequestRules,
+    authorityToRequest,
+    defaultAuthorityRequest,
+    type Authority,
+} from '@/domain/authority';
 import { getInstitutionName } from '@/domain/institution';
 import { locationsToCoordinates } from '@/domain/location/helpers/locationConverters';
 import { calculateBounds, calculateCenter } from '@/domain/map/mapHelpers';
@@ -82,12 +88,24 @@ const { mutateAsync: updateAuthority, isPending: isUpdatingAuthority } = useUpda
 
 const showInformationDialog = ref<boolean>(false);
 
-const onSaveInformation = async (data: AuthorityRequest) => {
+const form = useForm(defaultAuthorityRequest(), authorityRequestRules, {
+    sync: () => props.authority,
+    syncFn: authorityToRequest,
+});
+
+const onSaveEdit = async () => {
+    const data = form.body.value;
+
     await updateAuthority({
         id: props.authority.id,
         data,
     });
 
+    showInformationDialog.value = false;
+};
+
+const onCancelEdit = () => {
+    form.reset();
     showInformationDialog.value = false;
 };
 
@@ -182,7 +200,7 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
 
         <OverviewSection title="Locaties">
             <BlokMap
-                class="h-[600px] rounded"
+                class="aspect-video rounded"
                 ref="blokmap"
                 :map="map"
                 :locations="locations"
@@ -193,21 +211,17 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
         </OverviewSection>
 
         <Teleport to="body">
-            <Dialog
-                class="w-full max-w-xl"
-                v-model:visible="showInformationDialog"
-                modal
-                header="Groep bewerken">
+            <Dialog v-model:visible="showInformationDialog" modal header="Groep bewerken">
                 <AuthorityForm
                     id="authority-form"
+                    class="w-xl max-w-full"
                     :authority="authority"
-                    @click:save="onSaveInformation">
+                    :form="form"
+                    @submit="onSaveEdit">
                 </AuthorityForm>
                 <template #footer>
                     <div class="flex justify-end gap-2">
-                        <Button severity="contrast" @click="showInformationDialog = false" text>
-                            Annuleren
-                        </Button>
+                        <Button severity="contrast" @click="onCancelEdit" text> Annuleren </Button>
                         <Button type="submit" form="authority-form" :loading="isUpdatingAuthority">
                             <FontAwesomeIcon :icon="faCheck" />
                             <span>Opslaan</span>

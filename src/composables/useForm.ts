@@ -6,17 +6,26 @@ export type FormSyncer<R, S> = {
     sync: MaybeRefOrGetter<S | undefined>;
 };
 
-export function useForm<R, S>(def: R, validation: object, syncer?: FormSyncer<R, S>) {
-    const form = ref<R>(def);
-    const v$ = useVuelidate(validation, form);
+export type Form<R> = ReturnType<typeof useForm<R, any>>;
 
-    watchEffect(() => {
+export function useForm<R, S>(def: R, validation: object, syncer?: FormSyncer<R, S>) {
+    const body = ref(def);
+    const v$ = useVuelidate(validation, body);
+
+    const sync = () => {
         if (syncer) {
             const { sync, syncFn } = syncer;
             const value = toValue(sync);
-            form.value = value ? syncFn(value) : def;
+            body.value = value ? syncFn(value) : def;
         }
-    });
+    };
 
-    return { form, v$ };
+    const reset = () => {
+        sync();
+        v$.value.$reset();
+    };
+
+    watchEffect(sync);
+
+    return { body, v$, reset };
 }

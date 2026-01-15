@@ -109,7 +109,7 @@ const navigate = (): void => {
 
     .location-detail__carousel {
         .carousel__image {
-            @apply aspect-12/9 w-full object-cover;
+            @apply aspect-12/9 h-full w-full object-cover;
         }
     }
 

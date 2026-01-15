@@ -4,10 +4,9 @@ import InputText from 'primevue/inputtext';
 import InputHint from '@/components/atoms/form/InputHint.vue';
 import InputIcon from '@/components/atoms/form/InputIcon.vue';
 import InputLabel from '@/components/atoms/form/InputLabel.vue';
-import useVuelidate from '@vuelidate/core';
-import { watchImmediate } from '@vueuse/core';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useForm } from '@/composables/useForm';
 import { tagToRequest, type Tag, type TagRequest } from '@/domain/tag';
 import { tagRequestRules } from '@/domain/tag/helpers';
 import { defaultTagRequest } from '@/domain/tag/tagConstants';
@@ -24,17 +23,12 @@ const emit = defineEmits<{
 
 const { locale } = useI18n();
 
+const { form, v$ } = useForm(defaultTagRequest(), tagRequestRules, {
+    sync: () => props.tag,
+    syncFn: tagToRequest,
+});
+
 const editingLocale = ref<string>(locale.value);
-const form = ref<TagRequest>(defaultTagRequest());
-
-const v$ = useVuelidate(tagRequestRules, form);
-
-watchImmediate(
-    () => props.tag,
-    (tag) => {
-        form.value = tag ? tagToRequest(tag) : defaultTagRequest();
-    },
-);
 
 const onSaveClick = async (): Promise<void> => {
     const valid = await v$.value.$validate();
@@ -54,10 +48,10 @@ const onSaveClick = async (): Promise<void> => {
 </script>
 
 <template>
-    <form class="form" @submit.prevent="onSaveClick">
-        <fieldset class="form__fieldset">
-            <legend class="form__legend">
-                <span class="form__section-title">Naam</span>
+    <form class="max-w-[500px] space-y-5" @submit.prevent="onSaveClick">
+        <fieldset>
+            <legend class="flex w-full items-center justify-between gap-3">
+                <span class="text-sm font-semibold text-gray-900">Naam</span>
                 <LanguageSelector v-model="editingLocale">
                     <template #button="{ toggle, currentFlag, currentLabel }">
                         <Button severity="contrast" size="small" class="text-sm" @click="toggle">
@@ -67,7 +61,6 @@ const onSaveClick = async (): Promise<void> => {
                     </template>
                 </LanguageSelector>
             </legend>
-
             <InputLabel :htmlFor="`tag-name-${editingLocale}`">
                 Naam ({{ editingLocale.toUpperCase() }}) *
             </InputLabel>
@@ -83,7 +76,7 @@ const onSaveClick = async (): Promise<void> => {
             </InputHint>
         </fieldset>
 
-        <div class="form__grid">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div class="space-y-1">
                 <InputLabel htmlFor="tag-slug">Sleutel *</InputLabel>
                 <InputText
@@ -109,23 +102,3 @@ const onSaveClick = async (): Promise<void> => {
         </div>
     </form>
 </template>
-
-<style scoped>
-@reference '@/assets/styles/main.css';
-
-.form {
-    @apply max-w-[500px] space-y-5;
-
-    .form__legend {
-        @apply flex w-full items-center justify-between gap-3;
-    }
-
-    .form__section-title {
-        @apply text-sm font-semibold text-gray-900;
-    }
-
-    .form__grid {
-        @apply grid grid-cols-1 gap-4 md:grid-cols-2;
-    }
-}
-</style>

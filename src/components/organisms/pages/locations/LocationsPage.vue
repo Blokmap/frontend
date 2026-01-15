@@ -66,7 +66,7 @@ const previousLocationCount = ref<number>(filterStore.filters.perPage ?? 12);
 // Keep track of previous location count to show skeletons when loading new data
 watch(locations, (locations) => {
     if (!locations || !locations.data.length) return;
-    //previousLocationCount.value = locations.data.length;
+    previousLocationCount.value = locations.data.length;
 });
 
 // Watch for changes in geoLocation to fly the map to that location
@@ -200,7 +200,7 @@ const transitionKey = computed<string | undefined>(() => {
 }
 
 .locations__list {
-    @apply z-2 w-full flex-col space-y-8 lg:flex lg:w-3/5;
+    @apply z-2 w-full flex-col space-y-8 lg:flex lg:w-1/2 xl:w-3/5;
     @apply mt-[calc(100vh-155px)] -mb-6 p-4 pb-12 md:p-0 lg:mt-0;
     @apply rounded-2xl bg-white md:bg-transparent;
 
@@ -237,7 +237,7 @@ const transitionKey = computed<string | undefined>(() => {
 
 .locations__map {
     @apply fixed top-0 left-0 z-1 h-screen w-full;
-    @apply lg:sticky lg:top-[2rem] lg:h-[calc(100vh-4rem)] lg:w-2/5 lg:self-start;
+    @apply lg:sticky lg:top-[2rem] lg:h-[calc(100vh-4rem)] lg:w-2/5 lg:self-start xl:w-1/2;
 
     .locations__map-inner {
         @apply h-full w-full lg:rounded-xl lg:shadow-md;

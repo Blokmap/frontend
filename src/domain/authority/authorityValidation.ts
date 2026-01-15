@@ -1,4 +1,4 @@
-import { v, optional } from '@/utils/forms/validation';
+import { v } from '@/utils/forms/validation';
 
 /**
  * Validation rules for AuthorityRequest
@@ -9,7 +9,8 @@ export const authorityRequestRules = {
         maxLength: v.maxLength('name', 255),
     },
     description: {
-        maxLength: optional(v.maxLength('description', 1000)),
+        required: v.required('description'),
+        maxLength: v.maxLength('description', 1000),
     },
     institutionId: {},
 };

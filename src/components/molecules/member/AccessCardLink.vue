@@ -35,7 +35,6 @@ defineProps<{
 
 .access-link {
     @apply flex items-center gap-3 p-3;
-    @apply hover:border-primary-400 hover:bg-primary-50 rounded-lg border border-slate-200 transition-all;
 
     .link__avatar {
         @apply h-12 w-12 shrink-0;

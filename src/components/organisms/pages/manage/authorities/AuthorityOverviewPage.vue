@@ -3,14 +3,14 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import ManageBreadcrumb, { type BreadcrumbItem } from '@/components/molecules/Breadcrumb.vue';
 import EntityCard from '@/components/molecules/EntityCard.vue';
-import AuthorityInformationBuilder from '@/components/molecules/authority/builder/AuthorityInformationBuilder.vue';
+import AuthorityForm from '@/components/molecules/authority/form/AuthorityForm.vue';
 import BlokMap from '@/components/molecules/map/BlokMap.vue';
 import OverviewSection from '@/components/molecules/overview/OverviewSection.vue';
 import PageContent from '@/components/organisms/pages/PageContent.vue';
 import PageTitle from '@/components/organisms/pages/PageTitle.vue';
-import { faBuilding, faCheck, faEdit, faX } from '@fortawesome/free-solid-svg-icons';
+import { faBuilding, faCheck, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, ref, useTemplateRef, watch, watchEffect } from 'vue';
+import { computed, ref, useTemplateRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import {
@@ -20,7 +20,7 @@ import {
 } from '@/composables/data/useAuthorities';
 import { useReadAuthorityLocations } from '@/composables/data/useLocations';
 import { useMapBox } from '@/composables/maps';
-import { type Authority, type AuthorityRequest, authorityToRequest } from '@/domain/authority';
+import { type Authority, type AuthorityRequest } from '@/domain/authority';
 import { getInstitutionName } from '@/domain/institution';
 import { locationsToCoordinates } from '@/domain/location/helpers/locationConverters';
 import { calculateBounds, calculateCenter } from '@/domain/map/mapHelpers';
@@ -31,8 +31,9 @@ const props = defineProps<{
     authority: Authority;
 }>();
 
-const { locale } = useI18n();
 const router = useRouter();
+
+const { locale } = useI18n();
 
 const authorityId = computed<number>(() => {
     return props.authority.id;
@@ -79,23 +80,12 @@ watch(
 
 const { mutateAsync: updateAuthority, isPending: isUpdatingAuthority } = useUpdateAuthority();
 
-const informationForm = ref<AuthorityRequest>();
-const informationSnapshot = ref<string>('');
-
-const isInformationDirty = computed(() => {
-    return JSON.stringify(informationForm.value) !== informationSnapshot.value;
-});
-
 const showInformationDialog = ref<boolean>(false);
 
-const onSaveInformation = async () => {
-    if (!informationForm.value) return;
-
-    const { name, description } = informationForm.value;
-
+const onSaveInformation = async (data: AuthorityRequest) => {
     await updateAuthority({
         id: props.authority.id,
-        data: { name, description, institutionId: informationForm.value.institutionId },
+        data,
     });
 
     showInformationDialog.value = false;
@@ -121,12 +111,6 @@ const onLocationClick = (locationId: number) => {
         params: { locationId },
     });
 };
-
-watchEffect(() => {
-    const request = authorityToRequest(props.authority);
-    informationForm.value = request;
-    informationSnapshot.value = JSON.stringify(request);
-});
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => {
     const institutionId = props.authority.institution?.id;
@@ -210,29 +194,25 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
 
         <Teleport to="body">
             <Dialog
-                class="w-full max-w-4xl overflow-y-auto"
+                class="w-full max-w-xl"
                 v-model:visible="showInformationDialog"
-                modal>
-                <template #container>
-                    <AuthorityInformationBuilder v-if="informationForm" v-model="informationForm">
-                        <template #actions>
-                            <Button
-                                @click="onSaveInformation"
-                                :disabled="!isInformationDirty"
-                                :loading="isUpdatingAuthority">
-                                <FontAwesomeIcon :icon="faCheck" />
-                                <span>Opslaan</span>
-                            </Button>
-                            <Button
-                                severity="contrast"
-                                @click="showInformationDialog = false"
-                                rounded>
-                                <template #icon>
-                                    <FontAwesomeIcon :icon="faX" />
-                                </template>
-                            </Button>
-                        </template>
-                    </AuthorityInformationBuilder>
+                modal
+                header="Groep bewerken">
+                <AuthorityForm
+                    id="authority-form"
+                    :authority="authority"
+                    @click:save="onSaveInformation">
+                </AuthorityForm>
+                <template #footer>
+                    <div class="flex justify-end gap-2">
+                        <Button severity="contrast" @click="showInformationDialog = false" text>
+                            Annuleren
+                        </Button>
+                        <Button type="submit" form="authority-form" :loading="isUpdatingAuthority">
+                            <FontAwesomeIcon :icon="faCheck" />
+                            <span>Opslaan</span>
+                        </Button>
+                    </div>
                 </template>
             </Dialog>
         </Teleport>
